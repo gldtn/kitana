@@ -52,6 +52,11 @@ for cmd in git yay Hyprland hyprctl sddm vicinae quickshell swaync waybar; do
   check_command "$cmd"
 done
 
+if command -v Hyprland >/dev/null 2>&1; then
+  echo
+  Hyprland --version 2>/dev/null || Hyprland -v 2>/dev/null || true
+fi
+
 echo
 
 for pkg in \
@@ -64,6 +69,7 @@ for pkg in \
   hyprpolkitagent \
   pixie-sddm-git \
   quickshell \
+  qt6ct \
   sddm \
   swaync \
   vicinae-bin \
@@ -84,6 +90,44 @@ if systemctl --user list-unit-files xdg-desktop-portal-hyprland.service >/dev/nu
   check_user_service xdg-desktop-portal-hyprland.service
 else
   echo '[WARN] user service not found: xdg-desktop-portal-hyprland.service'
+fi
+
+echo
+
+if [ -L "$HOME/.config/hypr" ]; then
+  pass "Hypr config symlink: ~/.config/hypr"
+elif [ -d "$HOME/.config/hypr" ]; then
+  echo '[WARN] Hypr config exists but is not a symlink: ~/.config/hypr'
+else
+  fail "Hypr config missing: ~/.config/hypr"
+fi
+
+if [ -f "$HOME/.config/hypr/hyprland.lua" ]; then
+  pass "Hypr Lua entrypoint: ~/.config/hypr/hyprland.lua"
+else
+  fail "Hypr Lua entrypoint missing: ~/.config/hypr/hyprland.lua"
+fi
+
+for lua_module in \
+  modules/autostart.lua \
+  modules/binds.lua \
+  modules/env.lua \
+  modules/windowrules.lua; do
+  if [ -f "$HOME/.config/hypr/$lua_module" ]; then
+    pass "Hypr Lua module: ~/.config/hypr/$lua_module"
+  else
+    fail "Hypr Lua module missing: ~/.config/hypr/$lua_module"
+  fi
+done
+
+if command -v luac >/dev/null 2>&1 && [ -f "$HOME/.config/hypr/hyprland.lua" ]; then
+  if luac -p "$HOME/.config/hypr/hyprland.lua" "$HOME/.config/hypr"/modules/*.lua; then
+    pass "Hypr Lua syntax"
+  else
+    fail "Hypr Lua syntax"
+  fi
+else
+  echo '[WARN] skipping Hypr Lua syntax check: luac or hyprland.lua missing'
 fi
 
 echo

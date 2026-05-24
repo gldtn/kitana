@@ -14,6 +14,7 @@ PACKAGES=(
   matugen-bin
   nwg-look
   qt5-wayland
+  qt6ct
   qt6-declarative
   qt6-quickcontrols2
   qt6-svg

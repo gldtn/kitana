@@ -5,6 +5,7 @@ Personal Arch Linux bootstrap and post-install setup.
 ## What this does
 
 - Installs core system, development, CLI, terminal, Hyprland ecosystem, and fonts.
+- Targets Hyprland 0.55+ with Lua-based config.
 - Installs desktop apps by category from separate scripts in `install/apps/`.
 - Prompts for a browser choice and applies MIME defaults based on that selection.
 - Creates web app launchers after browser selection.
@@ -41,6 +42,7 @@ bash ~/.local/share/kitana/validate.sh
 ## Desktop categories
 
 - `install/desktop/cli.sh`
+- `install/desktop/configs.sh`
 - `install/desktop/development.sh`
 - `install/desktop/fonts.sh`
 - `install/desktop/themes.sh`
@@ -54,7 +56,12 @@ bash ~/.local/share/kitana/validate.sh
 - SDDM is installed and enabled in `install/desktop/essentials.sh`.
 - `pixie-sddm-git` is included as the SDDM theme package.
 - `uwsm` is not installed by default.
-- Hyprland config is intentionally not bundled right now; build `~/.config/hypr/` from scratch.
+- SDDM starts the Hyprland session; `hyprlock` only locks an already-running session.
+- Hyprland Lua config is linked from `hypr/` to `~/.config/hypr` during install.
+- The Hyprland config entrypoint is `hypr/hyprland.lua`.
+- On Hyprland 0.55+, `hyprland.lua` is loaded instead of `hyprland.conf` when present.
+- Hyprlang config remains transitional for Hyprland and is expected to be dropped after 1-2 releases, but Hypr* tools may still use Hyprlang for their own configs.
 - Browser choice is stored in `~/.config/webapp-install.conf` and reused by:
   - `install/apps/mimetypes.sh`
   - `bin/webapp-install`
+  - `bin/webapp-launch`
