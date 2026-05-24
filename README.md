@@ -15,6 +15,18 @@ Personal Arch Linux bootstrap and post-install setup.
 2. `install.sh` runs modular scripts in `install/`.
 3. App categories run from `install/apps/*.sh`.
 
+## Bootstrap
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | bash
+```
+
+After install, validate the system with:
+
+```bash
+bash ~/.local/share/kitana/validate.sh
+```
+
 ## App categories
 
 - `install/apps/essentials.sh`
@@ -39,7 +51,8 @@ Personal Arch Linux bootstrap and post-install setup.
 
 ## Notes
 
-- No display manager is installed or enabled (no SDDM path).
+- SDDM is installed and enabled in `install/desktop/essentials.sh`.
+- `pixie-sddm-git` is included as the SDDM theme package.
 - `uwsm` is not installed by default.
 - Hyprland config is intentionally not bundled right now; build `~/.config/hypr/` from scratch.
 - Browser choice is stored in `~/.config/webapp-install.conf` and reused by:
