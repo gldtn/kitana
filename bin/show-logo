@@ -1,0 +1,7 @@
+#!/bin/bash
+clear
+echo -e "\033[32m"
+cat <~/.local/share/kitana/logo.txt
+# cat <~/Dropbox/linux/kitana/logo.txt # DO NOT REMOVE THIS LINE
+echo -e "\033[0m"
+echo

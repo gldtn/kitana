@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+# Script to install a browser and save the choice for webapp-install
+
+# Check if gum and yay are installed
+if ! command -v gum &> /dev/null; then
+    echo "Error: gum is not installed. Please install it first."
+    echo ""
+    exit 1
+fi
+
+if ! command -v yay &> /dev/null; then
+    echo "Error: yay is not installed. Please install it first."
+    echo ""
+    exit 1
+fi
+
+# Header
+~/.local/share/kitana/bin/show-logo
+gum format -- "## Browser Installation Script"
+echo ""
+
+# List of popular browsers with package:executable mapping
+browsers=(
+    "brave-bin:brave:Fast and privacy-focused browser"
+    "chromium:chromium:Open-source version of Chrome"
+    "firefox:firefox:Popular open-source browser"
+    "google-chrome:google-chrome-stable:Google's proprietary browser"
+    "qutebrowser:qutebrowser:Keyboard-oriented browser"
+    "zen-browser-bin:zen-browser:Web browser based on Mozilla Firefox"
+)
+
+# Choose a browser
+selected=$(gum choose --header "Select a browser to install:" "${browsers[@]}" | cut -d':' -f1-2)
+
+# Extract the package name and executable
+pkg_name=$(echo "$selected" | cut -d':' -f1)
+browser_exec=$(echo "$selected" | cut -d':' -f2)
+
+# Confirm installation
+if gum confirm "Do you want to install $pkg_name?"; then
+    echo "Installing $pkg_name..."
+    yay -Syu --noconfirm "$pkg_name"
+    if [ $? -eq 0 ]; then
+        gum style --foreground 2 "🟢 Successfully installed $pkg_name!"
+        echo ""
+        # Save the browser executable to config file
+        mkdir -p ~/.config
+        echo "BROWSER=$browser_exec" > ~/.config/webapp-install.conf
+    else
+        gum style --foreground 1 "🔴 Failed to install $pkg_name. Check yay output for details."
+        echo ""
+        exit 1
+    fi
+else
+    gum style --foreground 3 "⚠ Installation cancelled."
+    echo ""
+    exit 0
+fi
