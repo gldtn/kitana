@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Bootstrap script for Kitana - Custom Arch/Hyprland Setup
+# Bootstrap script for Kitana - Custom Arch/Hyprland Setup by gldtn
 # Run as: curl -sL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | bash
 # Assumes fresh Arch install with sudo user.
 

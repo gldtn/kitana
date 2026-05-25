@@ -30,6 +30,9 @@ bash ~/.local/share/kitana/validate.sh
 
 ## App categories
 
+- `install/apps/ai.sh`
+- `install/apps/communication.sh`
+- `install/apps/crypto.sh`
 - `install/apps/essentials.sh`
 - `install/apps/editors.sh`
 - `install/apps/productivity.sh`
