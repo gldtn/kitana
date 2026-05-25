@@ -44,7 +44,7 @@ hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd(chatClient))
 hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd(iptvClient))
 hl.bind(mod .. " + SHIFT + M", hl.dsp.exec_cmd(musicClient))
 
-hl.bind(mod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch exit"))
+hl.bind(mod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
 
 -- Window split/pseudo
 hl.bind(mod .. " + P", hl.dsp.window.pseudo())
