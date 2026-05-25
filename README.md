@@ -28,6 +28,12 @@ After install, validate the system with:
 bash ~/.local/share/kitana/validate.sh
 ```
 
+To rerun only app installation:
+
+```bash
+bash ~/.local/share/kitana/install-apps.sh
+```
+
 ## App categories
 
 - `install/apps/ai.sh`
@@ -41,6 +47,7 @@ bash ~/.local/share/kitana/validate.sh
 - `install/apps/managers.sh`
 - `install/apps/mimetypes.sh`
 - `install/apps/webapps.sh`
+- `install-apps.sh` reruns only app categories, browser selection, MIME defaults, and webapps.
 
 ## Desktop categories
 

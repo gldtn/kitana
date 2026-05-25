@@ -32,17 +32,17 @@ hl.bind(mod .. " + Q", hl.dsp.window.close(), { description = "Close active wind
 hl.bind(mod .. " + E", hl.dsp.exec_cmd(editor), { description = "Editor" })
 hl.bind(mod .. " + B", hl.dsp.exec_cmd(browser), { description = "Browser" })
 hl.bind(mod .. " + G", hl.dsp.exec_cmd(guiEditor), { description = "Gui editor" })
-hl.bind(mod .. " + ENTER", hl.dsp.exec_cmd(terminal), { description = "Terminal" })
+hl.bind(mod .. " + RETURN", hl.dsp.exec_cmd(terminal), { description = "Terminal" })
 hl.bind(mod .. " + SPACE", hl.dsp.exec_cmd(launcher), { description = "Launcher" })
 hl.bind(mod .. " + F", hl.dsp.exec_cmd(fileManager), { description = "File manager" })
 hl.bind(mod .. " + A", hl.dsp.exec_cmd(activityManager), { description = "Activity manager" })
 hl.bind(mod .. " + SLASH", hl.dsp.exec_cmd(passwordManager), { description = "Password manager" })
 
 -- Web apps & others
-hl.bind(mod .. " SHIFT + E", hl.dsp.exec_cmd(emailClient))
-hl.bind(mod .. " SHIFT + C", hl.dsp.exec_cmd(chatClient))
-hl.bind(mod .. " SHIFT + T", hl.dsp.exec_cmd(iptvClient))
-hl.bind(mod .. " SHIFT + M", hl.dsp.exec_cmd(musicClient))
+hl.bind(mod .. " + SHIFT + E", hl.dsp.exec_cmd(emailClient))
+hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd(chatClient))
+hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd(iptvClient))
+hl.bind(mod .. " + SHIFT + M", hl.dsp.exec_cmd(musicClient))
 
 hl.bind(mod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch exit"))
 

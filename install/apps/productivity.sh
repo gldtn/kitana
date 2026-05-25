@@ -6,7 +6,6 @@ PACKAGES=(
   1password-beta
   1password-cli
   calcure
-  ledger-live-desktop
   localsend-bin
   onlyoffice-bin
 )

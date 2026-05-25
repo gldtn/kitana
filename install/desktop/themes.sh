@@ -4,7 +4,7 @@ echo "Installing theme and toolkit packages..."
 
 PACKAGES=(
   adw-gtk-theme
-  graphite-gtk-theme-git
+  gnome-themes-extra
   gtk-engine-murrine
   gtk3
   gtk4
@@ -19,8 +19,19 @@ PACKAGES=(
   qt6-quickcontrols2
   qt6-svg
   qt6-wayland
+  sassc
 )
 
 for pkg in "${PACKAGES[@]}"; do
   yay -S --noconfirm --needed "$pkg"
 done
+
+tmpdir="$(mktemp -d)"
+trap 'rm -rf "$tmpdir"' EXIT
+
+git clone --depth 1 https://github.com/vinceliuice/Graphite-gtk-theme.git "$tmpdir/Graphite-gtk-theme"
+
+(
+  cd "$tmpdir/Graphite-gtk-theme"
+  ./install.sh --theme default --tweaks normal rimless --size standard compact
+)
