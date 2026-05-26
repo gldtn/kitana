@@ -45,6 +45,14 @@ check_user_service() {
   fi
 }
 
+check_xdg_user_dir() {
+  if [ -d "$HOME/$1" ]; then
+    pass "XDG user dir: ~/$1"
+  else
+    fail "XDG user dir missing: ~/$1"
+  fi
+}
+
 echo "Validating Kitana install..."
 echo
 
@@ -80,6 +88,12 @@ done
 
 echo
 
+for user_dir in Documents Downloads Pictures Media/music Media/videos; do
+  check_xdg_user_dir "$user_dir"
+done
+
+echo
+
 check_service_enabled bluetooth.service
 check_service_enabled iwd.service
 check_service_enabled sddm.service
@@ -94,10 +108,12 @@ fi
 
 echo
 
+KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
+
 if [ -L "$HOME/.config/hypr" ]; then
-  pass "Hypr config symlink: ~/.config/hypr"
+  fail "Hypr config should be a directory, not a symlink: ~/.config/hypr"
 elif [ -d "$HOME/.config/hypr" ]; then
-  echo '[WARN] Hypr config exists but is not a symlink: ~/.config/hypr'
+  pass "Hypr config directory: ~/.config/hypr"
 else
   fail "Hypr config missing: ~/.config/hypr"
 fi
@@ -108,26 +124,65 @@ else
   fail "Hypr Lua entrypoint missing: ~/.config/hypr/hyprland.lua"
 fi
 
+if [ -d "$HOME/.config/hypr/modules" ]; then
+  pass "Hypr user override directory: ~/.config/hypr/modules"
+else
+  fail "Hypr user override directory missing: ~/.config/hypr/modules"
+fi
+
+if [ -d "$HOME/.config/hypr/scripts" ]; then
+  pass "Hypr user script directory: ~/.config/hypr/scripts"
+else
+  fail "Hypr user script directory missing: ~/.config/hypr/scripts"
+fi
+
 for lua_module in \
   modules/autostart.lua \
   modules/binds.lua \
   modules/env.lua \
   modules/windowrules.lua; do
-  if [ -f "$HOME/.config/hypr/$lua_module" ]; then
-    pass "Hypr Lua module: ~/.config/hypr/$lua_module"
+  if [ -f "$KITANA_DIR/hypr/$lua_module" ]; then
+    pass "Kitana Hypr Lua default: $lua_module"
   else
-    fail "Hypr Lua module missing: ~/.config/hypr/$lua_module"
+    fail "Kitana Hypr Lua default missing: $lua_module"
   fi
 done
 
-if command -v luac >/dev/null 2>&1 && [ -f "$HOME/.config/hypr/hyprland.lua" ]; then
-  if luac -p "$HOME/.config/hypr/hyprland.lua" "$HOME/.config/hypr"/modules/*.lua; then
-    pass "Hypr Lua syntax"
+if [ -f "$HOME/.config/hypr/hypridle.conf" ]; then
+  pass "Hypridle config: ~/.config/hypr/hypridle.conf"
+else
+  fail "Hypridle config missing: ~/.config/hypr/hypridle.conf"
+fi
+
+if [ -f "$HOME/.config/hypr/hyprpaper.conf" ]; then
+  pass "Hyprpaper config: ~/.config/hypr/hyprpaper.conf"
+else
+  fail "Hyprpaper config missing: ~/.config/hypr/hyprpaper.conf"
+fi
+
+if [ -e "$HOME/.config/hypr/walls" ]; then
+  pass "Hypr wallpapers: ~/.config/hypr/walls"
+else
+  fail "Hypr wallpapers missing: ~/.config/hypr/walls"
+fi
+
+if command -v luac >/dev/null 2>&1; then
+  if luac -p "$KITANA_DIR/hypr/hyprland.lua" "$KITANA_DIR"/hypr/modules/*.lua; then
+    pass "Kitana Hypr Lua syntax"
   else
-    fail "Hypr Lua syntax"
+    fail "Kitana Hypr Lua syntax"
+  fi
+
+  user_modules=("$HOME/.config/hypr"/modules/*.lua)
+  if [ -e "${user_modules[0]}" ]; then
+    if luac -p "${user_modules[@]}"; then
+      pass "Hypr user override Lua syntax"
+    else
+      fail "Hypr user override Lua syntax"
+    fi
   fi
 else
-  echo '[WARN] skipping Hypr Lua syntax check: luac or hyprland.lua missing'
+  echo '[WARN] skipping Hypr Lua syntax check: luac missing'
 fi
 
 echo
