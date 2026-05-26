@@ -7,6 +7,8 @@ HYPR_CONFIG_DIR="$HOME/.config/hypr"
 HYPR_ENTRYPOINT="$HYPR_CONFIG_DIR/hyprland.lua"
 HYPR_ENTRYPOINT_MARKER="Kitana managed Hyprland Lua entrypoint"
 HYPRPAPER_MARKER="Kitana managed Hyprpaper config"
+GHOSTTY_CONFIG_DIR="$HOME/.config/ghostty"
+GHOSTTY_CONFIG_MARKER="Kitana managed Ghostty config"
 
 install_kitana_entrypoint() {
   cat >"$HYPR_ENTRYPOINT" <<EOF
@@ -65,5 +67,22 @@ for script in "$KITANA_DIR"/hypr/scripts/*; do
 
   if [ ! -e "$target" ]; then
     ln -s "$script" "$target"
+  fi
+done
+
+mkdir -p "$GHOSTTY_CONFIG_DIR/themes"
+
+if [ ! -e "$GHOSTTY_CONFIG_DIR/config" ] || grep -q "$GHOSTTY_CONFIG_MARKER" "$GHOSTTY_CONFIG_DIR/config"; then
+  cp "$KITANA_DIR/ghostty/config" "$GHOSTTY_CONFIG_DIR/config"
+else
+  echo "Keeping existing Ghostty config: $GHOSTTY_CONFIG_DIR/config"
+fi
+
+for theme in "$KITANA_DIR"/ghostty/themes/*; do
+  [ -e "$theme" ] || continue
+  target="$GHOSTTY_CONFIG_DIR/themes/$(basename "$theme")"
+
+  if [ ! -e "$target" ]; then
+    cp "$theme" "$target"
   fi
 done

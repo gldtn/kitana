@@ -172,6 +172,20 @@ else
   fail "Hypr wallpapers missing: ~/.config/hypr/walls"
 fi
 
+if [ -f "$HOME/.config/ghostty/config" ]; then
+  pass "Ghostty config: ~/.config/ghostty/config"
+else
+  fail "Ghostty config missing: ~/.config/ghostty/config"
+fi
+
+for ghostty_theme in catppuccin cyberdream tokyonight; do
+  if [ -f "$HOME/.config/ghostty/themes/$ghostty_theme" ]; then
+    pass "Ghostty theme: $ghostty_theme"
+  else
+    fail "Ghostty theme missing: $ghostty_theme"
+  fi
+done
+
 if command -v luac >/dev/null 2>&1; then
   if luac -p "$KITANA_DIR/hypr/hyprland.lua" "$KITANA_DIR"/hypr/modules/*.lua; then
     pass "Kitana Hypr Lua syntax"

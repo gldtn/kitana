@@ -95,6 +95,7 @@ bash ~/.local/share/kitana/install-desktop.sh
 - `hypridle.conf` is copied to `~/.config/hypr/hypridle.conf` only if missing, so local edits are preserved.
 - `hyprpaper.conf` is copied to `~/.config/hypr/hyprpaper.conf` only if missing, and wallpapers are linked from `~/.config/hypr/walls`.
 - The Kitana Hyprland config entrypoint is `hypr/hyprland.lua`.
+- Ghostty defaults live in `ghostty/`; `~/.config/ghostty/config` is copied only when missing or Kitana-managed, and themes are copied only when missing.
 - On Hyprland 0.55+, `hyprland.lua` is loaded instead of `hyprland.conf` when present.
 - Hyprlang config remains transitional for Hyprland and is expected to be dropped after 1-2 releases, but Hypr* tools may still use Hyprlang for their own configs.
 - Browser choice is stored in `~/.config/webapp-install.conf` and reused by:
