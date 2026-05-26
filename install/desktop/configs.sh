@@ -6,6 +6,7 @@ KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
 HYPR_CONFIG_DIR="$HOME/.config/hypr"
 HYPR_ENTRYPOINT="$HYPR_CONFIG_DIR/hyprland.lua"
 HYPR_ENTRYPOINT_MARKER="Kitana managed Hyprland Lua entrypoint"
+HYPRPAPER_MARKER="Kitana managed Hyprpaper config"
 
 install_kitana_entrypoint() {
   cat >"$HYPR_ENTRYPOINT" <<EOF
@@ -50,7 +51,7 @@ if [ ! -e "$HYPR_CONFIG_DIR/hypridle.conf" ]; then
   cp "$KITANA_DIR/hypr/hypridle.conf" "$HYPR_CONFIG_DIR/hypridle.conf"
 fi
 
-if [ ! -e "$HYPR_CONFIG_DIR/hyprpaper.conf" ]; then
+if [ ! -e "$HYPR_CONFIG_DIR/hyprpaper.conf" ] || grep -q "$HYPRPAPER_MARKER" "$HYPR_CONFIG_DIR/hyprpaper.conf" || grep -q "mystical_night_town_default.jpg" "$HYPR_CONFIG_DIR/hyprpaper.conf"; then
   cp "$KITANA_DIR/hypr/hyprpaper.conf" "$HYPR_CONFIG_DIR/hyprpaper.conf"
 fi
 

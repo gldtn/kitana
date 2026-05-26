@@ -160,6 +160,12 @@ else
   fail "Hyprpaper config missing: ~/.config/hypr/hyprpaper.conf"
 fi
 
+if [ -f "$KITANA_DIR/hypr/walls/mystical_night_town_default.jpg" ]; then
+  pass "Hyprpaper default wallpaper"
+else
+  fail "Hyprpaper default wallpaper missing"
+fi
+
 if [ -e "$HOME/.config/hypr/walls" ]; then
   pass "Hypr wallpapers: ~/.config/hypr/walls"
 else
