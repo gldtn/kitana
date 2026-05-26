@@ -2,7 +2,7 @@
 
 echo "Installing desktop config files..."
 
-KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana/}"
+KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
 
 mkdir -p "$HOME/.config"
 

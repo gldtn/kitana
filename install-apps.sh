@@ -2,7 +2,7 @@
 
 set -e
 
-KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana/}"
+KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
 
 source_script() {
   local script="$1"

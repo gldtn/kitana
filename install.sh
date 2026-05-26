@@ -10,7 +10,7 @@ set -e
 trap 'echo "Kitana installation failed! You can retry by running: bash ~/.local/share/kitana/install.sh"' ERR
 
 # Define base path
-KITANA_DIR="$HOME/.local/share/kitana/"
+KITANA_DIR="$HOME/.local/share/kitana"
 
 # Function to source a script
 source_script() {
@@ -53,7 +53,7 @@ source_script "apps/managers.sh"
 
 echo "Let's install your preferred browser..."
 sleep 2
-bash "$HOME/.local/share/kitana/bin/install-browser"
+bash "$KITANA_DIR/bin/install-browser"
 
 source_script "apps/mimetypes.sh"
 source_script "apps/webapps.sh"
