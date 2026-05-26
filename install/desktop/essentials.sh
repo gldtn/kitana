@@ -42,7 +42,8 @@ mkdir -p \
   "$HOME/Media/music" \
   "$HOME/Media/videos"
 
-cat >"$HOME/.config/user-dirs.dirs" <<EOF
+if [ ! -e "$HOME/.config/user-dirs.dirs" ]; then
+  cat >"$HOME/.config/user-dirs.dirs" <<EOF
 XDG_DESKTOP_DIR="$HOME"
 XDG_DOCUMENTS_DIR="$HOME/Documents"
 XDG_DOWNLOAD_DIR="$HOME/Downloads"
@@ -52,6 +53,7 @@ XDG_PUBLICSHARE_DIR="$HOME"
 XDG_TEMPLATES_DIR="$HOME"
 XDG_VIDEOS_DIR="$HOME/Media/videos"
 EOF
+fi
 
 sudo systemctl enable --now iwd.service bluetooth.service
 sudo systemctl enable --now sddm.service
