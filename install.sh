@@ -32,31 +32,9 @@ sudo sed -i '/^\[options\]/a ILoveCandy' /etc/pacman.conf
 # Install everything in order
 source_script "preflight.sh"
 source_script "system.sh"
-source_script "desktop/development.sh"
-source_script "desktop/terminal.sh"
-source_script "desktop/cli.sh"
-source_script "desktop/hardening.sh"
-source_script "desktop/hyprland.sh"
-source_script "desktop/fonts.sh"
-source_script "desktop/themes.sh"
-source_script "desktop/essentials.sh"
-source_script "desktop/configs.sh"
-source_script "apps/ai.sh"
-source_script "apps/communication.sh"
-source_script "apps/crypto.sh"
-source_script "apps/editors.sh"
-source_script "apps/essentials.sh"
-source_script "apps/productivity.sh"
-source_script "apps/media.sh"
-source_script "apps/files.sh"
-source_script "apps/managers.sh"
 
-echo "Let's install your preferred browser..."
-sleep 2
-bash "$KITANA_DIR/bin/install-browser"
-
-source_script "apps/mimetypes.sh"
-source_script "apps/webapps.sh"
+bash "$KITANA_DIR/install-desktop.sh"
+bash "$KITANA_DIR/install-apps.sh"
 
 # Ensure locate is up to date now that everything has been installed
 sudo updatedb

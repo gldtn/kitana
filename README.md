@@ -13,8 +13,8 @@ Personal Arch Linux bootstrap and post-install setup.
 ## Install flow
 
 1. Run `bootstrap.sh` on a fresh Arch install.
-2. `install.sh` runs modular scripts in `install/`.
-3. App categories run from `install/apps/*.sh`.
+2. `install.sh` runs base system setup, then delegates to `install-desktop.sh` and `install-apps.sh`.
+3. Desktop and app categories run from `install/desktop/*.sh` and `install/apps/*.sh`.
 
 ## Bootstrap
 
@@ -32,6 +32,12 @@ To rerun only app installation:
 
 ```bash
 bash ~/.local/share/kitana/install-apps.sh
+```
+
+To rerun only desktop setup:
+
+```bash
+bash ~/.local/share/kitana/install-desktop.sh
 ```
 
 ## App categories
@@ -60,6 +66,7 @@ bash ~/.local/share/kitana/install-apps.sh
 - `install/desktop/hyprland.sh`
 - `install/desktop/essentials.sh`
 - `install/desktop/terminal.sh`
+- `install-desktop.sh` reruns only desktop categories and config deployment.
 
 ## Notes
 
