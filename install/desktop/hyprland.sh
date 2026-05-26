@@ -7,8 +7,8 @@ PACKAGES=(
   hyprcursor
   hypridle
   hyprland
+  hyprland-guiutils
   hyprland-qt-support
-  hyprland-qtutils
   hyprlang
   hyprlock
   hyprpaper
