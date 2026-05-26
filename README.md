@@ -22,6 +22,19 @@ Personal Arch Linux bootstrap and post-install setup.
 curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | bash
 ```
 
+Bootstrap can also run a focused mode:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | bash -s -- desktop
+curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | bash -s -- apps
+curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | bash -s -- configs
+```
+
+- `full` runs the entire installer and is the default.
+- `desktop` installs only desktop/Hyprland/system UI categories.
+- `apps` installs only app categories, browser selection, MIME defaults, and webapps.
+- `configs` only deploys config symlinks.
+
 After install, validate the system with:
 
 ```bash
