@@ -7,14 +7,27 @@ PACKAGES=(
   bluez-utils
   brightnessctl
   ddcutil
+  grim
   inetutils
   iwd
-  pixie-sddm-git
+  pamixer
+  playerctl
+  polkit
   quickshell
+  satty
   sddm
+  slurp
+  swww
   swaync
+  udiskie
   vicinae-bin
   xdg-desktop-portal-gtk
+  xdg-user-dirs
+  xdg-utils
+  waybar
+  wl-clip-persist
+  wl-clipboard
+  wl-screenrec
 )
 
 for pkg in "${PACKAGES[@]}"; do

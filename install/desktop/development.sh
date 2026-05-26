@@ -5,6 +5,7 @@ echo "Installing development packages..."
 PACKAGES=(
   clang
   composer
+  dart-sass
   gcc
   git
   github-cli
@@ -13,12 +14,8 @@ PACKAGES=(
   llvm
   luarocks
   luajit
-  mariadb-libs
   mise
-  nginx
   npm
-  php
-  postgresql-libs
   tree-sitter-cli
 )
 

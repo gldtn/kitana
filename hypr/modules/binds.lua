@@ -15,7 +15,7 @@ local webappLauncher = "~/.local/share/kitana/bin/webapp-launch"
 local emailClient = webappLauncher .. " https://app.hey.com HEY"
 local chatClient = webappLauncher .. " https://web.whatsapp.com WhatsApp"
 -- NOTE: these are not web apps
-local iptvClient = "open-tv"
+local iptvClient = "open_tv" -- this must be with an underscore
 local musicClient = "youtube-music-desktop-app"
 
 ---------------------
