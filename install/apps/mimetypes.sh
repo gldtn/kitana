@@ -7,6 +7,8 @@ if [ -f "$CONFIG_FILE" ]; then
     source "$CONFIG_FILE"
 fi
 
+mkdir -p "$HOME/.local/share/applications" "$HOME/.local/share/mime/packages"
+
 case "$BROWSER" in
     brave)
         BROWSER_DESKTOP="brave-browser.desktop"
@@ -61,5 +63,5 @@ xdg-mime default mpv.desktop video/x-ogm+ogg
 xdg-mime default mpv.desktop video/x-theora+ogg
 xdg-mime default mpv.desktop application/ogg
 
-update-desktop-database ~/.local/share/applications
-update-mime-database ~/.local/share/mime
+update-desktop-database "$HOME/.local/share/applications"
+update-mime-database "$HOME/.local/share/mime"
