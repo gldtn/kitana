@@ -171,7 +171,7 @@ for lua_module in \
   fi
 done
 
-for custom_module in monitors input binds decorations autostart local; do
+for custom_module in monitors binds; do
   if [ -f "$HOME/.config/hypr/custom/$custom_module.lua" ]; then
     pass "Hypr custom module: $custom_module"
   else

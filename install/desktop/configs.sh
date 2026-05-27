@@ -42,7 +42,7 @@ else
   echo "Use require(\"default.hypr...\") to load Kitana defaults from $KITANA_DIR/default."
 fi
 
-for custom_module in monitors input binds decorations autostart local; do
+for custom_module in monitors binds; do
   custom_file="$HYPR_CONFIG_DIR/custom/$custom_module.lua"
 
   if [ ! -e "$custom_file" ]; then
@@ -77,9 +77,12 @@ done
 mkdir -p "$BASH_CONFIG_DIR/custom"
 
 if [ ! -e "$HOME/.bashrc" ] || grep -q "$BASHRC_MARKER" "$HOME/.bashrc"; then
-  cp "$KITANA_DIR/config/bash/bashrc" "$HOME/.bashrc"
+  cp "$KITANA_DIR/config/bash/.bashrc" "$HOME/.bashrc"
 else
-  echo "Keeping existing Bash entrypoint: $HOME/.bashrc"
+  backup="$HOME/.bashrc.bak.$(date +%s)"
+  echo "Backing up existing Bash entrypoint to $backup"
+  mv "$HOME/.bashrc" "$backup"
+  cp "$KITANA_DIR/config/bash/.bashrc" "$HOME/.bashrc"
 fi
 
 if [ ! -e "$BASH_CONFIG_DIR/rc" ] || grep -q "$BASH_RC_MARKER" "$BASH_CONFIG_DIR/rc"; then

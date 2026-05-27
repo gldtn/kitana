@@ -4,7 +4,7 @@
 
 local launcher = "vicinae toggle"
 local browser = "brave"
-local editor = "nvim"
+local editor = "ghostty -e nvim"
 local guiEditor = "zeditor"
 local terminal = "ghostty"
 local fileManager = "nautilus --new-window"
@@ -29,12 +29,12 @@ local mod = "SUPER" -- Sets "Windows" key as main modifier
 hl.bind(mod .. " + Q", hl.dsp.window.close(), { description = "Close active window" })
 
 -- Launch programs
-hl.bind(mod .. " + E", hl.dsp.exec_cmd(editor), { description = "Editor" })
+hl.bind(mod .. " + C", hl.dsp.exec_cmd(editor), { description = "Editor" })
 hl.bind(mod .. " + B", hl.dsp.exec_cmd(browser), { description = "Browser" })
 hl.bind(mod .. " + G", hl.dsp.exec_cmd(guiEditor), { description = "Gui editor" })
 hl.bind(mod .. " + RETURN", hl.dsp.exec_cmd(terminal), { description = "Terminal" })
-hl.bind(mod .. " + SPACE", hl.dsp.exec_cmd(launcher), { description = "Launcher" })
-hl.bind(mod .. " + F", hl.dsp.exec_cmd(fileManager), { description = "File manager" })
+hl.bind(mod .. " + D", hl.dsp.exec_cmd(launcher), { description = "Launcher" })
+hl.bind(mod .. " + E", hl.dsp.exec_cmd(fileManager), { description = "File manager" })
 hl.bind(mod .. " + A", hl.dsp.exec_cmd(activityManager), { description = "Activity manager" })
 hl.bind(mod .. " + SLASH", hl.dsp.exec_cmd(passwordManager), { description = "Password manager" })
 
@@ -52,7 +52,7 @@ hl.bind(mod .. " + X", hl.dsp.layout("togglesplit"), { description = "Toggle spl
 
 -- Window float
 hl.bind(mod .. " + CTRL + SHIFT + F", hl.dsp.window.float({ action = "toggle" }), { description = "Toggle float" })
-hl.bind(mod .. " + CTRL + T", hl.dsp.exec_cmd("~/.config/hypr/scripts/toggle_float.sh"), { description = "Toggle float and center" })
+hl.bind(mod .. " + CTRL + T", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/default/hypr/scripts/toggle_float.sh"), { description = "Toggle float and center" })
 
 -- Fullscreen window
 hl.bind(mod .. " + CTRL + M", hl.dsp.window.fullscreen({ mode = "maximized" }), { description = "Full width" })
