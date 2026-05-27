@@ -1,0 +1,6 @@
+# Starship prompt
+export STARSHIP_CONFIG=~/.config/starship/starship.toml
+
+if [[ $- == *i* ]] && [[ ${TERM:-} != "dumb" ]] && command -v starship &> /dev/null; then
+  eval "$(starship init bash)"
+fi

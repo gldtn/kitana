@@ -87,15 +87,18 @@ bash ~/.local/share/kitana/install-desktop.sh
 - `pixie-sddm-git` is included as the SDDM theme package.
 - `uwsm` is not installed by default.
 - SDDM starts the Hyprland session; `hyprlock` only locks an already-running session.
-- Hyprland Lua defaults live in `~/.local/share/kitana/hypr`.
+- `config/` contains Kitana-managed user-facing entrypoints copied into `~/.config` or `$HOME`.
+- `default/` contains Kitana defaults and assets; do not edit these directly.
+- Hyprland Lua defaults live in `~/.local/share/kitana/default/hypr`.
 - The user Hypr config directory is a real directory at `~/.config/hypr`, not a symlink.
-- The generated user entrypoint is `~/.config/hypr/hyprland.lua` and loads Kitana defaults.
-- Override a default module by creating `~/.config/hypr/modules/<module>.lua` with the same module name.
+- The managed user entrypoint is `~/.config/hypr/hyprland.lua` and loads Kitana defaults first.
+- Customize Hyprland in `~/.config/hypr/custom/*.lua`; these files load after Kitana defaults.
 - Scripts are linked individually into `~/.config/hypr/scripts` only when no user script already exists.
 - `hypridle.conf` is copied to `~/.config/hypr/hypridle.conf` only if missing, so local edits are preserved.
 - `hyprpaper.conf` is copied to `~/.config/hypr/hyprpaper.conf` only if missing, and wallpapers are linked from `~/.config/hypr/walls`.
-- The Kitana Hyprland config entrypoint is `hypr/hyprland.lua`.
-- Ghostty defaults live in `ghostty/`; `~/.config/ghostty/config` is copied only when missing or Kitana-managed, and themes are copied only when missing.
+- Bash defaults live in `default/bash`; customize Bash in `~/.config/bash/custom/*.bash`.
+- Starship config is copied to `~/.config/starship/starship.toml` only when missing or Kitana-managed.
+- Ghostty defaults live in `default/ghostty`; `~/.config/ghostty/config` is copied only when missing or Kitana-managed, and themes are copied only when missing.
 - On Hyprland 0.55+, `hyprland.lua` is loaded instead of `hyprland.conf` when present.
 - Hyprlang config remains transitional for Hyprland and is expected to be dropped after 1-2 releases, but Hypr* tools may still use Hyprlang for their own configs.
 - Browser choice is stored in `~/.config/webapp-install.conf` and reused by:

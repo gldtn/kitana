@@ -53,6 +53,22 @@ check_xdg_user_dir() {
   fi
 }
 
+check_file() {
+  if [ -f "$1" ]; then
+    pass "$2"
+  else
+    fail "$3"
+  fi
+}
+
+check_dir() {
+  if [ -d "$1" ]; then
+    pass "$2"
+  else
+    fail "$3"
+  fi
+}
+
 echo "Validating Kitana install..."
 echo
 
@@ -110,6 +126,13 @@ echo
 
 KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
 
+check_file "$HOME/.bashrc" "Bash entrypoint: ~/.bashrc" "Bash entrypoint missing: ~/.bashrc"
+check_file "$HOME/.config/bash/rc" "Bash config: ~/.config/bash/rc" "Bash config missing: ~/.config/bash/rc"
+check_dir "$HOME/.config/bash/custom" "Bash custom directory: ~/.config/bash/custom" "Bash custom directory missing: ~/.config/bash/custom"
+check_file "$HOME/.config/starship/starship.toml" "Starship config: ~/.config/starship/starship.toml" "Starship config missing: ~/.config/starship/starship.toml"
+
+echo
+
 if [ -L "$HOME/.config/hypr" ]; then
   fail "Hypr config should be a directory, not a symlink: ~/.config/hypr"
 elif [ -d "$HOME/.config/hypr" ]; then
@@ -124,10 +147,10 @@ else
   fail "Hypr Lua entrypoint missing: ~/.config/hypr/hyprland.lua"
 fi
 
-if [ -d "$HOME/.config/hypr/modules" ]; then
-  pass "Hypr user override directory: ~/.config/hypr/modules"
+if [ -d "$HOME/.config/hypr/custom" ]; then
+  pass "Hypr custom directory: ~/.config/hypr/custom"
 else
-  fail "Hypr user override directory missing: ~/.config/hypr/modules"
+  fail "Hypr custom directory missing: ~/.config/hypr/custom"
 fi
 
 if [ -d "$HOME/.config/hypr/scripts" ]; then
@@ -141,10 +164,18 @@ for lua_module in \
   modules/binds.lua \
   modules/env.lua \
   modules/windowrules.lua; do
-  if [ -f "$KITANA_DIR/hypr/$lua_module" ]; then
+  if [ -f "$KITANA_DIR/default/hypr/$lua_module" ]; then
     pass "Kitana Hypr Lua default: $lua_module"
   else
     fail "Kitana Hypr Lua default missing: $lua_module"
+  fi
+done
+
+for custom_module in monitors input binds decorations autostart local; do
+  if [ -f "$HOME/.config/hypr/custom/$custom_module.lua" ]; then
+    pass "Hypr custom module: $custom_module"
+  else
+    fail "Hypr custom module missing: $custom_module"
   fi
 done
 
@@ -160,7 +191,7 @@ else
   fail "Hyprpaper config missing: ~/.config/hypr/hyprpaper.conf"
 fi
 
-if [ -f "$KITANA_DIR/hypr/walls/mystical_night_town_default.jpg" ]; then
+if [ -f "$KITANA_DIR/default/hypr/walls/mystical_night_town_default.jpg" ]; then
   pass "Hyprpaper default wallpaper"
 else
   fail "Hyprpaper default wallpaper missing"
@@ -187,22 +218,30 @@ for ghostty_theme in catppuccin cyberdream tokyonight; do
 done
 
 if command -v luac >/dev/null 2>&1; then
-  if luac -p "$KITANA_DIR/hypr/hyprland.lua" "$KITANA_DIR"/hypr/modules/*.lua; then
+  if luac -p "$KITANA_DIR/config/hypr/hyprland.lua" "$KITANA_DIR"/default/hypr/modules/*.lua; then
     pass "Kitana Hypr Lua syntax"
   else
     fail "Kitana Hypr Lua syntax"
   fi
 
-  user_modules=("$HOME/.config/hypr"/modules/*.lua)
-  if [ -e "${user_modules[0]}" ]; then
-    if luac -p "${user_modules[@]}"; then
-      pass "Hypr user override Lua syntax"
+  custom_modules=("$HOME/.config/hypr"/custom/*.lua)
+  if [ -e "${custom_modules[0]}" ]; then
+    if luac -p "${custom_modules[@]}"; then
+      pass "Hypr custom Lua syntax"
     else
-      fail "Hypr user override Lua syntax"
+      fail "Hypr custom Lua syntax"
     fi
   fi
 else
   echo '[WARN] skipping Hypr Lua syntax check: luac missing'
+fi
+
+if command -v ghostty >/dev/null 2>&1 && [ -f "$KITANA_DIR/default/ghostty/config" ]; then
+  if ghostty +validate-config --config-file="$KITANA_DIR/default/ghostty/config"; then
+    pass "Kitana Ghostty config syntax"
+  else
+    fail "Kitana Ghostty config syntax"
+  fi
 fi
 
 echo

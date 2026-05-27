@@ -1,0 +1,17 @@
+# Kitana managed Bash config
+
+KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
+
+for file in \
+  "$KITANA_DIR/default/bash/shell" \
+  "$KITANA_DIR/default/bash/prompt" \
+  "$KITANA_DIR/default/bash/aliases" \
+  "$KITANA_DIR/default/bash/functions" \
+  "$KITANA_DIR/default/bash/envs" \
+  "$KITANA_DIR/default/bash/init"; do
+  [ -f "$file" ] && source "$file"
+done
+
+for file in "$HOME/.config/bash/custom/"*.bash; do
+  [ -e "$file" ] && source "$file"
+done

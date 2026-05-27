@@ -1,0 +1,4 @@
+# This file is kept for compatibility; ~/.config/bash/rc loads Kitana defaults.
+
+# Only load inputrc for interactive terminals
+# [[ $- == *i* ]] && bind -f ~/.local/share/kitana/default/bash/inputrc
