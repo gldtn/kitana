@@ -206,6 +206,14 @@ else
   fail "Hypridle config missing: ~/.config/hypr/hypridle.conf"
 fi
 
+if systemctl --user is-active hypridle.service >/dev/null 2>&1; then
+  pass "user service active: hypridle.service"
+elif pgrep -x hypridle >/dev/null 2>&1; then
+  pass "process active: hypridle"
+else
+  fail "hypridle is not running"
+fi
+
 if [ -f "$HOME/.config/hypr/hyprpaper.conf" ]; then
   pass "Hyprpaper config: ~/.config/hypr/hyprpaper.conf"
 else

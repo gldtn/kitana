@@ -6,6 +6,7 @@ KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
 HYPR_CONFIG_DIR="$HOME/.config/hypr"
 HYPR_ENTRYPOINT="$HYPR_CONFIG_DIR/hyprland.lua"
 HYPR_ENTRYPOINT_MARKER="Kitana managed Hyprland Lua entrypoint"
+HYPRIDLE_MARKER="Kitana managed Hypridle config"
 HYPRPAPER_MARKER="Kitana managed Hyprpaper config"
 BASH_CONFIG_DIR="$HOME/.config/bash"
 BASH_RC_MARKER="Kitana managed Bash config"
@@ -62,7 +63,7 @@ EOF
   fi
 done
 
-if [ ! -e "$HYPR_CONFIG_DIR/hypridle.conf" ]; then
+if [ ! -e "$HYPR_CONFIG_DIR/hypridle.conf" ] || grep -q "$HYPRIDLE_MARKER" "$HYPR_CONFIG_DIR/hypridle.conf" || grep -q "timeout = 2700" "$HYPR_CONFIG_DIR/hypridle.conf"; then
   cp "$KITANA_DIR/default/hypr/hypridle.conf" "$HYPR_CONFIG_DIR/hypridle.conf"
 fi
 
