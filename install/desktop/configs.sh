@@ -140,10 +140,18 @@ else
   echo "Keeping existing Qt6ct config: $QT6CT_CONFIG_DIR/qt6ct.conf"
 fi
 
-if command -v gsettings >/dev/null 2>&1; then
+if command -v gsettings >/dev/null 2>&1 && [ "${KITANA_SKIP_GSETTINGS:-0}" != "1" ]; then
   gsettings set org.gnome.desktop.interface color-scheme prefer-dark >/dev/null 2>&1 || true
-  gsettings set org.gnome.desktop.interface gtk-theme Graphite-Dark-compact >/dev/null 2>&1 || true
-  gsettings set org.gnome.desktop.interface icon-theme Tela-circle-black >/dev/null 2>&1 || true
+
+  if [ -d "$HOME/.local/share/themes/Graphite-Dark-compact" ] || [ -d /usr/share/themes/Graphite-Dark-compact ]; then
+    gsettings set org.gnome.desktop.interface gtk-theme Graphite-Dark-compact >/dev/null 2>&1 || true
+  else
+    gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark >/dev/null 2>&1 || true
+  fi
+
+  if [ -d "$HOME/.local/share/icons/Tela-circle-black" ] || [ -d /usr/share/icons/Tela-circle-black ]; then
+    gsettings set org.gnome.desktop.interface icon-theme Tela-circle-black >/dev/null 2>&1 || true
+  fi
 fi
 
 mkdir -p "$GHOSTTY_CONFIG_DIR/themes"
