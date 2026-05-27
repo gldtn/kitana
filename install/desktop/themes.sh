@@ -2,6 +2,9 @@
 
 echo "Installing theme and toolkit packages..."
 
+GRAPHITE_THEME_ARGS="${GRAPHITE_THEME_ARGS:---theme default --tweaks normal rimless black --size compact}"
+TELA_ICON_ARGS="${TELA_ICON_ARGS:--a}"
+
 PACKAGES=(
   adw-gtk-theme
   gnome-themes-extra
@@ -39,5 +42,12 @@ git clone --depth 1 https://github.com/vinceliuice/Graphite-gtk-theme.git "$tmpd
 
 (
   cd "$tmpdir/Graphite-gtk-theme"
-  ./install.sh --theme default --tweaks black rimless --size compact
+  ./install.sh $GRAPHITE_THEME_ARGS
+)
+
+git clone --depth 1 https://github.com/vinceliuice/Tela-circle-icon-theme.git "$tmpdir/Tela-circle-icon-theme"
+
+(
+  cd "$tmpdir/Tela-circle-icon-theme"
+  ./install.sh $TELA_ICON_ARGS
 )

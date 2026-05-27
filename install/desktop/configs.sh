@@ -142,7 +142,8 @@ fi
 
 if command -v gsettings >/dev/null 2>&1; then
   gsettings set org.gnome.desktop.interface color-scheme prefer-dark >/dev/null 2>&1 || true
-  gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark >/dev/null 2>&1 || true
+  gsettings set org.gnome.desktop.interface gtk-theme Graphite-Dark-compact >/dev/null 2>&1 || true
+  gsettings set org.gnome.desktop.interface icon-theme Tela-circle-black >/dev/null 2>&1 || true
 fi
 
 mkdir -p "$GHOSTTY_CONFIG_DIR/themes"
