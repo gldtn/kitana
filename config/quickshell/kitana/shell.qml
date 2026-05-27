@@ -24,6 +24,10 @@ ShellRoot {
     return workspaceSets[Math.min(index, workspaceSets.length - 1)];
   }
 
+  function screenName(screen) {
+    return screen && screen.name ? screen.name : "";
+  }
+
   Variants {
     model: Quickshell.screens
 
@@ -77,6 +81,8 @@ ShellRoot {
         stdout: StdioCollector { onStreamFinished: bluetoothText.text = text.trim() || "bt off" }
       }
 
+      Process { id: workspaceSwitch }
+
       Rectangle {
         anchors.fill: parent
         color: "transparent"
@@ -124,7 +130,14 @@ ShellRoot {
                   MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: Hyprland.dispatch("workspace " + workspacePill.workspaceId)
+                    onClicked: workspaceSwitch.exec([
+                      "sh",
+                      "-c",
+                      "monitor=$1; workspace=$2; [ -n \"$monitor\" ] && hyprctl dispatch focusmonitor \"$monitor\" >/dev/null 2>&1 || true; hyprctl dispatch \"hl.dsp.workspace($workspace)\" >/dev/null 2>&1 || hyprctl dispatch workspace \"$workspace\" >/dev/null 2>&1",
+                      "kitana-workspace",
+                      root.screenName(panel.screen),
+                      String(workspacePill.workspaceId)
+                    ])
                   }
                 }
               }

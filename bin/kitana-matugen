@@ -6,8 +6,9 @@ source_value="${1:-$HOME/.config/hypr/walls/mystical_night_town_default.jpg}"
 target="$HOME/.config/quickshell/kitana/Colors.qml"
 mkdir -p "$(dirname "$target")"
 
-if [[ "$source_value" =~ ^#?[0-9a-fA-F]{6}$ ]]; then
-  color="#${source_value#\#}"
+generate_from_hex() {
+  local color="#${1#\#}"
+
   python - "$color" "$target" <<'PY'
 import colorsys
 import pathlib
@@ -42,29 +43,10 @@ QtObject {{
 }}
 ''')
 PY
-  echo "Generated $target from $color"
-  exit 0
-fi
+}
 
-if ! command -v matugen >/dev/null 2>&1; then
-  echo "matugen is not installed; pass a hex color like '#89b4fa' instead"
-  exit 1
-fi
-
-if [ ! -f "$source_value" ]; then
-  echo "wallpaper not found: $source_value"
-  exit 1
-fi
-
-tmpdir="$(mktemp -d)"
-trap 'rm -rf "$tmpdir"' EXIT
-
-if ! matugen image "$source_value" --json hex >"$tmpdir/colors.json"; then
-  echo "matugen failed; pass a hex color like '#89b4fa' to generate Kitana bar colors without matugen"
-  exit 1
-fi
-
-python - "$tmpdir/colors.json" "$target" <<'PY'
+generate_from_json() {
+  python - "$1" "$target" <<'PY'
 import json
 import pathlib
 import sys
@@ -74,7 +56,10 @@ colors = data.get("colors", data)
 dark = colors.get("dark", colors)
 
 def get(name, fallback):
-    return dark.get(name, fallback)
+    value = dark.get(name, fallback)
+    if isinstance(value, dict):
+        return value.get("hex", fallback)
+    return value
 
 pathlib.Path(sys.argv[2]).write_text(f'''// Kitana managed Quickshell colors
 
@@ -95,5 +80,44 @@ QtObject {{
 }}
 ''')
 PY
+}
 
-echo "Generated $target"
+average_color() {
+  if command -v magick >/dev/null 2>&1; then
+    magick "$source_value" -resize 1x1! -format '#%[hex:p{0,0}]' info:
+  elif command -v convert >/dev/null 2>&1; then
+    convert "$source_value" -resize 1x1! -format '#%[hex:p{0,0}]' info:
+  else
+    return 1
+  fi
+}
+
+if [[ "$source_value" =~ ^#?[0-9a-fA-F]{6}$ ]]; then
+  generate_from_hex "$source_value"
+  echo "Generated $target from #${source_value#\#}"
+  exit 0
+fi
+
+if [ ! -f "$source_value" ]; then
+  echo "wallpaper not found: $source_value"
+  exit 1
+fi
+
+tmpdir="$(mktemp -d)"
+trap 'rm -rf "$tmpdir"' EXIT
+
+if command -v matugen >/dev/null 2>&1 && matugen image "$source_value" --dry-run --source-color-index 0 --json hex >"$tmpdir/colors.json" 2>"$tmpdir/matugen.err"; then
+  generate_from_json "$tmpdir/colors.json"
+  echo "Generated $target from $source_value"
+  exit 0
+fi
+
+if color="$(average_color)"; then
+  generate_from_hex "$color"
+  echo "Generated $target from average wallpaper color $color"
+  exit 0
+fi
+
+echo "Could not extract colors from wallpaper: $source_value"
+echo "Install matugen or ImageMagick, or pass a hex color like '#89b4fa'."
+exit 1
