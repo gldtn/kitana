@@ -76,7 +76,7 @@ check_dir() {
 echo "Validating Kitana install..."
 echo
 
-for cmd in git yay Hyprland hyprctl sddm vicinae quickshell swaync waybar; do
+for cmd in git yay Hyprland start-hyprland hyprctl sddm vicinae quickshell swaync waybar; do
   check_command "$cmd"
 done
 
@@ -117,6 +117,12 @@ echo
 check_service_enabled bluetooth.service
 check_service_enabled iwd.service
 check_service_enabled sddm.service
+
+if [ -f /etc/sddm.conf.d/20-hyprland.conf ] && grep -q '^CompositorCommand=start-hyprland$' /etc/sddm.conf.d/20-hyprland.conf; then
+  pass "SDDM Hyprland compositor command: start-hyprland"
+else
+  fail "SDDM Hyprland compositor command missing: /etc/sddm.conf.d/20-hyprland.conf"
+fi
 
 echo
 

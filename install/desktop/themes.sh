@@ -35,6 +35,11 @@ sudo tee /etc/sddm.conf.d/10-theme.conf >/dev/null <<EOF
 Current=pixie
 EOF
 
+sudo tee /etc/sddm.conf.d/20-hyprland.conf >/dev/null <<EOF
+[Wayland]
+CompositorCommand=start-hyprland
+EOF
+
 tmpdir="$(mktemp -d)"
 trap 'rm -rf "$tmpdir"' EXIT
 
