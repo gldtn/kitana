@@ -1,3 +1,5 @@
+// Kitana managed Quickshell colors
+
 pragma Singleton
 
 import QtQuick

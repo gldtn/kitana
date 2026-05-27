@@ -24,7 +24,6 @@ PACKAGES=(
   xdg-desktop-portal-gtk
   xdg-user-dirs
   xdg-utils
-  waybar
   wl-clip-persist
   wl-clipboard
   wl-screenrec

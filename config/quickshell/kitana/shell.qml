@@ -104,8 +104,9 @@ ShellRoot {
 
                 Rectangle {
                   id: workspacePill
-                  property bool active: Hyprland.workspaces.values.some(workspace => workspace.id === modelData && workspace.active)
-                  property bool occupied: Hyprland.workspaces.values.some(workspace => workspace.id === modelData && workspace.toplevels.values.length > 0)
+                  property int workspaceId: modelData
+                  property bool active: Hyprland.workspaces.values.some(workspace => workspace.id === workspaceId && workspace.active)
+                  property bool occupied: Hyprland.workspaces.values.some(workspace => workspace.id === workspaceId && workspace.toplevels.values.length > 0)
 
                   width: active ? 30 : 22
                   height: 22
@@ -114,7 +115,7 @@ ShellRoot {
 
                   Text {
                     anchors.centerIn: parent
-                    text: modelData
+                    text: workspacePill.workspaceId
                     color: workspacePill.active ? Colors.accentText : Colors.foreground
                     font.pixelSize: 12
                     font.weight: Font.DemiBold
@@ -123,7 +124,7 @@ ShellRoot {
                   MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: Hyprland.dispatch("workspace " + modelData)
+                    onClicked: Hyprland.dispatch("workspace " + workspacePill.workspaceId)
                   }
                 }
               }

@@ -76,7 +76,7 @@ check_dir() {
 echo "Validating Kitana install..."
 echo
 
-for cmd in git yay Hyprland start-hyprland hyprctl sddm vicinae quickshell swaync waybar; do
+for cmd in git yay Hyprland start-hyprland hyprctl sddm vicinae quickshell swaync; do
   check_command "$cmd"
 done
 
@@ -101,7 +101,6 @@ for pkg in \
   sddm \
   swaync \
   vicinae-bin \
-  waybar \
   xdg-desktop-portal-hyprland; do
   check_package "$pkg"
 done
@@ -299,6 +298,14 @@ for quickshell_config in shell.qml Colors.qml qmldir; do
     fail "Quickshell config missing: $quickshell_config"
   fi
 done
+
+if [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+  if pgrep -x quickshell >/dev/null 2>&1; then
+    pass "process active: quickshell"
+  else
+    fail "quickshell is not running"
+  fi
+fi
 
 if command -v luac >/dev/null 2>&1; then
   if luac -p "$KITANA_DIR/config/hypr/hyprland.lua" "$KITANA_DIR"/default/hypr/modules/*.lua; then

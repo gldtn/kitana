@@ -207,7 +207,13 @@ done
 
 mkdir -p "$QUICKSHELL_CONFIG_DIR"
 
-for quickshell_config in shell.qml Colors.qml qmldir; do
+if [ ! -e "$QUICKSHELL_CONFIG_DIR/shell.qml" ] || grep -q "Kitana managed Quickshell bar" "$QUICKSHELL_CONFIG_DIR/shell.qml"; then
+  cp "$KITANA_DIR/config/quickshell/kitana/shell.qml" "$QUICKSHELL_CONFIG_DIR/shell.qml"
+else
+  echo "Keeping existing Quickshell config: $QUICKSHELL_CONFIG_DIR/shell.qml"
+fi
+
+for quickshell_config in Colors.qml qmldir; do
   if [ ! -e "$QUICKSHELL_CONFIG_DIR/$quickshell_config" ]; then
     cp "$KITANA_DIR/config/quickshell/kitana/$quickshell_config" "$QUICKSHELL_CONFIG_DIR/$quickshell_config"
   else
