@@ -139,6 +139,7 @@ check_file "$HOME/.config/bash/rc" "Bash config: ~/.config/bash/rc" "Bash config
 check_dir "$HOME/.config/bash/custom" "Bash custom directory: ~/.config/bash/custom" "Bash custom directory missing: ~/.config/bash/custom"
 check_file "$HOME/.config/starship/starship.toml" "Starship config: ~/.config/starship/starship.toml" "Starship config missing: ~/.config/starship/starship.toml"
 check_file "$HOME/.config/gtk-3.0/settings.ini" "GTK 3 config: ~/.config/gtk-3.0/settings.ini" "GTK 3 config missing: ~/.config/gtk-3.0/settings.ini"
+check_file "$HOME/.config/gtk-3.0/bookmarks" "GTK bookmarks: ~/.config/gtk-3.0/bookmarks" "GTK bookmarks missing: ~/.config/gtk-3.0/bookmarks"
 check_file "$HOME/.config/gtk-4.0/settings.ini" "GTK 4 config: ~/.config/gtk-4.0/settings.ini" "GTK 4 config missing: ~/.config/gtk-4.0/settings.ini"
 check_file "$HOME/.config/Kvantum/kvantum.kvconfig" "Kvantum config: ~/.config/Kvantum/kvantum.kvconfig" "Kvantum config missing: ~/.config/Kvantum/kvantum.kvconfig"
 check_file "$HOME/.config/qt6ct/qt6ct.conf" "Qt6ct config: ~/.config/qt6ct/qt6ct.conf" "Qt6ct config missing: ~/.config/qt6ct/qt6ct.conf"

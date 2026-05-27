@@ -122,6 +122,18 @@ else
   echo "Keeping existing GTK 3 config: $GTK3_CONFIG_DIR/settings.ini"
 fi
 
+if [ ! -e "$GTK3_CONFIG_DIR/bookmarks" ]; then
+  {
+    printf 'file://%s/Documents Documents\n' "$HOME"
+    printf 'file://%s/Downloads Downloads\n' "$HOME"
+    printf 'file://%s/Pictures Pictures\n' "$HOME"
+    printf 'file://%s/Media/music Music\n' "$HOME"
+    printf 'file://%s/Media/videos Videos\n' "$HOME"
+  } >"$GTK3_CONFIG_DIR/bookmarks"
+else
+  echo "Keeping existing GTK bookmarks: $GTK3_CONFIG_DIR/bookmarks"
+fi
+
 if [ ! -e "$GTK4_CONFIG_DIR/settings.ini" ] || grep -q "$GTK4_CONFIG_MARKER" "$GTK4_CONFIG_DIR/settings.ini"; then
   cp "$KITANA_DIR/config/gtk-4.0/settings.ini" "$GTK4_CONFIG_DIR/settings.ini"
 else
