@@ -22,6 +22,7 @@ KVANTUM_CONFIG_DIR="$HOME/.config/Kvantum"
 KVANTUM_CONFIG_MARKER="Kitana managed Kvantum config"
 QT6CT_CONFIG_DIR="$HOME/.config/qt6ct"
 QT6CT_CONFIG_MARKER="Kitana managed Qt6ct config"
+ZED_CONFIG_DIR="$HOME/.config/zed"
 
 mkdir -p "$HOME/.config"
 
@@ -180,5 +181,24 @@ for theme in "$KITANA_DIR"/default/ghostty/themes/*; do
 
   if [ ! -e "$target" ]; then
     cp "$theme" "$target"
+  fi
+done
+
+mkdir -p "$ZED_CONFIG_DIR/snippets"
+
+for zed_config in settings.json keymap.json tasks.json; do
+  if [ ! -e "$ZED_CONFIG_DIR/$zed_config" ]; then
+    cp "$KITANA_DIR/config/zed/$zed_config" "$ZED_CONFIG_DIR/$zed_config"
+  else
+    echo "Keeping existing Zed config: $ZED_CONFIG_DIR/$zed_config"
+  fi
+done
+
+for snippet in "$KITANA_DIR"/config/zed/snippets/*.json; do
+  [ -e "$snippet" ] || continue
+  target="$ZED_CONFIG_DIR/snippets/$(basename "$snippet")"
+
+  if [ ! -e "$target" ]; then
+    cp "$snippet" "$target"
   fi
 done

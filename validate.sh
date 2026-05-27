@@ -238,6 +238,22 @@ for ghostty_theme in catppuccin cyberdream tokyonight; do
   fi
 done
 
+for zed_config in settings.json keymap.json tasks.json; do
+  if [ -f "$HOME/.config/zed/$zed_config" ]; then
+    pass "Zed config: $zed_config"
+  else
+    fail "Zed config missing: $zed_config"
+  fi
+done
+
+for zed_snippet in blade filament inertia livewire pest php volt; do
+  if [ -f "$HOME/.config/zed/snippets/$zed_snippet.json" ]; then
+    pass "Zed snippet: $zed_snippet"
+  else
+    fail "Zed snippet missing: $zed_snippet"
+  fi
+done
+
 if command -v luac >/dev/null 2>&1; then
   if luac -p "$KITANA_DIR/config/hypr/hyprland.lua" "$KITANA_DIR"/default/hypr/modules/*.lua; then
     pass "Kitana Hypr Lua syntax"
