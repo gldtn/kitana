@@ -125,7 +125,7 @@ else
 fi
 
 limine_config=""
-for candidate in /boot/limine.conf /boot/efi/limine.conf /efi/limine.conf; do
+for candidate in /boot/limine.conf /boot/limine/limine.conf /boot/efi/limine.conf /efi/limine.conf; do
   if [ -f "$candidate" ]; then
     limine_config="$candidate"
     break

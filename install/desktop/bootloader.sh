@@ -11,7 +11,7 @@ finish() {
 }
 
 if [ -z "$LIMINE_CONFIG" ]; then
-  for candidate in /boot/limine.conf /boot/efi/limine.conf /efi/limine.conf; do
+  for candidate in /boot/limine.conf /boot/limine/limine.conf /boot/efi/limine.conf /efi/limine.conf; do
     if [ -f "$candidate" ]; then
       LIMINE_CONFIG="$candidate"
       break
