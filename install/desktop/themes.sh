@@ -2,7 +2,7 @@
 
 echo "Installing theme and toolkit packages..."
 
-GRAPHITE_THEME_ARGS="${GRAPHITE_THEME_ARGS:---theme default --color dark --tweaks normal rimless black --size compact --libadwaita}"
+GRAPHITE_THEME_ARGS="${GRAPHITE_THEME_ARGS:---theme default --color standard --tweaks normal rimless --libadwaita}"
 TELA_ICON_ARGS="${TELA_ICON_ARGS:-}"
 
 PACKAGES=(
