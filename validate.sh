@@ -124,7 +124,6 @@ if systemctl --user is-active xdg-desktop-portal-hyprland.service >/dev/null 2>&
   pass "user service active: xdg-desktop-portal-hyprland.service"
 elif systemctl --user is-active xdg-desktop-portal.service >/dev/null 2>&1; then
   pass "user service active: xdg-desktop-portal.service"
-  warn "Hyprland portal backend is not currently active; it may be D-Bus activated on demand."
 elif systemctl --user list-unit-files xdg-desktop-portal-hyprland.service >/dev/null 2>&1; then
   warn "user service not active: xdg-desktop-portal-hyprland.service"
 else
