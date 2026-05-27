@@ -124,6 +124,30 @@ else
   fail "SDDM Hyprland compositor command missing: /etc/sddm.conf.d/20-hyprland.conf"
 fi
 
+limine_config=""
+for candidate in /boot/limine.conf /boot/efi/limine.conf /efi/limine.conf; do
+  if [ -f "$candidate" ]; then
+    limine_config="$candidate"
+    break
+  fi
+done
+
+if [ -n "$limine_config" ]; then
+  if grep -q '^# Kitana managed Limine theme start$' "$limine_config" && grep -q '^term_background: 1e1e2e$' "$limine_config"; then
+    pass "Limine theme: Catppuccin Mocha"
+  else
+    fail "Limine Catppuccin Mocha theme missing: $limine_config"
+  fi
+
+  if grep -q '^interface_branding:$' "$limine_config"; then
+    pass "Limine branding hidden"
+  else
+    fail "Limine branding is not hidden: $limine_config"
+  fi
+else
+  warn "Limine config not found; skipping Limine theme validation"
+fi
+
 echo
 
 if systemctl --user is-active xdg-desktop-portal-hyprland.service >/dev/null 2>&1; then
