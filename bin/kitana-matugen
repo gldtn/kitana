@@ -1,0 +1,53 @@
+#!/bin/bash
+
+set -euo pipefail
+
+wallpaper="${1:-$HOME/.config/hypr/walls/mystical_night_town_default.jpg}"
+target="$HOME/.config/quickshell/kitana/Colors.qml"
+
+if ! command -v matugen >/dev/null 2>&1; then
+  echo "matugen is not installed"
+  exit 1
+fi
+
+if [ ! -f "$wallpaper" ]; then
+  echo "wallpaper not found: $wallpaper"
+  exit 1
+fi
+
+tmpdir="$(mktemp -d)"
+trap 'rm -rf "$tmpdir"' EXIT
+
+matugen image "$wallpaper" --json hex >"$tmpdir/colors.json"
+
+python - "$tmpdir/colors.json" "$target" <<'PY'
+import json
+import pathlib
+import sys
+
+data = json.loads(pathlib.Path(sys.argv[1]).read_text())
+colors = data.get("colors", data)
+dark = colors.get("dark", colors)
+
+def get(name, fallback):
+    return dark.get(name, fallback)
+
+pathlib.Path(sys.argv[2]).write_text(f'''pragma Singleton
+
+import QtQuick
+
+QtObject {{
+  readonly property color background: "{get("background", "#1e1e2e" )}"
+  readonly property color surface: "{get("surface_container", "#313244" )}"
+  readonly property color surfaceAlt: "{get("surface_container_high", "#45475a" )}"
+  readonly property color foreground: "{get("on_background", "#cdd6f4" )}"
+  readonly property color muted: "{get("on_surface_variant", "#9399b2" )}"
+  readonly property color accent: "{get("primary", "#89b4fa" )}"
+  readonly property color accentText: "{get("on_primary", "#11111b" )}"
+  readonly property color warning: "{get("tertiary", "#f9e2af" )}"
+  readonly property color danger: "{get("error", "#f38ba8" )}"
+}}
+''')
+PY
+
+echo "Generated $target"

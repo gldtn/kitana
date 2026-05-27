@@ -292,6 +292,14 @@ for zed_snippet in blade filament inertia livewire pest php volt; do
   fi
 done
 
+for quickshell_config in shell.qml Colors.qml qmldir; do
+  if [ -f "$HOME/.config/quickshell/kitana/$quickshell_config" ]; then
+    pass "Quickshell config: $quickshell_config"
+  else
+    fail "Quickshell config missing: $quickshell_config"
+  fi
+done
+
 if command -v luac >/dev/null 2>&1; then
   if luac -p "$KITANA_DIR/config/hypr/hyprland.lua" "$KITANA_DIR"/default/hypr/modules/*.lua; then
     pass "Kitana Hypr Lua syntax"

@@ -24,6 +24,7 @@ KVANTUM_CONFIG_MARKER="Kitana managed Kvantum config"
 QT6CT_CONFIG_DIR="$HOME/.config/qt6ct"
 QT6CT_CONFIG_MARKER="Kitana managed Qt6ct config"
 ZED_CONFIG_DIR="$HOME/.config/zed"
+QUICKSHELL_CONFIG_DIR="$HOME/.config/quickshell/kitana"
 
 mkdir -p "$HOME/.config"
 
@@ -201,5 +202,15 @@ for snippet in "$KITANA_DIR"/config/zed/snippets/*.json; do
 
   if [ ! -e "$target" ]; then
     cp "$snippet" "$target"
+  fi
+done
+
+mkdir -p "$QUICKSHELL_CONFIG_DIR"
+
+for quickshell_config in shell.qml Colors.qml qmldir; do
+  if [ ! -e "$QUICKSHELL_CONFIG_DIR/$quickshell_config" ]; then
+    cp "$KITANA_DIR/config/quickshell/kitana/$quickshell_config" "$QUICKSHELL_CONFIG_DIR/$quickshell_config"
+  else
+    echo "Keeping existing Quickshell config: $QUICKSHELL_CONFIG_DIR/$quickshell_config"
   fi
 done
