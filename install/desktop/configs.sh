@@ -14,6 +14,14 @@ GHOSTTY_CONFIG_DIR="$HOME/.config/ghostty"
 GHOSTTY_CONFIG_MARKER="Kitana managed Ghostty config"
 STARSHIP_CONFIG_DIR="$HOME/.config/starship"
 STARSHIP_CONFIG_MARKER="Kitana managed Starship config"
+GTK3_CONFIG_DIR="$HOME/.config/gtk-3.0"
+GTK4_CONFIG_DIR="$HOME/.config/gtk-4.0"
+GTK3_CONFIG_MARKER="Kitana managed GTK 3 config"
+GTK4_CONFIG_MARKER="Kitana managed GTK 4 config"
+KVANTUM_CONFIG_DIR="$HOME/.config/Kvantum"
+KVANTUM_CONFIG_MARKER="Kitana managed Kvantum config"
+QT6CT_CONFIG_DIR="$HOME/.config/qt6ct"
+QT6CT_CONFIG_MARKER="Kitana managed Qt6ct config"
 
 mkdir -p "$HOME/.config"
 
@@ -104,6 +112,37 @@ if [ ! -e "$STARSHIP_CONFIG_DIR/starship.toml" ] || grep -q "$STARSHIP_CONFIG_MA
   cp "$KITANA_DIR/config/starship.toml" "$STARSHIP_CONFIG_DIR/starship.toml"
 else
   echo "Keeping existing Starship config: $STARSHIP_CONFIG_DIR/starship.toml"
+fi
+
+mkdir -p "$GTK3_CONFIG_DIR" "$GTK4_CONFIG_DIR" "$KVANTUM_CONFIG_DIR" "$QT6CT_CONFIG_DIR"
+
+if [ ! -e "$GTK3_CONFIG_DIR/settings.ini" ] || grep -q "$GTK3_CONFIG_MARKER" "$GTK3_CONFIG_DIR/settings.ini"; then
+  cp "$KITANA_DIR/config/gtk-3.0/settings.ini" "$GTK3_CONFIG_DIR/settings.ini"
+else
+  echo "Keeping existing GTK 3 config: $GTK3_CONFIG_DIR/settings.ini"
+fi
+
+if [ ! -e "$GTK4_CONFIG_DIR/settings.ini" ] || grep -q "$GTK4_CONFIG_MARKER" "$GTK4_CONFIG_DIR/settings.ini"; then
+  cp "$KITANA_DIR/config/gtk-4.0/settings.ini" "$GTK4_CONFIG_DIR/settings.ini"
+else
+  echo "Keeping existing GTK 4 config: $GTK4_CONFIG_DIR/settings.ini"
+fi
+
+if [ ! -e "$KVANTUM_CONFIG_DIR/kvantum.kvconfig" ] || grep -q "$KVANTUM_CONFIG_MARKER" "$KVANTUM_CONFIG_DIR/kvantum.kvconfig"; then
+  cp "$KITANA_DIR/config/Kvantum/kvantum.kvconfig" "$KVANTUM_CONFIG_DIR/kvantum.kvconfig"
+else
+  echo "Keeping existing Kvantum config: $KVANTUM_CONFIG_DIR/kvantum.kvconfig"
+fi
+
+if [ ! -e "$QT6CT_CONFIG_DIR/qt6ct.conf" ] || grep -q "$QT6CT_CONFIG_MARKER" "$QT6CT_CONFIG_DIR/qt6ct.conf"; then
+  cp "$KITANA_DIR/config/qt6ct/qt6ct.conf" "$QT6CT_CONFIG_DIR/qt6ct.conf"
+else
+  echo "Keeping existing Qt6ct config: $QT6CT_CONFIG_DIR/qt6ct.conf"
+fi
+
+if command -v gsettings >/dev/null 2>&1; then
+  gsettings set org.gnome.desktop.interface color-scheme prefer-dark >/dev/null 2>&1 || true
+  gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark >/dev/null 2>&1 || true
 fi
 
 mkdir -p "$GHOSTTY_CONFIG_DIR/themes"

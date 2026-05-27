@@ -138,6 +138,18 @@ check_file "$HOME/.bashrc" "Bash entrypoint: ~/.bashrc" "Bash entrypoint missing
 check_file "$HOME/.config/bash/rc" "Bash config: ~/.config/bash/rc" "Bash config missing: ~/.config/bash/rc"
 check_dir "$HOME/.config/bash/custom" "Bash custom directory: ~/.config/bash/custom" "Bash custom directory missing: ~/.config/bash/custom"
 check_file "$HOME/.config/starship/starship.toml" "Starship config: ~/.config/starship/starship.toml" "Starship config missing: ~/.config/starship/starship.toml"
+check_file "$HOME/.config/gtk-3.0/settings.ini" "GTK 3 config: ~/.config/gtk-3.0/settings.ini" "GTK 3 config missing: ~/.config/gtk-3.0/settings.ini"
+check_file "$HOME/.config/gtk-4.0/settings.ini" "GTK 4 config: ~/.config/gtk-4.0/settings.ini" "GTK 4 config missing: ~/.config/gtk-4.0/settings.ini"
+check_file "$HOME/.config/Kvantum/kvantum.kvconfig" "Kvantum config: ~/.config/Kvantum/kvantum.kvconfig" "Kvantum config missing: ~/.config/Kvantum/kvantum.kvconfig"
+check_file "$HOME/.config/qt6ct/qt6ct.conf" "Qt6ct config: ~/.config/qt6ct/qt6ct.conf" "Qt6ct config missing: ~/.config/qt6ct/qt6ct.conf"
+
+if command -v gsettings >/dev/null 2>&1; then
+  if [ "$(gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null || true)" = "'prefer-dark'" ]; then
+    pass "GTK/libadwaita color scheme: prefer-dark"
+  else
+    warn "GTK/libadwaita color scheme is not prefer-dark"
+  fi
+fi
 
 echo
 
