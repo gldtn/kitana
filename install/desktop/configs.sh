@@ -61,8 +61,15 @@ if [ ! -e "$HYPR_CONFIG_DIR/hyprpaper.conf" ] || grep -q "$HYPRPAPER_MARKER" "$H
   cp "$KITANA_DIR/default/hypr/hyprpaper.conf" "$HYPR_CONFIG_DIR/hyprpaper.conf"
 fi
 
-if [ ! -e "$HYPR_CONFIG_DIR/walls" ]; then
-  ln -s "$KITANA_DIR/default/hypr/walls" "$HYPR_CONFIG_DIR/walls"
+WALLS_LINK="$HYPR_CONFIG_DIR/walls"
+
+if [ -L "$WALLS_LINK" ] && [ ! -e "$WALLS_LINK" ]; then
+  echo "Removing broken Hypr wallpapers symlink: $WALLS_LINK"
+  rm "$WALLS_LINK"
+fi
+
+if [ ! -e "$WALLS_LINK" ]; then
+  ln -s "$KITANA_DIR/default/hypr/walls" "$WALLS_LINK"
 fi
 
 for script in "$KITANA_DIR"/default/hypr/scripts/*; do

@@ -13,6 +13,10 @@ fail() {
   failed=1
 }
 
+warn() {
+  printf '[WARN] %s\n' "$1"
+}
+
 check_command() {
   if command -v "$1" >/dev/null 2>&1; then
     pass "command: $1"
@@ -116,10 +120,15 @@ check_service_enabled sddm.service
 
 echo
 
-if systemctl --user list-unit-files xdg-desktop-portal-hyprland.service >/dev/null 2>&1; then
-  check_user_service xdg-desktop-portal-hyprland.service
+if systemctl --user is-active xdg-desktop-portal-hyprland.service >/dev/null 2>&1; then
+  pass "user service active: xdg-desktop-portal-hyprland.service"
+elif systemctl --user is-active xdg-desktop-portal.service >/dev/null 2>&1; then
+  pass "user service active: xdg-desktop-portal.service"
+  warn "Hyprland portal backend is not currently active; it may be D-Bus activated on demand."
+elif systemctl --user list-unit-files xdg-desktop-portal-hyprland.service >/dev/null 2>&1; then
+  warn "user service not active: xdg-desktop-portal-hyprland.service"
 else
-  echo '[WARN] user service not found: xdg-desktop-portal-hyprland.service'
+  warn "user service not found: xdg-desktop-portal-hyprland.service"
 fi
 
 echo
@@ -197,7 +206,7 @@ else
   fail "Hyprpaper default wallpaper missing"
 fi
 
-if [ -e "$HOME/.config/hypr/walls" ]; then
+if [ -d "$HOME/.config/hypr/walls" ]; then
   pass "Hypr wallpapers: ~/.config/hypr/walls"
 else
   fail "Hypr wallpapers missing: ~/.config/hypr/walls"
