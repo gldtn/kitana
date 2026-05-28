@@ -12,6 +12,12 @@ ShellRoot {
 
   property var workspaceSets: [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]]
 
+  function range(start, end) {
+    const workspaces = [];
+    for (let workspace = start; workspace <= end; workspace++) workspaces.push(workspace);
+    return workspaces;
+  }
+
   function screenIndex(screen) {
     for (let i = 0; i < Quickshell.screens.length; i++) {
       if (Quickshell.screens[i] === screen) return i;
@@ -21,7 +27,14 @@ ShellRoot {
 
   function workspacesFor(screen) {
     const index = screenIndex(screen);
-    return workspaceSets[Math.min(index, workspaceSets.length - 1)];
+    const configured = Quickshell.screens.length === 1 ? range(1, 10) : workspaceSets[Math.min(index, workspaceSets.length - 1)];
+    const activeWorkspace = Hyprland.workspaces.values.find(workspace => workspace.active);
+
+    if (Quickshell.screens.length === 1 && activeWorkspace && activeWorkspace.id > 0 && configured.indexOf(activeWorkspace.id) === -1) {
+      return [activeWorkspace.id].concat(configured);
+    }
+
+    return configured;
   }
 
   function screenName(screen) {
@@ -133,7 +146,7 @@ ShellRoot {
                     onClicked: workspaceSwitch.exec([
                       "sh",
                       "-c",
-                      "monitor=$1; workspace=$2; [ -n \"$monitor\" ] && hyprctl dispatch focusmonitor \"$monitor\" >/dev/null 2>&1 || true; hyprctl dispatch \"hl.dsp.workspace($workspace)\" >/dev/null 2>&1 || hyprctl dispatch workspace \"$workspace\" >/dev/null 2>&1",
+                      "monitor=$1; workspace=$2; [ -n \"$monitor\" ] && hyprctl dispatch focusmonitor \"$monitor\" >/dev/null 2>&1 || true; hyprctl dispatch \"hl.dsp.focus({ workspace = $workspace })\" >/dev/null 2>&1 || hyprctl dispatch workspace \"$workspace\" >/dev/null 2>&1",
                       "kitana-workspace",
                       root.screenName(panel.screen),
                       String(workspacePill.workspaceId)
