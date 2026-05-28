@@ -7,6 +7,7 @@ HYPR_CONFIG_DIR="$HOME/.config/hypr"
 HYPR_ENTRYPOINT="$HYPR_CONFIG_DIR/hyprland.lua"
 HYPR_ENTRYPOINT_MARKER="Kitana managed Hyprland Lua entrypoint"
 HYPRIDLE_MARKER="Kitana managed Hypridle config"
+HYPRLOCK_MARKER="Kitana managed Hyprlock config"
 HYPRPAPER_MARKER="Kitana managed Hyprpaper config"
 BASH_CONFIG_DIR="$HOME/.config/bash"
 BASH_RC_MARKER="Kitana managed Bash config"
@@ -66,6 +67,10 @@ done
 
 if [ ! -e "$HYPR_CONFIG_DIR/hypridle.conf" ] || grep -q "$HYPRIDLE_MARKER" "$HYPR_CONFIG_DIR/hypridle.conf" || grep -q "timeout = 2700" "$HYPR_CONFIG_DIR/hypridle.conf"; then
   cp "$KITANA_DIR/default/hypr/hypridle.conf" "$HYPR_CONFIG_DIR/hypridle.conf"
+fi
+
+if [ ! -e "$HYPR_CONFIG_DIR/hyprlock.conf" ] || grep -q "$HYPRLOCK_MARKER" "$HYPR_CONFIG_DIR/hyprlock.conf" || grep -q "sample hyprlock.conf" "$HYPR_CONFIG_DIR/hyprlock.conf"; then
+  cp "$KITANA_DIR/default/hypr/hyprlock.conf" "$HYPR_CONFIG_DIR/hyprlock.conf"
 fi
 
 if [ ! -e "$HYPR_CONFIG_DIR/hyprpaper.conf" ] || grep -q "$HYPRPAPER_MARKER" "$HYPR_CONFIG_DIR/hyprpaper.conf" || grep -q "mystical_night_town_default.jpg" "$HYPR_CONFIG_DIR/hyprpaper.conf"; then

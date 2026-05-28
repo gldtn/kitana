@@ -6,6 +6,7 @@ wall_dir="${KITANA_WALLPAPER_DIR:-$HOME/.config/hypr/walls}"
 hyprpaper_config="$HOME/.config/hypr/hyprpaper.conf"
 state_dir="$HOME/.config/kitana"
 state_file="$state_dir/wallpaper"
+current_wallpaper="$state_dir/current-wallpaper"
 fit_mode="${KITANA_WALLPAPER_FIT:-cover}"
 awww_resize="${KITANA_AWWW_RESIZE:-crop}"
 awww_transition="${KITANA_AWWW_TRANSITION:-random}"
@@ -66,6 +67,7 @@ fi
 
 mkdir -p "$(dirname "$hyprpaper_config")" "$state_dir"
 printf '%s\n' "$selected" >"$state_file"
+ln -sfn "$selected" "$current_wallpaper"
 
 cat >"$hyprpaper_config" <<EOF
 # Kitana managed Hyprpaper config

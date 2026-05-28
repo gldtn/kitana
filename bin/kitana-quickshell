@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -euo pipefail
+
+config_name="kitana"
+config_file="$HOME/.config/quickshell/$config_name/shell.qml"
+log_file="/tmp/kitana-quickshell.log"
+
+if ! command -v quickshell >/dev/null 2>&1; then
+  exit 0
+fi
+
+if pgrep -x quickshell >/dev/null 2>&1; then
+  touch "$config_file"
+  exit 0
+fi
+
+exec quickshell --daemonize --no-duplicate --config "$config_name" >"$log_file" 2>&1

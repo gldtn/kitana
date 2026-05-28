@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -euo pipefail
+
+if pgrep -x hyprlock >/dev/null 2>&1; then
+  exit 0
+fi
+
+hyprctl eval 'hl.config({ misc = { allow_session_lock_restore = true } })' >/dev/null 2>&1 || true
+exec hyprlock --immediate-render --no-fade-in

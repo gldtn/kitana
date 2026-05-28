@@ -236,6 +236,30 @@ else
   fail "Hypridle config missing: ~/.config/hypr/hypridle.conf"
 fi
 
+if [ -f "$HOME/.config/hypr/hyprlock.conf" ]; then
+  pass "Hyprlock config: ~/.config/hypr/hyprlock.conf"
+else
+  fail "Hyprlock config missing: ~/.config/hypr/hyprlock.conf"
+fi
+
+if [ -x "$KITANA_DIR/bin/kitana-lock" ]; then
+  pass "Kitana lock helper: bin/kitana-lock"
+else
+  fail "Kitana lock helper missing or not executable: bin/kitana-lock"
+fi
+
+if [ -e "$HOME/.config/kitana/current-wallpaper" ]; then
+  pass "Kitana current wallpaper: ~/.config/kitana/current-wallpaper"
+else
+  fail "Kitana current wallpaper missing: ~/.config/kitana/current-wallpaper"
+fi
+
+if [ -x "$KITANA_DIR/bin/kitana-quickshell" ]; then
+  pass "Kitana Quickshell helper: bin/kitana-quickshell"
+else
+  fail "Kitana Quickshell helper missing or not executable: bin/kitana-quickshell"
+fi
+
 if systemctl --user is-active hypridle.service >/dev/null 2>&1; then
   pass "user service active: hypridle.service"
 elif pgrep -x hypridle >/dev/null 2>&1; then
