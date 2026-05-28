@@ -206,6 +206,8 @@ for snippet in "$KITANA_DIR"/config/zed/snippets/*.json; do
 done
 
 mkdir -p "$QUICKSHELL_CONFIG_DIR"
+mkdir -p "$QUICKSHELL_CONFIG_DIR/modules"
+mkdir -p "$QUICKSHELL_CONFIG_DIR/custom"
 
 if [ ! -e "$QUICKSHELL_CONFIG_DIR/shell.qml" ] || grep -q "Kitana managed Quickshell bar" "$QUICKSHELL_CONFIG_DIR/shell.qml"; then
   cp "$KITANA_DIR/config/quickshell/kitana/shell.qml" "$QUICKSHELL_CONFIG_DIR/shell.qml"
@@ -218,5 +220,27 @@ for quickshell_config in Colors.qml qmldir; do
     cp "$KITANA_DIR/config/quickshell/kitana/$quickshell_config" "$QUICKSHELL_CONFIG_DIR/$quickshell_config"
   else
     echo "Keeping existing Quickshell config: $QUICKSHELL_CONFIG_DIR/$quickshell_config"
+  fi
+done
+
+for quickshell_module in "$KITANA_DIR"/config/quickshell/kitana/modules/*.qml; do
+  [ -e "$quickshell_module" ] || continue
+  target="$QUICKSHELL_CONFIG_DIR/modules/$(basename "$quickshell_module")"
+
+  if [ ! -e "$target" ] || grep -q "Kitana managed Quickshell module" "$target"; then
+    cp "$quickshell_module" "$target"
+  else
+    echo "Keeping existing Quickshell module: $target"
+  fi
+done
+
+for quickshell_custom in "$KITANA_DIR"/config/quickshell/kitana/custom/*.qml; do
+  [ -e "$quickshell_custom" ] || continue
+  target="$QUICKSHELL_CONFIG_DIR/custom/$(basename "$quickshell_custom")"
+
+  if [ ! -e "$target" ]; then
+    cp "$quickshell_custom" "$target"
+  else
+    echo "Keeping existing Quickshell custom config: $target"
   fi
 done

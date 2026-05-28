@@ -53,13 +53,31 @@ import sys
 
 data = json.loads(pathlib.Path(sys.argv[1]).read_text())
 colors = data.get("colors", data)
-dark = colors.get("dark", colors)
 
 def get(name, fallback):
-    value = dark.get(name, fallback)
-    if isinstance(value, dict):
-        return value.get("hex", fallback)
-    return value
+    value = colors.get(name)
+
+    if value is None and isinstance(colors.get("dark"), dict):
+        value = colors["dark"].get(name)
+
+    def extract(candidate):
+        if isinstance(candidate, str):
+            return candidate
+        if not isinstance(candidate, dict):
+            return None
+
+        for key in ("color", "hex"):
+            if isinstance(candidate.get(key), str):
+                return candidate[key]
+
+        for mode in ("dark", "default", "light"):
+            extracted = extract(candidate.get(mode))
+            if extracted:
+                return extracted
+
+        return None
+
+    return extract(value) or fallback
 
 pathlib.Path(sys.argv[2]).write_text(f'''// Kitana managed Quickshell colors
 

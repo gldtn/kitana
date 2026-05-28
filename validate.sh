@@ -76,7 +76,7 @@ check_dir() {
 echo "Validating Kitana install..."
 echo
 
-for cmd in git yay Hyprland start-hyprland hyprctl sddm vicinae quickshell swaync; do
+for cmd in git yay Hyprland start-hyprland hyprctl sddm vicinae quickshell swaync awww awww-daemon; do
   check_command "$cmd"
 done
 
@@ -88,6 +88,7 @@ fi
 echo
 
 for pkg in \
+  awww \
   bluez \
   ghostty-nightly-bin \
   hyprland \
@@ -299,7 +300,27 @@ for quickshell_config in shell.qml Colors.qml qmldir; do
   fi
 done
 
+for quickshell_module in ClockPill StatusGroup WorkspaceGroup; do
+  if [ -f "$HOME/.config/quickshell/kitana/modules/$quickshell_module.qml" ]; then
+    pass "Quickshell module: $quickshell_module"
+  else
+    fail "Quickshell module missing: $quickshell_module"
+  fi
+done
+
+if [ -f "$HOME/.config/quickshell/kitana/custom/Settings.qml" ]; then
+  pass "Quickshell custom settings"
+else
+  fail "Quickshell custom settings missing"
+fi
+
 if [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+  if pgrep -x awww-daemon >/dev/null 2>&1; then
+    pass "process active: awww-daemon"
+  else
+    fail "awww-daemon is not running"
+  fi
+
   if pgrep -x quickshell >/dev/null 2>&1; then
     pass "process active: quickshell"
   else

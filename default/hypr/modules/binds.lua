@@ -35,6 +35,8 @@ hl.bind(mod .. " + G", hl.dsp.exec_cmd(guiEditor), { description = "Gui editor" 
 hl.bind(mod .. " + RETURN", hl.dsp.exec_cmd(terminal), { description = "Terminal" })
 hl.bind(mod .. " + D", hl.dsp.exec_cmd(launcher), { description = "Launcher" })
 hl.bind(mod .. " + E", hl.dsp.exec_cmd(fileManager), { description = "File manager" })
+hl.bind(mod .. " + W", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-wallpaper"), { description = "Wallpaper chooser" })
+hl.bind(mod .. " + SHIFT + W", hl.dsp.exec_cmd("touch ~/.config/quickshell/kitana/shell.qml"), { description = "Reload Quickshell" })
 hl.bind(mod .. " + A", hl.dsp.exec_cmd(activityManager), { description = "Activity manager" })
 hl.bind(mod .. " + SLASH", hl.dsp.exec_cmd(passwordManager), { description = "Password manager" })
 

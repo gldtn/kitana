@@ -1,0 +1,122 @@
+#!/bin/bash
+
+set -euo pipefail
+
+wall_dir="${KITANA_WALLPAPER_DIR:-$HOME/.config/hypr/walls}"
+hyprpaper_config="$HOME/.config/hypr/hyprpaper.conf"
+state_dir="$HOME/.config/kitana"
+state_file="$state_dir/wallpaper"
+fit_mode="${KITANA_WALLPAPER_FIT:-cover}"
+awww_resize="${KITANA_AWWW_RESIZE:-crop}"
+awww_transition="${KITANA_AWWW_TRANSITION:-random}"
+awww_duration="${KITANA_AWWW_DURATION:-3}"
+awww_step="${KITANA_AWWW_STEP:-90}"
+awww_fps="${KITANA_AWWW_FPS:-60}"
+
+wallpapers=()
+for wallpaper in "$wall_dir"/*.{jpg,jpeg,png,webp,gif}; do
+  [ -e "$wallpaper" ] || continue
+  wallpapers+=("$wallpaper")
+done
+
+selected=""
+restore=0
+
+case "${1:-}" in
+  --restore)
+    restore=1
+    ;;
+  "")
+    ;;
+  *)
+    selected="$1"
+    ;;
+esac
+
+if [ "$restore" -eq 1 ]; then
+  if [ -f "$state_file" ]; then
+    selected="$(<"$state_file")"
+  else
+    selected="$wall_dir/mystical_night_town_default.jpg"
+  fi
+elif [ -z "$selected" ]; then
+  if [ "${#wallpapers[@]}" -eq 0 ]; then
+    echo "No wallpapers found in $wall_dir"
+    exit 1
+  fi
+
+  if command -v vicinae >/dev/null 2>&1; then
+    selected="$(printf '%s\n' "${wallpapers[@]}" | vicinae dmenu --navigation-title "Wallpapers" --placeholder "Choose wallpaper" || true)"
+  elif command -v fzf >/dev/null 2>&1; then
+    selected_name="$(printf '%s\n' "${wallpapers[@]##*/}" | fzf --prompt='Wallpaper > ' || true)"
+    [ -n "$selected_name" ] || exit 0
+    selected="$wall_dir/$selected_name"
+  else
+    echo "Install vicinae or fzf to choose a wallpaper interactively."
+    exit 1
+  fi
+
+  [ -n "$selected" ] || exit 0
+fi
+
+if [ ! -f "$selected" ]; then
+  echo "wallpaper not found: $selected"
+  exit 1
+fi
+
+mkdir -p "$(dirname "$hyprpaper_config")" "$state_dir"
+printf '%s\n' "$selected" >"$state_file"
+
+cat >"$hyprpaper_config" <<EOF
+# Kitana managed Hyprpaper config
+
+splash = false
+ipc = true
+
+wallpaper {
+    monitor =
+    path = $selected
+    fit_mode = $fit_mode
+}
+EOF
+
+apply_awww() {
+  command -v awww >/dev/null 2>&1 || return 1
+  command -v awww-daemon >/dev/null 2>&1 || return 1
+
+  if ! awww query >/dev/null 2>&1; then
+    awww-daemon >/tmp/kitana-awww.log 2>&1 &
+    sleep 0.4
+  fi
+
+  awww img "$selected" \
+    --resize "$awww_resize" \
+    --transition-type "$awww_transition" \
+    --transition-duration "$awww_duration" \
+    --transition-step "$awww_step" \
+    --transition-fps "$awww_fps" >/dev/null 2>&1
+
+  pkill -x hyprpaper 2>/dev/null || true
+}
+
+apply_hyprpaper() {
+  command -v hyprctl >/dev/null 2>&1 || return 1
+  command -v hyprpaper >/dev/null 2>&1 || return 1
+
+  if ! hyprctl hyprpaper wallpaper ",$selected,$fit_mode" >/dev/null 2>&1; then
+    pkill -x hyprpaper 2>/dev/null || true
+    hyprpaper >/tmp/kitana-hyprpaper.log 2>&1 &
+    sleep 0.3
+    hyprctl hyprpaper wallpaper ",$selected,$fit_mode" >/dev/null 2>&1
+  fi
+}
+
+backend="awww"
+if ! apply_awww; then
+  backend="hyprpaper"
+  apply_hyprpaper
+fi
+
+"${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-matugen" "$selected"
+
+echo "Wallpaper set with $backend: $selected"

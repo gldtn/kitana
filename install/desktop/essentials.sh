@@ -3,6 +3,7 @@
 echo "Installing DE essentials packages..."
 
 PACKAGES=(
+  awww
   bluez
   bluez-utils
   brightnessctl
@@ -17,7 +18,6 @@ PACKAGES=(
   satty
   sddm
   slurp
-  swww
   swaync
   udiskie
   vicinae-bin
