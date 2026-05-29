@@ -8,7 +8,6 @@ TELA_ICON_ARGS="${TELA_ICON_ARGS:-}"
 PACKAGES=(
   adw-gtk-theme
   gnome-themes-extra
-  gtk-engine-murrine
   gtk3
   gtk4
   kvantum
