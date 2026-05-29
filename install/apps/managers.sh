@@ -4,8 +4,6 @@ echo "Installing connectivity and system managers..."
 
 PACKAGES=(
   btop
-  bluetui
-  impala
   wiremix
 )
 
