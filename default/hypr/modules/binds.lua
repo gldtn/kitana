@@ -9,7 +9,7 @@ local guiEditor = "zeditor"
 local terminal = "ghostty"
 local fileManager = "nautilus --new-window"
 local passwordManager = "1password"
-local activityManager = "btop"
+local activityManager = "ghostty -e btop"
 -- TODO: the following need a web apps launcher to work, see Omarchy web app launcher
 local webappLauncher = "~/.local/share/kitana/bin/webapp-launch"
 local emailClient = webappLauncher .. " https://app.hey.com HEY"
