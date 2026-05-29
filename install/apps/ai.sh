@@ -3,7 +3,7 @@
 echo "Installing AI apps..."
 
 PACKAGES=(
-  opencode-desktop
+  opencode-desktop-bin
 )
 
 for pkg in "${PACKAGES[@]}"; do
