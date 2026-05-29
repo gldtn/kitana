@@ -25,7 +25,6 @@ PACKAGES=(
   xdg-utils
   wl-clip-persist
   wl-clipboard
-  wl-screenrec
 )
 
 for pkg in "${PACKAGES[@]}"; do
