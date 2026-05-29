@@ -44,12 +44,20 @@ WALLPAPER_DIR="${env_wallpaper_dir:-${KITANA_WALLPAPER_DIR:-$HOME/.config/kitana
 
 mkdir -p "$WALLPAPER_DIR"
 
-if ! compgen -G "$WALLPAPER_DIR/*" >/dev/null; then
-  for wallpaper in "$KITANA_DIR"/default/wallpapers/*; do
-    [ -e "$wallpaper" ] || continue
-    ln -sfn "$wallpaper" "$WALLPAPER_DIR/$(basename "$wallpaper")"
-  done
-fi
+for wallpaper_link in "$WALLPAPER_DIR"/*; do
+  if [ -L "$wallpaper_link" ] && [ ! -e "$wallpaper_link" ]; then
+    echo "Removing broken wallpaper symlink: $wallpaper_link"
+    rm "$wallpaper_link"
+  fi
+done
+
+for wallpaper in "$KITANA_DIR"/default/wallpapers/*; do
+  [ -e "$wallpaper" ] || continue
+  target="$WALLPAPER_DIR/$(basename "$wallpaper")"
+  if [ ! -e "$target" ]; then
+    ln -sfn "$wallpaper" "$target"
+  fi
+done
 
 if [ -L "$HYPR_CONFIG_DIR" ]; then
   target=$(readlink "$HYPR_CONFIG_DIR")
@@ -110,6 +118,11 @@ fi
 for script in "$KITANA_DIR"/default/hypr/scripts/*; do
   [ -e "$script" ] || continue
   target="$HYPR_CONFIG_DIR/scripts/$(basename "$script")"
+
+  if [ -L "$target" ] && [ ! -e "$target" ]; then
+    echo "Removing broken Hypr script symlink: $target"
+    rm "$target"
+  fi
 
   if [ ! -e "$target" ]; then
     ln -s "$script" "$target"
