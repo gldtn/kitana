@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-source_value="${1:-$HOME/.config/hypr/walls/mystical_night_town_default.jpg}"
+source_value="${1:-$HOME/.config/kitana/current-wallpaper}"
 target="$HOME/.config/quickshell/kitana/Colors.qml"
 mkdir -p "$(dirname "$target")"
 
@@ -24,6 +24,13 @@ def hex_color(lightness, saturation=None):
     rr, gg, bb = colorsys.hls_to_rgb(h, lightness, s if saturation is None else saturation)
     return "#{:02x}{:02x}{:02x}".format(round(rr * 255), round(gg * 255), round(bb * 255))
 
+def alpha(color, opacity):
+    return "#{:02x}{}".format(round(opacity * 255), color.lstrip("#"))
+
+background = hex_color(0.10, max(s * 0.45, 0.12))
+surface = hex_color(0.16, max(s * 0.40, 0.10))
+surface_alt = hex_color(0.24, max(s * 0.40, 0.10))
+
 target.write_text(f'''// Kitana managed Quickshell colors
 
 pragma Singleton
@@ -31,9 +38,20 @@ pragma Singleton
 import QtQuick
 
 QtObject {{
-  readonly property color background: "{hex_color(0.10, max(s * 0.45, 0.12))}"
-  readonly property color surface: "{hex_color(0.16, max(s * 0.40, 0.10))}"
-  readonly property color surfaceAlt: "{hex_color(0.24, max(s * 0.40, 0.10))}"
+  readonly property color background: "{background}"
+  readonly property color surface: "{surface}"
+  readonly property color surfaceAlt: "{surface_alt}"
+  readonly property color surfaceHover: "{alpha(surface_alt, 0.92)}"
+  readonly property color surfaceHighlight: "{alpha(source, 0.20)}"
+  readonly property color panel: "{alpha(background, 0.78)}"
+  readonly property color panelStrong: "{alpha(background, 0.90)}"
+  readonly property color panelBorder: "{alpha(surface_alt, 0.62)}"
+  readonly property color panelBorderStrong: "{alpha(source, 0.72)}"
+  readonly property color workspaceInactive: "{alpha(surface, 0.76)}"
+  readonly property color workspaceOccupied: "{alpha(surface_alt, 0.88)}"
+  readonly property color scrim: "{alpha(background, 0.66)}"
+  readonly property color scrimSoft: "{alpha(background, 0.42)}"
+  readonly property color imageOverlay: "{alpha(background, 0.70)}"
   readonly property color foreground: "#f4f4f5"
   readonly property color muted: "#a1a1aa"
   readonly property color accent: "{source}"
@@ -79,6 +97,22 @@ def get(name, fallback):
 
     return extract(value) or fallback
 
+def alpha(color, opacity):
+    color = color.lstrip("#")
+    if len(color) == 8:
+        color = color[2:]
+    return "#{:02x}{}".format(round(opacity * 255), color)
+
+background = get("background", "#1e1e2e")
+surface = get("surface_container", "#313244")
+surface_alt = get("surface_container_high", "#45475a")
+surface_hover = get("surface_container_highest", surface_alt)
+surface_highlight = get("primary_container", get("primary", "#89b4fa"))
+workspace_inactive = get("surface_container", surface)
+workspace_occupied = get("secondary_container", get("surface_container_high", surface_alt))
+outline = get("outline", "#7f849c")
+outline_variant = get("outline_variant", surface_alt)
+
 pathlib.Path(sys.argv[2]).write_text(f'''// Kitana managed Quickshell colors
 
 pragma Singleton
@@ -86,9 +120,20 @@ pragma Singleton
 import QtQuick
 
 QtObject {{
-  readonly property color background: "{get("background", "#1e1e2e" )}"
-  readonly property color surface: "{get("surface_container", "#313244" )}"
-  readonly property color surfaceAlt: "{get("surface_container_high", "#45475a" )}"
+  readonly property color background: "{background}"
+  readonly property color surface: "{surface}"
+  readonly property color surfaceAlt: "{surface_alt}"
+  readonly property color surfaceHover: "{alpha(surface_hover, 0.92)}"
+  readonly property color surfaceHighlight: "{alpha(surface_highlight, 0.26)}"
+  readonly property color panel: "{alpha(get("surface_container_low", background), 0.78)}"
+  readonly property color panelStrong: "{alpha(surface, 0.90)}"
+  readonly property color panelBorder: "{alpha(outline_variant, 0.62)}"
+  readonly property color panelBorderStrong: "{alpha(outline, 0.72)}"
+  readonly property color workspaceInactive: "{alpha(workspace_inactive, 0.76)}"
+  readonly property color workspaceOccupied: "{alpha(workspace_occupied, 0.88)}"
+  readonly property color scrim: "{alpha(background, 0.66)}"
+  readonly property color scrimSoft: "{alpha(background, 0.42)}"
+  readonly property color imageOverlay: "{alpha(background, 0.70)}"
   readonly property color foreground: "{get("on_background", "#cdd6f4" )}"
   readonly property color muted: "{get("on_surface_variant", "#9399b2" )}"
   readonly property color accent: "{get("primary", "#89b4fa" )}"

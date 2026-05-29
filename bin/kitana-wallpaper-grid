@@ -1,0 +1,23 @@
+#!/bin/bash
+
+set -euo pipefail
+
+kitana_dir="${KITANA_DIR:-$HOME/.local/share/kitana}"
+log_file="/tmp/kitana-wallpaper-grid.log"
+
+if ! command -v quickshell >/dev/null 2>&1; then
+  command -v notify-send >/dev/null 2>&1 && notify-send "Kitana" "Quickshell is not installed"
+  exit 1
+fi
+
+if ! pgrep -x quickshell >/dev/null 2>&1; then
+  "$kitana_dir/bin/kitana-quickshell" >/dev/null 2>&1 || true
+  sleep 0.5
+fi
+
+if quickshell ipc -c kitana call kitana-wallpaper toggle >"$log_file" 2>&1; then
+  exit 0
+fi
+
+command -v notify-send >/dev/null 2>&1 && notify-send "Kitana" "Wallpaper grid is not available. Try SUPER+SHIFT+W, then SUPER+W."
+exit 1

@@ -10,7 +10,7 @@ PACKAGES=(
   ddcutil
   grim
   inetutils
-  iwd
+  networkmanager
   pamixer
   playerctl
   polkit
@@ -18,7 +18,6 @@ PACKAGES=(
   satty
   sddm
   slurp
-  swaync
   udiskie
   vicinae-bin
   xdg-desktop-portal-gtk
@@ -54,12 +53,6 @@ XDG_VIDEOS_DIR="$HOME/Media/videos"
 EOF
 fi
 
-sudo systemctl enable --now iwd.service bluetooth.service
+sudo systemctl disable --now iwd.service systemd-networkd.service 2>/dev/null || true
+sudo systemctl enable --now NetworkManager.service bluetooth.service
 sudo systemctl enable --now sddm.service
-
-sudo mkdir -p /etc/systemd/system/systemd-networkd-wait-online.service.d
-sudo tee /etc/systemd/system/systemd-networkd-wait-online.service.d/wait-for-only-one-interface.conf >/dev/null <<EOF
-[Service]
-ExecStart=
-ExecStart=/usr/lib/systemd/systemd-networkd-wait-online --any
-EOF

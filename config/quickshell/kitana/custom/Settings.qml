@@ -17,7 +17,7 @@ QtObject {
 
     readonly property int clockHorizontalPadding: 26
     readonly property int statusHorizontalPadding: 22
-    readonly property int workspaceHorizontalPadding: 18
+    readonly property int workspaceHorizontalPadding: 12
 
     readonly property int textPixelSize: 12
     readonly property int clockPixelSize: 13

@@ -76,7 +76,7 @@ check_dir() {
 echo "Validating Kitana install..."
 echo
 
-for cmd in git yay Hyprland start-hyprland hyprctl sddm vicinae quickshell swaync awww awww-daemon; do
+for cmd in git yay Hyprland start-hyprland hyprctl sddm vicinae quickshell awww awww-daemon nmcli; do
   check_command "$cmd"
 done
 
@@ -96,11 +96,11 @@ for pkg in \
   hyprpaper \
   hyprpicker \
   hyprpolkitagent \
+  networkmanager \
   pixie-sddm-git \
   quickshell \
   qt6ct \
   sddm \
-  swaync \
   vicinae-bin \
   xdg-desktop-portal-hyprland; do
   check_package "$pkg"
@@ -115,8 +115,20 @@ done
 echo
 
 check_service_enabled bluetooth.service
-check_service_enabled iwd.service
+check_service_enabled NetworkManager.service
 check_service_enabled sddm.service
+
+if systemctl is-enabled iwd.service >/dev/null 2>&1; then
+  fail "service should be disabled: iwd.service"
+else
+  pass "service disabled: iwd.service"
+fi
+
+if systemctl is-enabled systemd-networkd.service >/dev/null 2>&1; then
+  fail "service should be disabled: systemd-networkd.service"
+else
+  pass "service disabled: systemd-networkd.service"
+fi
 
 if [ -f /etc/sddm.conf.d/20-hyprland.conf ] && grep -q '^CompositorCommand=start-hyprland$' /etc/sddm.conf.d/20-hyprland.conf; then
   pass "SDDM Hyprland compositor command: start-hyprland"
@@ -260,6 +272,29 @@ else
   fail "Kitana Quickshell helper missing or not executable: bin/kitana-quickshell"
 fi
 
+if [ -x "$KITANA_DIR/bin/kitana-wallpaper-grid" ]; then
+  pass "Kitana wallpaper grid helper: bin/kitana-wallpaper-grid"
+else
+  fail "Kitana wallpaper grid helper missing or not executable: bin/kitana-wallpaper-grid"
+fi
+
+if [ -f "$KITANA_DIR/config/quickshell/kitana/Modules/WallpaperGrid.qml" ]; then
+  pass "Quickshell module: WallpaperGrid"
+else
+  fail "Quickshell module missing: WallpaperGrid"
+fi
+
+if [ -f "$HOME/.config/kitana/config" ]; then
+  pass "Kitana config: ~/.config/kitana/config"
+  env_wallpaper_dir="${KITANA_WALLPAPER_DIR:-}"
+  # shellcheck disable=SC1090
+  source "$HOME/.config/kitana/config"
+  KITANA_WALLPAPER_DIR="${env_wallpaper_dir:-${KITANA_WALLPAPER_DIR:-$HOME/.config/kitana/wallpapers}}"
+else
+  fail "Kitana config missing: ~/.config/kitana/config"
+  KITANA_WALLPAPER_DIR="${KITANA_WALLPAPER_DIR:-$HOME/.config/kitana/wallpapers}"
+fi
+
 if systemctl --user is-active hypridle.service >/dev/null 2>&1; then
   pass "user service active: hypridle.service"
 elif pgrep -x hypridle >/dev/null 2>&1; then
@@ -274,16 +309,16 @@ else
   fail "Hyprpaper config missing: ~/.config/hypr/hyprpaper.conf"
 fi
 
-if [ -f "$KITANA_DIR/default/hypr/walls/mystical_night_town_default.jpg" ]; then
-  pass "Hyprpaper default wallpaper"
+if [ -f "$KITANA_DIR/default/wallpapers/mystical_night_town_default.jpg" ]; then
+  pass "Kitana default wallpaper"
 else
-  fail "Hyprpaper default wallpaper missing"
+  fail "Kitana default wallpaper missing"
 fi
 
-if [ -d "$HOME/.config/hypr/walls" ]; then
-  pass "Hypr wallpapers: ~/.config/hypr/walls"
+if [ -d "$KITANA_WALLPAPER_DIR" ]; then
+  pass "Kitana wallpaper directory: $KITANA_WALLPAPER_DIR"
 else
-  fail "Hypr wallpapers missing: ~/.config/hypr/walls"
+  fail "Kitana wallpaper directory missing: $KITANA_WALLPAPER_DIR"
 fi
 
 if [ -f "$HOME/.config/ghostty/config" ]; then
@@ -324,13 +359,31 @@ for quickshell_config in shell.qml Colors.qml qmldir; do
   fi
 done
 
-for quickshell_module in ClockPill StatusGroup WorkspaceGroup; do
-  if [ -f "$HOME/.config/quickshell/kitana/modules/$quickshell_module.qml" ]; then
+for quickshell_module in ClockPill NotificationPopups StatusGroup SystemPanel WallpaperGrid WorkspaceGroup; do
+  if [ -f "$HOME/.config/quickshell/kitana/Modules/$quickshell_module.qml" ]; then
     pass "Quickshell module: $quickshell_module"
   else
     fail "Quickshell module missing: $quickshell_module"
   fi
 done
+
+if [ -f "$HOME/.config/quickshell/kitana/Services/SystemStatus.qml" ] && [ -f "$HOME/.config/quickshell/kitana/Services/qmldir" ]; then
+  pass "Quickshell service: SystemStatus"
+else
+  fail "Quickshell service missing: SystemStatus"
+fi
+
+if [ -f "$HOME/.config/quickshell/kitana/Services/NotificationService.qml" ]; then
+  pass "Quickshell service: NotificationService"
+else
+  fail "Quickshell service missing: NotificationService"
+fi
+
+if [ -f "$HOME/.config/quickshell/kitana/Widgets/PanelRow.qml" ]; then
+  pass "Quickshell widget: PanelRow"
+else
+  fail "Quickshell widget missing: PanelRow"
+fi
 
 if [ -f "$HOME/.config/quickshell/kitana/custom/Settings.qml" ]; then
   pass "Quickshell custom settings"

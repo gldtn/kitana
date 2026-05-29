@@ -3,12 +3,23 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Io
 import "./custom" as Custom
-import "./modules"
+import "./Modules"
+import "./Services" as Services
 
 ShellRoot {
     Custom.Settings {
         id: settings
+    }
+
+    WallpaperGrid {}
+
+    IpcHandler {
+        target: "kitana-notifications"
+
+        function dismissLast(): void { Services.NotificationService.dismissLast(); }
+        function clear(): void { Services.NotificationService.clear(); }
     }
 
     Variants {
@@ -35,6 +46,16 @@ ShellRoot {
 
             color: "transparent"
 
+            SystemPanel {
+                id: systemPanel
+
+                panelScreen: modelData
+            }
+
+            NotificationPopups {
+                panelScreen: modelData
+            }
+
             RowLayout {
                 anchors.fill: parent
                 spacing: settings.rowSpacing
@@ -53,7 +74,9 @@ ShellRoot {
                     Layout.fillWidth: true
                 }
 
-                StatusGroup {}
+                StatusGroup {
+                    systemPanel: systemPanel
+                }
             }
         }
     }

@@ -95,7 +95,10 @@ bash ~/.local/share/kitana/install-desktop.sh
 - Customize Hyprland in `~/.config/hypr/custom/*.lua`; these files load after Kitana defaults.
 - Scripts are linked individually into `~/.config/hypr/scripts` only when no user script already exists.
 - `hypridle.conf` is copied to `~/.config/hypr/hypridle.conf` only if missing, so local edits are preserved.
-- `hyprpaper.conf` is copied to `~/.config/hypr/hyprpaper.conf` only if missing, and wallpapers are linked from `~/.config/hypr/walls`.
+- Kitana user settings live in `~/.config/kitana/config`.
+- Wallpapers default to `~/.config/kitana/wallpapers`; override with `KITANA_WALLPAPER_DIR` in `~/.config/kitana/config`.
+- Bundled wallpapers live in `~/.local/share/kitana/default/wallpapers`.
+- `hyprpaper.conf` is copied to `~/.config/hypr/hyprpaper.conf` only if missing; wallpaper selection is managed by `bin/kitana-wallpaper`.
 - Bash defaults live in `default/bash`; customize Bash in `~/.config/bash/custom/*.bash`.
 - Starship config is copied to `~/.config/starship/starship.toml` only when missing or Kitana-managed.
 - Ghostty defaults live in `default/ghostty`; `~/.config/ghostty/config` is copied only when missing or Kitana-managed, and themes are copied only when missing.

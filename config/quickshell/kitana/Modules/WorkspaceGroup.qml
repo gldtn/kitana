@@ -20,11 +20,11 @@ Rectangle {
 
     Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
     Layout.preferredHeight: settings.pillHeight
-    Layout.preferredWidth: workspaceRow.implicitWidth + settings.workspaceHorizontalPadding
+    Layout.preferredWidth: workspaceRow.implicitWidth + settings.workspaceSpacing * 2
 
     radius: height / settings.radiusDivisor
-    color: Colors.background
-    border.color: Colors.surfaceAlt
+    color: Colors.panel
+    border.color: Colors.panelBorder
     border.width: settings.borderWidth
 
     function range(start, end) {
@@ -89,12 +89,12 @@ Rectangle {
                 width: active ? settings.workspaceActiveWidth : settings.workspaceInactiveWidth
                 height: settings.workspacePillHeight
                 radius: height / settings.radiusDivisor
-                color: active ? Colors.accent : (occupied ? Colors.surfaceAlt : Colors.surface)
+                color: active ? Colors.accent : (occupied ? Colors.workspaceOccupied : Colors.workspaceInactive)
 
                 Text {
                     anchors.centerIn: parent
                     text: workspacePill.workspaceId
-                    color: workspacePill.active ? Colors.accentText : Colors.foreground
+                    color: workspacePill.active ? Colors.accentText : (workspacePill.occupied ? Colors.foreground : Colors.muted)
                     font.family: settings.fontFamily
                     font.pixelSize: settings.textPixelSize
                     font.weight: Font.DemiBold

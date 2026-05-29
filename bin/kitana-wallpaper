@@ -2,7 +2,16 @@
 
 set -euo pipefail
 
-wall_dir="${KITANA_WALLPAPER_DIR:-$HOME/.config/hypr/walls}"
+kitana_config="$HOME/.config/kitana/config"
+env_wall_dir="${KITANA_WALLPAPER_DIR:-}"
+
+if [ -f "$kitana_config" ]; then
+  # shellcheck disable=SC1090
+  source "$kitana_config"
+fi
+
+wall_dir="${env_wall_dir:-${KITANA_WALLPAPER_DIR:-$HOME/.config/kitana/wallpapers}}"
+default_wall_dir="${KITANA_DIR:-$HOME/.local/share/kitana}/default/wallpapers"
 hyprpaper_config="$HOME/.config/hypr/hyprpaper.conf"
 state_dir="$HOME/.config/kitana"
 state_file="$state_dir/wallpaper"
@@ -14,8 +23,10 @@ awww_duration="${KITANA_AWWW_DURATION:-3}"
 awww_step="${KITANA_AWWW_STEP:-90}"
 awww_fps="${KITANA_AWWW_FPS:-60}"
 
+shopt -s nullglob globstar
+
 wallpapers=()
-for wallpaper in "$wall_dir"/*.{jpg,jpeg,png,webp,gif}; do
+for wallpaper in "$wall_dir"/**/*.{jpg,jpeg,png,webp,gif}; do
   [ -e "$wallpaper" ] || continue
   wallpapers+=("$wallpaper")
 done
@@ -24,6 +35,14 @@ selected=""
 restore=0
 
 case "${1:-}" in
+  --dir)
+    printf '%s\n' "$wall_dir"
+    exit 0
+    ;;
+  --list)
+    printf '%s\n' "${wallpapers[@]}"
+    exit 0
+    ;;
   --restore)
     restore=1
     ;;
@@ -37,8 +56,13 @@ esac
 if [ "$restore" -eq 1 ]; then
   if [ -f "$state_file" ]; then
     selected="$(<"$state_file")"
+    if [ ! -f "$selected" ]; then
+      migrated="$wall_dir/$(basename "$selected")"
+      [ -f "$migrated" ] && selected="$migrated"
+    fi
   else
     selected="$wall_dir/mystical_night_town_default.jpg"
+    [ -f "$selected" ] || selected="$default_wall_dir/mystical_night_town_default.jpg"
   fi
 elif [ -z "$selected" ]; then
   if [ "${#wallpapers[@]}" -eq 0 ]; then

@@ -9,6 +9,8 @@ HYPR_ENTRYPOINT_MARKER="Kitana managed Hyprland Lua entrypoint"
 HYPRIDLE_MARKER="Kitana managed Hypridle config"
 HYPRLOCK_MARKER="Kitana managed Hyprlock config"
 HYPRPAPER_MARKER="Kitana managed Hyprpaper config"
+KITANA_CONFIG_DIR="$HOME/.config/kitana"
+KITANA_CONFIG_FILE="$KITANA_CONFIG_DIR/config"
 BASH_CONFIG_DIR="$HOME/.config/bash"
 BASH_RC_MARKER="Kitana managed Bash config"
 BASHRC_MARKER="Kitana managed Bash entrypoint"
@@ -27,7 +29,27 @@ QT6CT_CONFIG_MARKER="Kitana managed Qt6ct config"
 ZED_CONFIG_DIR="$HOME/.config/zed"
 QUICKSHELL_CONFIG_DIR="$HOME/.config/quickshell/kitana"
 
-mkdir -p "$HOME/.config"
+mkdir -p "$HOME/.config" "$KITANA_CONFIG_DIR"
+
+if [ ! -e "$KITANA_CONFIG_FILE" ]; then
+  cp "$KITANA_DIR/config/kitana/config" "$KITANA_CONFIG_FILE"
+else
+  echo "Keeping existing Kitana config: $KITANA_CONFIG_FILE"
+fi
+
+env_wallpaper_dir="${KITANA_WALLPAPER_DIR:-}"
+# shellcheck disable=SC1090
+source "$KITANA_CONFIG_FILE"
+WALLPAPER_DIR="${env_wallpaper_dir:-${KITANA_WALLPAPER_DIR:-$HOME/.config/kitana/wallpapers}}"
+
+mkdir -p "$WALLPAPER_DIR"
+
+if ! compgen -G "$WALLPAPER_DIR/*" >/dev/null; then
+  for wallpaper in "$KITANA_DIR"/default/wallpapers/*; do
+    [ -e "$wallpaper" ] || continue
+    ln -sfn "$wallpaper" "$WALLPAPER_DIR/$(basename "$wallpaper")"
+  done
+fi
 
 if [ -L "$HYPR_CONFIG_DIR" ]; then
   target=$(readlink "$HYPR_CONFIG_DIR")
@@ -77,15 +99,12 @@ if [ ! -e "$HYPR_CONFIG_DIR/hyprpaper.conf" ] || grep -q "$HYPRPAPER_MARKER" "$H
   cp "$KITANA_DIR/default/hypr/hyprpaper.conf" "$HYPR_CONFIG_DIR/hyprpaper.conf"
 fi
 
-WALLS_LINK="$HYPR_CONFIG_DIR/walls"
-
-if [ -L "$WALLS_LINK" ] && [ ! -e "$WALLS_LINK" ]; then
-  echo "Removing broken Hypr wallpapers symlink: $WALLS_LINK"
-  rm "$WALLS_LINK"
-fi
-
-if [ ! -e "$WALLS_LINK" ]; then
-  ln -s "$KITANA_DIR/default/hypr/walls" "$WALLS_LINK"
+if [ -L "$HYPR_CONFIG_DIR/walls" ]; then
+  walls_target="$(readlink "$HYPR_CONFIG_DIR/walls")"
+  if [ "$walls_target" = "$KITANA_DIR/default/hypr/walls" ] || [ ! -e "$HYPR_CONFIG_DIR/walls" ]; then
+    echo "Removing old Hypr wallpapers symlink: $HYPR_CONFIG_DIR/walls"
+    rm "$HYPR_CONFIG_DIR/walls"
+  fi
 fi
 
 for script in "$KITANA_DIR"/default/hypr/scripts/*; do
@@ -211,7 +230,10 @@ for snippet in "$KITANA_DIR"/config/zed/snippets/*.json; do
 done
 
 mkdir -p "$QUICKSHELL_CONFIG_DIR"
-mkdir -p "$QUICKSHELL_CONFIG_DIR/modules"
+mkdir -p "$QUICKSHELL_CONFIG_DIR/Common"
+mkdir -p "$QUICKSHELL_CONFIG_DIR/Modules"
+mkdir -p "$QUICKSHELL_CONFIG_DIR/Services"
+mkdir -p "$QUICKSHELL_CONFIG_DIR/Widgets"
 mkdir -p "$QUICKSHELL_CONFIG_DIR/custom"
 
 if [ ! -e "$QUICKSHELL_CONFIG_DIR/shell.qml" ] || grep -q "Kitana managed Quickshell bar" "$QUICKSHELL_CONFIG_DIR/shell.qml"; then
@@ -228,15 +250,19 @@ for quickshell_config in Colors.qml qmldir; do
   fi
 done
 
-for quickshell_module in "$KITANA_DIR"/config/quickshell/kitana/modules/*.qml; do
-  [ -e "$quickshell_module" ] || continue
-  target="$QUICKSHELL_CONFIG_DIR/modules/$(basename "$quickshell_module")"
+for quickshell_dir in Common Modules Services Widgets; do
+  [ -d "$KITANA_DIR/config/quickshell/kitana/$quickshell_dir" ] || continue
 
-  if [ ! -e "$target" ] || grep -q "Kitana managed Quickshell module" "$target"; then
-    cp "$quickshell_module" "$target"
-  else
-    echo "Keeping existing Quickshell module: $target"
-  fi
+  for quickshell_file in "$KITANA_DIR"/config/quickshell/kitana/"$quickshell_dir"/*; do
+    [ -f "$quickshell_file" ] || continue
+    target="$QUICKSHELL_CONFIG_DIR/$quickshell_dir/$(basename "$quickshell_file")"
+
+    if [ ! -e "$target" ] || grep -q "Kitana managed Quickshell" "$target" || [ "$(basename "$quickshell_file")" = "qmldir" ]; then
+      cp "$quickshell_file" "$target"
+    else
+      echo "Keeping existing Quickshell file: $target"
+    fi
+  done
 done
 
 for quickshell_custom in "$KITANA_DIR"/config/quickshell/kitana/custom/*.qml; do

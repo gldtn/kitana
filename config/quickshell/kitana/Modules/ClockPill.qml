@@ -15,8 +15,8 @@ Rectangle {
     Layout.preferredWidth: clockText.implicitWidth + settings.clockHorizontalPadding
 
     radius: height / settings.radiusDivisor
-    color: Colors.background
-    border.color: Colors.surfaceAlt
+    color: Colors.panel
+    border.color: Colors.panelBorder
     border.width: settings.borderWidth
 
     Text {
