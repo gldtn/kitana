@@ -23,6 +23,7 @@ PanelWindow {
         section = targetSection || "notifications";
         Services.SystemStatus.refresh();
         visible = true;
+        closeArea.forceActiveFocus();
     }
 
     function close() {
@@ -70,7 +71,10 @@ PanelWindow {
     }
 
     MouseArea {
+        id: closeArea
         anchors.fill: parent
+        focus: true
+        Keys.onEscapePressed: root.close()
         onClicked: root.close()
     }
 
