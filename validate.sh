@@ -309,7 +309,7 @@ else
   fail "Hyprpaper config missing: ~/.config/hypr/hyprpaper.conf"
 fi
 
-if [ -f "$KITANA_DIR/default/wallpapers/mystical_night_town_default.jpg" ]; then
+if [ -f "$KITANA_DIR/default/wallpapers/04-floating-islands.jpg" ]; then
   pass "Kitana default wallpaper"
 else
   fail "Kitana default wallpaper missing"

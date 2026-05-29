@@ -95,7 +95,7 @@ if [ ! -e "$HYPR_CONFIG_DIR/hyprlock.conf" ] || grep -q "$HYPRLOCK_MARKER" "$HYP
   cp "$KITANA_DIR/default/hypr/hyprlock.conf" "$HYPR_CONFIG_DIR/hyprlock.conf"
 fi
 
-if [ ! -e "$HYPR_CONFIG_DIR/hyprpaper.conf" ] || grep -q "$HYPRPAPER_MARKER" "$HYPR_CONFIG_DIR/hyprpaper.conf" || grep -q "mystical_night_town_default.jpg" "$HYPR_CONFIG_DIR/hyprpaper.conf"; then
+if [ ! -e "$HYPR_CONFIG_DIR/hyprpaper.conf" ] || grep -q "$HYPRPAPER_MARKER" "$HYPR_CONFIG_DIR/hyprpaper.conf" || grep -q "mystical_night_town_default.jpg" "$HYPR_CONFIG_DIR/hyprpaper.conf" || grep -q "fantasy_world_floating_islands.jpg" "$HYPR_CONFIG_DIR/hyprpaper.conf"; then
   cp "$KITANA_DIR/default/hypr/hyprpaper.conf" "$HYPR_CONFIG_DIR/hyprpaper.conf"
 fi
 
