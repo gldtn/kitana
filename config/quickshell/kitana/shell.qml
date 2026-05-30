@@ -1,4 +1,5 @@
 // Kitana managed Quickshell bar
+//@ pragma UseQApplication
 
 import QtQuick
 import QtQuick.Layouts
@@ -26,6 +27,8 @@ ShellRoot {
         model: Quickshell.screens
 
         PanelWindow {
+            id: panelWindow
+
             required property var modelData
 
             screen: modelData
@@ -56,6 +59,12 @@ ShellRoot {
                 panelScreen: modelData
             }
 
+            DashboardPanel {
+                id: dashboardPanel
+
+                panelScreen: modelData
+            }
+
             RowLayout {
                 anchors.fill: parent
                 spacing: settings.rowSpacing
@@ -68,13 +77,16 @@ ShellRoot {
                     Layout.fillWidth: true
                 }
 
-                ClockPill {}
+                ClockPill {
+                    dashboardPanel: dashboardPanel
+                }
 
                 Item {
                     Layout.fillWidth: true
                 }
 
                 StatusGroup {
+                    panelWindow: panelWindow
                     systemPanel: systemPanel
                 }
             }
