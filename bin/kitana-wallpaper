@@ -143,6 +143,10 @@ if ! apply_awww; then
   apply_hyprpaper
 fi
 
-"${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-matugen" "$selected"
+if [ -f "$state_dir/theme" ]; then
+  "${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-theme" --restore >/dev/null 2>&1 || "${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-matugen" "$selected"
+else
+  "${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-matugen" "$selected"
+fi
 
 echo "Wallpaper set with $backend: $selected"

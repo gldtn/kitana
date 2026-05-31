@@ -1,0 +1,104 @@
+#!/bin/bash
+
+set -euo pipefail
+
+kitana_dir="${KITANA_DIR:-$HOME/.local/share/kitana}"
+state_dir="$HOME/.config/kitana"
+state_file="$state_dir/theme"
+target="$HOME/.config/quickshell/kitana/Colors.qml"
+
+themes=(
+  "catppuccin-mocha|Catppuccin Mocha|#1e1e2e|#313244|#45475a|#cdd6f4|#9399b2|#89b4fa|#11111b|#f9e2af|#f38ba8"
+  "rose-pine|Rose Pine|#191724|#26233a|#403d52|#e0def4|#908caa|#c4a7e7|#191724|#f6c177|#eb6f92"
+  "tokyo-night|Tokyo Night|#1a1b26|#24283b|#414868|#c0caf5|#565f89|#7aa2f7|#1a1b26|#e0af68|#f7768e"
+  "dracula|Dracula|#282a36|#343746|#44475a|#f8f8f2|#b6b6c8|#bd93f9|#282a36|#f1fa8c|#ff5555"
+  "kanagawa-dragon|Kanagawa Dragon|#181616|#1f1f28|#393836|#c5c9c5|#a6a69c|#8ba4b0|#181616|#c4b28a|#c4746e"
+)
+
+usage() {
+  printf 'Usage: %s [--list|--restore|THEME]\n' "$(basename "$0")"
+}
+
+find_theme() {
+  local requested="$1"
+  local theme slug name
+
+  for theme in "${themes[@]}"; do
+    IFS='|' read -r slug name _ <<<"$theme"
+    if [ "$requested" = "$slug" ] || [ "$requested" = "$name" ]; then
+      printf '%s\n' "$theme"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+write_theme() {
+  local theme="$1"
+  local slug name background surface surface_alt foreground muted accent accent_text warning danger
+
+  IFS='|' read -r slug name background surface surface_alt foreground muted accent accent_text warning danger <<<"$theme"
+  mkdir -p "$(dirname "$target")" "$state_dir"
+
+  cat >"$target" <<EOF
+// Kitana managed Quickshell colors
+
+pragma Singleton
+
+import QtQuick
+
+QtObject {
+  readonly property color background: "$background"
+  readonly property color surface: "$surface"
+  readonly property color surfaceAlt: "$surface_alt"
+  readonly property color surfaceHover: "#ee${surface_alt#\#}"
+  readonly property color surfaceHighlight: "#33${accent#\#}"
+  readonly property color panel: "#8f${background#\#}"
+  readonly property color panelStrong: "#a8${background#\#}"
+  readonly property color panelBorder: "#9e${surface_alt#\#}"
+  readonly property color panelBorderStrong: "#b8${accent#\#}"
+  readonly property color workspaceInactive: "#c2${surface#\#}"
+  readonly property color workspaceOccupied: "#e6${surface_alt#\#}"
+  readonly property color scrim: "#a8${background#\#}"
+  readonly property color scrimSoft: "#6b${background#\#}"
+  readonly property color imageOverlay: "#b3${background#\#}"
+  readonly property color foreground: "$foreground"
+  readonly property color muted: "$muted"
+  readonly property color accent: "$accent"
+  readonly property color accentText: "$accent_text"
+  readonly property color warning: "$warning"
+  readonly property color danger: "$danger"
+}
+EOF
+
+  printf '%s\n' "$slug" >"$state_file"
+  "$kitana_dir/bin/kitana-quickshell" >/dev/null 2>&1 || true
+  printf 'Theme applied: %s\n' "$name"
+}
+
+case "${1:-}" in
+  --list)
+    for theme in "${themes[@]}"; do
+      IFS='|' read -r slug name background surface surface_alt foreground muted accent accent_text warning danger <<<"$theme"
+      printf '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\n' "$slug" "$name" "$background" "$surface" "$surface_alt" "$foreground" "$muted" "$accent" "$accent_text" "$warning" "$danger"
+    done
+    ;;
+  --restore)
+    if [ -f "$state_file" ]; then
+      selected="$(<"$state_file")"
+      theme="$(find_theme "$selected")" || exit 0
+      write_theme "$theme"
+    fi
+    ;;
+  ""|-h|--help)
+    usage
+    ;;
+  *)
+    theme="$(find_theme "$1")" || {
+      printf 'Unknown theme: %s\n' "$1" >&2
+      exit 1
+    }
+    write_theme "$theme"
+    ;;
+esac

@@ -34,7 +34,15 @@ hl.layer_rule({
   match        = { class = "quickshell", title = ".*(menu|tray|popup).*" },
 
   no_anim      = true,
-  blur         = false,
+  ignore_alpha = 0,
+})
+
+hl.layer_rule({
+  -- Blur transparent Kitana Quickshell surfaces through Hyprland.
+  name         = "kitana-quickshell-blur",
+  match        = { namespace = ".*quickshell.*" },
+
+  blur         = true,
   ignore_alpha = 0,
 })
 

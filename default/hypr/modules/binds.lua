@@ -35,6 +35,7 @@ hl.bind(mod .. " + G", hl.dsp.exec_cmd(guiEditor), { description = "Gui editor" 
 hl.bind(mod .. " + RETURN", hl.dsp.exec_cmd(terminal), { description = "Terminal" })
 hl.bind(mod .. " + D", hl.dsp.exec_cmd(launcher), { description = "Launcher" })
 hl.bind(mod .. " + E", hl.dsp.exec_cmd(fileManager), { description = "File manager" })
+hl.bind(mod .. " + T", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-theme-grid"), { description = "Theme chooser" })
 hl.bind(mod .. " + W", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-wallpaper-grid"), { description = "Wallpaper chooser" })
 hl.bind(mod .. " + SHIFT + W", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-quickshell"), { description = "Reload Quickshell" })
 hl.bind(mod .. " + COMMA", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-notifications dismissLast"), { description = "Dismiss last notification" })

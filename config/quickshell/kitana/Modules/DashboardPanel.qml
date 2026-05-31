@@ -18,12 +18,20 @@ PanelWindow {
     property var panelScreen: null
     property string activeTab: "datetime"
     property var wallpapers: []
+    property var themes: []
     property string weatherStatus: "Loading weather..."
     property var weather: ({})
     property alias weatherLocation: weatherPrefs.location
     property alias weatherUnits: weatherPrefs.units
     property int wallpaperPage: 0
     property int wallpaperPageSize: 12
+    property int wallpaperCurrentIndex: 0
+    property int themePage: 0
+    property int themePageSize: 6
+    property int themeCurrentIndex: 0
+    property string pickerQuery: ""
+    property bool pickerSearchActive: false
+    property bool pickerHelpVisible: false
     property string kitanaDir: Quickshell.env("KITANA_DIR") || Quickshell.env("HOME") + "/.local/share/kitana"
     property date currentTime: new Date()
     property date calendarMonth: new Date(currentTime.getFullYear(), currentTime.getMonth(), 1)
@@ -62,6 +70,7 @@ PanelWindow {
 
     function open(tab: string): void {
         activeTab = tab || "datetime";
+        resetPickerState();
         visible = true;
         closeArea.forceActiveFocus();
         refreshTab();
@@ -78,9 +87,19 @@ PanelWindow {
             open(tab || activeTab);
     }
 
+    IpcHandler {
+        target: "kitana-dashboard"
+
+        function open(tab: string): void { root.open(tab || "datetime"); }
+        function close(): void { root.close(); }
+        function toggle(tab: string): void { root.toggle(tab || "datetime"); }
+    }
+
     function refreshTab(): void {
         if (activeTab === "wallpapers" && wallpapers.length === 0)
             listProcess.exec([kitanaDir + "/bin/kitana-wallpaper", "--list"]);
+        if (activeTab === "themes" && themes.length === 0)
+            themeListProcess.exec([kitanaDir + "/bin/kitana-theme", "--list"]);
         if ((activeTab === "weather" || activeTab === "datetime") && !weather.current_condition)
             refreshWeather();
         if (activeTab === "datetime")
@@ -134,18 +153,159 @@ PanelWindow {
             applyProcess.exec([kitanaDir + "/bin/kitana-wallpaper", path]);
     }
 
-    function wallpaperPageCount(): int {
-        return Math.max(1, Math.ceil(wallpapers.length / wallpaperPageSize));
+    function themeFromLine(line: string): var {
+        const parts = line.split("|");
+        return {
+            slug: parts[0] || "",
+            name: parts[1] || parts[0] || "Theme",
+            background: parts[2] || "#1e1e2e",
+            surface: parts[3] || "#313244",
+            surfaceAlt: parts[4] || "#45475a",
+            foreground: parts[5] || "#cdd6f4",
+            muted: parts[6] || "#9399b2",
+            accent: parts[7] || "#89b4fa",
+            accentText: parts[8] || "#11111b",
+            warning: parts[9] || "#f9e2af",
+            danger: parts[10] || "#f38ba8"
+        };
     }
 
-    function wallpaperPageItems(page: int, items: var): var {
-        const start = page * wallpaperPageSize;
-        return items.slice(start, start + wallpaperPageSize);
+    function applyTheme(theme: var): void {
+        if (theme && theme.slug)
+            themeApplyProcess.exec([kitanaDir + "/bin/kitana-theme", theme.slug]);
+    }
+
+    function resetPickerState(): void {
+        pickerQuery = "";
+        pickerSearchActive = false;
+        pickerHelpVisible = false;
+        wallpaperPage = 0;
+        wallpaperCurrentIndex = 0;
+        themePage = 0;
+        themeCurrentIndex = 0;
+    }
+
+    function filteredWallpapers(): var {
+        const needle = pickerQuery.toLowerCase();
+        return needle.length === 0 ? wallpapers : wallpapers.filter(path => basename(path).toLowerCase().indexOf(needle) !== -1);
+    }
+
+    function wallpaperPageCount(): int {
+        return Math.max(1, Math.ceil(filteredWallpapers().length / wallpaperPageSize));
+    }
+
+    function pageItems(page: int, items: var, pageSize: int): var {
+        const start = page * pageSize;
+        return items.slice(start, start + pageSize);
+    }
+
+    function wallpaperPageItems(): var {
+        return pageItems(wallpaperPage, filteredWallpapers(), wallpaperPageSize);
     }
 
     function shiftWallpaperPage(delta: int): void {
         const count = wallpaperPageCount();
         wallpaperPage = (wallpaperPage + delta + count) % count;
+        wallpaperCurrentIndex = Math.min(filteredWallpapers().length - 1, wallpaperPage * wallpaperPageSize);
+    }
+
+    function filteredThemes(): var {
+        const needle = pickerQuery.toLowerCase();
+        return needle.length === 0 ? themes : themes.filter(theme => theme.name.toLowerCase().indexOf(needle) !== -1 || theme.slug.toLowerCase().indexOf(needle) !== -1);
+    }
+
+    function themePageCount(): int {
+        return Math.max(1, Math.ceil(filteredThemes().length / themePageSize));
+    }
+
+    function themePageItems(): var {
+        return pageItems(themePage, filteredThemes(), themePageSize);
+    }
+
+    function shiftThemePage(delta: int): void {
+        const count = themePageCount();
+        themePage = (themePage + delta + count) % count;
+        themeCurrentIndex = Math.min(filteredThemes().length - 1, themePage * themePageSize);
+    }
+
+    function movePickerSelection(delta: int): void {
+        const items = activeTab === "themes" ? filteredThemes() : filteredWallpapers();
+        if (items.length === 0)
+            return;
+
+        if (activeTab === "themes") {
+            themeCurrentIndex = (themeCurrentIndex + delta + items.length) % items.length;
+            themePage = Math.floor(themeCurrentIndex / themePageSize);
+        } else {
+            wallpaperCurrentIndex = (wallpaperCurrentIndex + delta + items.length) % items.length;
+            wallpaperPage = Math.floor(wallpaperCurrentIndex / wallpaperPageSize);
+        }
+    }
+
+    function refreshPickerFilter(): void {
+        if (activeTab === "themes") {
+            themePage = 0;
+            themeCurrentIndex = filteredThemes().length > 0 ? 0 : -1;
+        } else if (activeTab === "wallpapers") {
+            wallpaperPage = 0;
+            wallpaperCurrentIndex = filteredWallpapers().length > 0 ? 0 : -1;
+        }
+    }
+
+    function applyCurrentPickerItem(): void {
+        if (activeTab === "themes")
+            applyTheme(filteredThemes()[themeCurrentIndex]);
+        else if (activeTab === "wallpapers")
+            applyWallpaper(filteredWallpapers()[wallpaperCurrentIndex]);
+    }
+
+    function handleKey(event: var): void {
+        const pickerTab = activeTab === "wallpapers" || activeTab === "themes";
+        const text = event.text.toLowerCase();
+        const key = event.key;
+
+        if (key === Qt.Key_Escape) {
+            if (pickerSearchActive) {
+                pickerSearchActive = false;
+                closeArea.forceActiveFocus();
+            } else {
+                close();
+            }
+            event.accepted = true;
+            return;
+        }
+
+        if (!pickerTab || pickerSearchActive)
+            return;
+
+        if (key === Qt.Key_Return || key === Qt.Key_Enter || key === Qt.Key_Space) {
+            applyCurrentPickerItem();
+            event.accepted = true;
+        } else if (key === Qt.Key_Left || key === Qt.Key_H) {
+            movePickerSelection(-1);
+            event.accepted = true;
+        } else if (key === Qt.Key_Right || key === Qt.Key_L) {
+            movePickerSelection(1);
+            event.accepted = true;
+        } else if (key === Qt.Key_Up || key === Qt.Key_K) {
+            movePickerSelection(activeTab === "themes" ? -3 : -4);
+            event.accepted = true;
+        } else if (key === Qt.Key_Down || key === Qt.Key_J) {
+            movePickerSelection(activeTab === "themes" ? 3 : 4);
+            event.accepted = true;
+        } else if (key === Qt.Key_PageUp || text === "[" || text === "p") {
+            activeTab === "themes" ? shiftThemePage(-1) : shiftWallpaperPage(-1);
+            event.accepted = true;
+        } else if (key === Qt.Key_PageDown || text === "]" || text === "n") {
+            activeTab === "themes" ? shiftThemePage(1) : shiftWallpaperPage(1);
+            event.accepted = true;
+        } else if (text === "/") {
+            pickerSearchActive = true;
+            event.accepted = true;
+        } else if (text === "?") {
+            pickerHelpVisible = !pickerHelpVisible;
+            event.accepted = true;
+        }
     }
 
     function tempValue(day: var, keyC: string, keyF: string): string {
@@ -263,6 +423,24 @@ PanelWindow {
     }
 
     Process {
+        id: themeListProcess
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                root.themes = text.trim().length > 0 ? text.trim().split("\n").map(line => root.themeFromLine(line)) : [];
+                root.themePage = 0;
+                root.themeCurrentIndex = root.themes.length > 0 ? 0 : -1;
+            }
+        }
+    }
+
+    Process {
+        id: themeApplyProcess
+
+        onRunningChanged: if (!running) root.close()
+    }
+
+    Process {
         id: weatherProcess
 
         stdout: StdioCollector {
@@ -333,7 +511,8 @@ PanelWindow {
         id: closeArea
         anchors.fill: parent
         focus: true
-        Keys.onEscapePressed: root.close()
+        Keys.priority: Keys.BeforeItem
+        Keys.onPressed: event => root.handleKey(event)
         onClicked: root.close()
     }
 
@@ -366,9 +545,10 @@ PanelWindow {
                 spacing: 8
 
                 TabButton { icon: "󰃰"; label: "Date"; tab: "datetime" }
-                TabButton { icon: "󰸉"; label: "Wallpapers"; tab: "wallpapers" }
-                TabButton { icon: "󰝚"; label: "Media"; tab: "media" }
                 TabButton { icon: "󰖕"; label: "Weather"; tab: "weather" }
+                TabButton { icon: "󰝚"; label: "Media"; tab: "media" }
+                TabButton { icon: "󰸉"; label: "Wallpapers"; tab: "wallpapers" }
+                TabButton { icon: "󰏘"; label: "Themes"; tab: "themes" }
 
                 Item { Layout.fillWidth: true }
 
@@ -384,7 +564,7 @@ PanelWindow {
             Loader {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                sourceComponent: root.activeTab === "wallpapers" ? wallpapersTab : (root.activeTab === "media" ? mediaTab : (root.activeTab === "weather" ? weatherTab : (root.activeTab === "settings" ? settingsTab : datetimeTab)))
+                sourceComponent: root.activeTab === "wallpapers" ? wallpapersTab : (root.activeTab === "themes" ? themesTab : (root.activeTab === "media" ? mediaTab : (root.activeTab === "weather" ? weatherTab : (root.activeTab === "settings" ? settingsTab : datetimeTab))))
             }
         }
     }
@@ -433,6 +613,8 @@ PanelWindow {
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
             onClicked: {
+                if (root.activeTab !== tabButton.tab)
+                    root.resetPickerState();
                 root.activeTab = tabButton.tab;
                 root.refreshTab();
             }
@@ -792,98 +974,343 @@ PanelWindow {
         }
     }
 
+    component PickerFooter: Rectangle {
+        Layout.fillWidth: true
+        Layout.preferredHeight: root.pickerSearchActive ? 36 : (root.pickerHelpVisible ? 52 : 24)
+        radius: 10
+        color: root.pickerSearchActive ? Colors.surface : "transparent"
+        border.color: root.pickerSearchActive ? Colors.panelBorder : "transparent"
+        border.width: root.pickerSearchActive ? 1 : 0
+
+        TextInput {
+            anchors.fill: parent
+            anchors.leftMargin: 12
+            anchors.rightMargin: 12
+            verticalAlignment: TextInput.AlignVCenter
+            visible: root.pickerSearchActive
+            clip: true
+            text: root.pickerQuery
+            color: Colors.foreground
+            selectionColor: Colors.surfaceHighlight
+            selectedTextColor: Colors.foreground
+            font.family: settings.fontFamily
+            font.pixelSize: settings.textPixelSize
+            onVisibleChanged: if (visible) forceActiveFocus()
+            onTextChanged: {
+                root.pickerQuery = text;
+                root.refreshPickerFilter();
+            }
+            Keys.onEscapePressed: {
+                root.pickerSearchActive = false;
+                closeArea.forceActiveFocus();
+            }
+            Keys.onReturnPressed: {
+                root.pickerSearchActive = false;
+                closeArea.forceActiveFocus();
+            }
+        }
+
+        Text {
+            anchors.fill: parent
+            visible: !root.pickerSearchActive
+            verticalAlignment: Text.AlignVCenter
+            text: root.pickerHelpVisible ? "arrows/hjkl move  ·  p/n pages  ·  enter/space apply  ·  / search  ·  ? hide help  ·  esc close" : "? help  ·  arrows/hjkl move  ·  / search  ·  enter/space apply  ·  esc close"
+            color: Colors.muted
+            font.family: settings.fontFamily
+            font.pixelSize: settings.textPixelSize
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WordWrap
+        }
+    }
+
+    component PickerHelp: Item {
+        Layout.fillWidth: true
+        Layout.preferredHeight: root.pickerSearchActive ? 36 : (root.pickerHelpVisible ? 52 : 24)
+
+        PickerFooter {
+            width: Math.min(parent.width, 590)
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+    }
+
+    component PickerTopInset: Item {
+        Layout.fillWidth: true
+        Layout.preferredHeight: 4
+    }
+
     Component {
         id: wallpapersTab
 
         ColumnLayout {
-            spacing: 10
+            spacing: 8
 
-            Text {
-                Layout.fillWidth: true
-                text: root.wallpapers.length + " wallpapers"
-                color: Colors.muted
-                font.family: settings.fontFamily
-                font.pixelSize: settings.textPixelSize
-            }
+            PickerTopInset {}
+            PickerHelp {}
 
-            GridView {
+            Item {
                 id: wallpaperGrid
+
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 clip: true
-                model: root.wallpaperPageItems(root.wallpaperPage, root.wallpapers)
-                cellWidth: Math.floor(width / 4)
-                cellHeight: Math.floor(height / 3)
 
-                delegate: Rectangle {
-                    id: wallpaperCard
+                readonly property int columns: 4
+                readonly property int gap: 10
+                readonly property real cardWidth: Math.floor((width - (columns - 1) * gap) / columns)
+                readonly property real cardHeight: Math.floor((height - 2 * gap) / 3)
+                readonly property real trackWidth: columns * cardWidth + (columns - 1) * gap
 
-                    required property string modelData
-
-                    width: wallpaperGrid.cellWidth - 10
-                    height: wallpaperGrid.cellHeight - 10
-                    radius: 12
-                    color: Colors.surface
-                    border.color: wallpaperMouse.containsMouse ? Colors.accent : Colors.panelBorder
-                    border.width: wallpaperMouse.containsMouse ? 2 : 1
-                    clip: true
-                    scale: wallpaperMouse.containsMouse ? 1.015 : 1
-
-                    Behavior on scale {
-                        NumberAnimation { duration: 120 }
-                    }
-
-                    Image {
-                        id: wallpaperImage
-                        anchors.fill: parent
-                        source: root.fileUrl(wallpaperCard.modelData)
-                        fillMode: Image.PreserveAspectCrop
-                        asynchronous: true
-                        visible: false
-                    }
+                Repeater {
+                    model: root.wallpaperPageItems()
 
                     Rectangle {
-                        id: wallpaperMask
-                        anchors.fill: parent
-                        radius: parent.radius
-                        visible: false
-                        layer.enabled: true
-                    }
+                        id: wallpaperCard
 
-                    MultiEffect {
-                        anchors.fill: wallpaperImage
-                        source: wallpaperImage
-                        maskEnabled: true
-                        maskSource: wallpaperMask
-                    }
+                        required property string modelData
+                        required property int index
+                        readonly property int sourceIndex: root.wallpaperPage * root.wallpaperPageSize + index
+                        readonly property bool selected: sourceIndex === root.wallpaperCurrentIndex
+                        readonly property int row: Math.floor(index / wallpaperGrid.columns)
+                        readonly property int column: index % wallpaperGrid.columns
+                        x: Math.round((wallpaperGrid.width - wallpaperGrid.trackWidth) / 2 + column * (wallpaperGrid.cardWidth + wallpaperGrid.gap))
+                        y: row * (wallpaperGrid.cardHeight + wallpaperGrid.gap)
+                        width: wallpaperGrid.cardWidth
+                        height: wallpaperGrid.cardHeight
+                        radius: 12
+                        color: Colors.surface
+                        border.color: selected || wallpaperMouse.containsMouse ? Colors.accent : Colors.panelBorder
+                        border.width: selected || wallpaperMouse.containsMouse ? 2 : 1
+                        clip: true
+                        scale: selected || wallpaperMouse.containsMouse ? 1.015 : 1
 
-                    MouseArea {
-                        id: wallpaperMouse
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: root.applyWallpaper(wallpaperCard.modelData)
+                        Behavior on scale { NumberAnimation { duration: 120 } }
+
+                        Image {
+                            id: wallpaperImage
+                            anchors.fill: parent
+                            source: root.fileUrl(wallpaperCard.modelData)
+                            fillMode: Image.PreserveAspectCrop
+                            asynchronous: true
+                            visible: false
+                        }
+
+                        Rectangle {
+                            id: wallpaperMask
+                            anchors.fill: parent
+                            radius: parent.radius
+                            visible: false
+                            layer.enabled: true
+                        }
+
+                        MultiEffect {
+                            anchors.fill: wallpaperImage
+                            source: wallpaperImage
+                            maskEnabled: true
+                            maskSource: wallpaperMask
+                        }
+
+                        MouseArea {
+                            id: wallpaperMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onEntered: root.wallpaperCurrentIndex = wallpaperCard.sourceIndex
+                            onClicked: root.applyWallpaper(wallpaperCard.modelData)
+                        }
                     }
                 }
             }
 
-            RowLayout {
+            Item {
                 Layout.fillWidth: true
-                spacing: 10
+                Layout.preferredHeight: 30
 
-                Item { Layout.fillWidth: true }
-                MiniButton { text: "‹"; onClicked: root.shiftWallpaperPage(-1) }
+                Row {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 10
+
+                    MiniButton { text: "‹"; onClicked: root.shiftWallpaperPage(-1) }
+
+                    Text {
+                        height: 28
+                        text: (root.wallpaperPage + 1) + " / " + root.wallpaperPageCount()
+                        verticalAlignment: Text.AlignVCenter
+                        color: Colors.muted
+                        font.family: settings.fontFamily
+                        font.pixelSize: settings.textPixelSize
+                        font.weight: Font.DemiBold
+                    }
+
+                    MiniButton { text: "›"; onClicked: root.shiftWallpaperPage(1) }
+                }
 
                 Text {
-                    text: root.wallpapers.length + " wallpapers    " + (root.wallpaperPage + 1) + " / " + root.wallpaperPageCount()
+                    anchors.right: parent.right
+                    anchors.rightMargin: 5
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 110
+                    text: root.filteredWallpapers().length + " wallpapers"
                     color: Colors.muted
+                    horizontalAlignment: Text.AlignRight
                     font.family: settings.fontFamily
                     font.pixelSize: settings.textPixelSize
                     font.weight: Font.DemiBold
                 }
+            }
+        }
+    }
 
-                MiniButton { text: "›"; onClicked: root.shiftWallpaperPage(1) }
-                Item { Layout.fillWidth: true }
+    Component {
+        id: themesTab
+
+        ColumnLayout {
+            spacing: 8
+
+            PickerTopInset {}
+            PickerHelp {}
+
+            Item {
+                id: themeGrid
+
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                clip: true
+
+                readonly property int columns: 3
+                readonly property int gap: 10
+                readonly property real cardWidth: Math.floor((width - (columns - 1) * gap) / columns)
+                readonly property real cardHeight: Math.floor((height - gap) / 2)
+                readonly property real trackWidth: columns * cardWidth + (columns - 1) * gap
+
+                Repeater {
+                    model: root.themePageItems()
+
+                    Rectangle {
+                        id: themeCard
+
+                        required property int index
+                        required property var modelData
+                        readonly property int sourceIndex: root.themePage * root.themePageSize + index
+                        readonly property bool selected: sourceIndex === root.themeCurrentIndex
+                        readonly property int row: Math.floor(index / themeGrid.columns)
+                        readonly property int column: index % themeGrid.columns
+                        x: Math.round((themeGrid.width - themeGrid.trackWidth) / 2 + column * (themeGrid.cardWidth + themeGrid.gap))
+                        y: row * (themeGrid.cardHeight + themeGrid.gap)
+                        width: themeGrid.cardWidth
+                        height: themeGrid.cardHeight
+                        radius: 14
+                        color: modelData.background
+                        border.color: selected || themeMouse.containsMouse ? modelData.accent : modelData.surfaceAlt
+                        border.width: selected || themeMouse.containsMouse ? 2 : 1
+                        clip: true
+                        scale: selected || themeMouse.containsMouse ? 1.015 : 1
+
+                        Behavior on scale { NumberAnimation { duration: 120 } }
+
+                        Rectangle {
+                            anchors.fill: parent
+                            anchors.margins: 14
+                            radius: 12
+                            color: modelData.surface
+                            border.color: modelData.surfaceAlt
+                            border.width: 1
+
+                            Row {
+                                anchors.left: parent.left
+                                anchors.leftMargin: 14
+                                anchors.top: parent.top
+                                anchors.topMargin: 14
+                                spacing: 8
+
+                                Repeater {
+                                    model: [themeCard.modelData.accent, themeCard.modelData.warning, themeCard.modelData.danger, themeCard.modelData.muted]
+
+                                    Rectangle {
+                                        width: 18
+                                        height: 18
+                                        radius: 9
+                                        color: modelData
+                                    }
+                                }
+                            }
+
+                            ColumnLayout {
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                anchors.bottom: parent.bottom
+                                anchors.margins: 14
+                                spacing: 4
+
+                                Text {
+                                    Layout.fillWidth: true
+                                    text: themeCard.modelData.name
+                                    color: themeCard.modelData.foreground
+                                    elide: Text.ElideRight
+                                    font.family: settings.fontFamily
+                                    font.pixelSize: settings.textPixelSize + 1
+                                    font.weight: Font.DemiBold
+                                }
+
+                                Text {
+                                    Layout.fillWidth: true
+                                    text: themeCard.modelData.slug
+                                    color: themeCard.modelData.muted
+                                    elide: Text.ElideRight
+                                    font.family: settings.fontFamily
+                                    font.pixelSize: settings.textPixelSize
+                                }
+                            }
+                        }
+
+                        MouseArea {
+                            id: themeMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onEntered: root.themeCurrentIndex = themeCard.sourceIndex
+                            onClicked: root.applyTheme(themeCard.modelData)
+                        }
+                    }
+                }
+            }
+
+            Item {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 30
+
+                Row {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 10
+
+                    MiniButton { text: "‹"; onClicked: root.shiftThemePage(-1) }
+
+                    Text {
+                        height: 28
+                        text: (root.themePage + 1) + " / " + root.themePageCount()
+                        verticalAlignment: Text.AlignVCenter
+                        color: Colors.muted
+                        font.family: settings.fontFamily
+                        font.pixelSize: settings.textPixelSize
+                        font.weight: Font.DemiBold
+                    }
+
+                    MiniButton { text: "›"; onClicked: root.shiftThemePage(1) }
+                }
+
+                Text {
+                    anchors.right: parent.right
+                    anchors.rightMargin: 5
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 90
+                    text: root.filteredThemes().length + " themes"
+                    color: Colors.muted
+                    horizontalAlignment: Text.AlignRight
+                    font.family: settings.fontFamily
+                    font.pixelSize: settings.textPixelSize
+                    font.weight: Font.DemiBold
+                }
             }
         }
     }
@@ -1552,6 +1979,8 @@ PanelWindow {
 
         Layout.preferredWidth: widthOverride
         Layout.preferredHeight: heightOverride
+        width: widthOverride
+        height: heightOverride
         radius: 9
         color: miniMouse.containsMouse ? Colors.surfaceHover : Colors.surface
         border.color: Colors.panelBorder
