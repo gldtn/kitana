@@ -88,7 +88,7 @@ PanelWindow {
         anchors.topMargin: settings.panelHeight + settings.topMargin + 10
         anchors.rightMargin: settings.sideMargin
         radius: 18
-        color: Colors.panelStrong
+        color: Colors.panelBackground
         border.color: Colors.panelBorder
         border.width: 1
 
@@ -184,8 +184,8 @@ PanelWindow {
                 width: parent.width
                 height: Math.max(220, card.height - headerActions.height - quickGrid.height - sliders.height - 86)
                 radius: 14
-                color: Colors.panel
-                border.color: Colors.panelBorder
+                color: Colors.panelContainerBackground
+                border.color: Colors.panelContainerBorder
                 border.width: 1
                 clip: true
 

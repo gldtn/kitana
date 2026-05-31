@@ -1,0 +1,250 @@
+#!/bin/bash
+
+set -euo pipefail
+
+kitana_dir="${KITANA_DIR:-$HOME/.local/share/kitana}"
+zed_config_dir="$HOME/.config/zed"
+zed_theme_dir="$zed_config_dir/themes"
+zed_theme_file="$zed_theme_dir/kitana-dynamic.json"
+theme="${1:-}"
+theme_env=""
+
+if [ -z "$theme" ]; then
+  printf 'Usage: %s THEME\n' "$(basename "$0")" >&2
+  exit 2
+fi
+
+theme_env="$(lua "$kitana_dir/lib/kitana-theme.lua" env "$theme")" || exit 1
+eval "$theme_env"
+mkdir -p "$zed_theme_dir"
+
+zed_source_path=""
+if [ -n "$zed_source_file" ]; then
+  zed_source_path="$kitana_dir/$zed_source_file"
+fi
+
+if [ -n "$zed_source_path" ] && [ -f "$zed_source_path" ]; then
+  jq --arg theme_name "$zed_theme_name" '
+    . as $root
+    | ($root.themes[] | select(.name == $theme_name)) as $theme
+    | {
+        "$schema": ($root["$schema"] // "https://zed.dev/schema/themes/v0.2.0.json"),
+        "name": "Kitana Dynamic",
+        "author": ($root.author // "Kitana"),
+        "themes": [($theme | .name = "Kitana Dynamic")]
+      }
+  ' "$zed_source_path" >"$zed_theme_file"
+
+  if ! jq -e '.themes | length == 1' "$zed_theme_file" >/dev/null; then
+    printf 'Zed theme not found in %s: %s\n' "$zed_source_file" "$zed_theme_name" >&2
+    exit 1
+  fi
+
+  if [ -f "$zed_config_dir/settings.json" ]; then
+    touch "$zed_config_dir/settings.json"
+  fi
+  exit 0
+fi
+
+cat >"$zed_theme_file" <<EOF
+{
+  "\$schema": "https://zed.dev/schema/themes/v0.2.0.json",
+  "name": "Kitana Dynamic",
+  "author": "Kitana",
+  "themes": [
+    {
+      "name": "Kitana Dynamic",
+      "appearance": "dark",
+      "style": {
+        "accents": ["$accent0", "$warning0", "$danger0"],
+        "background.appearance": "opaque",
+        "background": "$base0",
+        "surface.background": "$base1",
+        "elevated_surface.background": "$surface1",
+        "panel.background": "$base0",
+        "status_bar.background": "$base0",
+        "title_bar.background": "$base0",
+        "title_bar.inactive_background": "$base1",
+        "toolbar.background": "$base0",
+        "tab_bar.background": "$base0",
+        "tab.inactive_background": "$base1",
+        "tab.active_background": "$base0",
+        "border": "$surface1",
+        "border.variant": "$surface0",
+        "border.focused": "$accent0",
+        "border.selected": "$accent0",
+        "border.transparent": "#00000000",
+        "border.disabled": "${surface1}66",
+        "element.background": "$surface0",
+        "element.hover": "$surface1",
+        "element.active": "$surface1",
+        "element.selected": "${accent0}33",
+        "element.disabled": "${surface0}99",
+        "drop_target.background": "${accent0}55",
+        "ghost_element.background": "#00000000",
+        "ghost_element.hover": "${surface0}99",
+        "ghost_element.active": "$surface1",
+        "ghost_element.selected": "${accent0}22",
+        "ghost_element.disabled": "${surface1}66",
+        "text": "$text0",
+        "text.muted": "$subtext0",
+        "text.placeholder": "${subtext0}99",
+        "text.disabled": "${text0}66",
+        "text.accent": "$accent0",
+        "icon": "$text0",
+        "icon.muted": "$subtext0",
+        "icon.placeholder": "${subtext0}99",
+        "icon.disabled": "${text0}66",
+        "icon.accent": "$accent0",
+        "search.match_background": "${warning0}55",
+        "search.active_match_background": "${danger0}55",
+        "scrollbar.thumb.background": "${subtext0}55",
+        "scrollbar.thumb.hover_background": "${subtext0}88",
+        "scrollbar.thumb.border": "${surface1}66",
+        "scrollbar.track.background": "#00000000",
+        "scrollbar.track.border": "${surface0}66",
+        "editor.foreground": "$text0",
+        "editor.background": "$base0",
+        "editor.gutter.background": "$base0",
+        "editor.subheader.background": "$base1",
+        "editor.active_line.background": "${surface0}aa",
+        "editor.highlighted_line.background": "${surface0}aa",
+        "editor.line_number": "$subtext0",
+        "editor.active_line_number": "$accent0",
+        "editor.invisible": "${surface1}66",
+        "editor.wrap_guide": "${surface1}55",
+        "editor.active_wrap_guide": "${accent0}88",
+        "editor.document_highlight.bracket_background": "#00000000",
+        "editor.document_highlight.read_background": "${accent0}33",
+        "editor.document_highlight.write_background": "${surface1}99",
+        "terminal.background": "$base0",
+        "terminal.foreground": "$text0",
+        "terminal.bright_foreground": "$text1",
+        "terminal.dim_foreground": "$subtext0",
+        "terminal.ansi.black": "$base0",
+        "terminal.ansi.bright_black": "$subtext0",
+        "terminal.ansi.dim_black": "$surface0",
+        "terminal.ansi.red": "$danger0",
+        "terminal.ansi.bright_red": "$danger0",
+        "terminal.ansi.dim_red": "$danger0",
+        "terminal.ansi.green": "$accent1",
+        "terminal.ansi.bright_green": "$accent1",
+        "terminal.ansi.dim_green": "$accent1",
+        "terminal.ansi.yellow": "$warning0",
+        "terminal.ansi.bright_yellow": "$warning0",
+        "terminal.ansi.dim_yellow": "$warning0",
+        "terminal.ansi.blue": "$accent0",
+        "terminal.ansi.bright_blue": "$accent0",
+        "terminal.ansi.dim_blue": "$accent0",
+        "terminal.ansi.magenta": "$accent1",
+        "terminal.ansi.bright_magenta": "$accent1",
+        "terminal.ansi.dim_magenta": "$accent1",
+        "terminal.ansi.cyan": "$accent1",
+        "terminal.ansi.bright_cyan": "$accent1",
+        "terminal.ansi.dim_cyan": "$accent1",
+        "terminal.ansi.white": "$text0",
+        "terminal.ansi.bright_white": "$text1",
+        "terminal.ansi.dim_white": "$subtext0",
+        "link_text.hover": "$accent0",
+        "version_control.added": "$accent1",
+        "version_control.modified": "$warning0",
+        "version_control.deleted": "$danger0",
+        "version_control.word_added": "${accent1}33",
+        "version_control.word_deleted": "${danger0}33",
+        "created": "$accent1",
+        "created.background": "${accent1}1a",
+        "created.border": "$accent1",
+        "modified": "$warning0",
+        "modified.background": "${warning0}1a",
+        "modified.border": "$warning0",
+        "deleted": "$danger0",
+        "deleted.background": "${danger0}1a",
+        "deleted.border": "$danger0",
+        "error": "$danger0",
+        "error.background": "${danger0}1a",
+        "error.border": "$danger0",
+        "warning": "$warning0",
+        "warning.background": "${warning0}1a",
+        "warning.border": "$warning0",
+        "info": "$accent0",
+        "info.background": "${accent0}1a",
+        "info.border": "$accent0",
+        "hint": "$accent0",
+        "hint.background": "${accent0}1a",
+        "hint.border": "$accent0",
+        "success": "$accent1",
+        "success.background": "${accent1}1a",
+        "success.border": "$accent1",
+        "conflict": "$warning0",
+        "conflict.background": "${warning0}1a",
+        "conflict.border": "$warning0",
+        "ignored": "${subtext0}99",
+        "ignored.background": "${surface0}66",
+        "ignored.border": "$surface1",
+        "hidden": "$surface1",
+        "hidden.background": "${surface1}1a",
+        "hidden.border": "$surface1",
+        "predictive": "${subtext0}aa",
+        "predictive.background": "${surface1}55",
+        "predictive.border": "$surface1",
+        "renamed": "$accent0",
+        "renamed.background": "${accent0}1a",
+        "renamed.border": "$accent0",
+        "unreachable": "${subtext0}99",
+        "unreachable.background": "${surface0}66",
+        "unreachable.border": "$surface1",
+        "players": [
+          { "cursor": "$accent0", "background": "${accent0}80", "selection": "${accent0}3d" },
+          { "cursor": "$danger0", "background": "${danger0}80", "selection": "${danger0}3d" },
+          { "cursor": "$warning0", "background": "${warning0}80", "selection": "${warning0}3d" },
+          { "cursor": "$text0", "background": "${text0}80", "selection": "${text0}3d" }
+        ],
+        "syntax": {
+          "attribute": { "color": "$accent0", "font_style": null, "font_weight": null },
+          "boolean": { "color": "$warning0", "font_style": null, "font_weight": null },
+          "comment": { "color": "$subtext0", "font_style": "italic", "font_weight": null },
+          "comment.doc": { "color": "$subtext0", "font_style": "italic", "font_weight": null },
+          "constant": { "color": "$warning0", "font_style": null, "font_weight": null },
+          "constructor": { "color": "$accent0", "font_style": null, "font_weight": null },
+          "embedded": { "color": "$text0", "font_style": null, "font_weight": null },
+          "emphasis": { "color": "$accent0", "font_style": "italic", "font_weight": null },
+          "emphasis.strong": { "color": "$warning0", "font_style": null, "font_weight": 700 },
+          "enum": { "color": "$accent0", "font_style": null, "font_weight": null },
+          "function": { "color": "$accent0", "font_style": null, "font_weight": null },
+          "keyword": { "color": "$danger0", "font_style": "italic", "font_weight": null },
+          "label": { "color": "$accent0", "font_style": null, "font_weight": null },
+          "link_text": { "color": "$accent0", "font_style": "italic", "font_weight": null },
+          "link_uri": { "color": "$accent0", "font_style": null, "font_weight": null },
+          "namespace": { "color": "$text0", "font_style": null, "font_weight": null },
+          "number": { "color": "$warning0", "font_style": null, "font_weight": null },
+          "operator": { "color": "$accent0", "font_style": null, "font_weight": null },
+          "predictive": { "color": "$subtext0", "font_style": "italic", "font_weight": null },
+          "preproc": { "color": "$danger0", "font_style": null, "font_weight": null },
+          "primary": { "color": "$text0", "font_style": null, "font_weight": null },
+          "property": { "color": "$danger0", "font_style": null, "font_weight": null },
+          "punctuation": { "color": "$text0", "font_style": null, "font_weight": null },
+          "punctuation.bracket": { "color": "$subtext0", "font_style": null, "font_weight": null },
+          "punctuation.delimiter": { "color": "$subtext0", "font_style": null, "font_weight": null },
+          "selector": { "color": "$accent0", "font_style": null, "font_weight": null },
+          "string": { "color": "$accent1", "font_style": null, "font_weight": null },
+          "string.escape": { "color": "$warning0", "font_style": null, "font_weight": null },
+          "string.regex": { "color": "$warning0", "font_style": null, "font_weight": null },
+          "tag": { "color": "$accent0", "font_style": null, "font_weight": null },
+          "text.literal": { "color": "$accent1", "font_style": null, "font_weight": null },
+          "title": { "color": "$danger0", "font_style": null, "font_weight": 400 },
+          "type": { "color": "$accent0", "font_style": null, "font_weight": null },
+          "variable": { "color": "$text0", "font_style": null, "font_weight": null },
+          "variable.special": { "color": "$warning0", "font_style": null, "font_weight": null },
+          "variant": { "color": "$accent0", "font_style": null, "font_weight": null },
+          "diff.plus": { "color": "$accent1", "font_style": null, "font_weight": null },
+          "diff.minus": { "color": "$danger0", "font_style": null, "font_weight": null }
+        }
+      }
+    }
+  ]
+}
+EOF
+
+if [ -f "$zed_config_dir/settings.json" ]; then
+  touch "$zed_config_dir/settings.json"
+fi

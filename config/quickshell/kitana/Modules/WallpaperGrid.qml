@@ -204,7 +204,7 @@ PanelWindow {
             height: root.cardHeight
             anchors.centerIn: parent
             radius: 18
-            color: Colors.panelStrong
+            color: Colors.panelBackground
             border.color: Colors.panelBorder
             border.width: 1
 

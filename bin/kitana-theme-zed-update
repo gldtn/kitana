@@ -1,0 +1,41 @@
+#!/bin/bash
+
+set -euo pipefail
+
+kitana_dir="${KITANA_DIR:-$HOME/.local/share/kitana}"
+
+if ! command -v curl >/dev/null 2>&1; then
+  printf 'curl is required to update Zed theme files\n' >&2
+  exit 1
+fi
+
+if ! command -v jq >/dev/null 2>&1; then
+  printf 'jq is required to validate Zed theme files\n' >&2
+  exit 1
+fi
+
+lua "$kitana_dir/lib/kitana-theme.lua" list | while IFS='|' read -r slug _; do
+  theme_env="$(lua "$kitana_dir/lib/kitana-theme.lua" env "$slug")" || exit 1
+  eval "$theme_env"
+
+  if [ -z "$zed_source_url" ] || [ -z "$zed_source_file" ] || [ -z "$zed_theme_name" ]; then
+    printf 'Skipping %s: no Zed source metadata\n' "$slug" >&2
+    continue
+  fi
+
+  target="$kitana_dir/$zed_source_file"
+  tmp="$target.tmp"
+  mkdir -p "$(dirname "$target")"
+
+  curl -fsSL "$zed_source_url" -o "$tmp"
+  jq empty "$tmp"
+
+  if ! jq -e --arg theme_name "$zed_theme_name" '.themes[]? | select(.name == $theme_name)' "$tmp" >/dev/null; then
+    rm -f "$tmp"
+    printf 'Theme %s not found in upstream Zed file for %s\n' "$zed_theme_name" "$slug" >&2
+    exit 1
+  fi
+
+  mv "$tmp" "$target"
+  printf 'Updated %s from %s\n' "$zed_source_file" "$zed_source_url"
+done

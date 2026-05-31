@@ -18,12 +18,13 @@ Rectangle {
     required property var panelScreen
     property var workspaceSets: [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]]
 
-    Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-    Layout.preferredHeight: settings.pillHeight
-    Layout.preferredWidth: workspaceRow.implicitWidth + settings.workspaceSpacing * 2
+    implicitHeight: settings.pillHeight
+    implicitWidth: workspaceRow.implicitWidth + settings.workspaceSpacing * 2
+    width: implicitWidth
+    height: implicitHeight
 
     radius: height / settings.radiusDivisor
-    color: Colors.panel
+    color: Colors.panelBackground
     border.color: Colors.panelBorder
     border.width: settings.borderWidth
 

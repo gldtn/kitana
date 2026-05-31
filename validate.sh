@@ -76,7 +76,7 @@ check_dir() {
 echo "Validating Kitana install..."
 echo
 
-for cmd in git yay Hyprland start-hyprland hyprctl sddm vicinae quickshell awww awww-daemon nmcli; do
+for cmd in git yay Hyprland start-hyprland hyprctl sddm vicinae quickshell awww awww-daemon nmcli lua; do
   check_command "$cmd"
 done
 
@@ -271,6 +271,36 @@ if [ -x "$KITANA_DIR/bin/kitana-quickshell" ]; then
 else
   fail "Kitana Quickshell helper missing or not executable: bin/kitana-quickshell"
 fi
+
+for helper in kitana-theme kitana-theme-quickshell kitana-theme-ghostty kitana-theme-zed kitana-theme-zed-update kitana-theme-hypr; do
+  if [ -x "$KITANA_DIR/bin/$helper" ]; then
+    pass "Kitana theme helper: bin/$helper"
+  else
+    fail "Kitana theme helper missing or not executable: bin/$helper"
+  fi
+done
+
+if [ -f "$KITANA_DIR/lib/kitana-theme.lua" ]; then
+  pass "Kitana theme library: lib/kitana-theme.lua"
+else
+  fail "Kitana theme library missing: lib/kitana-theme.lua"
+fi
+
+for theme in catppuccin-mocha rose-pine tokyo-night dracula kanagawa-dragon; do
+  if [ -f "$KITANA_DIR/themes/$theme.lua" ]; then
+    pass "Kitana theme palette: themes/$theme.lua"
+  else
+    fail "Kitana theme palette missing: themes/$theme.lua"
+  fi
+done
+
+for theme in catppuccin-mocha rose-pine tokyo-night dracula kanagawa-dragon; do
+  if [ -f "$KITANA_DIR/vendor/zed/$theme.json" ]; then
+    pass "Kitana Zed upstream theme: vendor/zed/$theme.json"
+  else
+    fail "Kitana Zed upstream theme missing: vendor/zed/$theme.json"
+  fi
+done
 
 if [ -x "$KITANA_DIR/bin/kitana-wallpaper-grid" ]; then
   pass "Kitana wallpaper grid helper: bin/kitana-wallpaper-grid"

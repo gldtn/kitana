@@ -525,7 +525,7 @@ PanelWindow {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.topMargin: settings.panelHeight + settings.topMargin + 10
         radius: 18
-        color: Colors.panelStrong
+        color: Colors.panelBackground
         border.color: Colors.panelBorder
         border.width: 1
         clip: true
@@ -591,16 +591,20 @@ PanelWindow {
             spacing: 7
 
             Text {
+                height: tabButton.height
                 text: tabButton.icon
                 color: tabButton.selected ? Colors.accent : Colors.foreground
+                verticalAlignment: Text.AlignVCenter
                 font.family: settings.fontFamily
                 font.pixelSize: settings.iconPixelSize
             }
 
             Text {
+                height: tabButton.height
                 text: tabButton.label
                 visible: !tabButton.compact
                 color: Colors.foreground
+                verticalAlignment: Text.AlignVCenter
                 font.family: settings.fontFamily
                 font.pixelSize: settings.textPixelSize
                 font.weight: Font.DemiBold
@@ -792,8 +796,8 @@ PanelWindow {
                 Layout.preferredWidth: 250
                 Layout.fillHeight: true
                 radius: 16
-                color: Colors.panel
-                border.color: Colors.panelBorder
+                color: Colors.panelContainerBackground
+                border.color: Colors.panelContainerBorder
                 border.width: 1
 
                 ColumnLayout {
@@ -900,8 +904,8 @@ PanelWindow {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 radius: 16
-                color: Colors.panel
-                border.color: Colors.panelBorder
+                color: Colors.panelContainerBackground
+                border.color: Colors.panelContainerBorder
                 border.width: 1
 
                 ColumnLayout {
@@ -1056,8 +1060,9 @@ PanelWindow {
 
                 readonly property int columns: 4
                 readonly property int gap: 10
-                readonly property real cardWidth: Math.floor((width - (columns - 1) * gap) / columns)
-                readonly property real cardHeight: Math.floor((height - 2 * gap) / 3)
+                readonly property int edgeInset: 5
+                readonly property real cardWidth: Math.floor((width - 2 * edgeInset - (columns - 1) * gap) / columns)
+                readonly property real cardHeight: Math.floor((height - 2 * edgeInset - 2 * gap) / 3)
                 readonly property real trackWidth: columns * cardWidth + (columns - 1) * gap
 
                 Repeater {
@@ -1073,13 +1078,11 @@ PanelWindow {
                         readonly property int row: Math.floor(index / wallpaperGrid.columns)
                         readonly property int column: index % wallpaperGrid.columns
                         x: Math.round((wallpaperGrid.width - wallpaperGrid.trackWidth) / 2 + column * (wallpaperGrid.cardWidth + wallpaperGrid.gap))
-                        y: row * (wallpaperGrid.cardHeight + wallpaperGrid.gap)
+                        y: wallpaperGrid.edgeInset + row * (wallpaperGrid.cardHeight + wallpaperGrid.gap)
                         width: wallpaperGrid.cardWidth
                         height: wallpaperGrid.cardHeight
                         radius: 12
                         color: Colors.surface
-                        border.color: selected || wallpaperMouse.containsMouse ? Colors.accent : Colors.panelBorder
-                        border.width: selected || wallpaperMouse.containsMouse ? 2 : 1
                         clip: true
                         scale: selected || wallpaperMouse.containsMouse ? 1.015 : 1
 
@@ -1107,6 +1110,14 @@ PanelWindow {
                             source: wallpaperImage
                             maskEnabled: true
                             maskSource: wallpaperMask
+                        }
+
+                        Rectangle {
+                            anchors.fill: parent
+                            radius: parent.radius
+                            color: "transparent"
+                            border.color: wallpaperCard.selected || wallpaperMouse.containsMouse ? Colors.accent : Colors.panelBorder
+                            border.width: wallpaperCard.selected || wallpaperMouse.containsMouse ? 2 : 1
                         }
 
                         MouseArea {
@@ -1179,8 +1190,9 @@ PanelWindow {
 
                 readonly property int columns: 3
                 readonly property int gap: 10
-                readonly property real cardWidth: Math.floor((width - (columns - 1) * gap) / columns)
-                readonly property real cardHeight: Math.floor((height - gap) / 2)
+                readonly property int edgeInset: 5
+                readonly property real cardWidth: Math.floor((width - 2 * edgeInset - (columns - 1) * gap) / columns)
+                readonly property real cardHeight: Math.floor((height - 2 * edgeInset - gap) / 2)
                 readonly property real trackWidth: columns * cardWidth + (columns - 1) * gap
 
                 Repeater {
@@ -1196,7 +1208,7 @@ PanelWindow {
                         readonly property int row: Math.floor(index / themeGrid.columns)
                         readonly property int column: index % themeGrid.columns
                         x: Math.round((themeGrid.width - themeGrid.trackWidth) / 2 + column * (themeGrid.cardWidth + themeGrid.gap))
-                        y: row * (themeGrid.cardHeight + themeGrid.gap)
+                        y: themeGrid.edgeInset + row * (themeGrid.cardHeight + themeGrid.gap)
                         width: themeGrid.cardWidth
                         height: themeGrid.cardHeight
                         radius: 14
@@ -1325,8 +1337,8 @@ PanelWindow {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 244
                 radius: 16
-                color: Colors.panel
-                border.color: Colors.panelBorder
+                color: Colors.panelContainerBackground
+                border.color: Colors.panelContainerBorder
                 border.width: 1
                 clip: true
 
@@ -1459,8 +1471,8 @@ PanelWindow {
                     Layout.preferredWidth: 230
                     Layout.fillHeight: true
                     radius: 16
-                    color: Colors.panel
-                    border.color: Colors.panelBorder
+                    color: Colors.panelContainerBackground
+                    border.color: Colors.panelContainerBorder
                     border.width: 1
 
                     ColumnLayout {
@@ -1504,8 +1516,8 @@ PanelWindow {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     radius: 16
-                    color: Colors.panel
-                    border.color: Colors.panelBorder
+                    color: Colors.panelContainerBackground
+                    border.color: Colors.panelContainerBorder
                     border.width: 1
 
                     ColumnLayout {
@@ -1583,8 +1595,8 @@ PanelWindow {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 128
                 radius: 16
-                color: Colors.panel
-                border.color: Colors.panelBorder
+                color: Colors.panelContainerBackground
+                border.color: Colors.panelContainerBorder
                 border.width: 1
 
                 ColumnLayout {
@@ -1639,8 +1651,8 @@ PanelWindow {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 184
                 radius: 16
-                color: Colors.panel
-                border.color: Colors.panelBorder
+                color: Colors.panelContainerBackground
+                border.color: Colors.panelContainerBorder
                 border.width: 1
 
                 ColumnLayout {
@@ -1763,8 +1775,8 @@ PanelWindow {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 122
                 radius: 16
-                color: Colors.panel
-                border.color: Colors.panelBorder
+                color: Colors.panelContainerBackground
+                border.color: Colors.panelContainerBorder
                 border.width: 1
 
                 RowLayout {
@@ -1827,8 +1839,8 @@ PanelWindow {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 74
                 radius: 14
-                color: Colors.panel
-                border.color: Colors.panelBorder
+                color: Colors.panelContainerBackground
+                border.color: Colors.panelContainerBorder
                 border.width: 1
 
                 RowLayout {

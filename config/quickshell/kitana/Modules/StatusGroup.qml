@@ -17,23 +17,6 @@ Rectangle {
     property var systemPanel: null
     property var panelWindow: null
     property bool trayExpanded: false
-    property real trayOverlayGap: settings.statusSpacing * 2
-
-    function updateTrayExpanded(): void {
-        if (trayHover.hovered || trayOverlayHover.hovered) {
-            trayCloseTimer.stop();
-            trayExpanded = true;
-        } else {
-            trayCloseTimer.restart();
-        }
-    }
-
-    Timer {
-        id: trayCloseTimer
-        interval: 350
-        repeat: false
-        onTriggered: root.trayExpanded = trayHover.hovered || trayOverlayHover.hovered
-    }
 
     function traySource(item: var): string {
         const icon = item && item.icon ? item.icon : "";
@@ -87,12 +70,13 @@ Rectangle {
         Quickshell.execDetached(["bash", "-c", script, "_", item.id, String(globalX), String(globalY)]);
     }
 
-    Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
-    Layout.preferredHeight: settings.pillHeight
-    Layout.preferredWidth: statusRow.implicitWidth + settings.statusHorizontalPadding
+    implicitHeight: settings.pillHeight
+    implicitWidth: statusRow.implicitWidth + settings.statusHorizontalPadding
+    width: implicitWidth
+    height: implicitHeight
 
     radius: height / settings.radiusDivisor
-    color: Colors.panel
+    color: Colors.panelBackground
     border.color: Colors.panelBorder
     border.width: settings.borderWidth
 
@@ -113,23 +97,111 @@ Rectangle {
         }
 
         Item {
-            id: trayCluster
+            id: traySection
 
             anchors.verticalCenter: parent.verticalCenter
             visible: SystemTray.items.values.length > 0
-            width: trayToggle.width
+            width: trayToggle.width + trayContainer.width + (root.trayExpanded && trayContainer.width > 0 ? settings.statusItemSpacing : 0)
             implicitWidth: width
-            height: settings.iconPixelSize + 8
-
-            HoverHandler {
-                id: trayHover
-                onHoveredChanged: root.updateTrayExpanded()
-            }
+            height: statusRow.height
 
             StatusButton {
                 id: trayToggle
-                icon: ""
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                icon: root.trayExpanded ? "" : ""
                 label: ""
+                onClicked: root.trayExpanded = !root.trayExpanded
+            }
+
+            Item {
+                id: trayContainer
+
+                anchors.left: trayToggle.right
+                anchors.leftMargin: root.trayExpanded ? settings.statusItemSpacing : 0
+                anchors.verticalCenter: parent.verticalCenter
+                width: root.trayExpanded ? trayRow.implicitWidth : 0
+                height: parent.height
+                clip: true
+
+                Behavior on width {
+                    NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
+                }
+
+                Behavior on anchors.leftMargin {
+                    NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
+                }
+
+                Row {
+                    id: trayRow
+
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: settings.statusItemSpacing
+
+                    Repeater {
+                        model: SystemTray.items
+
+                        delegate: Item {
+                            id: trayButton
+
+                            required property var modelData
+
+                            width: settings.iconPixelSize + 6
+                            height: settings.iconPixelSize + 8
+                            clip: true
+
+                            function displayMenu(mouse: var): void {
+                                if (modelData.hasMenu) {
+                                    if (trayMenuAnchor.visible)
+                                        trayMenuAnchor.close();
+                                    trayMenuAnchor.menu = modelData.menu;
+                                    trayMenuAnchor.anchor.item = trayButton;
+                                    trayMenuAnchor.open();
+                                    return;
+                                }
+
+                                const globalPoint = trayMouse.mapToGlobal(mouse.x, mouse.y);
+                                root.callContextMenuFallback(modelData, Math.round(globalPoint.x), Math.round(globalPoint.y));
+                            }
+
+                            Rectangle {
+                                anchors.fill: parent
+                                radius: 6
+                                color: trayMouse.containsMouse ? Colors.surfaceHover : "transparent"
+                            }
+
+                            QW.IconImage {
+                                anchors.centerIn: parent
+                                width: settings.iconPixelSize
+                                height: settings.iconPixelSize
+                                implicitSize: settings.iconPixelSize
+                                source: root.traySource(trayButton.modelData)
+                                mipmap: true
+                            }
+
+                            MouseArea {
+                                id: trayMouse
+
+                                anchors.fill: parent
+                                acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+
+                                onClicked: mouse => {
+                                    if (mouse.button === Qt.MiddleButton) {
+                                        trayButton.modelData.secondaryActivate();
+                                    } else if (mouse.button === Qt.RightButton || trayButton.modelData.onlyMenu) {
+                                        trayButton.displayMenu(mouse);
+                                    } else {
+                                        trayButton.modelData.activate();
+                                    }
+                                }
+
+                                onWheel: wheel => trayButton.modelData.scroll(wheel.angleDelta.y, false)
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -164,105 +236,6 @@ Rectangle {
         }
     }
 
-    Item {
-        id: trayOverlay
-
-        x: statusRow.x + trayCluster.x - width - root.trayOverlayGap
-        anchors.verticalCenter: statusRow.verticalCenter
-        width: root.trayExpanded ? trayRow.implicitWidth + settings.statusItemSpacing * 2 : 0
-        height: settings.iconPixelSize + 8
-        z: 10
-        clip: true
-        visible: SystemTray.items.values.length > 0 && (width > 0 || root.trayExpanded)
-
-        Behavior on width {
-            NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
-        }
-
-        HoverHandler {
-            id: trayOverlayHover
-            onHoveredChanged: root.updateTrayExpanded()
-        }
-
-        Rectangle {
-            anchors.fill: parent
-            radius: height / settings.radiusDivisor
-            color: Colors.panel
-        }
-
-        Row {
-            id: trayRow
-
-            x: settings.statusItemSpacing
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: settings.statusItemSpacing
-
-            Repeater {
-                model: SystemTray.items
-
-                delegate: Item {
-                    id: trayButton
-
-                    required property var modelData
-
-                    width: settings.iconPixelSize + 6
-                    height: settings.iconPixelSize + 6
-                    clip: true
-
-                    function displayMenu(mouse: var): void {
-                        if (modelData.hasMenu) {
-                            if (trayMenuAnchor.visible)
-                                trayMenuAnchor.close();
-                            trayMenuAnchor.menu = modelData.menu;
-                            trayMenuAnchor.anchor.item = trayButton;
-                            trayMenuAnchor.open();
-                            return;
-                        }
-
-                        const globalPoint = trayMouse.mapToGlobal(mouse.x, mouse.y);
-                        root.callContextMenuFallback(modelData, Math.round(globalPoint.x), Math.round(globalPoint.y));
-                    }
-
-                    Rectangle {
-                        anchors.fill: parent
-                        radius: 6
-                        color: trayMouse.containsMouse ? Colors.surfaceHover : "transparent"
-                    }
-
-                    QW.IconImage {
-                        anchors.centerIn: parent
-                        width: settings.iconPixelSize
-                        height: settings.iconPixelSize
-                        implicitSize: settings.iconPixelSize
-                        source: root.traySource(trayButton.modelData)
-                        mipmap: true
-                    }
-
-                    MouseArea {
-                        id: trayMouse
-
-                        anchors.fill: parent
-                        acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-
-                        onClicked: mouse => {
-                            if (mouse.button === Qt.MiddleButton) {
-                                trayButton.modelData.secondaryActivate();
-                            } else if (mouse.button === Qt.RightButton || trayButton.modelData.onlyMenu) {
-                                trayButton.displayMenu(mouse);
-                            } else {
-                                trayButton.modelData.activate();
-                            }
-                        }
-
-                        onWheel: wheel => trayButton.modelData.scroll(wheel.angleDelta.y, false)
-                    }
-                }
-            }
-        }
-    }
-
     component StatusButton: Item {
         id: button
 
@@ -271,26 +244,31 @@ Rectangle {
         signal clicked
 
         width: buttonRow.implicitWidth
-        height: buttonRow.implicitHeight
+        height: settings.iconPixelSize + 8
 
         Row {
             id: buttonRow
 
+            anchors.centerIn: parent
             spacing: settings.statusItemSpacing
 
             Text {
                 width: settings.iconPixelSize + 4
+                height: button.height
                 text: button.icon
                 color: mouse.containsMouse ? Colors.foreground : Colors.accent
                 horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
                 font.family: settings.fontFamily
                 font.pixelSize: settings.iconPixelSize
             }
 
             Text {
+                height: button.height
                 text: button.label
                 visible: text.length > 0
                 color: Colors.foreground
+                verticalAlignment: Text.AlignVCenter
                 font.family: settings.fontFamily
                 font.pixelSize: settings.textPixelSize
                 font.weight: Font.DemiBold

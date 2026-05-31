@@ -14,12 +14,13 @@ Rectangle {
 
     property var dashboardPanel: null
 
-    Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-    Layout.preferredHeight: settings.pillHeight
-    Layout.preferredWidth: clockText.implicitWidth + settings.clockHorizontalPadding
+    implicitHeight: settings.pillHeight
+    implicitWidth: clockText.implicitWidth + settings.clockHorizontalPadding
+    width: implicitWidth
+    height: implicitHeight
 
     radius: height / settings.radiusDivisor
-    color: Colors.panel
+    color: Colors.panelBackground
     border.color: Colors.panelBorder
     border.width: settings.borderWidth
 

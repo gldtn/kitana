@@ -4,15 +4,23 @@
 
 -- Refer to https://wiki.hypr.land/Configuring/Basics/Variables/
 
+local ok, kitana_theme = pcall(require, "hypr.kitana-theme")
+if not ok then
+  kitana_theme = {}
+end
+
+local border_active = kitana_theme.border_active or kitana_theme.window_border or "rgba(33ccffee)"
+local border_inactive = kitana_theme.border_inactive or "rgba(595959aa)"
+
 hl.config({
   general = {
     gaps_in          = 6,
     gaps_out         = 6,
-    border_size      = 1,
+    border_size      = 2,
 
     col              = {
-      active_border   = { colors = { "rgba(33ccffee)" } },
-      inactive_border = "rgba(595959aa)",
+      active_border   = { colors = { border_active } },
+      inactive_border = border_inactive,
     },
 
     resize_on_border = false,

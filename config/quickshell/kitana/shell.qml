@@ -65,27 +65,27 @@ ShellRoot {
                 panelScreen: modelData
             }
 
-            RowLayout {
+            Item {
                 anchors.fill: parent
-                spacing: settings.rowSpacing
 
                 WorkspaceGroup {
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+
                     panelScreen: modelData
                 }
 
-                Item {
-                    Layout.fillWidth: true
-                }
-
                 ClockPill {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
+
                     dashboardPanel: dashboardPanel
                 }
 
-                Item {
-                    Layout.fillWidth: true
-                }
-
                 StatusGroup {
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
                     panelWindow: panelWindow
                     systemPanel: systemPanel
                 }

@@ -5,354 +5,51 @@ set -euo pipefail
 kitana_dir="${KITANA_DIR:-$HOME/.local/share/kitana}"
 state_dir="$HOME/.config/kitana"
 state_file="$state_dir/theme"
-target="$HOME/.config/quickshell/kitana/Colors.qml"
-ghostty_config_dir="$HOME/.config/ghostty"
-ghostty_theme_file="$ghostty_config_dir/kitana-theme.conf"
-zed_config_dir="$HOME/.config/zed"
-zed_theme_dir="$zed_config_dir/themes"
-zed_theme_file="$zed_theme_dir/kitana-dynamic.json"
-
-themes=(
-  "catppuccin-mocha|Catppuccin Mocha|#1e1e2e|#313244|#45475a|#cdd6f4|#9399b2|#89b4fa|#11111b|#f9e2af|#f38ba8"
-  "rose-pine|Rose Pine|#191724|#26233a|#403d52|#e0def4|#908caa|#c4a7e7|#191724|#f6c177|#eb6f92"
-  "tokyo-night|Tokyo Night|#1a1b26|#24283b|#414868|#c0caf5|#565f89|#7aa2f7|#1a1b26|#e0af68|#f7768e"
-  "dracula|Dracula|#282a36|#343746|#44475a|#f8f8f2|#b6b6c8|#bd93f9|#282a36|#f1fa8c|#ff5555"
-  "kanagawa-dragon|Kanagawa Dragon|#181616|#1f1f28|#393836|#c5c9c5|#a6a69c|#8ba4b0|#181616|#c4b28a|#c4746e"
-)
 
 usage() {
   printf 'Usage: %s [--list|--restore|THEME]\n' "$(basename "$0")"
 }
 
 find_theme() {
+  lua "$kitana_dir/lib/kitana-theme.lua" find "$1"
+}
+
+apply_theme() {
   local requested="$1"
-  local theme slug name
+  local slug theme_env name
 
-  for theme in "${themes[@]}"; do
-    IFS='|' read -r slug name _ <<<"$theme"
-    if [ "$requested" = "$slug" ] || [ "$requested" = "$name" ]; then
-      printf '%s\n' "$theme"
-      return 0
-    fi
-  done
+  slug="$(find_theme "$requested")" || {
+    printf 'Unknown theme: %s\n' "$requested" >&2
+    exit 1
+  }
 
-  return 1
-}
+  theme_env="$(lua "$kitana_dir/lib/kitana-theme.lua" env "$slug")" || exit 1
+  eval "$theme_env"
+  mkdir -p "$state_dir"
 
-ghostty_theme_name() {
-  case "$1" in
-    catppuccin-mocha) printf 'Catppuccin Mocha\n' ;;
-    rose-pine) printf 'Rose Pine\n' ;;
-    tokyo-night) printf 'TokyoNight\n' ;;
-    dracula) printf 'Dracula\n' ;;
-    kanagawa-dragon) printf 'Kanagawa Dragon\n' ;;
-  esac
-}
-
-write_ghostty_theme() {
-  local slug="$1"
-  local ghostty_theme
-
-  ghostty_theme="$(ghostty_theme_name "$slug")"
-  [ -n "$ghostty_theme" ] || return 0
-
-  mkdir -p "$ghostty_config_dir"
-  printf '# Kitana managed Ghostty theme\ntheme = %s\n' "$ghostty_theme" >"$ghostty_theme_file"
-
-  if command -v ghostty >/dev/null 2>&1 && [ -f "$ghostty_config_dir/config" ]; then
-    ghostty +validate-config --config-file="$ghostty_config_dir/config" >/dev/null
-  fi
-
-  if systemctl --user is-active --quiet app-com.mitchellh.ghostty.service 2>/dev/null; then
-    systemctl reload --user app-com.mitchellh.ghostty.service >/dev/null 2>&1 || true
-  elif pgrep -x ghostty >/dev/null 2>&1; then
-    killall -SIGUSR2 ghostty >/dev/null 2>&1 || true
-  fi
-}
-
-write_zed_theme() {
-  local background="$1"
-  local surface="$2"
-  local surface_alt="$3"
-  local foreground="$4"
-  local muted="$5"
-  local accent="$6"
-  local warning="$7"
-  local danger="$8"
-
-  mkdir -p "$zed_theme_dir"
-
-  cat >"$zed_theme_file" <<EOF
-{
-  "\$schema": "https://zed.dev/schema/themes/v0.2.0.json",
-  "name": "Kitana Dynamic",
-  "author": "Kitana",
-  "themes": [
-    {
-      "name": "Kitana Dynamic",
-      "appearance": "dark",
-      "style": {
-        "accents": ["$accent", "$warning", "$danger"],
-        "background.appearance": "opaque",
-        "background": "$background",
-        "surface.background": "$surface",
-        "elevated_surface.background": "$surface_alt",
-        "panel.background": "$background",
-        "status_bar.background": "$background",
-        "title_bar.background": "$background",
-        "title_bar.inactive_background": "$surface",
-        "toolbar.background": "$background",
-        "tab_bar.background": "$background",
-        "tab.inactive_background": "$surface",
-        "tab.active_background": "$background",
-        "border": "$surface_alt",
-        "border.variant": "$surface",
-        "border.focused": "$accent",
-        "border.selected": "$accent",
-        "border.transparent": "#00000000",
-        "border.disabled": "${surface_alt}66",
-        "element.background": "$surface",
-        "element.hover": "$surface_alt",
-        "element.active": "$surface_alt",
-        "element.selected": "${accent}33",
-        "element.disabled": "${surface}99",
-        "drop_target.background": "${accent}55",
-        "ghost_element.background": "#00000000",
-        "ghost_element.hover": "${surface}99",
-        "ghost_element.active": "$surface_alt",
-        "ghost_element.selected": "${accent}22",
-        "ghost_element.disabled": "${surface_alt}66",
-        "text": "$foreground",
-        "text.muted": "$muted",
-        "text.placeholder": "${muted}99",
-        "text.disabled": "${foreground}66",
-        "text.accent": "$accent",
-        "icon": "$foreground",
-        "icon.muted": "$muted",
-        "icon.placeholder": "${muted}99",
-        "icon.disabled": "${foreground}66",
-        "icon.accent": "$accent",
-        "search.match_background": "${warning}55",
-        "search.active_match_background": "${danger}55",
-        "scrollbar.thumb.background": "${muted}55",
-        "scrollbar.thumb.hover_background": "${muted}88",
-        "scrollbar.thumb.border": "${surface_alt}66",
-        "scrollbar.track.background": "#00000000",
-        "scrollbar.track.border": "${surface}66",
-        "editor.foreground": "$foreground",
-        "editor.background": "$background",
-        "editor.gutter.background": "$background",
-        "editor.subheader.background": "$surface",
-        "editor.active_line.background": "${surface}aa",
-        "editor.highlighted_line.background": "${surface}aa",
-        "editor.line_number": "$muted",
-        "editor.active_line_number": "$accent",
-        "editor.invisible": "${surface_alt}66",
-        "editor.wrap_guide": "${surface_alt}55",
-        "editor.active_wrap_guide": "${accent}88",
-        "editor.document_highlight.bracket_background": "#00000000",
-        "editor.document_highlight.read_background": "${accent}33",
-        "editor.document_highlight.write_background": "${surface_alt}99",
-        "terminal.background": "$background",
-        "terminal.foreground": "$foreground",
-        "terminal.bright_foreground": "$foreground",
-        "terminal.dim_foreground": "$muted",
-        "terminal.ansi.black": "$background",
-        "terminal.ansi.bright_black": "$muted",
-        "terminal.ansi.dim_black": "$surface",
-        "terminal.ansi.red": "$danger",
-        "terminal.ansi.bright_red": "$danger",
-        "terminal.ansi.dim_red": "$danger",
-        "terminal.ansi.green": "$accent",
-        "terminal.ansi.bright_green": "$accent",
-        "terminal.ansi.dim_green": "$accent",
-        "terminal.ansi.yellow": "$warning",
-        "terminal.ansi.bright_yellow": "$warning",
-        "terminal.ansi.dim_yellow": "$warning",
-        "terminal.ansi.blue": "$accent",
-        "terminal.ansi.bright_blue": "$accent",
-        "terminal.ansi.dim_blue": "$accent",
-        "terminal.ansi.magenta": "$surface_alt",
-        "terminal.ansi.bright_magenta": "$accent",
-        "terminal.ansi.dim_magenta": "$surface_alt",
-        "terminal.ansi.cyan": "$accent",
-        "terminal.ansi.bright_cyan": "$accent",
-        "terminal.ansi.dim_cyan": "$accent",
-        "terminal.ansi.white": "$foreground",
-        "terminal.ansi.bright_white": "$foreground",
-        "terminal.ansi.dim_white": "$muted",
-        "link_text.hover": "$accent",
-        "version_control.added": "$accent",
-        "version_control.modified": "$warning",
-        "version_control.deleted": "$danger",
-        "version_control.word_added": "${accent}33",
-        "version_control.word_deleted": "${danger}33",
-        "created": "$accent",
-        "created.background": "${accent}1a",
-        "created.border": "$accent",
-        "modified": "$warning",
-        "modified.background": "${warning}1a",
-        "modified.border": "$warning",
-        "deleted": "$danger",
-        "deleted.background": "${danger}1a",
-        "deleted.border": "$danger",
-        "error": "$danger",
-        "error.background": "${danger}1a",
-        "error.border": "$danger",
-        "warning": "$warning",
-        "warning.background": "${warning}1a",
-        "warning.border": "$warning",
-        "info": "$accent",
-        "info.background": "${accent}1a",
-        "info.border": "$accent",
-        "hint": "$accent",
-        "hint.background": "${accent}1a",
-        "hint.border": "$accent",
-        "success": "$accent",
-        "success.background": "${accent}1a",
-        "success.border": "$accent",
-        "conflict": "$warning",
-        "conflict.background": "${warning}1a",
-        "conflict.border": "$warning",
-        "ignored": "${muted}99",
-        "ignored.background": "${surface}66",
-        "ignored.border": "$surface_alt",
-        "hidden": "$surface_alt",
-        "hidden.background": "${surface_alt}1a",
-        "hidden.border": "$surface_alt",
-        "predictive": "${muted}aa",
-        "predictive.background": "${surface_alt}55",
-        "predictive.border": "$surface_alt",
-        "renamed": "$accent",
-        "renamed.background": "${accent}1a",
-        "renamed.border": "$accent",
-        "unreachable": "${muted}99",
-        "unreachable.background": "${surface}66",
-        "unreachable.border": "$surface_alt",
-        "players": [
-          { "cursor": "$accent", "background": "${accent}80", "selection": "${accent}3d" },
-          { "cursor": "$danger", "background": "${danger}80", "selection": "${danger}3d" },
-          { "cursor": "$warning", "background": "${warning}80", "selection": "${warning}3d" },
-          { "cursor": "$foreground", "background": "${foreground}80", "selection": "${foreground}3d" }
-        ],
-        "syntax": {
-          "attribute": { "color": "$accent", "font_style": null, "font_weight": null },
-          "boolean": { "color": "$warning", "font_style": null, "font_weight": null },
-          "comment": { "color": "$muted", "font_style": "italic", "font_weight": null },
-          "comment.doc": { "color": "$muted", "font_style": "italic", "font_weight": null },
-          "constant": { "color": "$warning", "font_style": null, "font_weight": null },
-          "constructor": { "color": "$accent", "font_style": null, "font_weight": null },
-          "embedded": { "color": "$foreground", "font_style": null, "font_weight": null },
-          "emphasis": { "color": "$accent", "font_style": "italic", "font_weight": null },
-          "emphasis.strong": { "color": "$warning", "font_style": null, "font_weight": 700 },
-          "enum": { "color": "$accent", "font_style": null, "font_weight": null },
-          "function": { "color": "$accent", "font_style": null, "font_weight": null },
-          "keyword": { "color": "$danger", "font_style": "italic", "font_weight": null },
-          "label": { "color": "$accent", "font_style": null, "font_weight": null },
-          "link_text": { "color": "$accent", "font_style": "italic", "font_weight": null },
-          "link_uri": { "color": "$accent", "font_style": null, "font_weight": null },
-          "namespace": { "color": "$foreground", "font_style": null, "font_weight": null },
-          "number": { "color": "$warning", "font_style": null, "font_weight": null },
-          "operator": { "color": "$accent", "font_style": null, "font_weight": null },
-          "predictive": { "color": "$muted", "font_style": "italic", "font_weight": null },
-          "preproc": { "color": "$danger", "font_style": null, "font_weight": null },
-          "primary": { "color": "$foreground", "font_style": null, "font_weight": null },
-          "property": { "color": "$danger", "font_style": null, "font_weight": null },
-          "punctuation": { "color": "$foreground", "font_style": null, "font_weight": null },
-          "punctuation.bracket": { "color": "$muted", "font_style": null, "font_weight": null },
-          "punctuation.delimiter": { "color": "$muted", "font_style": null, "font_weight": null },
-          "selector": { "color": "$accent", "font_style": null, "font_weight": null },
-          "string": { "color": "$accent", "font_style": null, "font_weight": null },
-          "string.escape": { "color": "$warning", "font_style": null, "font_weight": null },
-          "string.regex": { "color": "$warning", "font_style": null, "font_weight": null },
-          "tag": { "color": "$accent", "font_style": null, "font_weight": null },
-          "text.literal": { "color": "$accent", "font_style": null, "font_weight": null },
-          "title": { "color": "$danger", "font_style": null, "font_weight": 400 },
-          "type": { "color": "$accent", "font_style": null, "font_weight": null },
-          "variable": { "color": "$foreground", "font_style": null, "font_weight": null },
-          "variable.special": { "color": "$warning", "font_style": null, "font_weight": null },
-          "variant": { "color": "$accent", "font_style": null, "font_weight": null },
-          "diff.plus": { "color": "$accent", "font_style": null, "font_weight": null },
-          "diff.minus": { "color": "$danger", "font_style": null, "font_weight": null }
-        }
-      }
-    }
-  ]
-}
-EOF
-
-  if [ -f "$zed_config_dir/settings.json" ]; then
-    touch "$zed_config_dir/settings.json"
-  fi
-}
-
-write_theme() {
-  local theme="$1"
-  local slug name background surface surface_alt foreground muted accent accent_text warning danger
-
-  IFS='|' read -r slug name background surface surface_alt foreground muted accent accent_text warning danger <<<"$theme"
-  mkdir -p "$(dirname "$target")" "$state_dir"
-
-  cat >"$target" <<EOF
-// Kitana managed Quickshell colors
-
-pragma Singleton
-
-import QtQuick
-
-QtObject {
-  readonly property color background: "$background"
-  readonly property color surface: "$surface"
-  readonly property color surfaceAlt: "$surface_alt"
-  readonly property color surfaceHover: "#ee${surface_alt#\#}"
-  readonly property color surfaceHighlight: "#33${accent#\#}"
-  readonly property color panel: "#8f${background#\#}"
-  readonly property color panelStrong: "#a8${background#\#}"
-  readonly property color panelBorder: "#9e${surface_alt#\#}"
-  readonly property color panelBorderStrong: "#b8${accent#\#}"
-  readonly property color workspaceInactive: "#c2${surface#\#}"
-  readonly property color workspaceOccupied: "#e6${surface_alt#\#}"
-  readonly property color scrim: "#a8${background#\#}"
-  readonly property color scrimSoft: "#6b${background#\#}"
-  readonly property color imageOverlay: "#b3${background#\#}"
-  readonly property color foreground: "$foreground"
-  readonly property color muted: "$muted"
-  readonly property color accent: "$accent"
-  readonly property color accentText: "$accent_text"
-  readonly property color warning: "$warning"
-  readonly property color danger: "$danger"
-}
-EOF
+  "$kitana_dir/bin/kitana-theme-quickshell" "$slug"
+  "$kitana_dir/bin/kitana-theme-ghostty" "$slug"
+  "$kitana_dir/bin/kitana-theme-zed" "$slug"
+  "$kitana_dir/bin/kitana-theme-hypr" "$slug"
 
   printf '%s\n' "$slug" >"$state_file"
-  write_ghostty_theme "$slug"
-  write_zed_theme "$background" "$surface" "$surface_alt" "$foreground" "$muted" "$accent" "$warning" "$danger"
   "$kitana_dir/bin/kitana-quickshell" >/dev/null 2>&1 || true
   printf 'Theme applied: %s\n' "$name"
 }
 
 case "${1:-}" in
   --list)
-    for theme in "${themes[@]}"; do
-      IFS='|' read -r slug name background surface surface_alt foreground muted accent accent_text warning danger <<<"$theme"
-      printf '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\n' "$slug" "$name" "$background" "$surface" "$surface_alt" "$foreground" "$muted" "$accent" "$accent_text" "$warning" "$danger"
-    done
+    lua "$kitana_dir/lib/kitana-theme.lua" list
     ;;
   --restore)
     if [ -f "$state_file" ]; then
-      selected="$(<"$state_file")"
-      theme="$(find_theme "$selected")" || exit 0
-      write_theme "$theme"
+      apply_theme "$(<"$state_file")"
     fi
     ;;
   ""|-h|--help)
     usage
     ;;
   *)
-    theme="$(find_theme "$1")" || {
-      printf 'Unknown theme: %s\n' "$1" >&2
-      exit 1
-    }
-    write_theme "$theme"
+    apply_theme "$1"
     ;;
 esac

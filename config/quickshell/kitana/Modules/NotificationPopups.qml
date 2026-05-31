@@ -51,7 +51,7 @@ PanelWindow {
                 width: popupColumn.width
                 height: Math.max(72, bodyText.visible ? 90 : 72)
                 radius: 14
-                color: Colors.panelStrong
+                color: Colors.panelBackground
                 border.color: Colors.panelBorder
                 border.width: 1
 
