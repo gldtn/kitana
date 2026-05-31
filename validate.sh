@@ -327,14 +327,6 @@ else
   fail "Ghostty config missing: ~/.config/ghostty/config"
 fi
 
-for ghostty_theme in catppuccin cyberdream tokyonight; do
-  if [ -f "$HOME/.config/ghostty/themes/$ghostty_theme" ]; then
-    pass "Ghostty theme: $ghostty_theme"
-  else
-    fail "Ghostty theme missing: $ghostty_theme"
-  fi
-done
-
 for zed_config in settings.json keymap.json tasks.json; do
   if [ -f "$HOME/.config/zed/$zed_config" ]; then
     pass "Zed config: $zed_config"

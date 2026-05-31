@@ -206,22 +206,11 @@ if command -v gsettings >/dev/null 2>&1 && [ "${KITANA_SKIP_GSETTINGS:-0}" != "1
   fi
 fi
 
-mkdir -p "$GHOSTTY_CONFIG_DIR/themes"
-
 if [ ! -e "$GHOSTTY_CONFIG_DIR/config" ] || grep -q "$GHOSTTY_CONFIG_MARKER" "$GHOSTTY_CONFIG_DIR/config"; then
   cp "$KITANA_DIR/default/ghostty/config" "$GHOSTTY_CONFIG_DIR/config"
 else
   echo "Keeping existing Ghostty config: $GHOSTTY_CONFIG_DIR/config"
 fi
-
-for theme in "$KITANA_DIR"/default/ghostty/themes/*; do
-  [ -e "$theme" ] || continue
-  target="$GHOSTTY_CONFIG_DIR/themes/$(basename "$theme")"
-
-  if [ ! -e "$target" ]; then
-    cp "$theme" "$target"
-  fi
-done
 
 mkdir -p "$ZED_CONFIG_DIR/snippets"
 

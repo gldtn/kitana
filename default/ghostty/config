@@ -1,7 +1,8 @@
 # Kitana managed Ghostty config
 
 # Theme
-theme = catppuccin
+theme = Catppuccin Mocha
+config-file = ?kitana-theme.conf
 
 # ncurses calls it ghostty, not xterm-ghostty
 #term = "ghostty"

@@ -49,7 +49,7 @@
     "env": true,
     "tailwindcss": true
   },
-  "theme": "Catppuccin Mocha",
+  "theme": "Kitana Dynamic",
   "icon_theme": "Flow Light",
   "buffer_font_family": "Berkeley Mono Variable",
   "buffer_font_size": 16,
