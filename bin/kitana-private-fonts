@@ -1,0 +1,63 @@
+#!/bin/bash
+
+set -euo pipefail
+
+source_dir="${KITANA_PRIVATE_FONT_DIR:-$HOME/Dropbox/fonts}"
+target_dir="${KITANA_PRIVATE_FONT_TARGET:-$HOME/.local/share/fonts/kitana-private}"
+
+fonts=(
+  "Berkeley Mono Variable.otf"
+  "MonoLisaVariableNormal.ttf"
+  "MonoLisaVariableItalic.ttf"
+)
+
+echo "Installing Kitana private fonts..."
+echo "Source: $source_dir"
+echo "Target: $target_dir"
+
+if [ ! -d "$source_dir" ]; then
+  echo "Private font source directory not found: $source_dir"
+  echo "Sync Dropbox first, or set KITANA_PRIVATE_FONT_DIR=/path/to/fonts."
+  exit 1
+fi
+
+mkdir -p "$target_dir"
+
+installed=0
+missing=0
+
+for font in "${fonts[@]}"; do
+  source_file="$source_dir/$font"
+  target_file="$target_dir/$font"
+
+  if [ -f "$source_file" ]; then
+    cp -f "$source_file" "$target_file"
+    echo "Installed: $font"
+    installed=$((installed + 1))
+  else
+    echo "WARNING: missing private font: $source_file"
+    missing=$((missing + 1))
+  fi
+done
+
+if [ "$installed" -eq 0 ]; then
+  echo "No private fonts were installed."
+  exit 1
+fi
+
+fc-cache -f "$HOME/.local/share/fonts"
+
+if command -v fc-match >/dev/null 2>&1; then
+  echo
+  echo "Fontconfig matches:"
+  fc-match "Berkeley Mono Variable" || true
+  fc-match "MonoLisa Variable" || true
+fi
+
+if [ "$missing" -gt 0 ]; then
+  echo
+  echo "Installed $installed private font(s), with $missing missing file(s)."
+else
+  echo
+  echo "Installed all Kitana private fonts."
+fi
