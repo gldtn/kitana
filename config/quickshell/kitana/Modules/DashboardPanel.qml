@@ -1821,16 +1821,16 @@ PanelWindow {
                     }
 
                     GridLayout {
-                        Layout.preferredWidth: 360
+                        Layout.fillWidth: true
                         Layout.alignment: Qt.AlignVCenter
                         columns: 3
                         rowSpacing: 10
                         columnSpacing: 12
-                        WeatherMetric { icon: "󰖎"; label: "Humidity"; value: weather.current_condition ? weather.current_condition[0].humidity + "%" : "--" }
-                        WeatherMetric { icon: "󰖝"; label: "Wind"; value: root.windValue(weather.current_condition ? weather.current_condition[0] : null) }
-                        WeatherMetric { icon: "󰅐"; label: "Feels"; value: weather.current_condition ? root.tempValue(weather.current_condition[0], "FeelsLikeC", "FeelsLikeF") : "--"; valuePixelSize: 28 }
-                        WeatherMetric { icon: "󰖌"; label: "Precip"; value: weather.current_condition ? weather.current_condition[0].precipMM + " mm" : "--" }
-                        WeatherMetric { icon: "󰒋"; label: "Pressure"; value: weather.current_condition ? weather.current_condition[0].pressure + " hPa" : "--" }
+                        WeatherMetric { icon: "󰖎"; label: "Humidity"; value: weather.current_condition ? weather.current_condition[0].humidity + "%" : "--"; Layout.fillWidth: true }
+                        WeatherMetric { icon: "󰖝"; label: "Wind"; value: root.windValue(weather.current_condition ? weather.current_condition[0] : null); Layout.fillWidth: true }
+                        WeatherMetric { icon: "󰅐"; label: "Feels"; value: weather.current_condition ? root.tempValue(weather.current_condition[0], "FeelsLikeC", "FeelsLikeF") : "--"; valuePixelSize: 28; valueWeight: Font.Bold; Layout.fillWidth: true }
+                        WeatherMetric { icon: "󰖌"; label: "Precip"; value: weather.current_condition ? weather.current_condition[0].precipMM + " mm" : "--"; Layout.fillWidth: true }
+                        WeatherMetric { icon: "󰒋"; label: "Pressure"; value: weather.current_condition ? weather.current_condition[0].pressure + " hPa" : "--"; Layout.fillWidth: true }
                     }
                 }
             }
@@ -1848,10 +1848,10 @@ PanelWindow {
                     anchors.margins: 14
                     spacing: 8
 
-                    WeatherMetric { icon: "󰖜"; label: "Sunrise"; value: weather.weather ? weather.weather[0].astronomy[0].sunrise : "--" }
-                    WeatherMetric { icon: "󰖛"; label: "Sunset"; value: weather.weather ? weather.weather[0].astronomy[0].sunset : "--" }
+                    WeatherMetric { icon: "󰖜"; label: "Sunrise"; value: weather.weather ? weather.weather[0].astronomy[0].sunrise : "--"; Layout.fillWidth: true }
+                    WeatherMetric { icon: "󰖛"; label: "Sunset"; value: weather.weather ? weather.weather[0].astronomy[0].sunset : "--"; Layout.fillWidth: true }
                     WeatherMetric { icon: "󰖐"; label: "Moon"; value: weather.weather ? weather.weather[0].astronomy[0].moon_phase : "--"; Layout.fillWidth: true }
-                    WeatherMetric { icon: "󰔏"; label: "Visibility"; value: weather.current_condition ? weather.current_condition[0].visibility + " km" : "--" }
+                    WeatherMetric { icon: "󰔏"; label: "Visibility"; value: weather.current_condition ? weather.current_condition[0].visibility + " km" : "--"; Layout.fillWidth: true }
                 }
             }
 
@@ -2097,49 +2097,52 @@ PanelWindow {
         }
     }
 
-    component WeatherMetric: RowLayout {
+    component WeatherMetric: Item {
         property string icon: ""
         property string label: ""
         property string value: ""
         property int labelPixelSize: settings.textPixelSize - 1
         property int valuePixelSize: settings.textPixelSize
+        property int valueWeight: Font.DemiBold
 
         Layout.minimumWidth: 92
         Layout.fillHeight: true
         Layout.alignment: Qt.AlignVCenter
-        spacing: 8
+        implicitWidth: Math.max(92, content.implicitWidth)
+        implicitHeight: content.implicitHeight
 
-        Text {
-            Layout.alignment: Qt.AlignVCenter
-            text: icon
-            color: Colors.accent
-            font.family: settings.fontFamily
-            font.pixelSize: settings.iconPixelSize
-            verticalAlignment: Text.AlignVCenter
-        }
-
-        ColumnLayout {
-            Layout.fillWidth: true
-            Layout.alignment: Qt.AlignVCenter
-            spacing: 0
+        RowLayout {
+            id: content
+            anchors.centerIn: parent
+            spacing: 8
 
             Text {
-                Layout.fillWidth: true
-                text: label
-                color: Colors.muted
-                elide: Text.ElideRight
+                Layout.alignment: Qt.AlignVCenter
+                text: icon
+                color: Colors.accent
                 font.family: settings.fontFamily
-                font.pixelSize: labelPixelSize
+                font.pixelSize: settings.iconPixelSize
+                verticalAlignment: Text.AlignVCenter
             }
 
-            Text {
-                Layout.fillWidth: true
-                text: value
-                color: Colors.foreground
-                elide: Text.ElideRight
-                font.family: settings.fontFamily
-                font.pixelSize: valuePixelSize
-                font.weight: Font.DemiBold
+            ColumnLayout {
+                Layout.alignment: Qt.AlignVCenter
+                spacing: 0
+
+                Text {
+                    text: label
+                    color: Colors.muted
+                    font.family: settings.fontFamily
+                    font.pixelSize: labelPixelSize
+                }
+
+                Text {
+                    text: value
+                    color: Colors.foreground
+                    font.family: settings.fontFamily
+                    font.pixelSize: valuePixelSize
+                    font.weight: valueWeight
+                }
             }
         }
     }
