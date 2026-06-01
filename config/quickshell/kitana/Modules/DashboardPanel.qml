@@ -1828,7 +1828,7 @@ PanelWindow {
                         columnSpacing: 12
                         WeatherMetric { icon: "󰖎"; label: "Humidity"; value: weather.current_condition ? weather.current_condition[0].humidity + "%" : "--"; Layout.fillWidth: true }
                         WeatherMetric { icon: "󰖝"; label: "Wind"; value: root.windValue(weather.current_condition ? weather.current_condition[0] : null); Layout.fillWidth: true }
-                        WeatherMetric { icon: "󰅐"; label: "Feels"; value: weather.current_condition ? root.tempValue(weather.current_condition[0], "FeelsLikeC", "FeelsLikeF") : "--"; valuePixelSize: 28; valueWeight: Font.Bold; Layout.fillWidth: true }
+                        WeatherMetric { icon: "󰅐"; label: "Feels"; value: weather.current_condition ? root.tempValue(weather.current_condition[0], "FeelsLikeC", "FeelsLikeF") : "--"; valuePixelSize: 28; valueWeight: Font.Bold; contentYOffset: 6; Layout.fillWidth: true }
                         WeatherMetric { icon: "󰖌"; label: "Precip"; value: weather.current_condition ? weather.current_condition[0].precipMM + " mm" : "--"; Layout.fillWidth: true }
                         WeatherMetric { icon: "󰒋"; label: "Pressure"; value: weather.current_condition ? weather.current_condition[0].pressure + " hPa" : "--"; Layout.fillWidth: true }
                     }
@@ -2104,6 +2104,7 @@ PanelWindow {
         property int labelPixelSize: settings.textPixelSize - 1
         property int valuePixelSize: settings.textPixelSize
         property int valueWeight: Font.DemiBold
+        property int contentYOffset: 0
 
         Layout.minimumWidth: 92
         Layout.fillHeight: true
@@ -2114,6 +2115,7 @@ PanelWindow {
         RowLayout {
             id: content
             anchors.centerIn: parent
+            anchors.verticalCenterOffset: contentYOffset
             spacing: 8
 
             Text {
