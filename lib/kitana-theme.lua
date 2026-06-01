@@ -33,12 +33,22 @@ local function kitana_dir()
   return os.getenv("KITANA_DIR") or (os.getenv("HOME") .. "/.local/share/kitana")
 end
 
+local function ensure_package_path()
+  local root = kitana_dir()
+  local paths = root .. "/?.lua;" .. root .. "/?/init.lua;"
+  if not package.path:find(paths, 1, true) then
+    package.path = paths .. package.path
+  end
+end
+
 local function shell_quote(value)
   value = tostring(value or "")
   return "'" .. value:gsub("'", "'\\''") .. "'"
 end
 
 function M.load(slug)
+  ensure_package_path()
+
   local path = kitana_dir() .. "/themes/" .. slug .. ".lua"
   local chunk, err = loadfile(path)
   if not chunk then

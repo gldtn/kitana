@@ -1,3 +1,5 @@
+local color = require("themes.helpers.color")
+
 return {
   slug = "dracula",
   name = "Dracula",
@@ -17,16 +19,18 @@ return {
     selection = "#44475a",
     surface = "#343746",
     muted = "#b6b6c8",
+    border1 = color.darken("#44475a", 0.06),
+    background1 = color.lighten("#282a36", 0.03),
   },
 
   kitana = {
     crust0 = "background",
     crust1 = "background",
     mantle0 = "background",
-    mantle1 = "surface",
-    base0 = "background",
+    mantle1 = "border1",
+    base0 = "background1",
     base1 = "surface",
-    surface0 = "surface",
+    surface0 = "border1",
     surface1 = "current_line",
     overlay0 = "current_line",
     overlay1 = "muted",

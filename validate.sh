@@ -286,6 +286,17 @@ else
   fail "Kitana theme library missing: lib/kitana-theme.lua"
 fi
 
+if [ -f "$KITANA_DIR/themes/helpers/color.lua" ]; then
+  pass "Kitana theme helper library: themes/helpers/color.lua"
+  if LUA_PATH="$KITANA_DIR/?.lua;$KITANA_DIR/?/init.lua;;" lua -e 'local color = require("themes.helpers.color"); assert(color.mix("#000000", "#ffffff", 0.5) == "#808080"); assert(color.lighten("#000000", 0.25) == "#404040"); assert(color.darken("#ffffff", 0.25) == "#bfbfbf"); assert(color.alpha("#7aa2f7", "cc") == "#cc7aa2f7"); assert(color.strip("#7aa2f7") == "7aa2f7")'; then
+    pass "Kitana color helper functions"
+  else
+    fail "Kitana color helper functions"
+  fi
+else
+  fail "Kitana theme helper library missing: themes/helpers/color.lua"
+fi
+
 for theme in catppuccin-mocha rose-pine tokyo-night dracula kanagawa-dragon; do
   if [ -f "$KITANA_DIR/themes/$theme.lua" ]; then
     pass "Kitana theme palette: themes/$theme.lua"

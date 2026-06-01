@@ -1828,7 +1828,7 @@ PanelWindow {
                         columnSpacing: 12
                         WeatherMetric { icon: "󰖎"; label: "Humidity"; value: weather.current_condition ? weather.current_condition[0].humidity + "%" : "--" }
                         WeatherMetric { icon: "󰖝"; label: "Wind"; value: root.windValue(weather.current_condition ? weather.current_condition[0] : null) }
-                        WeatherMetric { icon: "󰅐"; label: "Feels"; value: weather.current_condition ? root.tempValue(weather.current_condition[0], "FeelsLikeC", "FeelsLikeF") : "--" }
+                        WeatherMetric { icon: "󰅐"; label: "Feels"; value: weather.current_condition ? root.tempValue(weather.current_condition[0], "FeelsLikeC", "FeelsLikeF") : "--"; valuePixelSize: 28 }
                         WeatherMetric { icon: "󰖌"; label: "Precip"; value: weather.current_condition ? weather.current_condition[0].precipMM + " mm" : "--" }
                         WeatherMetric { icon: "󰒋"; label: "Pressure"; value: weather.current_condition ? weather.current_condition[0].pressure + " hPa" : "--" }
                     }
@@ -2101,19 +2101,26 @@ PanelWindow {
         property string icon: ""
         property string label: ""
         property string value: ""
+        property int labelPixelSize: settings.textPixelSize - 1
+        property int valuePixelSize: settings.textPixelSize
 
         Layout.minimumWidth: 92
+        Layout.fillHeight: true
+        Layout.alignment: Qt.AlignVCenter
         spacing: 8
 
         Text {
+            Layout.alignment: Qt.AlignVCenter
             text: icon
             color: Colors.accent
             font.family: settings.fontFamily
             font.pixelSize: settings.iconPixelSize
+            verticalAlignment: Text.AlignVCenter
         }
 
         ColumnLayout {
             Layout.fillWidth: true
+            Layout.alignment: Qt.AlignVCenter
             spacing: 0
 
             Text {
@@ -2122,7 +2129,7 @@ PanelWindow {
                 color: Colors.muted
                 elide: Text.ElideRight
                 font.family: settings.fontFamily
-                font.pixelSize: settings.textPixelSize - 1
+                font.pixelSize: labelPixelSize
             }
 
             Text {
@@ -2131,7 +2138,7 @@ PanelWindow {
                 color: Colors.foreground
                 elide: Text.ElideRight
                 font.family: settings.fontFamily
-                font.pixelSize: settings.textPixelSize
+                font.pixelSize: valuePixelSize
                 font.weight: Font.DemiBold
             }
         }
