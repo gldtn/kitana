@@ -321,7 +321,66 @@ PanelWindow {
     }
 
     function forecastDays(): var {
-        return weather.weather ? weather.weather.slice(0, 6) : [];
+        return weather.weather ? weather.weather.slice(0, 5) : [];
+    }
+
+    function weatherCodeDescription(code: int): string {
+        if (code === 0)
+            return "Sunny";
+        if (code === 1 || code === 2)
+            return "Partly cloudy";
+        if (code === 3)
+            return "Cloudy";
+        if (code === 45 || code === 48)
+            return "Fog";
+        if (code >= 51 && code <= 57)
+            return "Drizzle";
+        if (code >= 61 && code <= 67)
+            return "Rain";
+        if (code >= 71 && code <= 77)
+            return "Snow";
+        if (code >= 80 && code <= 82)
+            return "Rain shower";
+        if (code >= 85 && code <= 86)
+            return "Snow shower";
+        if (code >= 95)
+            return "Thunderstorm";
+        return "Forecast";
+    }
+
+    function openMeteoDays(data: var): var {
+        const daily = data && data.daily ? data.daily : null;
+        if (!daily || !daily.time)
+            return [];
+
+        const days = [];
+        for (let i = 0; i < daily.time.length; i++) {
+            const min = Math.round(daily.temperature_2m_min[i]);
+            const max = Math.round(daily.temperature_2m_max[i]);
+            const rain = daily.precipitation_probability_max ? Math.round(daily.precipitation_probability_max[i] || 0) : 0;
+            const code = daily.weather_code ? daily.weather_code[i] : -1;
+            days.push({
+                date: daily.time[i],
+                mintempF: weatherUnits === "F" ? String(min) : "--",
+                maxtempF: weatherUnits === "F" ? String(max) : "--",
+                mintempC: weatherUnits === "C" ? String(min) : "--",
+                maxtempC: weatherUnits === "C" ? String(max) : "--",
+                hourly: [{}, {}, {}, {}, {
+                    chanceofrain: String(rain),
+                    weatherDesc: [{ value: weatherCodeDescription(code) }]
+                }]
+            });
+        }
+        return days;
+    }
+
+    function refreshExtendedForecast(data: var): void {
+        const area = data && data.nearest_area && data.nearest_area.length > 0 ? data.nearest_area[0] : null;
+        if (!area || !area.latitude || !area.longitude)
+            return;
+
+        const tempUnit = weatherUnits === "F" ? "fahrenheit" : "celsius";
+        forecastProcess.exec(["curl", "-fsSL", "https://api.open-meteo.com/v1/forecast?latitude=" + area.latitude + "&longitude=" + area.longitude + "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&temperature_unit=" + tempUnit + "&timezone=auto&forecast_days=5"]);
     }
 
     function daysInMonth(month: date): int {
@@ -446,11 +505,33 @@ PanelWindow {
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
-                    root.weather = JSON.parse(text);
+                    const parsed = JSON.parse(text);
+                    root.weather = parsed;
                     root.weatherStatus = "";
+                    root.refreshExtendedForecast(parsed);
                 } catch (error) {
                     root.weather = ({});
                     root.weatherStatus = "Weather unavailable";
+                }
+            }
+        }
+    }
+
+    Process {
+        id: forecastProcess
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    const days = root.openMeteoDays(JSON.parse(text));
+                    if (!root.weather.weather || days.length <= root.weather.weather.length)
+                        return;
+
+                    const merged = Object.assign({}, root.weather);
+                    merged.weather = root.weather.weather.concat(days.slice(root.weather.weather.length));
+                    root.weather = merged;
+                } catch (error) {
+                    // wttr.in already supplied the first three days; keep those on forecast fetch failure.
                 }
             }
         }
@@ -1780,8 +1861,9 @@ PanelWindow {
                 border.width: 1
 
                 RowLayout {
-                    anchors.fill: parent
-                    anchors.margins: 16
+                    id: weatherSummaryContent
+                    anchors.centerIn: parent
+                    width: Math.min(parent.width - 32, implicitWidth)
                     spacing: 14
 
                     Text {
@@ -1820,17 +1902,25 @@ PanelWindow {
                         }
                     }
 
-                    GridLayout {
-                        Layout.fillWidth: true
+                    Item {
+                        Layout.preferredWidth: weatherMetricGrid.width
+                        Layout.preferredHeight: weatherMetricGrid.implicitHeight
                         Layout.alignment: Qt.AlignVCenter
-                        columns: 3
-                        rowSpacing: 10
-                        columnSpacing: 12
-                        WeatherMetric { icon: "󰖎"; label: "Humidity"; value: weather.current_condition ? weather.current_condition[0].humidity + "%" : "--"; Layout.fillWidth: true }
-                        WeatherMetric { icon: "󰖝"; label: "Wind"; value: root.windValue(weather.current_condition ? weather.current_condition[0] : null); Layout.fillWidth: true }
-                        WeatherMetric { icon: "󰅐"; label: "Feels"; value: weather.current_condition ? root.tempValue(weather.current_condition[0], "FeelsLikeC", "FeelsLikeF") : "--"; valuePixelSize: 28; valueWeight: Font.Bold; contentYOffset: 6; Layout.fillWidth: true }
-                        WeatherMetric { icon: "󰖌"; label: "Precip"; value: weather.current_condition ? weather.current_condition[0].precipMM + " mm" : "--"; Layout.fillWidth: true }
-                        WeatherMetric { icon: "󰒋"; label: "Pressure"; value: weather.current_condition ? weather.current_condition[0].pressure + " hPa" : "--"; Layout.fillWidth: true }
+
+                        GridLayout {
+                            id: weatherMetricGrid
+                            anchors.centerIn: parent
+                            width: (3 * 108) + (2 * 28)
+                            columns: 3
+                            rowSpacing: 10
+                            columnSpacing: 28
+                            WeatherMetric { icon: "󰖎"; label: "Humidity"; value: weather.current_condition ? weather.current_condition[0].humidity + "%" : "--" }
+                            WeatherMetric { icon: "󰖝"; label: "Wind"; value: root.windValue(weather.current_condition ? weather.current_condition[0] : null) }
+                            WeatherMetric { icon: "󰅐"; label: "Feels"; value: weather.current_condition ? root.tempValue(weather.current_condition[0], "FeelsLikeC", "FeelsLikeF") : "--" }
+                            WeatherMetric { icon: "󰖌"; label: "Precip"; value: weather.current_condition ? weather.current_condition[0].precipMM + " mm" : "--" }
+                            WeatherMetric { icon: "󰒋"; label: "Pressure"; value: weather.current_condition ? weather.current_condition[0].pressure + " hPa" : "--" }
+                            WeatherMetric { icon: "󰔏"; label: "Visibility"; value: weather.current_condition ? weather.current_condition[0].visibility + " km" : "--" }
+                        }
                     }
                 }
             }
@@ -1848,16 +1938,15 @@ PanelWindow {
                     anchors.margins: 14
                     spacing: 8
 
-                    WeatherMetric { icon: "󰖜"; label: "Sunrise"; value: weather.weather ? weather.weather[0].astronomy[0].sunrise : "--"; Layout.fillWidth: true }
-                    WeatherMetric { icon: "󰖛"; label: "Sunset"; value: weather.weather ? weather.weather[0].astronomy[0].sunset : "--"; Layout.fillWidth: true }
-                    WeatherMetric { icon: "󰖐"; label: "Moon"; value: weather.weather ? weather.weather[0].astronomy[0].moon_phase : "--"; Layout.fillWidth: true }
-                    WeatherMetric { icon: "󰔏"; label: "Visibility"; value: weather.current_condition ? weather.current_condition[0].visibility + " km" : "--"; Layout.fillWidth: true }
+                    WeatherMetric { icon: "󰖜"; label: "Sunrise"; value: weather.weather ? weather.weather[0].astronomy[0].sunrise : "--"; centerContent: true; Layout.fillWidth: true }
+                    WeatherMetric { icon: "󰖛"; label: "Sunset"; value: weather.weather ? weather.weather[0].astronomy[0].sunset : "--"; centerContent: true; Layout.fillWidth: true }
+                    WeatherMetric { icon: "󰖐"; label: "Moon"; value: weather.weather ? weather.weather[0].astronomy[0].moon_phase : "--"; centerContent: true; Layout.fillWidth: true }
                 }
             }
 
             GridLayout {
                 Layout.fillWidth: true
-                columns: 3
+                columns: 5
                 rowSpacing: 10
                 columnSpacing: 10
 
@@ -2098,49 +2187,66 @@ PanelWindow {
     }
 
     component WeatherMetric: Item {
+        id: weatherMetric
+
         property string icon: ""
         property string label: ""
         property string value: ""
         property int labelPixelSize: settings.textPixelSize - 1
         property int valuePixelSize: settings.textPixelSize
         property int valueWeight: Font.DemiBold
-        property int contentYOffset: 0
+        property int contentWidth: 108
+        property int iconWidth: 18
+        property bool centerContent: false
 
         Layout.minimumWidth: 92
         Layout.fillHeight: true
-        Layout.alignment: Qt.AlignVCenter
-        implicitWidth: Math.max(92, content.implicitWidth)
-        implicitHeight: content.implicitHeight
+        Layout.alignment: Qt.AlignTop
+        implicitWidth: contentWidth
+        implicitHeight: Math.max(iconSlot.implicitHeight, textColumn.implicitHeight)
 
-        RowLayout {
+        Item {
             id: content
-            anchors.centerIn: parent
-            anchors.verticalCenterOffset: contentYOffset
-            spacing: 8
+            width: contentWidth
+            height: weatherMetric.implicitHeight
+            x: Math.round((parent.width - width) / 2)
+            y: centerContent ? Math.round((parent.height - height) / 2) : 0
 
             Text {
-                Layout.alignment: Qt.AlignVCenter
+                id: iconSlot
+                width: iconWidth
+                anchors.left: parent.left
+                anchors.verticalCenter: textColumn.verticalCenter
                 text: icon
                 color: Colors.accent
+                horizontalAlignment: Text.AlignHCenter
                 font.family: settings.fontFamily
                 font.pixelSize: settings.iconPixelSize
                 verticalAlignment: Text.AlignVCenter
             }
 
-            ColumnLayout {
-                Layout.alignment: Qt.AlignVCenter
+            Column {
+                id: textColumn
+                anchors.left: parent.left
+                anchors.leftMargin: iconWidth + 8
+                anchors.top: parent.top
+                width: contentWidth - iconWidth - 8
                 spacing: 0
 
                 Text {
+                    width: parent.width
                     text: label
                     color: Colors.muted
+                    horizontalAlignment: Text.AlignLeft
                     font.family: settings.fontFamily
                     font.pixelSize: labelPixelSize
                 }
 
                 Text {
+                    width: parent.width
                     text: value
                     color: Colors.foreground
+                    horizontalAlignment: Text.AlignLeft
                     font.family: settings.fontFamily
                     font.pixelSize: valuePixelSize
                     font.weight: valueWeight
