@@ -16,7 +16,7 @@ PACKAGES=(
   polkit
   quickshell
   satty
-  sddm
+  sddm-git
   slurp
   udiskie
   vicinae-bin
