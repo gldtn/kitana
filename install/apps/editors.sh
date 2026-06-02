@@ -3,7 +3,7 @@
 echo "Installing editor apps..."
 
 PACKAGES=(
-  neovim
+  neovim-git
   zed
 )
 

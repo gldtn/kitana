@@ -98,6 +98,7 @@ bash ~/.local/share/kitana/install-desktop.sh
 - Kitana user settings live in `~/.config/kitana/config`.
 - Wallpapers default to `~/.config/kitana/wallpapers`; override with `KITANA_WALLPAPER_DIR` in `~/.config/kitana/config`.
 - Bundled wallpapers live in `~/.local/share/kitana/default/wallpapers`.
+- Optional extras are enabled with `KITANA_EXTRAS=walls,nvim` or `KITANA_EXTRAS=all`.
 - `hyprpaper.conf` is copied to `~/.config/hypr/hyprpaper.conf` only if missing; wallpaper selection is managed by `bin/kitana-wallpaper`.
 - Bash defaults live in `default/bash`; customize Bash in `~/.config/bash/custom/*.bash`.
 - Starship config is copied to `~/.config/starship/starship.toml` only when missing or Kitana-managed.

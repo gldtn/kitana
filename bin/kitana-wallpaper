@@ -58,8 +58,8 @@ if [ "$restore" -eq 1 ]; then
       [ -f "$migrated" ] && selected="$migrated"
     fi
   else
-    selected="$wall_dir/kitana-wallpaper-004.jpg"
-    [ -f "$selected" ] || selected="$default_wall_dir/kitana-wallpaper-004.jpg"
+    selected="$wall_dir/kitana-wallpaper-001.jpg"
+    [ -f "$selected" ] || selected="$default_wall_dir/kitana-wallpaper-001.jpg"
   fi
 elif [ -z "$selected" ]; then
   if [ "${#wallpapers[@]}" -eq 0 ]; then

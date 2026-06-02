@@ -350,7 +350,7 @@ else
   fail "Hyprpaper config missing: ~/.config/hypr/hyprpaper.conf"
 fi
 
-if [ -f "$KITANA_DIR/default/wallpapers/kitana-wallpaper-004.jpg" ]; then
+if [ -f "$KITANA_DIR/default/wallpapers/kitana-wallpaper-001.jpg" ]; then
   pass "Kitana default wallpaper"
 else
   fail "Kitana default wallpaper missing"
