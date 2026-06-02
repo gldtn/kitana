@@ -11,10 +11,5 @@ PACKAGES=(
 )
 
 for pkg in "${PACKAGES[@]}"; do
-  if ! yay -S --noconfirm --needed "$pkg"; then
-    echo "$pkg install failed. Retrying with a clean AUR build..."
-    if ! yay -S --noconfirm --needed --answerclean All "$pkg"; then
-      echo "WARNING: $pkg failed to install and needs manual intervention. Continuing."
-    fi
-  fi
+  kitana_install_optional "apps/productivity" "$pkg"
 done

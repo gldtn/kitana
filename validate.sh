@@ -33,6 +33,21 @@ check_package() {
   fi
 }
 
+check_any_package() {
+  local label="$1"
+  shift
+
+  local pkg
+  for pkg in "$@"; do
+    if pacman -Q "$pkg" >/dev/null 2>&1; then
+      pass "package: $pkg"
+      return 0
+    fi
+  done
+
+  fail "package missing: $label (tried: $*)"
+}
+
 check_service_enabled() {
   if systemctl is-enabled "$1" >/dev/null 2>&1; then
     pass "service enabled: $1"
@@ -90,14 +105,12 @@ echo
 for pkg in \
   awww \
   bluez \
-  ghostty-nightly-bin \
   hyprland \
   hyprlock \
   hyprpaper \
   hyprpicker \
   hyprpolkitagent \
   networkmanager \
-  pixie-sddm-git \
   quickshell \
   qt6ct \
   sddm \
@@ -105,6 +118,8 @@ for pkg in \
   xdg-desktop-portal-hyprland; do
   check_package "$pkg"
 done
+
+check_any_package "ghostty" ghostty ghostty-nightly-bin
 
 echo
 

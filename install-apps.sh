@@ -4,6 +4,10 @@ set -e
 
 KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
 
+# shellcheck source=install/lib/install.sh
+source "$KITANA_DIR/install/lib/install.sh"
+kitana_init_install_log
+
 source_script() {
   local script="$1"
   if [ -f "$KITANA_DIR/install/$script" ]; then
@@ -28,5 +32,9 @@ source_script "apps/managers.sh"
 echo "Let's install your preferred browser..."
 bash "$KITANA_DIR/bin/install-browser"
 
+source_script "apps/git-config.sh"
+
 source_script "apps/mimetypes.sh"
 source_script "apps/webapps.sh"
+
+kitana_print_install_summary

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# shellcheck source=install.sh
+[ -n "${KITANA_INSTALL_REPORT:-}" ] || source "${KITANA_DIR:-$HOME/.local/share/kitana}/install/lib/install.sh"
+
 kitana_has_extra() {
   local extra="$1"
   local value="${KITANA_EXTRAS:-}"

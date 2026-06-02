@@ -21,5 +21,5 @@ PACKAGES=(
 )
 
 for pkg in "${PACKAGES[@]}"; do
-  yay -S --noconfirm --needed "$pkg"
+  kitana_install_required "desktop/hyprland" "$pkg" || exit 1
 done

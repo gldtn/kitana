@@ -12,8 +12,6 @@ PACKAGES=(
   kvantum
   kvantum-gt5
   materia-gtk-theme
-  matugen-bin
-  pixie-sddm-git
   qt5-wayland
   qt6ct
   qt6-declarative
@@ -22,8 +20,17 @@ PACKAGES=(
   qt6-wayland
 )
 
+OPTIONAL_PACKAGES=(
+  matugen-bin
+  pixie-sddm-git
+)
+
 for pkg in "${PACKAGES[@]}"; do
-  yay -S --noconfirm --needed "$pkg"
+  kitana_install_required "desktop/themes" "$pkg" || exit 1
+done
+
+for pkg in "${OPTIONAL_PACKAGES[@]}"; do
+  kitana_install_optional "desktop/themes" "$pkg"
 done
 
 sudo mkdir -p /etc/sddm.conf.d

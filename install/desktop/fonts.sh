@@ -14,5 +14,5 @@ PACKAGES=(
 )
 
 for pkg in "${PACKAGES[@]}"; do
-  yay -S --noconfirm --needed "$pkg"
+  kitana_install_required "desktop/fonts" "$pkg" || exit 1
 done

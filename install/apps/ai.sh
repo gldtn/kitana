@@ -7,5 +7,5 @@ PACKAGES=(
 )
 
 for pkg in "${PACKAGES[@]}"; do
-  yay -S --noconfirm --needed "$pkg"
+  kitana_install_optional "apps/ai" "$pkg"
 done

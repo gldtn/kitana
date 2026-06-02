@@ -7,7 +7,7 @@ Personal Arch Linux bootstrap and post-install setup.
 - Installs core system, development, CLI, terminal, Hyprland ecosystem, and fonts.
 - Targets Hyprland 0.55+ with Lua-based config.
 - Installs desktop apps by category from separate scripts in `install/apps/`.
-- Prompts for a browser choice and applies MIME defaults based on that selection.
+- Prompts for a browser choice, or uses `KITANA_BROWSER` for unattended installs, and applies MIME defaults based on that selection.
 - Creates web app launchers after browser selection.
 
 ## Install flow
@@ -34,6 +34,24 @@ curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | 
 - `desktop` installs only desktop/Hyprland/system UI categories.
 - `apps` installs only app categories, browser selection, MIME defaults, and webapps.
 - `configs` deploys Kitana-managed config entrypoints without overwriting user overrides.
+
+Unattended installs can set choices through environment variables:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | \
+  KITANA_UNATTENDED=1 KITANA_BROWSER=brave KITANA_EXTRAS=walls,nvim bash
+```
+
+Use `KITANA_EDGE=1` to prefer edge packages where available, with stable fallbacks:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | \
+  KITANA_UNATTENDED=1 KITANA_EDGE=1 KITANA_BROWSER=brave \
+  KITANA_GIT_NAME="Your Name" KITANA_GIT_EMAIL="you@example.com" \
+  bash
+```
+
+Tracked install failures are written to `~/.local/state/kitana/install-failures.log`.
 
 After install, validate the system with:
 
@@ -84,7 +102,7 @@ bash ~/.local/share/kitana/install-desktop.sh
 ## Notes
 
 - SDDM is installed and enabled in `install/desktop/essentials.sh`.
-- `pixie-sddm-git` is included as the SDDM theme package.
+- `pixie-sddm-git` is installed as an optional SDDM theme package.
 - `uwsm` is not installed by default.
 - SDDM starts the Hyprland session; `hyprlock` only locks an already-running session.
 - `config/` contains Kitana-managed user-facing entrypoints copied into `~/.config` or `$HOME`.
@@ -99,6 +117,7 @@ bash ~/.local/share/kitana/install-desktop.sh
 - Wallpapers default to `~/.config/kitana/wallpapers`; override with `KITANA_WALLPAPER_DIR` in `~/.config/kitana/config`.
 - Bundled wallpapers live in `~/.local/share/kitana/default/wallpapers`.
 - Optional extras are enabled with `KITANA_EXTRAS=walls,nvim` or `KITANA_EXTRAS=all`.
+- `KITANA_EDGE=1` prefers edge packages like `neovim-git` and `ghostty-nightly-bin`, with stable fallbacks.
 - `hyprpaper.conf` is copied to `~/.config/hypr/hyprpaper.conf` only if missing; wallpaper selection is managed by `bin/kitana-wallpaper`.
 - Bash defaults live in `default/bash`; customize Bash in `~/.config/bash/custom/*.bash`.
 - Starship config is copied to `~/.config/starship/starship.toml` only when missing or Kitana-managed.

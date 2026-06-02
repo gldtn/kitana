@@ -4,6 +4,10 @@ set -e
 
 KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
 
+# shellcheck source=install/lib/install.sh
+source "$KITANA_DIR/install/lib/install.sh"
+kitana_init_install_log
+
 source_script() {
   local script="$1"
   if [ -f "$KITANA_DIR/install/$script" ]; then
@@ -25,3 +29,5 @@ source_script "desktop/fonts.sh"
 source_script "desktop/themes.sh"
 source_script "desktop/essentials.sh"
 source_script "desktop/bootloader.sh"
+
+kitana_print_install_summary

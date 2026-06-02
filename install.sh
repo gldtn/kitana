@@ -12,6 +12,10 @@ trap 'echo "Kitana installation failed! You can retry by running: bash ~/.local/
 # Define base path
 KITANA_DIR="$HOME/.local/share/kitana"
 
+# shellcheck source=install/lib/install.sh
+source "$KITANA_DIR/install/lib/install.sh"
+kitana_init_install_log
+
 # Function to source a script
 source_script() {
   local script="$1"
@@ -27,10 +31,13 @@ source_script() {
 }
 
 # Add some visual flair to pacman
-sudo sed -i '/^\[options\]/a ILoveCandy' /etc/pacman.conf
+if ! grep -q '^ILoveCandy$' /etc/pacman.conf; then
+  sudo sed -i '/^\[options\]/a ILoveCandy' /etc/pacman.conf
+fi
 
 # Install everything in order
 source_script "preflight.sh"
+source_script "preflight/sudoers.sh"
 source_script "system.sh"
 
 bash "$KITANA_DIR/install-desktop.sh"
@@ -39,8 +46,12 @@ bash "$KITANA_DIR/install-apps.sh"
 # Ensure locate is up to date now that everything has been installed
 sudo updatedb
 
+kitana_print_install_summary
+
 # Prompt for reboot
-if command -v gum >/dev/null 2>&1; then
+if kitana_is_unattended; then
+  echo "Skipping reboot prompt because KITANA_UNATTENDED=1."
+elif command -v gum >/dev/null 2>&1; then
   if gum confirm "Reboot to apply all settings?"; then
     reboot
   fi

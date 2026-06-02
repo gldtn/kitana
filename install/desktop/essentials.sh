@@ -28,7 +28,7 @@ PACKAGES=(
 )
 
 for pkg in "${PACKAGES[@]}"; do
-  yay -S --noconfirm --needed "$pkg"
+  kitana_install_required "desktop/essentials" "$pkg" || exit 1
 done
 
 mkdir -p \

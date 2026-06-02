@@ -23,5 +23,5 @@ PACKAGES=(
 
 # Install packages
 for pkg in "${PACKAGES[@]}"; do
-    yay -S --noconfirm --needed "$pkg"
+    kitana_install_required "system" "$pkg" || exit 1
 done

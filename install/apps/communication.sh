@@ -7,5 +7,5 @@ REQUIRED_PACKAGES=(
 )
 
 for pkg in "${REQUIRED_PACKAGES[@]}"; do
-  yay -S --noconfirm --needed "$pkg"
+  kitana_install_optional "apps/communication" "$pkg"
 done
