@@ -214,6 +214,27 @@ check_file "$HOME/.config/gtk-3.0/bookmarks" "GTK bookmarks: ~/.config/gtk-3.0/b
 check_file "$HOME/.config/gtk-4.0/settings.ini" "GTK 4 config: ~/.config/gtk-4.0/settings.ini" "GTK 4 config missing: ~/.config/gtk-4.0/settings.ini"
 check_file "$HOME/.config/Kvantum/kvantum.kvconfig" "Kvantum config: ~/.config/Kvantum/kvantum.kvconfig" "Kvantum config missing: ~/.config/Kvantum/kvantum.kvconfig"
 check_file "$HOME/.config/qt6ct/qt6ct.conf" "Qt6ct config: ~/.config/qt6ct/qt6ct.conf" "Qt6ct config missing: ~/.config/qt6ct/qt6ct.conf"
+check_file "$HOME/.config/vicinae/settings.json" "Vicinae config: ~/.config/vicinae/settings.json" "Vicinae config missing: ~/.config/vicinae/settings.json"
+
+if [ -f "$HOME/.config/vicinae/settings.json" ]; then
+  if grep -q '"system_info"[[:space:]]*:[[:space:]]*false' "$HOME/.config/vicinae/settings.json"; then
+    pass "Vicinae startup telemetry disabled"
+  else
+    fail "Vicinae startup telemetry is not disabled"
+  fi
+fi
+
+if pgrep -x vicinae-server >/dev/null 2>&1; then
+  if vicinae ping >/dev/null 2>&1; then
+    pass "Vicinae server responds to ping"
+  else
+    fail "Vicinae server is running but does not respond to ping"
+  fi
+elif [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+  fail "Vicinae server is not running"
+else
+  warn "skipping Vicinae ping: server is not running outside Hyprland"
+fi
 
 if command -v gsettings >/dev/null 2>&1; then
   if [ "$(gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null || true)" = "'prefer-dark'" ]; then
