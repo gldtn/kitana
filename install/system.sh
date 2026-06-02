@@ -6,10 +6,8 @@ echo "Installing system packages..."
 
 PACKAGES=(
     libnewt
-    libva-mesa-driver
     linux-headers
     mesa
-    mesa-vdpau
     pipewire
     pipewire-alsa
     pipewire-jack
