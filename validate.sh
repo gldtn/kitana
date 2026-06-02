@@ -146,9 +146,15 @@ else
 fi
 
 if [ -f /etc/sddm.conf.d/20-hyprland.conf ] && grep -q '^CompositorCommand=start-hyprland$' /etc/sddm.conf.d/20-hyprland.conf; then
-  pass "SDDM Hyprland compositor command: start-hyprland"
+  fail "old SDDM greeter compositor override should be removed: /etc/sddm.conf.d/20-hyprland.conf"
 else
-  fail "SDDM Hyprland compositor command missing: /etc/sddm.conf.d/20-hyprland.conf"
+  pass "SDDM greeter compositor override not forced"
+fi
+
+if [ -f /etc/sddm.conf.d/10-theme.conf ] && grep -q '^Current=pixie$' /etc/sddm.conf.d/10-theme.conf && [ ! -d /usr/share/sddm/themes/pixie ]; then
+  fail "SDDM Pixie theme selected but not installed"
+else
+  pass "SDDM theme configuration is safe"
 fi
 
 limine_config=""
