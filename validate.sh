@@ -145,10 +145,10 @@ else
   pass "service disabled: systemd-networkd.service"
 fi
 
-if [ -f /etc/sddm.conf.d/20-hyprland.conf ] && grep -q '^CompositorCommand=start-hyprland$' /etc/sddm.conf.d/20-hyprland.conf; then
-  fail "old SDDM greeter compositor override should be removed: /etc/sddm.conf.d/20-hyprland.conf"
+if [ -f /etc/sddm.conf.d/20-hyprland.conf ] && grep -q '^DisplayServer=wayland$' /etc/sddm.conf.d/20-hyprland.conf && grep -q '^CompositorCommand=start-hyprland$' /etc/sddm.conf.d/20-hyprland.conf; then
+  pass "SDDM Wayland greeter compositor: start-hyprland"
 else
-  pass "SDDM greeter compositor override not forced"
+  fail "SDDM Wayland greeter compositor missing: /etc/sddm.conf.d/20-hyprland.conf"
 fi
 
 if [ -f /usr/share/wayland-sessions/kitana-hyprland.desktop ] && grep -q '^Exec=/usr/bin/start-hyprland$' /usr/share/wayland-sessions/kitana-hyprland.desktop; then

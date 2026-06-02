@@ -47,9 +47,12 @@ else
   fi
 fi
 
-if [ -f /etc/sddm.conf.d/20-hyprland.conf ] && grep -q '^CompositorCommand=start-hyprland$' /etc/sddm.conf.d/20-hyprland.conf; then
-  echo "Removing old Kitana SDDM Wayland compositor override."
-  sudo rm -f /etc/sddm.conf.d/20-hyprland.conf
-fi
+sudo tee /etc/sddm.conf.d/20-hyprland.conf >/dev/null <<EOF
+[General]
+DisplayServer=wayland
+
+[Wayland]
+CompositorCommand=start-hyprland
+EOF
 
 "$KITANA_DIR/install/desktop/gtk-theme-icons.sh"
