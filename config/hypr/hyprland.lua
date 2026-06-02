@@ -7,15 +7,22 @@ local kitana_dir = os.getenv("KITANA_DIR") or (home .. "/.local/share/kitana")
 package.path = home .. "/.config/?.lua;" .. kitana_dir .. "/?.lua;" .. package.path
 
 -- Kitana defaults. Do not edit these directly.
-require("default.hypr.modules.env")
-require("default.hypr.modules.monitors")
-require("default.hypr.modules.input")
-require("default.hypr.modules.decorations")
-require("default.hypr.modules.layout")
-require("default.hypr.modules.windowrules")
-require("default.hypr.modules.misc")
-require("default.hypr.modules.autostart")
-require("default.hypr.modules.binds")
+-- Order matters: base session settings first, then layout/rules, then startup/binds.
+local default_modules = {
+  "env",
+  "monitors",
+  "input",
+  "decorations",
+  "layout",
+  "rules",
+  "misc",
+  "autostart",
+  "binds",
+}
+
+for _, module in ipairs(default_modules) do
+  require("default.hypr.modules." .. module)
+end
 
 -- Local overrides and extensions.
 -- To override a default module, require the module on the list below and

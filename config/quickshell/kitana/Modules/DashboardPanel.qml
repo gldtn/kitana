@@ -3,6 +3,7 @@
 import QtQuick
 import QtQuick.Effects
 import QtQuick.Layouts
+import Qt.labs.folderlistmodel
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
@@ -33,6 +34,7 @@ PanelWindow {
     property bool pickerSearchActive: false
     property bool pickerHelpVisible: false
     property string kitanaDir: Quickshell.env("KITANA_DIR") || Quickshell.env("HOME") + "/.local/share/kitana"
+    property string wallpaperDir: Quickshell.env("KITANA_WALLPAPER_DIR") || Quickshell.env("HOME") + "/.config/kitana/wallpapers"
     property date currentTime: new Date()
     property date calendarMonth: new Date(currentTime.getFullYear(), currentTime.getMonth(), 1)
     property string firstClockTime: "--"
@@ -96,8 +98,6 @@ PanelWindow {
     }
 
     function refreshTab(): void {
-        if (activeTab === "wallpapers" && wallpapers.length === 0)
-            listProcess.exec([kitanaDir + "/bin/kitana-wallpaper", "--list"]);
         if (activeTab === "themes" && themes.length === 0)
             themeListProcess.exec([kitanaDir + "/bin/kitana-theme", "--list"]);
         if ((activeTab === "weather" || activeTab === "datetime") && !weather.current_condition)
@@ -145,7 +145,27 @@ PanelWindow {
     }
 
     function fileUrl(path: string): string {
-        return "file://" + path;
+        return "file://" + path.split("/").map(part => encodeURIComponent(part)).join("/");
+    }
+
+    function pathFromFileUrl(path: string): string {
+        return path.indexOf("file://") === 0 ? path.slice(7) : path;
+    }
+
+    function wallpaperFolderUrl(): string {
+        return fileUrl(wallpaperDir);
+    }
+
+    function refreshWallpaperCache(): void {
+        const items = [];
+        for (let i = 0; i < wallpaperFolderModel.count; i++) {
+            const path = wallpaperFolderModel.get(i, "filePath");
+            if (path)
+                items.push(pathFromFileUrl(path.toString()));
+        }
+        wallpapers = items;
+        wallpaperPage = Math.min(wallpaperPage, wallpaperPageCount() - 1);
+        wallpaperCurrentIndex = wallpapers.length > 0 ? Math.max(0, Math.min(wallpaperCurrentIndex, filteredWallpapers().length - 1)) : -1;
     }
 
     function applyWallpaper(path: string): void {
@@ -464,15 +484,21 @@ PanelWindow {
         onTriggered: root.updateMediaVisual()
     }
 
-    Process {
-        id: listProcess
+    FolderListModel {
+        id: wallpaperFolderModel
 
-        stdout: StdioCollector {
-            onStreamFinished: {
-                root.wallpapers = text.trim().length > 0 ? text.trim().split("\n") : [];
-                root.wallpaperPage = 0;
-            }
-        }
+        showDirsFirst: false
+        showDotAndDotDot: false
+        showHidden: false
+        caseSensitive: false
+        nameFilters: ["*.jpg", "*.jpeg", "*.png", "*.webp", "*.gif", "*.avif"]
+        showFiles: true
+        showDirs: false
+        sortField: FolderListModel.Name
+        folder: root.wallpaperFolderUrl()
+
+        onCountChanged: root.refreshWallpaperCache()
+        onStatusChanged: if (status === FolderListModel.Ready) root.refreshWallpaperCache()
     }
 
     Process {
@@ -1175,6 +1201,8 @@ PanelWindow {
                             source: root.fileUrl(wallpaperCard.modelData)
                             fillMode: Image.PreserveAspectCrop
                             asynchronous: true
+                            sourceSize.width: Math.max(1, wallpaperCard.width)
+                            sourceSize.height: Math.max(1, wallpaperCard.height)
                             visible: false
                         }
 

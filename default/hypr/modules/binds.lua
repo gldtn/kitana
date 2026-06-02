@@ -35,14 +35,6 @@ hl.bind(mod .. " + G", hl.dsp.exec_cmd(guiEditor), { description = "Gui editor" 
 hl.bind(mod .. " + RETURN", hl.dsp.exec_cmd(terminal), { description = "Terminal" })
 hl.bind(mod .. " + D", hl.dsp.exec_cmd(launcher), { description = "Launcher" })
 hl.bind(mod .. " + E", hl.dsp.exec_cmd(fileManager), { description = "File manager" })
-hl.bind(mod .. " + T", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-theme-grid"), { description = "Theme chooser" })
-hl.bind(mod .. " + W", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-wallpaper-grid"), { description = "Wallpaper chooser" })
-hl.bind(mod .. " + SHIFT + W", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-quickshell"), { description = "Reload Quickshell" })
-hl.bind(mod .. " + COMMA", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-notifications dismissLast"), { description = "Dismiss last notification" })
-hl.bind(mod .. " + SHIFT + COMMA", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-notifications clear"), { description = "Dismiss all notifications" })
-hl.bind(mod .. " + CTRL + L", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-lock"), { description = "Lock session" })
-hl.bind(mod .. " + CTRL + R", hl.dsp.exec_cmd("hyprshot -m region"), { description = "Screenshot region" })
-hl.bind(mod .. " + CTRL + W", hl.dsp.exec_cmd("hyprshot -m window"), { description = "Screenshot window" })
 hl.bind(mod .. " + A", hl.dsp.exec_cmd(activityManager), { description = "Activity manager" })
 hl.bind(mod .. " + SLASH", hl.dsp.exec_cmd(passwordManager), { description = "Password manager" })
 
@@ -52,7 +44,22 @@ hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd(chatClient))
 hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd(iptvClient))
 hl.bind(mod .. " + SHIFT + M", hl.dsp.exec_cmd(musicClient))
 
-hl.bind(mod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
+-- Hyprland control
+hl.bind(mod .. " + CTRL + L", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-lock"), { description = "Lock session" })
+hl.bind(mod .. " + CTRL + Z", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
+
+-- Quickshell control
+hl.bind(mod .. " + T", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-theme-grid"), { description = "Theme chooser" })
+hl.bind(mod .. " + W", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-wallpaper-grid"), { description = "Wallpaper chooser" })
+hl.bind(mod .. " + ALT + R", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-quickshell"), { description = "Reload Quickshell" })
+hl.bind(mod .. " + COMMA", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-notifications dismissLast"), { description = "Dismiss last notification" })
+hl.bind(mod .. " + SHIFT + COMMA", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-notifications clear"), { description = "Dismiss all notifications" })
+
+-- Screenshot
+hl.bind(mod .. " + SHIFT + P", hl.dsp.exec_cmd("hyprshot -m output"), { description = "Screenshot monitor" })
+hl.bind(mod .. " + SHIFT + W", hl.dsp.exec_cmd("hyprshot -m window"), { description = "Screenshot window" })
+hl.bind(mod .. " + SHIFT + R", hl.dsp.exec_cmd("hyprshot -m region"),{ description = "Screenshot region" })
+hl.bind(mod .. " + ALT + C", hl.dsp.exec_cmd("hyprshot -m region --clipboard-only"), { description = "Screenshot region (clipboard)" })
 
 -- Window split/pseudo
 hl.bind(mod .. " + P", hl.dsp.window.pseudo())
@@ -65,6 +72,15 @@ hl.bind(mod .. " + CTRL + T", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/
 -- Fullscreen window
 hl.bind(mod .. " + CTRL + M", hl.dsp.window.fullscreen({ mode = "maximized" }), { description = "Full width" })
 hl.bind(mod .. " + CTRL + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }), { description = "Force full screen" })
+
+-- Minimize window
+hl.bind(mod .. " + M", function ()
+    hl.dispatch(hl.dsp.workspace.toggle_special("minimize"))
+    hl.dispatch(hl.dsp.window.move({workspace = "+0"}))
+    hl.dispatch(hl.dsp.workspace.toggle_special("minimize"))
+    hl.dispatch(hl.dsp.window.move({workspace = "special:minimize"}))
+    hl.dispatch(hl.dsp.workspace.toggle_special("minimize"))
+end)
 
 -- Focus and Swap windows
 local directions = {

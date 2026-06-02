@@ -205,6 +205,16 @@ Rectangle {
             }
         }
 
+        Text {
+            anchors.verticalCenter: parent.verticalCenter
+            visible: traySection.visible && root.trayExpanded && trayContainer.width > 0
+            text: "|"
+            color: Colors.muted
+            font.family: settings.fontFamily
+            font.pixelSize: settings.textPixelSize
+            verticalAlignment: Text.AlignVCenter
+        }
+
         StatusButton {
             icon: Services.NotificationService.count > 0 ? "󱅫" : "󰂚"
             label: ""

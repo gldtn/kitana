@@ -20,8 +20,10 @@ STARSHIP_CONFIG_DIR="$HOME/.config/starship"
 STARSHIP_CONFIG_MARKER="Kitana managed Starship config"
 GTK3_CONFIG_DIR="$HOME/.config/gtk-3.0"
 GTK4_CONFIG_DIR="$HOME/.config/gtk-4.0"
+GTK2_CONFIG_FILE="$HOME/.gtkrc-2.0"
 GTK3_CONFIG_MARKER="Kitana managed GTK 3 config"
 GTK4_CONFIG_MARKER="Kitana managed GTK 4 config"
+GTK2_CONFIG_MARKER="Kitana managed GTK 2 config"
 KVANTUM_CONFIG_DIR="$HOME/.config/Kvantum"
 KVANTUM_CONFIG_MARKER="Kitana managed Kvantum config"
 QT6CT_CONFIG_DIR="$HOME/.config/qt6ct"
@@ -180,6 +182,12 @@ else
   echo "Keeping existing GTK 4 config: $GTK4_CONFIG_DIR/settings.ini"
 fi
 
+if [ ! -e "$GTK2_CONFIG_FILE" ] || grep -q "$GTK2_CONFIG_MARKER" "$GTK2_CONFIG_FILE" || grep -q "overwritten by nwg-look" "$GTK2_CONFIG_FILE"; then
+  cp "$KITANA_DIR/config/gtkrc-2.0" "$GTK2_CONFIG_FILE"
+else
+  echo "Keeping existing GTK 2 config: $GTK2_CONFIG_FILE"
+fi
+
 if [ ! -e "$KVANTUM_CONFIG_DIR/kvantum.kvconfig" ] || grep -q "$KVANTUM_CONFIG_MARKER" "$KVANTUM_CONFIG_DIR/kvantum.kvconfig"; then
   cp "$KITANA_DIR/config/Kvantum/kvantum.kvconfig" "$KVANTUM_CONFIG_DIR/kvantum.kvconfig"
 else
@@ -195,13 +203,13 @@ fi
 if command -v gsettings >/dev/null 2>&1 && [ "${KITANA_SKIP_GSETTINGS:-0}" != "1" ]; then
   gsettings set org.gnome.desktop.interface color-scheme prefer-dark >/dev/null 2>&1 || true
 
-  if [ -d "$HOME/.local/share/themes/Graphite-Dark-compact" ] || [ -d /usr/share/themes/Graphite-Dark-compact ]; then
-    gsettings set org.gnome.desktop.interface gtk-theme Graphite-Dark-compact >/dev/null 2>&1 || true
+  if [ -d "$HOME/.local/share/themes/Graphite-Dark" ] || [ -d "$HOME/.themes/Graphite-Dark" ] || [ -d /usr/share/themes/Graphite-Dark ]; then
+    gsettings set org.gnome.desktop.interface gtk-theme Graphite-Dark >/dev/null 2>&1 || true
   else
     gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark >/dev/null 2>&1 || true
   fi
 
-  if [ -d "$HOME/.local/share/icons/Tela-circle-black" ] || [ -d /usr/share/icons/Tela-circle-black ]; then
+  if [ -d "$HOME/.local/share/icons/Tela-circle-black" ] || [ -d "$HOME/.icons/Tela-circle-black" ] || [ -d /usr/share/icons/Tela-circle-black ]; then
     gsettings set org.gnome.desktop.interface icon-theme Tela-circle-black >/dev/null 2>&1 || true
   fi
 fi

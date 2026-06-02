@@ -28,6 +28,16 @@ hl.window_rule({
   no_focus = true,
 })
 
+hl.window_rule({
+  -- Nautilus spacebar image previews should behave like centered popups.
+  name   = "nautilus-previewer-popup",
+  match  = { class = "org.gnome.NautilusPreviewer" },
+
+  float  = true,
+  center = true,
+  size   = "875 600",
+})
+
 hl.layer_rule({
   -- Avoid compositor effects on transient menu/tray/popup layers.
   name         = "quiet-menu-tray-popup-layers",

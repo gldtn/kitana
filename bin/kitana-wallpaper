@@ -23,13 +23,10 @@ awww_duration="${KITANA_AWWW_DURATION:-3}"
 awww_step="${KITANA_AWWW_STEP:-90}"
 awww_fps="${KITANA_AWWW_FPS:-60}"
 
-shopt -s nullglob globstar
-
 wallpapers=()
-for wallpaper in "$wall_dir"/**/*.{jpg,jpeg,png,webp,gif}; do
-  [ -e "$wallpaper" ] || continue
+while IFS= read -r wallpaper; do
   wallpapers+=("$wallpaper")
-done
+done < <(find -L "$wall_dir" -maxdepth 1 -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" -o -iname "*.gif" -o -iname "*.avif" \) 2>/dev/null | sort -V)
 
 selected=""
 restore=0
@@ -61,8 +58,8 @@ if [ "$restore" -eq 1 ]; then
       [ -f "$migrated" ] && selected="$migrated"
     fi
   else
-    selected="$wall_dir/04-floating-islands.jpg"
-    [ -f "$selected" ] || selected="$default_wall_dir/04-floating-islands.jpg"
+    selected="$wall_dir/kitana-wallpaper-004.jpg"
+    [ -f "$selected" ] || selected="$default_wall_dir/kitana-wallpaper-004.jpg"
   fi
 elif [ -z "$selected" ]; then
   if [ "${#wallpapers[@]}" -eq 0 ]; then

@@ -226,7 +226,7 @@ for lua_module in \
   modules/autostart.lua \
   modules/binds.lua \
   modules/env.lua \
-  modules/windowrules.lua; do
+  modules/rules.lua; do
   if [ -f "$KITANA_DIR/default/hypr/$lua_module" ]; then
     pass "Kitana Hypr Lua default: $lua_module"
   else
@@ -350,7 +350,7 @@ else
   fail "Hyprpaper config missing: ~/.config/hypr/hyprpaper.conf"
 fi
 
-if [ -f "$KITANA_DIR/default/wallpapers/04-floating-islands.jpg" ]; then
+if [ -f "$KITANA_DIR/default/wallpapers/kitana-wallpaper-004.jpg" ]; then
   pass "Kitana default wallpaper"
 else
   fail "Kitana default wallpaper missing"

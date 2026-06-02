@@ -2,8 +2,7 @@
 
 echo "Installing theme and toolkit packages..."
 
-GRAPHITE_THEME_ARGS="${GRAPHITE_THEME_ARGS:---theme default --color dark --tweaks normal rimless --size standard --libadwaita}"
-TELA_ICON_ARGS="${TELA_ICON_ARGS:-}"
+KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
 
 PACKAGES=(
   adw-gtk-theme
@@ -14,7 +13,6 @@ PACKAGES=(
   kvantum-gt5
   materia-gtk-theme
   matugen-bin
-  nwg-look
   pixie-sddm-git
   qt5-wayland
   qt6ct
@@ -39,19 +37,4 @@ sudo tee /etc/sddm.conf.d/20-hyprland.conf >/dev/null <<EOF
 CompositorCommand=start-hyprland
 EOF
 
-tmpdir="$(mktemp -d)"
-trap 'rm -rf "$tmpdir"' EXIT
-
-git clone --depth 1 https://github.com/vinceliuice/Graphite-gtk-theme.git "$tmpdir/Graphite-gtk-theme"
-
-(
-  cd "$tmpdir/Graphite-gtk-theme"
-  ./install.sh $GRAPHITE_THEME_ARGS
-)
-
-git clone --depth 1 https://github.com/vinceliuice/Tela-circle-icon-theme.git "$tmpdir/Tela-circle-icon-theme"
-
-(
-  cd "$tmpdir/Tela-circle-icon-theme"
-  ./install.sh $TELA_ICON_ARGS
-)
+"$KITANA_DIR/install/desktop/gtk-theme-icons.sh"
