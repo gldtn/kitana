@@ -151,6 +151,14 @@ else
   pass "SDDM greeter compositor override not forced"
 fi
 
+if [ -f /usr/share/wayland-sessions/kitana-hyprland.desktop ] && grep -q '^Exec=/usr/bin/start-hyprland$' /usr/share/wayland-sessions/kitana-hyprland.desktop; then
+  pass "SDDM Kitana Hyprland session: start-hyprland"
+elif [ -f /usr/share/wayland-sessions/hyprland.desktop ] && grep -q '^Exec=.*start-hyprland$' /usr/share/wayland-sessions/hyprland.desktop; then
+  pass "SDDM Hyprland session: start-hyprland"
+else
+  fail "SDDM Hyprland session does not use start-hyprland"
+fi
+
 if [ -f /etc/sddm.conf.d/10-theme.conf ] && grep -q '^Current=pixie$' /etc/sddm.conf.d/10-theme.conf && [ ! -d /usr/share/sddm/themes/pixie ]; then
   fail "SDDM Pixie theme selected but not installed"
 else
