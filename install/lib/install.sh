@@ -92,6 +92,7 @@ kitana_run_logged() {
 
   "$@" > >(tee "$log_file") 2>&1
   exit_code=$?
+  export KITANA_LAST_EXIT_CODE="$exit_code"
 
   if [ "$had_errexit" -eq 1 ]; then
     set -e
@@ -114,7 +115,7 @@ kitana_install_required() {
     return 0
   fi
 
-  local exit_code=$?
+  local exit_code="${KITANA_LAST_EXIT_CODE:-1}"
   kitana_log_failure "$phase" "$pkg" "${command[*]}" "$exit_code" "yay -S $pkg" "${KITANA_LAST_COMMAND_LOG:-}"
   return "$exit_code"
 }
@@ -129,7 +130,7 @@ kitana_install_optional() {
     return 0
   fi
 
-  local exit_code=$?
+  local exit_code="${KITANA_LAST_EXIT_CODE:-1}"
   kitana_log_failure "$phase" "$pkg" "${command[*]}" "$exit_code" "yay -S $pkg" "${KITANA_LAST_COMMAND_LOG:-}"
 
   local retry=(yay -S --noconfirm --needed --answerclean All "$pkg")
@@ -139,7 +140,7 @@ kitana_install_optional() {
     return 0
   fi
 
-  exit_code=$?
+  exit_code="${KITANA_LAST_EXIT_CODE:-1}"
   kitana_log_failure "$phase" "$pkg" "${retry[*]}" "$exit_code" "yay -S --answerclean All $pkg" "${KITANA_LAST_COMMAND_LOG:-}"
   echo "WARNING: $pkg failed to install and needs manual intervention. Continuing."
   return 0
@@ -156,7 +157,7 @@ kitana_install_with_fallback() {
     return 0
   fi
 
-  local exit_code=$?
+  local exit_code="${KITANA_LAST_EXIT_CODE:-1}"
   kitana_log_failure "$phase" "$primary" "${command[*]}" "$exit_code" "yay -S $primary" "${KITANA_LAST_COMMAND_LOG:-}"
   echo "$primary failed. Trying fallback package: $fallback"
 

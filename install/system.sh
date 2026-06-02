@@ -15,7 +15,6 @@ PACKAGES=(
     vulkan-radeon
     wayland
     wireplumber
-    wlroots
     xf86-video-amdgpu
 )
 

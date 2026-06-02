@@ -49,7 +49,7 @@ install_browser_package() {
         return 0
     fi
 
-    local exit_code=$?
+    local exit_code="${KITANA_LAST_EXIT_CODE:-1}"
     kitana_log_failure "apps/browser" "$pkg_name" "${command[*]}" "$exit_code" "yay -S $pkg_name" "${KITANA_LAST_COMMAND_LOG:-}"
 
     echo "$pkg_name install failed. Retrying with a clean AUR build..."
@@ -61,7 +61,7 @@ install_browser_package() {
         return 0
     fi
 
-    exit_code=$?
+    exit_code="${KITANA_LAST_EXIT_CODE:-1}"
     kitana_log_failure "apps/browser" "$pkg_name" "${retry[*]}" "$exit_code" "yay -S --answerclean All $pkg_name" "${KITANA_LAST_COMMAND_LOG:-}"
 
     if command -v "$browser_exec" >/dev/null 2>&1; then
