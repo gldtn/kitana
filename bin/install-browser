@@ -30,6 +30,59 @@ browsers=(
     "zen-browser-bin:zen-browser:Web browser based on Mozilla Firefox"
 )
 
+save_browser_choice() {
+    mkdir -p ~/.config
+    echo "BROWSER=$1" > ~/.config/webapp-install.conf
+}
+
+install_browser_package() {
+    local pkg_name="$1"
+    local browser_exec="$2"
+    local command=(yay -S --noconfirm --needed "$pkg_name")
+    local retry=(yay -S --noconfirm --needed --answerclean All "$pkg_name")
+
+    echo "Installing $pkg_name..."
+    if "${command[@]}"; then
+        save_browser_choice "$browser_exec"
+        command -v gum >/dev/null 2>&1 && ! kitana_is_unattended && gum style --foreground 2 "Successfully installed $pkg_name!"
+        echo ""
+        return 0
+    fi
+
+    local exit_code=$?
+    kitana_log_failure "apps/browser" "$pkg_name" "${command[*]}" "$exit_code" "yay -S $pkg_name"
+
+    echo "$pkg_name install failed. Retrying with a clean AUR build..."
+    if "${retry[@]}"; then
+        save_browser_choice "$browser_exec"
+        kitana_log_report "Browser package succeeded after clean retry: $pkg_name"
+        command -v gum >/dev/null 2>&1 && ! kitana_is_unattended && gum style --foreground 2 "Successfully installed $pkg_name after clean retry!"
+        echo ""
+        return 0
+    fi
+
+    exit_code=$?
+    kitana_log_failure "apps/browser" "$pkg_name" "${retry[*]}" "$exit_code" "yay -S --answerclean All $pkg_name"
+
+    if command -v "$browser_exec" >/dev/null 2>&1; then
+        save_browser_choice "$browser_exec"
+        echo "WARNING: $pkg_name failed, but $browser_exec is already available. Continuing."
+        return 0
+    fi
+
+    command -v gum >/dev/null 2>&1 && ! kitana_is_unattended && gum style --foreground 1 "Failed to install $pkg_name. Check yay output for details."
+
+    if kitana_is_unattended; then
+        echo "WARNING: $pkg_name failed to install and needs manual intervention. Continuing unattended install."
+        echo "Manual repair: yay -S --answerclean All $pkg_name"
+        echo ""
+        return 0
+    fi
+
+    echo ""
+    return 1
+}
+
 browser_choice="${KITANA_BROWSER:-}"
 
 if [ -z "$browser_choice" ] && [ -f "$HOME/.config/webapp-install.conf" ]; then
@@ -71,20 +124,7 @@ pkg_name=$(echo "$selected" | cut -d':' -f1)
 browser_exec=$(echo "$selected" | cut -d':' -f2)
 
 if kitana_is_unattended || ! command -v gum >/dev/null 2>&1 || gum confirm "Do you want to install $pkg_name?"; then
-    echo "Installing $pkg_name..."
-    if yay -S --noconfirm --needed "$pkg_name"; then
-        command -v gum >/dev/null 2>&1 && ! kitana_is_unattended && gum style --foreground 2 "Successfully installed $pkg_name!"
-        echo ""
-        # Save the browser executable to config file
-        mkdir -p ~/.config
-        echo "BROWSER=$browser_exec" > ~/.config/webapp-install.conf
-    else
-        exit_code=$?
-        command -v gum >/dev/null 2>&1 && ! kitana_is_unattended && gum style --foreground 1 "Failed to install $pkg_name. Check yay output for details."
-        kitana_log_failure "apps/browser" "$pkg_name" "yay -S --noconfirm --needed $pkg_name" "$exit_code" "yay -S $pkg_name"
-        echo ""
-        exit 1
-    fi
+    install_browser_package "$pkg_name" "$browser_exec"
 else
     gum style --foreground 3 "Installation cancelled."
     echo ""
