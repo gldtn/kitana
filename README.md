@@ -18,9 +18,38 @@ Personal Arch Linux bootstrap and post-install setup.
 
 ## Bootstrap
 
+Fresh full install, interactive:
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | bash
 ```
+
+Fresh full install for unattended test-machine runs:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | \
+  KITANA_UNATTENDED=1 \
+  KITANA_BROWSER=brave \
+  KITANA_EXTRAS=walls,nvim \
+  KITANA_GIT_NAME="gldtn" \
+  KITANA_GIT_EMAIL="you@example.com" \
+  bash
+```
+
+Fresh full install with edge packages where available:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | \
+  KITANA_UNATTENDED=1 \
+  KITANA_EDGE=1 \
+  KITANA_BROWSER=brave \
+  KITANA_EXTRAS=walls,nvim \
+  KITANA_GIT_NAME="gldtn" \
+  KITANA_GIT_EMAIL="you@example.com" \
+  bash
+```
+
+Replace `KITANA_GIT_EMAIL` with the real GitHub email before running unattended installs.
 
 Bootstrap can also run a focused mode:
 
@@ -35,23 +64,34 @@ curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | 
 - `apps` installs only app categories, browser selection, MIME defaults, and webapps.
 - `configs` deploys Kitana-managed config entrypoints without overwriting user overrides.
 
-Unattended installs can set choices through environment variables:
+Focused modes can also run unattended. For example, desktop only:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | \
-  KITANA_UNATTENDED=1 KITANA_BROWSER=brave KITANA_EXTRAS=walls,nvim bash
+  KITANA_UNATTENDED=1 \
+  KITANA_BROWSER=brave \
+  bash -s -- desktop
 ```
 
-Use `KITANA_EDGE=1` to prefer edge packages where available, with stable fallbacks:
+Apps only:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | \
-  KITANA_UNATTENDED=1 KITANA_EDGE=1 KITANA_BROWSER=brave \
-  KITANA_GIT_NAME="Your Name" KITANA_GIT_EMAIL="you@example.com" \
-  bash
+  KITANA_UNATTENDED=1 \
+  KITANA_BROWSER=brave \
+  KITANA_GIT_NAME="gldtn" \
+  KITANA_GIT_EMAIL="you@example.com" \
+  bash -s -- apps
+```
+
+Configs only:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | bash -s -- configs
 ```
 
 Tracked install failures are written to `~/.local/state/kitana/install-failures.log`.
+The full install report is written to `~/.local/state/kitana/install-report.log`.
 
 After install, validate the system with:
 
