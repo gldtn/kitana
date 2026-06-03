@@ -5,12 +5,13 @@ set -euo pipefail
 KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
 CONFIG_FILE="$HOME/.config/webapp-install.conf"
 apply_mime=0
+set_default=0
 
 # shellcheck source=../install/lib/install.sh
 source "$KITANA_DIR/install/lib/install.sh"
 
 usage() {
-    printf 'Usage: %s [--current|--apply-mime]\n' "$(basename "$0")"
+    printf 'Usage: %s [--current|--apply-mime|--set-default]\n' "$(basename "$0")"
 }
 
 current_browser() {
@@ -37,6 +38,9 @@ while [ "$#" -gt 0 ]; do
             ;;
         --apply-mime)
             apply_mime=1
+            ;;
+        --set-default)
+            set_default=1
             ;;
         -h|--help)
             usage
@@ -118,6 +122,19 @@ install_browser_package() {
     return 1
 }
 
+set_default_browser() {
+    local browser_exec="$1"
+
+    if ! command -v "$browser_exec" >/dev/null 2>&1; then
+        echo "$browser_exec is not installed. Run $(basename "$0") --apply-mime to install and set it as default."
+        return 1
+    fi
+
+    save_browser_choice "$browser_exec"
+    bash "$KITANA_DIR/install/apps/mimetypes.sh"
+    gum style --foreground 2 "Default browser set to $browser_exec."
+}
+
 selected="$(gum choose --header "Select a browser to install or set as default:" "${browsers[@]}" | cut -d':' -f1-2)"
 
 if [ -z "$selected" ]; then
@@ -128,13 +145,15 @@ fi
 pkg_name="${selected%%:*}"
 browser_exec="${selected#*:}"
 
-if gum confirm "Install or set $pkg_name as the browser?"; then
+if [ "$set_default" -eq 1 ]; then
+    set_default_browser "$browser_exec"
+elif gum confirm "Install or set $pkg_name as the browser?"; then
     install_browser_package "$pkg_name" "$browser_exec"
 else
     gum style --foreground 3 "Installation cancelled."
     exit 0
 fi
 
-if [ "$apply_mime" -eq 1 ]; then
+if [ "$apply_mime" -eq 1 ] && [ "$set_default" -eq 0 ]; then
     bash "$KITANA_DIR/install/apps/mimetypes.sh"
 fi

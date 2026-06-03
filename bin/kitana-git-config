@@ -8,7 +8,24 @@ KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
 source "$KITANA_DIR/install/lib/install.sh"
 
 usage() {
-  printf 'Usage: %s [--new|--update]\n' "$(basename "$0")"
+  printf 'Usage: %s [--current|--ensure|--update]\n' "$(basename "$0")"
+}
+
+print_current_identity() {
+  local current_name current_email status=0
+  current_name="$(git config --global user.name 2>/dev/null || true)"
+  current_email="$(git config --global user.email 2>/dev/null || true)"
+
+  if [ -n "$current_name" ] && [ -n "$current_email" ]; then
+    echo "Git identity:"
+  else
+    echo "Git identity is incomplete:"
+    status=1
+  fi
+
+  printf '  name:  %s\n' "${current_name:-not set}"
+  printf '  email: %s\n' "${current_email:-not set}"
+  return "$status"
 }
 
 prompt_identity() {
@@ -21,13 +38,19 @@ prompt_identity() {
     return 1
   fi
 
-  name="$(gum input --prompt "Git name> " --placeholder "Your Name")"
-  email="$(gum input --prompt "Git email> " --placeholder "you@example.com")"
+  name="$(gum input --prompt "Git name> " --placeholder "Your Name")" || {
+    echo "Git identity unchanged."
+    return 0
+  }
+
+  email="$(gum input --prompt "Git email> " --placeholder "you@example.com")" || {
+    echo "Git identity unchanged."
+    return 0
+  }
 
   if [ -z "$name" ] || [ -z "$email" ]; then
-    echo "Skipping Git identity because name or email was empty."
-    kitana_log_failure "bin/kitana-git-config" "git-identity" "git config --global user.name/user.email" "1" "git config --global user.name 'Your Name'; git config --global user.email you@example.com"
-    return 1
+    echo "Git identity unchanged."
+    return 0
   fi
 
   git config --global user.name "$name"
@@ -35,15 +58,20 @@ prompt_identity() {
   echo "Git identity set: $name <$email>"
 }
 
-command="${1:---new}"
+command="${1:---current}"
 
 case "$command" in
-  --new)
+  --current)
+    print_current_identity
+    ;;
+  --ensure)
     current_name="$(git config --global user.name 2>/dev/null || true)"
     current_email="$(git config --global user.email 2>/dev/null || true)"
 
     if [ -n "$current_name" ] && [ -n "$current_email" ]; then
-      echo "Keeping existing Git identity: $current_name <$current_email>"
+      echo "Git identity already configured:"
+      printf '  name:  %s\n' "$current_name"
+      printf '  email: %s\n' "$current_email"
       exit 0
     fi
 

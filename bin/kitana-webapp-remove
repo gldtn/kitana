@@ -8,7 +8,7 @@ if [ "$#" -ne 1 ]; then
 "${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-show-logo"
   # Find all web apps
   while IFS= read -r -d '' file; do
-    if grep -q '^Exec=.*brave.*--app' "$file"; then
+    if grep -q '^Exec=.*kitana-webapp-launch' "$file"; then
       WEB_APPS+=("$(basename "${file%.desktop}")")
     fi
   done < <(find "$DESKTOP_DIR" -name '*.desktop' -print0)

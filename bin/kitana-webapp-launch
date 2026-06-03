@@ -17,4 +17,4 @@ if [ -z "$APP_URL" ]; then
   exit 1
 fi
 
-exec "$BROWSER" --new-window --ozone-platform=wayland --app="$APP_URL" --name="$APP_NAME" --class="$APP_NAME"
+exec "$BROWSER" --new-window --app="$APP_URL" --name="$APP_NAME" --class="$APP_NAME"

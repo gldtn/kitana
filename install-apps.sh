@@ -31,7 +31,7 @@ source_script "apps/managers.sh"
 echo "Let's install your preferred browser..."
 bash "$KITANA_DIR/bin/kitana-install-browser" --apply-mime
 
-bash "$KITANA_DIR/bin/kitana-git-config" --new
+bash "$KITANA_DIR/bin/kitana-git-config" --ensure
 
 source_script "apps/crypto.sh"
 source_script "apps/webapps.sh"

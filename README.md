@@ -88,6 +88,8 @@ To configure Git identity:
 
 ```bash
 ~/.local/share/kitana/bin/kitana-git-config
+~/.local/share/kitana/bin/kitana-git-config --current
+~/.local/share/kitana/bin/kitana-git-config --ensure
 ~/.local/share/kitana/bin/kitana-git-config --update
 ```
 
@@ -97,6 +99,7 @@ To install or change the browser used by web apps:
 ~/.local/share/kitana/bin/kitana-install-browser
 ~/.local/share/kitana/bin/kitana-install-browser --current
 ~/.local/share/kitana/bin/kitana-install-browser --apply-mime
+~/.local/share/kitana/bin/kitana-install-browser --set-default
 ```
 
 Browser choices include Brave, Brave Origin Beta, Chromium, Firefox, Google Chrome, Qutebrowser, and Zen Browser.
@@ -164,3 +167,4 @@ bash ~/.local/share/kitana/install-desktop.sh
   - `install/apps/mimetypes.sh`
   - `bin/kitana-webapp-install`
   - `bin/kitana-webapp-launch`
+- Web app desktop entries call `bin/kitana-webapp-launch`, so changing the Kitana browser config updates future web app launches without rewriting each desktop file.
