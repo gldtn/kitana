@@ -30,12 +30,6 @@ for pkg in "${PACKAGES[@]}"; do
   kitana_install_required "desktop/essentials" "$pkg" || exit 1
 done
 
-if kitana_is_edge; then
-  kitana_install_with_fallback "desktop/essentials" "sddm-git" "sddm" || exit 1
-else
-  kitana_install_required "desktop/essentials" "sddm" || exit 1
-fi
-
 mkdir -p \
   "$HOME/.config" \
   "$HOME/Documents" \
@@ -59,10 +53,3 @@ fi
 
 sudo systemctl disable --now iwd.service systemd-networkd.service 2>/dev/null || true
 sudo systemctl enable --now NetworkManager.service bluetooth.service
-sudo systemctl enable sddm.service
-
-if [ "${KITANA_START_SDDM:-0}" = "1" ]; then
-  sudo systemctl start sddm.service
-else
-  echo "SDDM enabled. Reboot after the installer finishes, or run KITANA_START_SDDM=1 to start it immediately."
-fi

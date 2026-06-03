@@ -28,6 +28,7 @@ source_script "desktop/wallpapers-extras.sh"
 source_script "desktop/fonts.sh"
 source_script "desktop/themes.sh"
 source_script "desktop/essentials.sh"
+source_script "login/sddm.sh"
 source_script "desktop/bootloader.sh"
 
 kitana_print_install_summary

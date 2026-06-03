@@ -138,10 +138,17 @@ bash ~/.local/share/kitana/install-desktop.sh
 - `install/desktop/terminal.sh`
 - `install-desktop.sh` reruns only desktop categories and config deployment.
 
+## Login
+
+- `install/login/sddm.sh` installs SDDM, refreshes the Kitana SDDM theme, and enables `sddm.service`.
+- `bin/kitana-refresh-sddm` refreshes `/usr/share/sddm/hyprland.lua`, `/usr/share/sddm/themes/kitana`, `/etc/sddm.conf.d/10-wayland.conf`, and `/etc/sddm.conf.d/20-theme.conf`.
+- Test the SDDM theme with `sddm-greeter --test-mode --theme /usr/share/sddm/themes/kitana`.
+
 ## Notes
 
-- SDDM is installed and enabled in `install/desktop/essentials.sh`.
-- `pixie-sddm-git` is installed as an optional SDDM theme package.
+- SDDM is installed and enabled in `install/login/sddm.sh`.
+- The Kitana SDDM theme source lives in `default/sddm/theme` and is installed to `/usr/share/sddm/themes/kitana`.
+- The SDDM greeter compositor uses `/usr/share/sddm/hyprland.lua` through `/etc/sddm.conf.d/10-wayland.conf`.
 - `uwsm` is not installed by default.
 - SDDM starts the Hyprland session; `hyprlock` only locks an already-running session.
 - `config/` contains Kitana-managed user-facing entrypoints copied into `~/.config` or `$HOME`.

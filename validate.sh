@@ -145,16 +145,16 @@ else
   pass "service disabled: systemd-networkd.service"
 fi
 
-if [ -f /etc/sddm.conf.d/20-hyprland.conf ] && grep -q '^DisplayServer=wayland$' /etc/sddm.conf.d/20-hyprland.conf && grep -q '^CompositorCommand=start-hyprland -- --config /etc/kitana/sddm-hyprland.conf$' /etc/sddm.conf.d/20-hyprland.conf; then
+if [ -f /etc/sddm.conf.d/10-wayland.conf ] && grep -q '^DisplayServer=wayland$' /etc/sddm.conf.d/10-wayland.conf && grep -q '^CompositorCommand=start-hyprland -- --config /usr/share/sddm/hyprland.lua$' /etc/sddm.conf.d/10-wayland.conf; then
   pass "SDDM Wayland greeter compositor: Kitana Hyprland config"
 else
-  fail "SDDM Wayland greeter compositor missing or not Kitana-configured: /etc/sddm.conf.d/20-hyprland.conf"
+  fail "SDDM Wayland greeter compositor missing or not Kitana-configured: /etc/sddm.conf.d/10-wayland.conf"
 fi
 
-if [ -f /etc/kitana/sddm-hyprland.conf ] && grep -q '^# Kitana managed SDDM Hyprland greeter compositor config$' /etc/kitana/sddm-hyprland.conf; then
-  pass "SDDM Hyprland greeter config: /etc/kitana/sddm-hyprland.conf"
+if [ -f /usr/share/sddm/hyprland.lua ] && grep -q '^-- Kitana managed SDDM Hyprland greeter compositor config\.$' /usr/share/sddm/hyprland.lua; then
+  pass "SDDM Hyprland greeter config: /usr/share/sddm/hyprland.lua"
 else
-  fail "SDDM Hyprland greeter config missing: /etc/kitana/sddm-hyprland.conf"
+  fail "SDDM Hyprland greeter config missing: /usr/share/sddm/hyprland.lua"
 fi
 
 if [ -f /usr/share/wayland-sessions/kitana-hyprland.desktop ] && grep -q '^Exec=/usr/bin/start-hyprland$' /usr/share/wayland-sessions/kitana-hyprland.desktop; then
@@ -165,10 +165,10 @@ else
   fail "SDDM Hyprland session does not use start-hyprland"
 fi
 
-if [ -f /etc/sddm.conf.d/10-theme.conf ] && grep -q '^Current=pixie$' /etc/sddm.conf.d/10-theme.conf && [ ! -d /usr/share/sddm/themes/pixie ]; then
-  fail "SDDM Pixie theme selected but not installed"
+if [ -f /etc/sddm.conf.d/20-theme.conf ] && grep -q '^Current=kitana$' /etc/sddm.conf.d/20-theme.conf && [ -d /usr/share/sddm/themes/kitana ]; then
+  pass "SDDM Kitana theme configured"
 else
-  pass "SDDM theme configuration is safe"
+  fail "SDDM Kitana theme missing or not selected"
 fi
 
 limine_config=""
@@ -511,7 +511,7 @@ if [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
 fi
 
 if command -v luac >/dev/null 2>&1; then
-  if luac -p "$KITANA_DIR/config/hypr/hyprland.lua" "$KITANA_DIR/config/hypr/kitana-theme.lua" "$KITANA_DIR"/default/hypr/modules/*.lua; then
+  if luac -p "$KITANA_DIR/config/hypr/hyprland.lua" "$KITANA_DIR/config/hypr/kitana-theme.lua" "$KITANA_DIR/default/sddm/hyprland.lua" "$KITANA_DIR"/default/hypr/modules/*.lua; then
     pass "Kitana Hypr Lua syntax"
   else
     fail "Kitana Hypr Lua syntax"

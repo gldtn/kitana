@@ -1,0 +1,9 @@
+[SddmGreeterTheme]
+Name=Kitana
+Description=Kitana SDDM theme
+Type=sddm-theme
+Version=1.0
+MainScript=Main.qml
+ConfigFile=theme.conf
+Theme-Id=kitana
+Theme-API=2.0

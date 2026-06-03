@@ -22,7 +22,6 @@ PACKAGES=(
 
 OPTIONAL_PACKAGES=(
   matugen-bin
-  pixie-sddm-git
 )
 
 for pkg in "${PACKAGES[@]}"; do
@@ -32,28 +31,5 @@ done
 for pkg in "${OPTIONAL_PACKAGES[@]}"; do
   kitana_install_optional "desktop/themes" "$pkg"
 done
-
-sudo mkdir -p /etc/kitana /etc/sddm.conf.d
-sudo cp "$KITANA_DIR/default/sddm/hyprland.conf" /etc/kitana/sddm-hyprland.conf
-
-if [ -d /usr/share/sddm/themes/pixie ]; then
-  sudo tee /etc/sddm.conf.d/10-theme.conf >/dev/null <<EOF
-[Theme]
-Current=pixie
-EOF
-else
-  echo "Pixie SDDM theme is not installed; leaving SDDM theme default."
-  if [ -f /etc/sddm.conf.d/10-theme.conf ] && grep -q '^Current=pixie$' /etc/sddm.conf.d/10-theme.conf; then
-    sudo rm -f /etc/sddm.conf.d/10-theme.conf
-  fi
-fi
-
-sudo tee /etc/sddm.conf.d/20-hyprland.conf >/dev/null <<EOF
-[General]
-DisplayServer=wayland
-
-[Wayland]
-CompositorCommand=start-hyprland -- --config /etc/kitana/sddm-hyprland.conf
-EOF
 
 "$KITANA_DIR/install/desktop/gtk-theme-icons.sh"
