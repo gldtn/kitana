@@ -62,10 +62,10 @@ kitana-install-1password
 kitana-install-dropbox
 kitana-install-extras-crypto
 kitana-install-extras-media
+kitana-install-extras-wallpapers
 kitana-install-ghostty-nightly
 kitana-install-nvim-gldtn
 kitana-install-private-fonts
-kitana-install-wallpapers
 ```
 
 To configure Git identity:
