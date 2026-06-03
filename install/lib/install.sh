@@ -1,5 +1,27 @@
 #!/bin/bash
 
+kitana_init_paths() {
+  export KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
+  export KITANA_INSTALL="${KITANA_INSTALL:-$KITANA_DIR/install}"
+
+  case ":$PATH:" in
+    *":$KITANA_DIR/bin:"*) ;;
+    *) export PATH="$KITANA_DIR/bin:$PATH" ;;
+  esac
+}
+
+source_script() {
+  local script="$1"
+  local script_path="$KITANA_INSTALL/$script"
+
+  if [ -f "$script_path" ]; then
+    echo "Sourcing $script..."
+    source "$script_path"
+  else
+    echo "$script not found; skipping."
+  fi
+}
+
 kitana_state_dir() {
   printf '%s\n' "${KITANA_STATE_DIR:-$HOME/.local/state/kitana}"
 }

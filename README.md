@@ -125,6 +125,15 @@ bash ~/.local/share/kitana/install-desktop.sh
 - `install/apps/webapps.sh`
 - `install-apps.sh` reruns only app categories, browser selection, MIME defaults, and webapps.
 
+## Repository layout
+
+- `applications/` is reserved for Kitana-managed desktop entry templates and launchers.
+- `bin/` contains `kitana-*` helper commands and is prepended to `PATH` during install.
+- `config/` contains user-facing config files copied into `~/.config` or `$HOME`.
+- `default/` contains Kitana defaults and assets copied elsewhere by install helpers.
+- `install/` contains install stages and shared install libraries.
+- `themes/` contains Kitana theme definitions used by theme helpers.
+
 ## Desktop categories
 
 - `install/desktop/cli.sh`

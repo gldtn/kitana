@@ -9,26 +9,13 @@ set -e
 # Give people a chance to retry running the installation
 trap 'echo "Kitana installation failed! You can retry by running: bash ~/.local/share/kitana/install.sh"' ERR
 
-# Define base path
-KITANA_DIR="$HOME/.local/share/kitana"
+export KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
+export KITANA_INSTALL="${KITANA_INSTALL:-$KITANA_DIR/install}"
 
 # shellcheck source=install/lib/install.sh
-source "$KITANA_DIR/install/lib/install.sh"
+source "$KITANA_INSTALL/lib/install.sh"
+kitana_init_paths
 kitana_init_install_log
-
-# Function to source a script
-source_script() {
-  local script="$1"
-  if [ -f "$KITANA_DIR/install/$script" ]; then
-    echo "Sourcing $script..."
-    source "$KITANA_DIR/install/$script" || {
-      echo "Error in $script"
-      exit 1
-    }
-  else
-    echo "$script not found; skipping."
-  fi
-}
 
 # Add some visual flair to pacman
 if ! grep -q '^ILoveCandy$' /etc/pacman.conf; then

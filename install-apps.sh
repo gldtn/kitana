@@ -2,21 +2,13 @@
 
 set -e
 
-KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
+export KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
+export KITANA_INSTALL="${KITANA_INSTALL:-$KITANA_DIR/install}"
 
 # shellcheck source=install/lib/install.sh
-source "$KITANA_DIR/install/lib/install.sh"
+source "$KITANA_INSTALL/lib/install.sh"
+kitana_init_paths
 kitana_init_install_log
-
-source_script() {
-  local script="$1"
-  if [ -f "$KITANA_DIR/install/$script" ]; then
-    echo "Sourcing $script..."
-    source "$KITANA_DIR/install/$script"
-  else
-    echo "$script not found; skipping."
-  fi
-}
 
 source_script "apps/ai.sh"
 source_script "apps/communication.sh"
@@ -29,9 +21,9 @@ source_script "apps/files.sh"
 source_script "apps/managers.sh"
 
 echo "Let's install your preferred browser..."
-bash "$KITANA_DIR/bin/kitana-install-browser" --apply-mime
+kitana-install-browser --apply-mime
 
-bash "$KITANA_DIR/bin/kitana-git-config" --ensure
+kitana-git-config --ensure
 
 source_script "apps/crypto.sh"
 source_script "apps/webapps.sh"

@@ -2,21 +2,13 @@
 
 set -e
 
-KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
+export KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
+export KITANA_INSTALL="${KITANA_INSTALL:-$KITANA_DIR/install}"
 
 # shellcheck source=install/lib/install.sh
-source "$KITANA_DIR/install/lib/install.sh"
+source "$KITANA_INSTALL/lib/install.sh"
+kitana_init_paths
 kitana_init_install_log
-
-source_script() {
-  local script="$1"
-  if [ -f "$KITANA_DIR/install/$script" ]; then
-    echo "Sourcing $script..."
-    source "$KITANA_DIR/install/$script"
-  else
-    echo "$script not found; skipping."
-  fi
-}
 
 source_script "desktop/development.sh"
 source_script "desktop/terminal.sh"
