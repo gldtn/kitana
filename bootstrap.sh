@@ -8,6 +8,7 @@ set -e
 
 MODE="${1:-full}"
 KITANA_DIR="$HOME/.local/share/kitana"
+KITANA_INSTALL="$KITANA_DIR/install"
 
 LOGO_URL="https://raw.githubusercontent.com/gldtn/kitana/master/logo.txt"
 echo
@@ -36,6 +37,9 @@ if [[ -n "$KITANA_REF" ]]; then
 fi
 
 echo -e "\nInstallation mode: $MODE"
+
+export KITANA_DIR KITANA_INSTALL
+export PATH="$KITANA_DIR/bin:$PATH"
 
 case "$MODE" in
   full)
