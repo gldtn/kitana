@@ -14,7 +14,7 @@ if ! command -v yay &> /dev/null; then
 fi
 
 # Header
-if ! kitana_is_unattended && command -v gum >/dev/null 2>&1; then
+if command -v gum >/dev/null 2>&1; then
     ~/.local/share/kitana/bin/show-logo
     gum format -- "## Browser Installation Script"
     echo ""
@@ -44,7 +44,7 @@ install_browser_package() {
     echo "Installing $pkg_name..."
     if kitana_run_logged "apps/browser" "$pkg_name" "browser" "${command[@]}"; then
         save_browser_choice "$browser_exec"
-        command -v gum >/dev/null 2>&1 && ! kitana_is_unattended && gum style --foreground 2 "Successfully installed $pkg_name!"
+        command -v gum >/dev/null 2>&1 && gum style --foreground 2 "Successfully installed $pkg_name!"
         echo ""
         return 0
     fi
@@ -56,7 +56,7 @@ install_browser_package() {
     if kitana_run_logged "apps/browser" "$pkg_name" "browser-clean-retry" "${retry[@]}"; then
         save_browser_choice "$browser_exec"
         kitana_log_report "Browser package succeeded after clean retry: $pkg_name"
-        command -v gum >/dev/null 2>&1 && ! kitana_is_unattended && gum style --foreground 2 "Successfully installed $pkg_name after clean retry!"
+        command -v gum >/dev/null 2>&1 && gum style --foreground 2 "Successfully installed $pkg_name after clean retry!"
         echo ""
         return 0
     fi
@@ -70,29 +70,18 @@ install_browser_package() {
         return 0
     fi
 
-    command -v gum >/dev/null 2>&1 && ! kitana_is_unattended && gum style --foreground 1 "Failed to install $pkg_name. Check yay output for details."
-
-    if kitana_is_unattended; then
-        echo "WARNING: $pkg_name failed to install and needs manual intervention. Continuing unattended install."
-        echo "Manual repair: yay -S --answerclean All $pkg_name"
-        echo ""
-        return 0
-    fi
+    command -v gum >/dev/null 2>&1 && gum style --foreground 1 "Failed to install $pkg_name. Check yay output for details."
 
     echo ""
     return 1
 }
 
-browser_choice="${KITANA_BROWSER:-}"
+browser_choice=""
 
 if [ -z "$browser_choice" ] && [ -f "$HOME/.config/webapp-install.conf" ]; then
     # shellcheck disable=SC1090
     source "$HOME/.config/webapp-install.conf"
     browser_choice="${BROWSER:-}"
-fi
-
-if [ -z "$browser_choice" ] && kitana_is_unattended; then
-    browser_choice="brave"
 fi
 
 if [ -n "$browser_choice" ]; then
@@ -108,7 +97,7 @@ if [ -n "$browser_choice" ]; then
     done
 else
     if ! command -v gum >/dev/null 2>&1; then
-        echo "Error: gum is required for interactive browser selection. Set KITANA_BROWSER for unattended installs."
+        echo "Error: gum is required for interactive browser selection."
         exit 1
     fi
     selected=$(gum choose --header "Select a browser to install:" "${browsers[@]}" | cut -d':' -f1-2)
@@ -123,7 +112,7 @@ fi
 pkg_name=$(echo "$selected" | cut -d':' -f1)
 browser_exec=$(echo "$selected" | cut -d':' -f2)
 
-if kitana_is_unattended || ! command -v gum >/dev/null 2>&1 || gum confirm "Do you want to install $pkg_name?"; then
+if ! command -v gum >/dev/null 2>&1 || gum confirm "Do you want to install $pkg_name?"; then
     install_browser_package "$pkg_name" "$browser_exec"
 else
     gum style --foreground 3 "Installation cancelled."

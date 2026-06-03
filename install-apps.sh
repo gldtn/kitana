@@ -20,7 +20,6 @@ source_script() {
 
 source_script "apps/ai.sh"
 source_script "apps/communication.sh"
-source_script "apps/crypto.sh"
 source_script "apps/editors.sh"
 source_script "apps/nvim-config.sh"
 source_script "apps/essentials.sh"
@@ -34,6 +33,7 @@ bash "$KITANA_DIR/bin/install-browser"
 
 source_script "apps/git-config.sh"
 
+source_script "apps/crypto.sh"
 source_script "apps/mimetypes.sh"
 source_script "apps/webapps.sh"
 

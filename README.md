@@ -1,13 +1,13 @@
 # Kitana
 
-Personal Arch Linux bootstrap and post-install setup.
+Personal, opinionated Arch Linux bootstrap and post-install setup.
 
 ## What this does
 
 - Installs core system, development, CLI, terminal, Hyprland ecosystem, and fonts.
 - Targets Hyprland 0.55+ with Lua-based config.
 - Installs desktop apps by category from separate scripts in `install/apps/`.
-- Prompts for a browser choice, or uses `KITANA_BROWSER` for unattended installs, and applies MIME defaults based on that selection.
+- Prompts for a browser choice and applies MIME defaults based on that selection.
 - Creates web app launchers after browser selection.
 
 ## Install flow
@@ -18,38 +18,20 @@ Personal Arch Linux bootstrap and post-install setup.
 
 ## Bootstrap
 
-Fresh full install, interactive:
+Fresh full install:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | bash
-```
-
-Fresh full install for unattended test-machine runs:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | \
-  KITANA_UNATTENDED=1 \
-  KITANA_BROWSER=brave \
-  KITANA_EXTRAS=walls,nvim \
-  KITANA_GIT_NAME="gldtn" \
-  KITANA_GIT_EMAIL="you@example.com" \
-  bash
 ```
 
 Fresh full install with edge packages where available:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | \
-  KITANA_UNATTENDED=1 \
   KITANA_EDGE=1 \
-  KITANA_BROWSER=brave \
-  KITANA_EXTRAS=walls,nvim \
-  KITANA_GIT_NAME="gldtn" \
-  KITANA_GIT_EMAIL="you@example.com" \
+  KITANA_EXTRAS=walls,nvim,crypto \
   bash
 ```
-
-Replace `KITANA_GIT_EMAIL` with the real GitHub email before running unattended installs.
 
 Bootstrap can also run a focused mode:
 
@@ -64,23 +46,19 @@ curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | 
 - `apps` installs only app categories, browser selection, MIME defaults, and webapps.
 - `configs` deploys Kitana-managed config entrypoints without overwriting user overrides.
 
-Focused modes can also run unattended. For example, desktop only:
+Desktop only with edge packages:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | \
-  KITANA_UNATTENDED=1 \
-  KITANA_BROWSER=brave \
+  KITANA_EDGE=1 \
   bash -s -- desktop
 ```
 
-Apps only:
+Apps only with optional extras:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | \
-  KITANA_UNATTENDED=1 \
-  KITANA_BROWSER=brave \
-  KITANA_GIT_NAME="gldtn" \
-  KITANA_GIT_EMAIL="you@example.com" \
+  KITANA_EXTRAS=nvim,crypto \
   bash -s -- apps
 ```
 
@@ -115,7 +93,7 @@ bash ~/.local/share/kitana/install-desktop.sh
 
 - `install/apps/ai.sh`
 - `install/apps/communication.sh`
-- `install/apps/crypto.sh`
+- `install/apps/crypto.sh` optional with `KITANA_EXTRAS=crypto` or `KITANA_EXTRAS=all`
 - `install/apps/essentials.sh`
 - `install/apps/editors.sh`
 - `install/apps/productivity.sh`
@@ -156,8 +134,8 @@ bash ~/.local/share/kitana/install-desktop.sh
 - Kitana user settings live in `~/.config/kitana/config`.
 - Wallpapers default to `~/.config/kitana/wallpapers`; override with `KITANA_WALLPAPER_DIR` in `~/.config/kitana/config`.
 - Bundled wallpapers live in `~/.local/share/kitana/default/wallpapers`.
-- Optional extras are enabled with `KITANA_EXTRAS=walls,nvim` or `KITANA_EXTRAS=all`.
-- `KITANA_EDGE=1` prefers edge packages like `neovim-git` and `ghostty-nightly-bin`, with stable fallbacks.
+- Optional extras are enabled with `KITANA_EXTRAS=walls,nvim,crypto` or `KITANA_EXTRAS=all`.
+- `KITANA_EDGE=1` prefers edge packages like `neovim-git`, `ghostty-nightly-bin`, and `sddm-git`, with stable fallbacks.
 - `hyprpaper.conf` is copied to `~/.config/hypr/hyprpaper.conf` only if missing; wallpaper selection is managed by `bin/kitana-wallpaper`.
 - Bash defaults live in `default/bash`; customize Bash in `~/.config/bash/custom/*.bash`.
 - Starship config is copied to `~/.config/starship/starship.toml` only when missing or Kitana-managed.

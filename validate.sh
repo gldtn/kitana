@@ -113,13 +113,13 @@ for pkg in \
   networkmanager \
   quickshell \
   qt6ct \
-  sddm \
   vicinae-bin \
   xdg-desktop-portal-hyprland; do
   check_package "$pkg"
 done
 
 check_any_package "ghostty" ghostty ghostty-nightly-bin
+check_any_package "sddm" sddm sddm-git
 
 echo
 
@@ -145,10 +145,16 @@ else
   pass "service disabled: systemd-networkd.service"
 fi
 
-if [ -f /etc/sddm.conf.d/20-hyprland.conf ] && grep -q '^DisplayServer=wayland$' /etc/sddm.conf.d/20-hyprland.conf && grep -q '^CompositorCommand=start-hyprland$' /etc/sddm.conf.d/20-hyprland.conf; then
-  pass "SDDM Wayland greeter compositor: start-hyprland"
+if [ -f /etc/sddm.conf.d/20-hyprland.conf ] && grep -q '^DisplayServer=wayland$' /etc/sddm.conf.d/20-hyprland.conf && grep -q '^CompositorCommand=start-hyprland -- --config /etc/kitana/sddm-hyprland.conf$' /etc/sddm.conf.d/20-hyprland.conf; then
+  pass "SDDM Wayland greeter compositor: Kitana Hyprland config"
 else
-  fail "SDDM Wayland greeter compositor missing: /etc/sddm.conf.d/20-hyprland.conf"
+  fail "SDDM Wayland greeter compositor missing or not Kitana-configured: /etc/sddm.conf.d/20-hyprland.conf"
+fi
+
+if [ -f /etc/kitana/sddm-hyprland.conf ] && grep -q '^# Kitana managed SDDM Hyprland greeter compositor config$' /etc/kitana/sddm-hyprland.conf; then
+  pass "SDDM Hyprland greeter config: /etc/kitana/sddm-hyprland.conf"
+else
+  fail "SDDM Hyprland greeter config missing: /etc/kitana/sddm-hyprland.conf"
 fi
 
 if [ -f /usr/share/wayland-sessions/kitana-hyprland.desktop ] && grep -q '^Exec=/usr/bin/start-hyprland$' /usr/share/wayland-sessions/kitana-hyprland.desktop; then
@@ -275,6 +281,7 @@ fi
 for lua_module in \
   modules/autostart.lua \
   modules/binds.lua \
+  modules/decorations.lua \
   modules/env.lua \
   modules/rules.lua; do
   if [ -f "$KITANA_DIR/default/hypr/$lua_module" ]; then
@@ -302,6 +309,12 @@ if [ -f "$HOME/.config/hypr/hyprlock.conf" ]; then
   pass "Hyprlock config: ~/.config/hypr/hyprlock.conf"
 else
   fail "Hyprlock config missing: ~/.config/hypr/hyprlock.conf"
+fi
+
+if [ -f "$HOME/.config/hypr/kitana-theme.lua" ]; then
+  pass "Hypr Kitana theme config: ~/.config/hypr/kitana-theme.lua"
+else
+  fail "Hypr Kitana theme config missing: ~/.config/hypr/kitana-theme.lua"
 fi
 
 if [ -x "$KITANA_DIR/bin/kitana-lock" ]; then
@@ -489,7 +502,7 @@ if [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
 fi
 
 if command -v luac >/dev/null 2>&1; then
-  if luac -p "$KITANA_DIR/config/hypr/hyprland.lua" "$KITANA_DIR"/default/hypr/modules/*.lua; then
+  if luac -p "$KITANA_DIR/config/hypr/hyprland.lua" "$KITANA_DIR/config/hypr/kitana-theme.lua" "$KITANA_DIR"/default/hypr/modules/*.lua; then
     pass "Kitana Hypr Lua syntax"
   else
     fail "Kitana Hypr Lua syntax"

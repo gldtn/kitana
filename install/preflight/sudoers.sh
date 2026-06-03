@@ -7,7 +7,7 @@ if grep -Eq '^%wheel[[:space:]]+ALL=\(ALL(:ALL)?\)[[:space:]]+ALL' /etc/sudoers 
   return 0 2>/dev/null || exit 0
 fi
 
-if ! kitana_is_unattended && command -v gum >/dev/null 2>&1; then
+if command -v gum >/dev/null 2>&1; then
   if ! gum confirm "Enable sudo for users in the wheel group?"; then
     echo "Skipping sudoers wheel configuration."
     return 0 2>/dev/null || exit 0

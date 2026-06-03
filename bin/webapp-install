@@ -7,8 +7,7 @@ KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
 # shellcheck source=../install/lib/install.sh
 source "$KITANA_DIR/install/lib/install.sh"
 
-# Default browser (fallback)
-BROWSER="${KITANA_BROWSER:-brave}"
+BROWSER="brave"
 
 # Load browser from config file if it exists
 CONFIG_FILE="$HOME/.config/webapp-install.conf"
@@ -18,10 +17,8 @@ fi
 
 # If BROWSER is still empty, prompt user to choose
 if [ -z "$BROWSER" ]; then
-    if kitana_is_unattended; then
-        BROWSER="brave"
-    elif ! command -v gum >/dev/null 2>&1; then
-        echo "No browser configured. Set KITANA_BROWSER or install gum for interactive selection."
+    if ! command -v gum >/dev/null 2>&1; then
+        echo "No browser configured. Install gum for interactive selection."
         exit 1
     fi
 fi

@@ -6,6 +6,8 @@ KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
 HYPR_CONFIG_DIR="$HOME/.config/hypr"
 HYPR_ENTRYPOINT="$HYPR_CONFIG_DIR/hyprland.lua"
 HYPR_ENTRYPOINT_MARKER="Kitana managed Hyprland Lua entrypoint"
+HYPR_THEME_FILE="$HYPR_CONFIG_DIR/kitana-theme.lua"
+HYPR_THEME_MARKER="Kitana managed Hyprland theme"
 HYPRIDLE_MARKER="Kitana managed Hypridle config"
 HYPRLOCK_MARKER="Kitana managed Hyprlock config"
 HYPRPAPER_MARKER="Kitana managed Hyprpaper config"
@@ -86,6 +88,12 @@ if [ ! -e "$HYPR_ENTRYPOINT" ] || grep -q "$HYPR_ENTRYPOINT_MARKER" "$HYPR_ENTRY
 else
   echo "Keeping existing Hypr Lua entrypoint: $HYPR_ENTRYPOINT"
   echo "Use require(\"default.hypr...\") to load Kitana defaults from $KITANA_DIR/default."
+fi
+
+if [ ! -e "$HYPR_THEME_FILE" ] || grep -q "$HYPR_THEME_MARKER" "$HYPR_THEME_FILE"; then
+  cp "$KITANA_DIR/config/hypr/kitana-theme.lua" "$HYPR_THEME_FILE"
+else
+  echo "Keeping existing Hypr theme config: $HYPR_THEME_FILE"
 fi
 
 for custom_module in monitors binds; do

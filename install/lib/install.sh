@@ -23,10 +23,6 @@ kitana_timestamp() {
   date '+%Y-%m-%d %H:%M:%S'
 }
 
-kitana_is_unattended() {
-  [ "${KITANA_UNATTENDED:-0}" = "1" ]
-}
-
 kitana_is_edge() {
   [ "${KITANA_EDGE:-0}" = "1" ]
 }

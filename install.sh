@@ -49,9 +49,7 @@ sudo updatedb
 kitana_print_install_summary
 
 # Prompt for reboot
-if kitana_is_unattended; then
-  echo "Skipping reboot prompt because KITANA_UNATTENDED=1."
-elif command -v gum >/dev/null 2>&1; then
+if command -v gum >/dev/null 2>&1; then
   if gum confirm "Reboot to apply all settings?"; then
     reboot
   fi

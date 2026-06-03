@@ -33,7 +33,8 @@ for pkg in "${OPTIONAL_PACKAGES[@]}"; do
   kitana_install_optional "desktop/themes" "$pkg"
 done
 
-sudo mkdir -p /etc/sddm.conf.d
+sudo mkdir -p /etc/kitana /etc/sddm.conf.d
+sudo cp "$KITANA_DIR/default/sddm/hyprland.conf" /etc/kitana/sddm-hyprland.conf
 
 if [ -d /usr/share/sddm/themes/pixie ]; then
   sudo tee /etc/sddm.conf.d/10-theme.conf >/dev/null <<EOF
@@ -52,7 +53,7 @@ sudo tee /etc/sddm.conf.d/20-hyprland.conf >/dev/null <<EOF
 DisplayServer=wayland
 
 [Wayland]
-CompositorCommand=start-hyprland
+CompositorCommand=start-hyprland -- --config /etc/kitana/sddm-hyprland.conf
 EOF
 
 "$KITANA_DIR/install/desktop/gtk-theme-icons.sh"

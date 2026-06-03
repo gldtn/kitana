@@ -16,7 +16,6 @@ PACKAGES=(
   polkit
   quickshell
   satty
-  sddm-git
   slurp
   udiskie
   vicinae-bin
@@ -30,6 +29,12 @@ PACKAGES=(
 for pkg in "${PACKAGES[@]}"; do
   kitana_install_required "desktop/essentials" "$pkg" || exit 1
 done
+
+if kitana_is_edge; then
+  kitana_install_with_fallback "desktop/essentials" "sddm-git" "sddm" || exit 1
+else
+  kitana_install_required "desktop/essentials" "sddm" || exit 1
+fi
 
 mkdir -p \
   "$HOME/.config" \
