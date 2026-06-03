@@ -29,12 +29,11 @@ source_script "apps/files.sh"
 source_script "apps/managers.sh"
 
 echo "Let's install your preferred browser..."
-bash "$KITANA_DIR/bin/install-browser"
+bash "$KITANA_DIR/bin/kitana-install-browser" --apply-mime
 
-source_script "apps/git-config.sh"
+bash "$KITANA_DIR/bin/kitana-git-config" --new
 
 source_script "apps/crypto.sh"
-source_script "apps/mimetypes.sh"
 source_script "apps/webapps.sh"
 
 kitana_print_install_summary

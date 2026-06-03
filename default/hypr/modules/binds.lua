@@ -11,7 +11,7 @@ local fileManager = "nautilus --new-window"
 local passwordManager = "1password"
 local activityManager = "ghostty -e btop"
 -- TODO: the following need a web apps launcher to work, see Omarchy web app launcher
-local webappLauncher = "~/.local/share/kitana/bin/webapp-launch"
+local webappLauncher = "~/.local/share/kitana/bin/kitana-webapp-launch"
 local emailClient = webappLauncher .. " https://app.hey.com HEY"
 local chatClient = webappLauncher .. " https://web.whatsapp.com WhatsApp"
 -- NOTE: these are not web apps

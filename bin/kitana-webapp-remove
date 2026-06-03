@@ -5,7 +5,7 @@ ICON_DIR="$HOME/.local/share/applications/icons"
 DESKTOP_DIR="$HOME/.local/share/applications/"
 
 if [ "$#" -ne 1 ]; then
-~/.local/share/kitana/bin/show-logo
+"${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-show-logo"
   # Find all web apps
   while IFS= read -r -d '' file; do
     if grep -q '^Exec=.*brave.*--app' "$file"; then
@@ -35,5 +35,5 @@ rm "$ICON_DIR/$APP_NAME.png"
 
 if [ "$#" -ne 1 ]; then
   echo -e "Removed $APP_NAME\n"
-  ~/.local/share/kitana/bin/show-done
+  "${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-show-done"
 fi

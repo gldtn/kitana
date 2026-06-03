@@ -329,17 +329,26 @@ else
   fail "Kitana current wallpaper missing: ~/.config/kitana/current-wallpaper"
 fi
 
-if [ -x "$KITANA_DIR/bin/kitana-quickshell" ]; then
-  pass "Kitana Quickshell helper: bin/kitana-quickshell"
-else
-  fail "Kitana Quickshell helper missing or not executable: bin/kitana-quickshell"
-fi
-
-for helper in kitana-theme kitana-theme-quickshell kitana-theme-ghostty kitana-theme-zed kitana-theme-zed-update kitana-theme-hypr; do
+for helper in \
+  kitana-git-config \
+  kitana-install-browser \
+  kitana-quickshell \
+  kitana-show-done \
+  kitana-show-logo \
+  kitana-theme \
+  kitana-theme-ghostty \
+  kitana-theme-grid \
+  kitana-theme-hypr \
+  kitana-theme-quickshell \
+  kitana-theme-zed \
+  kitana-theme-zed-update \
+  kitana-webapp-install \
+  kitana-webapp-launch \
+  kitana-webapp-remove; do
   if [ -x "$KITANA_DIR/bin/$helper" ]; then
-    pass "Kitana theme helper: bin/$helper"
+    pass "Kitana helper: bin/$helper"
   else
-    fail "Kitana theme helper missing or not executable: bin/$helper"
+    fail "Kitana helper missing or not executable: bin/$helper"
   fi
 done
 

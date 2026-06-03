@@ -39,7 +39,7 @@ if [ -z "$BROWSER" ]; then
 fi
 
 if [ "$#" -ne 3 ]; then
-    ~/.local/share/kitana/bin/show-logo
+    "$KITANA_DIR/bin/kitana-show-logo"
     echo -e "\e[32mLet's create a new web app you can start with the app launcher.\n\e[0m"
     APP_NAME=$(gum input --prompt "Name> " --placeholder "My favorite web app")
     APP_URL=$(gum input --prompt "URL> " --placeholder "https://example.com")
@@ -82,5 +82,5 @@ chmod +x "$DESKTOP_FILE"
 
 if [ "$#" -ne 3 ]; then
     echo -e "You can now find $APP_NAME using the app launcher (SUPER + SPACE)\n"
-    ~/.local/share/kitana/bin/show-done
+    "$KITANA_DIR/bin/kitana-show-done"
 fi

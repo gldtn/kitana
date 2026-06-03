@@ -7,6 +7,7 @@ Personal, opinionated Arch Linux bootstrap and post-install setup.
 - Installs core system, development, CLI, terminal, Hyprland ecosystem, and fonts.
 - Targets Hyprland 0.55+ with Lua-based config.
 - Installs desktop apps by category from separate scripts in `install/apps/`.
+- Runs as an interactive personal installer.
 - Prompts for a browser choice and applies MIME defaults based on that selection.
 - Creates web app launchers after browser selection.
 
@@ -83,6 +84,23 @@ To rerun only app installation:
 bash ~/.local/share/kitana/install-apps.sh
 ```
 
+To configure Git identity:
+
+```bash
+~/.local/share/kitana/bin/kitana-git-config
+~/.local/share/kitana/bin/kitana-git-config --update
+```
+
+To install or change the browser used by web apps:
+
+```bash
+~/.local/share/kitana/bin/kitana-install-browser
+~/.local/share/kitana/bin/kitana-install-browser --current
+~/.local/share/kitana/bin/kitana-install-browser --apply-mime
+```
+
+Browser choices include Brave, Brave Origin Beta, Chromium, Firefox, Google Chrome, Qutebrowser, and Zen Browser.
+
 To rerun only desktop setup:
 
 ```bash
@@ -144,5 +162,5 @@ bash ~/.local/share/kitana/install-desktop.sh
 - Hyprlang config remains transitional for Hyprland and is expected to be dropped after 1-2 releases, but Hypr* tools may still use Hyprlang for their own configs.
 - Browser choice is stored in `~/.config/webapp-install.conf` and reused by:
   - `install/apps/mimetypes.sh`
-  - `bin/webapp-install`
-  - `bin/webapp-launch`
+  - `bin/kitana-webapp-install`
+  - `bin/kitana-webapp-launch`

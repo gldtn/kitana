@@ -1,28 +1,73 @@
 #!/usr/bin/env bash
 
-# Script to install a browser and save the choice for webapp-install
+set -euo pipefail
 
 KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
+CONFIG_FILE="$HOME/.config/webapp-install.conf"
+apply_mime=0
 
 # shellcheck source=../install/lib/install.sh
 source "$KITANA_DIR/install/lib/install.sh"
 
-if ! command -v yay &> /dev/null; then
+usage() {
+    printf 'Usage: %s [--current|--apply-mime]\n' "$(basename "$0")"
+}
+
+current_browser() {
+    local browser=""
+    if [ -f "$CONFIG_FILE" ]; then
+        # shellcheck disable=SC1090
+        source "$CONFIG_FILE"
+        browser="${BROWSER:-}"
+    fi
+
+    if [ -n "$browser" ]; then
+        printf '%s\n' "$browser"
+    else
+        printf 'No browser configured.\n' >&2
+        return 1
+    fi
+}
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --current)
+            current_browser
+            exit $?
+            ;;
+        --apply-mime)
+            apply_mime=1
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            usage >&2
+            exit 2
+            ;;
+    esac
+    shift
+done
+
+if ! command -v yay >/dev/null 2>&1; then
     echo "Error: yay is not installed. Please install it first."
-    echo ""
     exit 1
 fi
 
-# Header
-if command -v gum >/dev/null 2>&1; then
-    ~/.local/share/kitana/bin/show-logo
-    gum format -- "## Browser Installation Script"
-    echo ""
+if ! command -v gum >/dev/null 2>&1; then
+    echo "Error: gum is required for interactive browser selection."
+    exit 1
 fi
 
-# List of popular browsers with package:executable mapping
+"$KITANA_DIR/bin/kitana-show-logo"
+gum format -- "## Browser Installation Script"
+echo ""
+
+# package:executable:description
 browsers=(
     "brave-bin:brave:Fast and privacy-focused browser"
+    "brave-origin-beta-bin:brave-origin-beta:Minimalist Brave Origin beta browser"
     "chromium:chromium:Open-source version of Chrome"
     "firefox:firefox:Popular open-source browser"
     "google-chrome:google-chrome-stable:Google's proprietary browser"
@@ -31,8 +76,8 @@ browsers=(
 )
 
 save_browser_choice() {
-    mkdir -p ~/.config
-    echo "BROWSER=$1" > ~/.config/webapp-install.conf
+    mkdir -p "$HOME/.config"
+    printf 'BROWSER=%s\n' "$1" >"$CONFIG_FILE"
 }
 
 install_browser_package() {
@@ -40,24 +85,23 @@ install_browser_package() {
     local browser_exec="$2"
     local command=(yay -S --noconfirm --needed "$pkg_name")
     local retry=(yay -S --noconfirm --needed --answerclean All "$pkg_name")
+    local exit_code
 
     echo "Installing $pkg_name..."
     if kitana_run_logged "apps/browser" "$pkg_name" "browser" "${command[@]}"; then
         save_browser_choice "$browser_exec"
-        command -v gum >/dev/null 2>&1 && gum style --foreground 2 "Successfully installed $pkg_name!"
-        echo ""
+        gum style --foreground 2 "Successfully installed $pkg_name!"
         return 0
     fi
 
-    local exit_code="${KITANA_LAST_EXIT_CODE:-1}"
+    exit_code="${KITANA_LAST_EXIT_CODE:-1}"
     kitana_log_failure "apps/browser" "$pkg_name" "${command[*]}" "$exit_code" "yay -S $pkg_name" "${KITANA_LAST_COMMAND_LOG:-}"
 
     echo "$pkg_name install failed. Retrying with a clean AUR build..."
     if kitana_run_logged "apps/browser" "$pkg_name" "browser-clean-retry" "${retry[@]}"; then
         save_browser_choice "$browser_exec"
         kitana_log_report "Browser package succeeded after clean retry: $pkg_name"
-        command -v gum >/dev/null 2>&1 && gum style --foreground 2 "Successfully installed $pkg_name after clean retry!"
-        echo ""
+        gum style --foreground 2 "Successfully installed $pkg_name after clean retry!"
         return 0
     fi
 
@@ -70,52 +114,27 @@ install_browser_package() {
         return 0
     fi
 
-    command -v gum >/dev/null 2>&1 && gum style --foreground 1 "Failed to install $pkg_name. Check yay output for details."
-
-    echo ""
+    gum style --foreground 1 "Failed to install $pkg_name. Check yay output for details."
     return 1
 }
 
-browser_choice=""
-
-if [ -z "$browser_choice" ] && [ -f "$HOME/.config/webapp-install.conf" ]; then
-    # shellcheck disable=SC1090
-    source "$HOME/.config/webapp-install.conf"
-    browser_choice="${BROWSER:-}"
-fi
-
-if [ -n "$browser_choice" ]; then
-    selected=""
-    for browser in "${browsers[@]}"; do
-        pkg="${browser%%:*}"
-        rest="${browser#*:}"
-        exec="${rest%%:*}"
-        if [ "$browser_choice" = "$pkg" ] || [ "$browser_choice" = "$exec" ]; then
-            selected="$pkg:$exec"
-            break
-        fi
-    done
-else
-    if ! command -v gum >/dev/null 2>&1; then
-        echo "Error: gum is required for interactive browser selection."
-        exit 1
-    fi
-    selected=$(gum choose --header "Select a browser to install:" "${browsers[@]}" | cut -d':' -f1-2)
-fi
+selected="$(gum choose --header "Select a browser to install or set as default:" "${browsers[@]}" | cut -d':' -f1-2)"
 
 if [ -z "$selected" ]; then
-    echo "Unknown browser choice: ${browser_choice:-none}"
+    echo "No browser selected."
     exit 1
 fi
 
-# Extract the package name and executable
-pkg_name=$(echo "$selected" | cut -d':' -f1)
-browser_exec=$(echo "$selected" | cut -d':' -f2)
+pkg_name="${selected%%:*}"
+browser_exec="${selected#*:}"
 
-if ! command -v gum >/dev/null 2>&1 || gum confirm "Do you want to install $pkg_name?"; then
+if gum confirm "Install or set $pkg_name as the browser?"; then
     install_browser_package "$pkg_name" "$browser_exec"
 else
     gum style --foreground 3 "Installation cancelled."
-    echo ""
     exit 0
+fi
+
+if [ "$apply_mime" -eq 1 ]; then
+    bash "$KITANA_DIR/install/apps/mimetypes.sh"
 fi

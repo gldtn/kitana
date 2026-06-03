@@ -13,7 +13,7 @@ APP_URL="${1:-}"
 APP_NAME="${2:-Web App}"
 
 if [ -z "$APP_URL" ]; then
-  echo "Usage: webapp-launch <url> [name]"
+  echo "Usage: kitana-webapp-launch <url> [name]"
   exit 1
 fi
 

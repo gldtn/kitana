@@ -13,6 +13,9 @@ case "$BROWSER" in
     brave)
         BROWSER_DESKTOP="brave-browser.desktop"
         ;;
+    brave-origin-beta)
+        BROWSER_DESKTOP="brave-origin-beta.desktop"
+        ;;
     chromium)
         BROWSER_DESKTOP="chromium.desktop"
         ;;
