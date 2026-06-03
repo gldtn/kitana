@@ -67,11 +67,11 @@ hl.bind(mod .. " + X", hl.dsp.layout("togglesplit"), { description = "Toggle spl
 
 -- Window float
 hl.bind(mod .. " + CTRL + SHIFT + F", hl.dsp.window.float({ action = "toggle" }), { description = "Toggle float" })
-hl.bind(mod .. " + CTRL + T", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/default/hypr/scripts/toggle_float.sh"), { description = "Toggle float and center" })
+hl.bind(mod .. " + CTRL + F", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/default/hypr/scripts/toggle_float.sh"), { description = "Toggle float and center" })
 
 -- Fullscreen window
 hl.bind(mod .. " + CTRL + M", hl.dsp.window.fullscreen({ mode = "maximized" }), { description = "Full width" })
-hl.bind(mod .. " + CTRL + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }), { description = "Force full screen" })
+hl.bind(mod .. " + CTRL + SHIFT + M", hl.dsp.window.fullscreen({ mode = "fullscreen" }), { description = "Force full screen" })
 
 -- Minimize window
 hl.bind(mod .. " + M", function ()
@@ -122,3 +122,31 @@ hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true 
 -- Brightness
 hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%-"), { locked = true, repeating = true })
 hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%+"), { locked = true, repeating = true })
+
+
+hl.bind("SUPER + F1", function ()
+    local game_mode = (hl.get_config("animations.enabled") == true)
+
+    if game_mode then
+        hl.exec_cmd("hyprctl reload")
+        return
+    end
+
+    hl.config({
+        general = {
+            gaps_in = 6, gaps_out = 6, -- Disable gaps
+            border_size = 2,
+        },
+
+        animations = {
+            enabled = true, -- Disable animations
+        },
+
+        -- Disable blur, shadow and window rounding
+        decoration = {
+            shadow = { enabled = false },
+            blur = { enabled = true },
+            rounding = 4,
+        }
+    })
+end)
