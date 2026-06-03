@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -euo pipefail
+
+KITANA_DIR="${KITANA_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+export PATH="$KITANA_DIR/bin:$PATH"
+
+kitana-pkg-add dropbox dropbox-cli libappindicator-gtk3 python-gpgme nautilus-dropbox
+
+if command -v dropbox-cli >/dev/null 2>&1; then
+  setsid dropbox-cli start >/dev/null 2>&1 &
+  echo "Dropbox started. Use the tray icon or browser prompt to finish setup."
+else
+  echo "Dropbox installed. Run dropbox-cli start to begin setup."
+fi

@@ -4,11 +4,7 @@ echo "Installing SDDM login manager..."
 
 KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
 
-if kitana_is_edge; then
-  kitana_install_with_fallback "login/sddm" "sddm-git" "sddm" || exit 1
-else
-  kitana_install_required "login/sddm" "sddm" || exit 1
-fi
+kitana_install_required "login/sddm" "sddm" || exit 1
 
 "$KITANA_DIR/bin/kitana-refresh-sddm"
 

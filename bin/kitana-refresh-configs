@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -euo pipefail
+
+KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
+
+bash "$KITANA_DIR/install/desktop/configs.sh"

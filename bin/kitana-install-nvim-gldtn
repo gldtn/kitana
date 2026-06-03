@@ -1,19 +1,14 @@
 #!/bin/bash
 
-echo "Checking personal Neovim config..."
+set -euo pipefail
 
-KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
-
-# shellcheck source=../lib/extras.sh
-source "$KITANA_DIR/install/lib/extras.sh"
-
-if ! kitana_has_extra nvim; then
-  echo "Skipping personal Neovim config. Set KITANA_EXTRAS=nvim or KITANA_EXTRAS=all to install it."
-  return 0 2>/dev/null || exit 0
-fi
+KITANA_DIR="${KITANA_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+export PATH="$KITANA_DIR/bin:$PATH"
 
 repo_url="${KITANA_NVIM_REPO:-https://github.com/gldtn/nvim.git}"
 nvim_dir="$HOME/.config/nvim"
+
+kitana-pkg-add neovim-git
 
 mkdir -p "$HOME/.config"
 

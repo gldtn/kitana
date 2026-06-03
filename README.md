@@ -25,49 +25,7 @@ Fresh full install:
 curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | bash
 ```
 
-Fresh full install with edge packages where available:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | \
-  KITANA_EDGE=1 \
-  KITANA_EXTRAS=walls,nvim,crypto \
-  bash
-```
-
-Bootstrap can also run a focused mode:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | bash -s -- desktop
-curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | bash -s -- apps
-curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | bash -s -- configs
-```
-
-- `full` runs the entire installer and is the default.
-- `desktop` installs only desktop/Hyprland/system UI categories.
-- `apps` installs only app categories, browser selection, MIME defaults, and webapps.
-- `configs` deploys Kitana-managed config entrypoints without overwriting user overrides.
-
-Desktop only with edge packages:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | \
-  KITANA_EDGE=1 \
-  bash -s -- desktop
-```
-
-Apps only with optional extras:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | \
-  KITANA_EXTRAS=nvim,crypto \
-  bash -s -- apps
-```
-
-Configs only:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | bash -s -- configs
-```
+The bootstrap runs the full installer. Use the `kitana-reinstall-*` and `kitana-refresh-*` commands after install to repair individual parts.
 
 Tracked install failures are written to `~/.local/state/kitana/install-failures.log`.
 The full install report is written to `~/.local/state/kitana/install-report.log`.
@@ -82,6 +40,32 @@ To rerun only app installation:
 
 ```bash
 bash ~/.local/share/kitana/install-apps.sh
+```
+
+To repair or refresh Kitana pieces after install:
+
+```bash
+kitana-reinstall
+kitana-reinstall-apps
+kitana-reinstall-desktop
+kitana-reinstall-configs
+kitana-refresh-applications
+kitana-refresh-configs
+kitana-refresh-sddm
+kitana-refresh-wallpapers
+```
+
+Optional/personal installs are available as individual commands:
+
+```bash
+kitana-install-1password
+kitana-install-dropbox
+kitana-install-extras-crypto
+kitana-install-extras-media
+kitana-install-ghostty-nightly
+kitana-install-nvim-gldtn
+kitana-install-private-fonts
+kitana-install-wallpapers
 ```
 
 To configure Git identity:
@@ -114,7 +98,6 @@ bash ~/.local/share/kitana/install-desktop.sh
 
 - `install/apps/ai.sh`
 - `install/apps/communication.sh`
-- `install/apps/crypto.sh` optional with `KITANA_EXTRAS=crypto` or `KITANA_EXTRAS=all`
 - `install/apps/essentials.sh`
 - `install/apps/editors.sh`
 - `install/apps/productivity.sh`
@@ -171,8 +154,7 @@ bash ~/.local/share/kitana/install-desktop.sh
 - Kitana user settings live in `~/.config/kitana/config`.
 - Wallpapers default to `~/.config/kitana/wallpapers`; override with `KITANA_WALLPAPER_DIR` in `~/.config/kitana/config`.
 - Bundled wallpapers live in `~/.local/share/kitana/default/wallpapers`.
-- Optional extras are enabled with `KITANA_EXTRAS=walls,nvim,crypto` or `KITANA_EXTRAS=all`.
-- `KITANA_EDGE=1` prefers edge packages like `neovim-git`, `ghostty-nightly-bin`, and `sddm-git`, with stable fallbacks.
+- Personal extras are installed with explicit `kitana-install-*` commands instead of installer flags.
 - `hyprpaper.conf` is copied to `~/.config/hypr/hyprpaper.conf` only if missing; wallpaper selection is managed by `bin/kitana-wallpaper`.
 - Bash defaults live in `default/bash`; customize Bash in `~/.config/bash/custom/*.bash`.
 - Starship config is copied to `~/.config/starship/starship.toml` only when missing or Kitana-managed.

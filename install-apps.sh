@@ -13,7 +13,6 @@ kitana_init_install_log
 source_script "apps/ai.sh"
 source_script "apps/communication.sh"
 source_script "apps/editors.sh"
-source_script "apps/nvim-config.sh"
 source_script "apps/essentials.sh"
 source_script "apps/productivity.sh"
 source_script "apps/media.sh"
@@ -25,7 +24,6 @@ kitana-install-browser --apply-mime
 
 kitana-git-config --ensure
 
-source_script "apps/crypto.sh"
 source_script "apps/webapps.sh"
 
 kitana_print_install_summary

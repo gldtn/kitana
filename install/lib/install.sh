@@ -45,10 +45,6 @@ kitana_timestamp() {
   date '+%Y-%m-%d %H:%M:%S'
 }
 
-kitana_is_edge() {
-  [ "${KITANA_EDGE:-0}" = "1" ]
-}
-
 kitana_log_report() {
   kitana_init_install_log
   printf '[%s] %s\n' "$(kitana_timestamp)" "$*" >>"$KITANA_INSTALL_REPORT"

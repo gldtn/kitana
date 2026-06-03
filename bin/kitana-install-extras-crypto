@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -euo pipefail
+
+KITANA_DIR="${KITANA_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+export PATH="$KITANA_DIR/bin:$PATH"
+
+kitana-pkg-add ledger-live-bin

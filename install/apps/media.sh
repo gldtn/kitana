@@ -7,8 +7,6 @@ PACKAGES=(
   imv
   mpv
   obs-studio
-  open-tv-bin
-  ytmdesktop-bin
 )
 
 for pkg in "${PACKAGES[@]}"; do

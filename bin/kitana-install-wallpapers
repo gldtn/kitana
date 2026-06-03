@@ -1,16 +1,6 @@
 #!/bin/bash
 
-echo "Checking wallpaper extras..."
-
-KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
-
-# shellcheck source=../lib/extras.sh
-source "$KITANA_DIR/install/lib/extras.sh"
-
-if ! kitana_has_extra walls; then
-  echo "Skipping wallpaper extras. Set KITANA_EXTRAS=walls or KITANA_EXTRAS=all to install them."
-  return 0 2>/dev/null || exit 0
-fi
+set -euo pipefail
 
 repo_url="${KITANA_WALLPAPER_EXTRAS_REPO:-https://github.com/gldtn/kitana-wallpapers-extras.git}"
 repo_dir="${KITANA_WALLPAPER_EXTRAS_DIR:-$HOME/.local/share/kitana-wallpapers-extras}"

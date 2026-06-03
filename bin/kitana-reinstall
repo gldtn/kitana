@@ -1,0 +1,27 @@
+#!/bin/bash
+
+set -euo pipefail
+
+KITANA_DIR="${KITANA_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+export PATH="$KITANA_DIR/bin:$PATH"
+
+confirm() {
+  if command -v gum >/dev/null 2>&1; then
+    gum confirm "$1"
+  else
+    read -r -p "$1 [y/N]: " choice
+    [[ "$choice" =~ ^[Yy]$ ]]
+  fi
+}
+
+echo "This will reinstall Kitana desktop/apps and refresh Kitana-managed configs."
+
+if confirm "Continue?"; then
+  kitana-reinstall-configs
+  kitana-reinstall-desktop
+  kitana-reinstall-apps
+
+  if confirm "System has been reinstalled. Reboot?"; then
+    reboot
+  fi
+fi

@@ -331,8 +331,25 @@ fi
 
 for helper in \
   kitana-git-config \
+  kitana-install-1password \
   kitana-install-browser \
+  kitana-install-dropbox \
+  kitana-install-extras-crypto \
+  kitana-install-extras-media \
+  kitana-install-ghostty-nightly \
+  kitana-install-nvim-gldtn \
+  kitana-install-private-fonts \
+  kitana-install-wallpapers \
+  kitana-pkg-add \
   kitana-quickshell \
+  kitana-refresh-applications \
+  kitana-refresh-configs \
+  kitana-refresh-sddm \
+  kitana-refresh-wallpapers \
+  kitana-reinstall \
+  kitana-reinstall-apps \
+  kitana-reinstall-configs \
+  kitana-reinstall-desktop \
   kitana-show-done \
   kitana-show-logo \
   kitana-theme \

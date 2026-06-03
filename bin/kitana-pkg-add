@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -euo pipefail
+
+if [ "$#" -eq 0 ]; then
+  echo "Usage: kitana-pkg-add <packages...>" >&2
+  exit 1
+fi
+
+yay -S --noconfirm --needed "$@"
+
+for pkg in "$@"; do
+  if ! pacman -Q "$pkg" >/dev/null 2>&1; then
+    echo "Package did not install: $pkg" >&2
+    exit 1
+  fi
+done

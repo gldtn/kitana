@@ -1,12 +1,11 @@
 #!/bin/bash
 
 # Bootstrap script for Kitana - Custom Arch/Hyprland Setup by gldtn
-# Run as: curl -sL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | bash -s -- [full|desktop|apps|configs]
+# Run as: curl -sL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | bash
 # Assumes fresh Arch install with sudo user.
 
 set -e
 
-MODE="${1:-full}"
 KITANA_DIR="$HOME/.local/share/kitana"
 KITANA_INSTALL="$KITANA_DIR/install"
 
@@ -36,26 +35,8 @@ if [[ -n "$KITANA_REF" ]]; then
   git -C "$KITANA_DIR" checkout "${KITANA_REF}"
 fi
 
-echo -e "\nInstallation mode: $MODE"
-
 export KITANA_DIR KITANA_INSTALL
 export PATH="$KITANA_DIR/bin:$PATH"
 
-case "$MODE" in
-  full)
-    bash "$KITANA_DIR/install.sh"
-    ;;
-  desktop)
-    bash "$KITANA_DIR/install-desktop.sh"
-    ;;
-  apps)
-    bash "$KITANA_DIR/install-apps.sh"
-    ;;
-  configs)
-    bash "$KITANA_DIR/install/desktop/configs.sh"
-    ;;
-  *)
-    echo "Usage: bootstrap.sh [full|desktop|apps|configs]"
-    exit 1
-    ;;
-esac
+echo -e "\nRunning full Kitana install..."
+bash "$KITANA_DIR/install.sh"
