@@ -1,0 +1,151 @@
+#!/bin/bash
+
+set -euo pipefail
+
+mode="${1:-summary}"
+gpu_paths=()
+vendors=()
+packages=()
+
+add_unique() {
+  local value="$1"
+  shift
+
+  local existing
+  for existing in "$@"; do
+    [ "$existing" = "$value" ] && return 1
+  done
+
+  printf '%s\n' "$value"
+}
+
+add_vendor() {
+  local vendor="$1"
+
+  if add_unique "$vendor" "${vendors[@]}" >/dev/null; then
+    vendors+=("$vendor")
+  fi
+}
+
+add_package() {
+  local package="$1"
+
+  if add_unique "$package" "${packages[@]}" >/dev/null; then
+    packages+=("$package")
+  fi
+}
+
+gpu_class() {
+  local path="$1/class"
+  [ -r "$path" ] || return 1
+
+  local class
+  class="$(<"$path")"
+  [[ "$class" == 0x03* ]]
+}
+
+detect_vendors() {
+  local device vendor_id
+
+  for device in /sys/bus/pci/devices/*; do
+    [ -d "$device" ] || continue
+    gpu_class "$device" || continue
+    gpu_paths+=("$device")
+
+    [ -r "$device/vendor" ] || continue
+    vendor_id="$(<"$device/vendor")"
+    case "$vendor_id" in
+      0x1002) add_vendor amd ;;
+      0x8086) add_vendor intel ;;
+      0x10de) add_vendor nvidia ;;
+    esac
+  done
+}
+
+nvidia_uses_gsp() {
+  command -v lspci >/dev/null 2>&1 || return 1
+
+  lspci | grep -i 'nvidia' | grep -qE 'GTX 16[0-9]{2}|RTX [2-5][0-9]{3}|RTX PRO [0-9]{4}|Quadro RTX|RTX A[0-9]{4}|A[1-9][0-9]{2}|H[1-9][0-9]{2}|T4|L[0-9]+'
+}
+
+nvidia_without_gsp() {
+  command -v lspci >/dev/null 2>&1 || return 1
+
+  lspci | grep -i 'nvidia' | grep -qE 'GTX (9[0-9]{2}|10[0-9]{2})|GT 10[0-9]{2}|Quadro [PM][0-9]{3,4}|Quadro GV100|MX *[0-9]+|Titan (X|Xp|V)|Tesla V100'
+}
+
+select_packages() {
+  local vendor
+
+  for vendor in "${vendors[@]}"; do
+    case "$vendor" in
+      amd)
+        add_package vulkan-icd-loader
+        add_package vulkan-radeon
+        add_package libva-mesa-driver
+        ;;
+      intel)
+        add_package vulkan-icd-loader
+        add_package vulkan-intel
+        add_package intel-media-driver
+        ;;
+      nvidia)
+        add_package vulkan-icd-loader
+        if nvidia_uses_gsp && ! nvidia_without_gsp; then
+          add_package nvidia-open
+        else
+          add_package nvidia
+        fi
+        add_package nvidia-utils
+        add_package egl-wayland
+        ;;
+    esac
+  done
+}
+
+print_summary() {
+  local vendor
+
+  echo "GPU vendors: ${vendors[*]:-unknown}"
+
+  if command -v lspci >/dev/null 2>&1; then
+    echo
+    lspci | grep -Ei 'VGA|3D|Display' || true
+  else
+    echo
+    printf 'GPU PCI devices: %s\n' "${gpu_paths[*]:-none}"
+  fi
+
+  echo
+  echo "Recommended packages:"
+  if [ "${#packages[@]}" -eq 0 ]; then
+    echo "  none"
+  else
+    for vendor in "${packages[@]}"; do
+      printf '  %s\n' "$vendor"
+    done
+  fi
+}
+
+detect_vendors
+select_packages
+
+case "$mode" in
+  summary)
+    print_summary
+    ;;
+  --vendors)
+    for vendor in "${vendors[@]}"; do
+      printf '%s\n' "$vendor"
+    done
+    ;;
+  --packages)
+    for package in "${packages[@]}"; do
+      printf '%s\n' "$package"
+    done
+    ;;
+  *)
+    echo "usage: kitana-hw-gpu [--vendors|--packages]" >&2
+    exit 1
+    ;;
+esac

@@ -91,7 +91,7 @@ check_dir() {
 echo "Validating Kitana install..."
 echo
 
-for cmd in git yay Hyprland start-hyprland hyprctl sddm quickshell awww awww-daemon nmcli nc lua; do
+for cmd in git yay Hyprland start-hyprland hyprctl sddm quickshell awww awww-daemon nmcli nc lspci lua; do
   check_command "$cmd"
 done
 
@@ -112,6 +112,7 @@ for pkg in \
   hyprpolkitagent \
   networkmanager \
   openbsd-netcat \
+  pciutils \
   quickshell \
   qt6ct \
   xdg-desktop-portal-hyprland; do
@@ -309,6 +310,7 @@ fi
 
 for helper in \
   kitana-git-config \
+  kitana-hw-gpu \
   kitana-audio-mic-status \
   kitana-install-1password \
   kitana-install-browser \
@@ -351,6 +353,25 @@ for helper in \
     fail "Kitana helper missing or not executable: bin/$helper"
   fi
 done
+
+if [ -x "$KITANA_DIR/bin/kitana-hw-gpu" ]; then
+  mapfile -t gpu_packages < <("$KITANA_DIR/bin/kitana-hw-gpu" --packages)
+  if [ "${#gpu_packages[@]}" -eq 0 ]; then
+    warn "No GPU-specific packages detected by kitana-hw-gpu"
+  else
+    for pkg in "${gpu_packages[@]}"; do
+      check_package "$pkg"
+    done
+
+    if printf '%s\n' "${gpu_packages[@]}" | grep -q '^vulkan-'; then
+      if [ -d /usr/share/vulkan/icd.d ] && compgen -G '/usr/share/vulkan/icd.d/*.json' >/dev/null; then
+        pass "Vulkan ICD files installed"
+      else
+        fail "Vulkan ICD files missing: /usr/share/vulkan/icd.d/*.json"
+      fi
+    fi
+  fi
+fi
 
 if [ -f "$KITANA_DIR/lib/kitana-theme.lua" ]; then
   pass "Kitana theme library: lib/kitana-theme.lua"
