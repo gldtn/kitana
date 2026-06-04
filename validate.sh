@@ -485,6 +485,18 @@ else
   fail "Quickshell service missing: AppSearchService"
 fi
 
+if [ -f "$HOME/.config/quickshell/kitana/shell.qml" ] && grep -q 'target: "kitana-bar"' "$HOME/.config/quickshell/kitana/shell.qml"; then
+  pass "Quickshell IPC: kitana-bar"
+else
+  fail "Quickshell IPC missing: kitana-bar"
+fi
+
+if [ -f "$HOME/.config/quickshell/kitana/Services/MediaService.qml" ] && grep -q '^singleton MediaService 1.0 MediaService.qml$' "$HOME/.config/quickshell/kitana/Services/qmldir"; then
+  pass "Quickshell service: MediaService"
+else
+  fail "Quickshell service missing: MediaService"
+fi
+
 if [ -f "$HOME/.config/quickshell/kitana/Widgets/PanelRow.qml" ]; then
   pass "Quickshell widget: PanelRow"
 else

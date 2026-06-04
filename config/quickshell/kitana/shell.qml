@@ -10,6 +10,10 @@ import "./Modules"
 import "./Services" as Services
 
 ShellRoot {
+    id: root
+
+    property bool barVisible: true
+
     Custom.Settings {
         id: settings
     }
@@ -24,6 +28,14 @@ ShellRoot {
         function clear(): void { Services.NotificationService.clear(); }
     }
 
+    IpcHandler {
+        target: "kitana-bar"
+
+        function show(): void { root.barVisible = true; }
+        function hide(): void { root.barVisible = false; }
+        function toggle(): void { root.barVisible = !root.barVisible; }
+    }
+
     Variants {
         model: Quickshell.screens
 
@@ -33,8 +45,8 @@ ShellRoot {
             required property var modelData
 
             screen: modelData
-            implicitHeight: settings.panelHeight
-            exclusiveZone: settings.exclusiveZone
+            implicitHeight: root.barVisible ? settings.panelHeight : 1
+            exclusiveZone: root.barVisible ? settings.exclusiveZone : 0
 
             anchors {
                 top: true
@@ -68,6 +80,7 @@ ShellRoot {
 
             Item {
                 anchors.fill: parent
+                visible: root.barVisible
 
                 WorkspaceGroup {
                     anchors.left: parent.left

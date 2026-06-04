@@ -51,7 +51,8 @@ hl.bind(mod .. " + CTRL + Z", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/nul
 -- Quickshell control
 hl.bind(mod .. " + T", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-theme-grid"), { description = "Theme chooser" })
 hl.bind(mod .. " + W", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-wallpaper-grid"), { description = "Wallpaper chooser" })
-hl.bind(mod .. " + ALT + R", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-quickshell"), { description = "Reload Quickshell" })
+hl.bind(mod .. " + CTRL + B", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-bar toggle"), { description = "Toggle Quickshell bar" })
+hl.bind(mod .. " + CTRL + R", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-quickshell --restart"), { description = "Restart Quickshell" })
 hl.bind(mod .. " + COMMA", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-notifications dismissLast"), { description = "Dismiss last notification" })
 hl.bind(mod .. " + SHIFT + COMMA", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-notifications clear"), { description = "Dismiss all notifications" })
 

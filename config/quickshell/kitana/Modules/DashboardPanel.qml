@@ -41,15 +41,10 @@ PanelWindow {
     property string firstClockDate: ""
     property string secondClockTime: "--"
     property string secondClockDate: ""
-    property string mediaStatus: "Stopped"
-    property string mediaArtist: ""
-    property string mediaTitle: "Nothing Playing"
-    property string mediaAlbum: ""
-    property string mediaArt: ""
-    property string mediaPlayer: ""
     property var cavaLevels: [1, 2, 3, 2, 1, 3, 4, 3, 2, 1, 2, 3, 2, 1, 2, 4, 3, 2, 1, 2, 3, 5, 4, 2, 1, 2, 3, 2, 1, 3, 2, 1]
     property int mediaVisualStep: 0
-    readonly property bool mediaPlaying: mediaStatus === "Playing"
+    property bool mediaAudioOverlayOpen: false
+    readonly property bool mediaPlaying: Services.MediaService.playing
 
     PersistentProperties {
         id: weatherPrefs
@@ -80,6 +75,7 @@ PanelWindow {
 
     function close(): void {
         visible = false;
+        mediaAudioOverlayOpen = false;
     }
 
     function toggle(tab: string): void {
@@ -109,18 +105,7 @@ PanelWindow {
     }
 
     function refreshMedia(): void {
-        mediaProcess.exec(["sh", "-c", "playerctl metadata --format '{{status}}|{{artist}}|{{title}}|{{album}}|{{mpris:artUrl}}|{{playerName}}' 2>/dev/null || true"]);
         Services.SystemStatus.refresh();
-    }
-
-    function mediaAction(action: string): void {
-        mediaActionProcess.exec(["playerctl", action]);
-    }
-
-    function mediaArtSource(): string {
-        if (!mediaArt)
-            return "";
-        return mediaArt.indexOf("file://") === 0 || mediaArt.indexOf("http") === 0 ? mediaArt : "file://" + mediaArt;
     }
 
     function updateMediaVisual(): void {
@@ -587,33 +572,6 @@ PanelWindow {
         }
     }
 
-    Process {
-        id: mediaProcess
-
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const parts = text.trim().split("|");
-                if (parts.length < 3 || text.trim().length === 0) {
-                    root.mediaStatus = "Stopped";
-                    root.mediaArtist = "";
-                    root.mediaTitle = "Nothing Playing";
-                    root.mediaAlbum = "";
-                    root.mediaArt = "";
-                    root.mediaPlayer = "";
-                    return;
-                }
-                root.mediaStatus = parts[0] || "Stopped";
-                root.mediaArtist = parts[1] || "Unknown Artist";
-                root.mediaTitle = parts[2] || "Unknown Track";
-                root.mediaAlbum = parts[3] || "";
-                root.mediaArt = parts[4] || "";
-                root.mediaPlayer = parts[5] || "";
-            }
-        }
-    }
-
-    Process { id: mediaActionProcess; onRunningChanged: if (!running) root.refreshMedia() }
-
     MouseArea {
         id: closeArea
         anchors.fill: parent
@@ -879,9 +837,9 @@ PanelWindow {
                 required property int index
 
                 readonly property real level: root.mediaPlaying ? Math.max(1, root.cavaLevels[index] || 1) : 1
-                width: Math.max(3, (cavaBars.width - (root.cavaLevels.length - 1) * 4) / root.cavaLevels.length)
+                width: Math.max(2, (cavaBars.width - (root.cavaLevels.length - 1) * 6) / root.cavaLevels.length)
                 height: Math.max(4, cavaBars.height * level / 8)
-                x: index * (width + 4)
+                x: index * (width + 6)
                 y: cavaBars.height - height
                 radius: width / 2
                 color: root.mediaPlaying ? Colors.accent : Colors.surfaceHighlight
@@ -1439,74 +1397,273 @@ PanelWindow {
     Component {
         id: mediaTab
 
-        ColumnLayout {
-            spacing: 12
+        Item {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
 
             Rectangle {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 244
-                radius: 16
+                id: mediaCard
+
+                anchors.fill: parent
+                radius: 18
                 color: Colors.panelContainerBackground
                 border.color: Colors.panelContainerBorder
                 border.width: 1
                 clip: true
 
-                RowLayout {
+                CavaBars {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    anchors.leftMargin: 18
+                    anchors.rightMargin: 18
+                    anchors.bottomMargin: 92
+                    height: 82
+                }
+
+                ColumnLayout {
                     anchors.fill: parent
-                    anchors.margins: 16
+                    anchors.margins: 18
                     spacing: 16
 
-                    Rectangle {
-                        id: albumCover
-
-                        Layout.preferredWidth: 164
-                        Layout.fillHeight: true
-                        radius: 14
-                        color: Colors.surface
-                        border.color: Colors.panelBorder
-                        border.width: 1
-                        clip: true
-
-                        Image {
-                            id: albumArt
-
-                            anchors.fill: parent
-                            source: root.mediaArtSource()
-                            fillMode: Image.PreserveAspectCrop
-                            asynchronous: true
-                            visible: false
-                        }
-
-                        Rectangle {
-                            id: albumArtMask
-
-                            anchors.fill: parent
-                            radius: albumCover.radius
-                            visible: false
-                            layer.enabled: true
-                        }
-
-                        MultiEffect {
-                            anchors.fill: albumArt
-                            source: albumArt
-                            visible: albumArt.source.toString().length > 0 && albumArt.status === Image.Ready
-                            maskEnabled: true
-                            maskSource: albumArtMask
-                        }
-
-                        Text {
-                            anchors.centerIn: parent
-                            visible: root.mediaArtSource().length === 0
-                            text: "󰎆"
-                            color: Colors.accent
-                            font.family: settings.fontFamily
-                            font.pixelSize: 58
-                        }
-                    }
-
-                    ColumnLayout {
+                    RowLayout {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
+                        spacing: 18
+
+                        Rectangle {
+                            id: albumCover
+
+                            Layout.preferredWidth: 180
+                            Layout.preferredHeight: 132
+                            Layout.alignment: Qt.AlignTop
+                            radius: 14
+                            color: Colors.background
+                            border.color: Colors.background
+                            border.width: 1
+                            clip: true
+
+                            Image {
+                                id: albumArt
+
+                                anchors.fill: parent
+                                source: Services.MediaService.artSource()
+                                fillMode: Image.Tile
+                                asynchronous: true
+                                visible: false
+                            }
+
+                            Rectangle {
+                                id: albumArtMask
+
+                                anchors.fill: parent
+                                radius: albumCover.radius
+                                visible: false
+                                layer.enabled: true
+                            }
+
+                            MultiEffect {
+                                anchors.fill: albumArt
+                                source: albumArt
+                                visible: albumArt.source.toString().length > 0 && albumArt.status === Image.Ready
+                                maskEnabled: true
+                                maskSource: albumArtMask
+                            }
+
+                            Text {
+                                anchors.centerIn: parent
+                                visible: Services.MediaService.artSource().length === 0
+                                text: "󰎆"
+                                color: Colors.accent
+                                font.family: settings.fontFamily
+                                font.pixelSize: 64
+                            }
+
+                            Rectangle {
+                                anchors.fill: parent
+                                radius: albumCover.radius
+                                color: "#18000000"
+                            }
+
+                            Rectangle {
+                                anchors.fill: parent
+                                radius: albumCover.radius
+                                gradient: Gradient {
+                                    GradientStop { position: 0.0; color: "#38ffffff" }
+                                    GradientStop { position: 0.38; color: "#00ffffff" }
+                                    GradientStop { position: 1.0; color: "#00000000" }
+                                }
+                            }
+
+                            Rectangle {
+                                anchors.fill: parent
+                                radius: albumCover.radius
+                                gradient: Gradient {
+                                    GradientStop { position: 0.0; color: "#00000000" }
+                                    GradientStop { position: 0.55; color: "#00000000" }
+                                    GradientStop { position: 1.0; color: "#66000000" }
+                                }
+                            }
+
+                            Rectangle {
+                                anchors.fill: parent
+                                anchors.margins: -1
+                                radius: Math.max(0, albumCover.radius - 1)
+                                color: "transparent"
+                                border.color: albumCover.border.color
+                                border.width: 6
+                            }
+                        }
+
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            spacing: 12
+
+                            RowLayout {
+                                Layout.fillWidth: true
+                                spacing: 10
+
+                                Text {
+                                    Layout.fillWidth: true
+                                    text: Services.MediaService.playerName
+                                    color: Colors.accent
+                                    elide: Text.ElideRight
+                                    font.family: settings.fontFamily
+                                    font.pixelSize: settings.textPixelSize
+                                    font.weight: Font.DemiBold
+                                }
+
+                                Rectangle {
+                                    Layout.preferredWidth: 84
+                                    Layout.preferredHeight: 30
+                                    radius: 10
+                                    color: root.mediaPlaying ? Colors.surfaceHighlight : Colors.surface
+                                    border.color: Colors.panelBorder
+                                    border.width: 1
+
+                                    Text {
+                                        anchors.centerIn: parent
+                                        text: Services.MediaService.status
+                                        color: root.mediaPlaying ? Colors.foreground : Colors.muted
+                                        font.family: settings.fontFamily
+                                        font.pixelSize: settings.textPixelSize
+                                        font.weight: Font.DemiBold
+                                    }
+                                }
+
+                                MediaButton {
+                                    text: Services.SystemStatus.audioIcon
+                                    onClicked: {
+                                        Services.SystemStatus.refresh();
+                                        root.mediaAudioOverlayOpen = !root.mediaAudioOverlayOpen;
+                                    }
+                                }
+                            }
+
+                            Item {
+                                id: mediaTitleClip
+
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: mediaTitleText.implicitHeight
+                                clip: true
+
+                                Text {
+                                    id: mediaTitleText
+
+                                    x: 0
+                                    text: Services.MediaService.title
+                                    color: Colors.foreground
+                                    font.family: settings.fontFamily
+                                    font.pixelSize: 28
+                                    font.weight: Font.Bold
+
+                                    onTextChanged: x = 0
+                                }
+
+                                SequentialAnimation {
+                                    id: mediaTitleMarquee
+
+                                    loops: Animation.Infinite
+                                    running: root.visible && root.activeTab === "media" && mediaTitleText.implicitWidth > mediaTitleClip.width
+                                    onRunningChanged: if (!running) mediaTitleText.x = 0
+
+                                    PauseAnimation { duration: 900 }
+                                    NumberAnimation {
+                                        target: mediaTitleText
+                                        property: "x"
+                                        from: 0
+                                        to: Math.min(0, mediaTitleClip.width - mediaTitleText.implicitWidth - 24)
+                                        duration: Math.max(3500, (mediaTitleText.implicitWidth - mediaTitleClip.width) * 28)
+                                        easing.type: Easing.InOutQuad
+                                    }
+                                    PauseAnimation { duration: 1200 }
+                                    NumberAnimation {
+                                        target: mediaTitleText
+                                        property: "x"
+                                        to: 0
+                                        duration: 600
+                                        easing.type: Easing.InOutQuad
+                                    }
+                                }
+                            }
+
+                            Text {
+                                Layout.fillWidth: true
+                                text: Services.MediaService.artist + (Services.MediaService.album ? "    " + Services.MediaService.album : "")
+                                color: Colors.muted
+                                elide: Text.ElideRight
+                                font.family: settings.fontFamily
+                                font.pixelSize: settings.textPixelSize + 1
+                            }
+
+                            Item { Layout.fillHeight: true }
+
+                            RowLayout {
+                                Layout.fillWidth: true
+                                spacing: 10
+
+                                MediaButton { text: "󰒮"; onClicked: Services.MediaService.previous() }
+                                MediaButton { text: root.mediaPlaying ? "󰏤" : "󰐊"; prominent: true; onClicked: Services.MediaService.playPause() }
+                                MediaButton { text: "󰓛"; onClicked: Services.MediaService.stop() }
+                                MediaButton { text: "󰒭"; onClicked: Services.MediaService.next() }
+                                Item { Layout.fillWidth: true }
+                                MediaButton { text: "󰑐"; onClicked: root.refreshMedia() }
+                            }
+                        }
+                    }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    visible: root.mediaAudioOverlayOpen
+                    onClicked: root.mediaAudioOverlayOpen = false
+                }
+
+                Rectangle {
+                    anchors.fill: parent
+                    visible: root.mediaAudioOverlayOpen
+                    color: Colors.scrimSoft
+                }
+
+                Rectangle {
+                    id: audioOverlay
+
+                    width: Math.min(330, parent.width - 36)
+                    height: Math.min(300, parent.height - 36)
+                    anchors.top: parent.top
+                    anchors.right: parent.right
+                    anchors.margins: 18
+                    visible: root.mediaAudioOverlayOpen
+                    radius: 16
+                    color: Colors.background
+                    border.color: Colors.panelBorderStrong
+                    border.width: 2
+                    opacity: visible ? 1 : 0
+
+                    ColumnLayout {
+                        anchors.fill: parent
+                        anchors.margins: 14
                         spacing: 10
 
                         RowLayout {
@@ -1515,87 +1672,19 @@ PanelWindow {
 
                             Text {
                                 Layout.fillWidth: true
-                                text: root.mediaPlayer ? root.mediaPlayer : "Media"
-                                color: Colors.accent
-                                elide: Text.ElideRight
+                                text: "Audio Output"
+                                color: Colors.foreground
                                 font.family: settings.fontFamily
-                                font.pixelSize: settings.textPixelSize
-                                font.weight: Font.DemiBold
+                                font.pixelSize: 15
+                                font.weight: Font.Bold
                             }
 
-                            Text {
-                                text: root.mediaStatus
-                                color: root.mediaPlaying ? Colors.foreground : Colors.muted
-                                font.family: settings.fontFamily
-                                font.pixelSize: settings.textPixelSize
-                                font.weight: Font.DemiBold
+                            MiniButton {
+                                text: "×"
+                                widthOverride: 32
+                                heightOverride: 30
+                                onClicked: root.mediaAudioOverlayOpen = false
                             }
-                        }
-
-                        Text {
-                            Layout.fillWidth: true
-                            text: root.mediaTitle
-                            color: Colors.foreground
-                            elide: Text.ElideRight
-                            font.family: settings.fontFamily
-                            font.pixelSize: 24
-                            font.weight: Font.Bold
-                        }
-
-                        Text {
-                            Layout.fillWidth: true
-                            text: root.mediaArtist + (root.mediaAlbum ? "    " + root.mediaAlbum : "")
-                            color: Colors.muted
-                            elide: Text.ElideRight
-                            font.family: settings.fontFamily
-                            font.pixelSize: settings.textPixelSize + 1
-                        }
-
-                        CavaBars {
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 58
-                        }
-
-                        RowLayout {
-                            Layout.fillWidth: true
-                            spacing: 10
-
-                            MediaButton { text: "󰒮"; onClicked: root.mediaAction("previous") }
-                            MediaButton { text: root.mediaPlaying ? "󰏤" : "󰐊"; prominent: true; onClicked: root.mediaAction("play-pause") }
-                            MediaButton { text: "󰓛"; onClicked: root.mediaAction("stop") }
-                            MediaButton { text: "󰒭"; onClicked: root.mediaAction("next") }
-                            Item { Layout.fillWidth: true }
-                            MediaButton { text: "󰑐"; onClicked: root.refreshMedia() }
-                        }
-                    }
-                }
-            }
-
-            RowLayout {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                spacing: 12
-
-                Rectangle {
-                    Layout.preferredWidth: 230
-                    Layout.fillHeight: true
-                    radius: 16
-                    color: Colors.panelContainerBackground
-                    border.color: Colors.panelContainerBorder
-                    border.width: 1
-
-                    ColumnLayout {
-                        anchors.fill: parent
-                        anchors.margins: 14
-                        spacing: 10
-
-                        Text {
-                            Layout.fillWidth: true
-                            text: "Audio"
-                            color: Colors.foreground
-                            font.family: settings.fontFamily
-                            font.pixelSize: 15
-                            font.weight: Font.Bold
                         }
 
                         Text {
@@ -1617,30 +1706,6 @@ PanelWindow {
                             text: Services.SystemStatus.audioMuted ? "Unmute" : "Mute"
                             heightOverride: 34
                             onClicked: Services.SystemStatus.toggleAudioMute()
-                        }
-                    }
-                }
-
-                Rectangle {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    radius: 16
-                    color: Colors.panelContainerBackground
-                    border.color: Colors.panelContainerBorder
-                    border.width: 1
-
-                    ColumnLayout {
-                        anchors.fill: parent
-                        anchors.margins: 14
-                        spacing: 10
-
-                        Text {
-                            Layout.fillWidth: true
-                            text: "Output Devices"
-                            color: Colors.foreground
-                            font.family: settings.fontFamily
-                            font.pixelSize: 15
-                            font.weight: Font.Bold
                         }
 
                         Flickable {

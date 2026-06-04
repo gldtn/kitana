@@ -6,6 +6,7 @@ Temporary notes for clean-install testing and session handoff. Update this befor
 
 - Kitana install flow is moving toward explicit `kitana-*` helper commands and targeted refresh/reinstall commands.
 - Vicinae has been replaced by the Kitana Quickshell launcher.
+- Dashboard media now uses a Quickshell MPRIS service with audio controls in an overlay.
 - Quickshell lifecycle is managed by `kitana-quickshell`:
   - `kitana-quickshell`
   - `kitana-quickshell start`
@@ -33,7 +34,7 @@ Temporary notes for clean-install testing and session handoff. Update this befor
 
 ## Open Issues
 
-- None currently recorded.
+- Revisit real CAVA integration for the dashboard media visualizer. Current bars are synthetic; a later pass should add a small `cava` service/process parser with graceful fallback.
 
 ## Useful Commands
 
