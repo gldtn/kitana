@@ -17,11 +17,6 @@ source "$KITANA_INSTALL/lib/install.sh"
 kitana_init_paths
 kitana_init_install_log
 
-# Add some visual flair to pacman
-if ! grep -q '^ILoveCandy$' /etc/pacman.conf; then
-  sudo sed -i '/^\[options\]/a ILoveCandy' /etc/pacman.conf
-fi
-
 # Install everything in order
 source_script "preflight.sh"
 source_script "preflight/sudoers.sh"
@@ -30,8 +25,10 @@ source_script "system.sh"
 bash "$KITANA_DIR/install-desktop.sh"
 bash "$KITANA_DIR/install-apps.sh"
 
-# Ensure locate is up to date now that everything has been installed
-sudo updatedb
+# Ensure locate is up to date now that everything has been installed.
+if command -v updatedb >/dev/null 2>&1; then
+  sudo updatedb || true
+fi
 
 kitana_print_install_summary
 

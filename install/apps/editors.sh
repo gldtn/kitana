@@ -7,6 +7,4 @@ PACKAGES=(
   zed
 )
 
-for pkg in "${PACKAGES[@]}"; do
-  kitana_install_required "apps/editors" "$pkg" || exit 1
-done
+kitana_install_required_packages "apps/editors" "${PACKAGES[@]}" || exit 1

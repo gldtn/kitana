@@ -7,6 +7,4 @@ PACKAGES=(
   wiremix
 )
 
-for pkg in "${PACKAGES[@]}"; do
-  kitana_install_required "apps/managers" "$pkg" || exit 1
-done
+kitana_install_required_packages "apps/managers" "${PACKAGES[@]}" || exit 1

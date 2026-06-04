@@ -24,9 +24,7 @@ OPTIONAL_PACKAGES=(
   matugen-bin
 )
 
-for pkg in "${PACKAGES[@]}"; do
-  kitana_install_required "desktop/themes" "$pkg" || exit 1
-done
+kitana_install_required_packages "desktop/themes" "${PACKAGES[@]}" || exit 1
 
 for pkg in "${OPTIONAL_PACKAGES[@]}"; do
   kitana_install_optional "desktop/themes" "$pkg"

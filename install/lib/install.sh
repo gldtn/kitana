@@ -134,6 +134,25 @@ kitana_install_required() {
   return "$exit_code"
 }
 
+kitana_install_required_packages() {
+  local phase="$1"
+  shift
+
+  [ "$#" -gt 0 ] || return 0
+
+  local command=(yay -S --noconfirm --needed "$@")
+  local label="$*"
+
+  kitana_log_report "Installing required packages: $label ($phase)"
+  if kitana_run_logged "$phase" "packages" "required" "${command[@]}"; then
+    return 0
+  fi
+
+  local exit_code="${KITANA_LAST_EXIT_CODE:-1}"
+  kitana_log_failure "$phase" "packages" "${command[*]}" "$exit_code" "yay -S $label" "${KITANA_LAST_COMMAND_LOG:-}"
+  return "$exit_code"
+}
+
 kitana_install_optional() {
   local phase="$1"
   local pkg="$2"
@@ -176,6 +195,28 @@ kitana_install_with_fallback() {
   echo "$primary failed. Trying fallback package: $fallback"
 
   kitana_install_required "$phase" "$fallback"
+}
+
+kitana_start_sudo_keepalive() {
+  if [ -n "${KITANA_SUDO_KEEPALIVE_PID:-}" ] && kill -0 "$KITANA_SUDO_KEEPALIVE_PID" 2>/dev/null; then
+    return 0
+  fi
+
+  sudo -v || return "$?"
+
+  while true; do
+    sleep 60
+    sudo -n true 2>/dev/null || exit
+  done &
+
+  export KITANA_SUDO_KEEPALIVE_PID="$!"
+  trap 'kitana_stop_sudo_keepalive' EXIT
+}
+
+kitana_stop_sudo_keepalive() {
+  if [ -n "${KITANA_SUDO_KEEPALIVE_PID:-}" ]; then
+    kill "$KITANA_SUDO_KEEPALIVE_PID" 2>/dev/null || true
+  fi
 }
 
 kitana_print_install_summary() {

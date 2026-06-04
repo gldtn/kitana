@@ -19,6 +19,4 @@ PACKAGES=(
   tree-sitter-cli
 )
 
-for pkg in "${PACKAGES[@]}"; do
-  kitana_install_required "desktop/development" "$pkg" || exit 1
-done
+kitana_install_required_packages "desktop/development" "${PACKAGES[@]}" || exit 1

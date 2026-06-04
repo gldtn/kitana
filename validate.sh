@@ -91,7 +91,7 @@ check_dir() {
 echo "Validating Kitana install..."
 echo
 
-for cmd in git yay Hyprland start-hyprland hyprctl sddm quickshell awww awww-daemon nmcli nc lspci lua; do
+for cmd in git yay Hyprland start-hyprland hyprctl sddm quickshell awww awww-daemon nmcli nc lspci reflector rsync lua; do
   check_command "$cmd"
 done
 
@@ -106,6 +106,7 @@ for pkg in \
   awww \
   bluez \
   hyprland \
+  hyprqt6engine \
   hyprlock \
   hyprpaper \
   hyprpicker \
@@ -114,6 +115,8 @@ for pkg in \
   openbsd-netcat \
   pciutils \
   quickshell \
+  reflector \
+  rsync \
   qt6ct \
   xdg-desktop-portal-hyprland; do
   check_package "$pkg"
@@ -121,6 +124,7 @@ done
 
 check_any_package "ghostty" ghostty ghostty-nightly-bin
 check_any_package "sddm" sddm sddm-git
+check_package "libappindicator"
 
 echo
 

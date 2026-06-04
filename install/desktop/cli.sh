@@ -26,6 +26,4 @@ PACKAGES=(
   zsh-completion
 )
 
-for pkg in "${PACKAGES[@]}"; do
-  kitana_install_required "desktop/cli" "$pkg" || exit 1
-done
+kitana_install_required_packages "desktop/cli" "${PACKAGES[@]}" || exit 1

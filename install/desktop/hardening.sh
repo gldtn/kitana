@@ -8,6 +8,4 @@ PACKAGES=(
   ufw
 )
 
-for pkg in "${PACKAGES[@]}"; do
-  kitana_install_required "desktop/hardening" "$pkg" || exit 1
-done
+kitana_install_required_packages "desktop/hardening" "${PACKAGES[@]}" || exit 1

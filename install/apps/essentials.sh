@@ -6,6 +6,4 @@ PACKAGES=(
   gnome-calculator
 )
 
-for pkg in "${PACKAGES[@]}"; do
-  kitana_install_required "apps/essentials" "$pkg" || exit 1
-done
+kitana_install_required_packages "apps/essentials" "${PACKAGES[@]}" || exit 1

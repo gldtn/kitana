@@ -26,9 +26,7 @@ PACKAGES=(
   wl-clipboard
 )
 
-for pkg in "${PACKAGES[@]}"; do
-  kitana_install_required "desktop/essentials" "$pkg" || exit 1
-done
+kitana_install_required_packages "desktop/essentials" "${PACKAGES[@]}" || exit 1
 
 mkdir -p \
   "$HOME/.config" \

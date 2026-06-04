@@ -13,6 +13,4 @@ PACKAGES=(
   ttf-material-symbols-variable-git
 )
 
-for pkg in "${PACKAGES[@]}"; do
-  kitana_install_required "desktop/fonts" "$pkg" || exit 1
-done
+kitana_install_required_packages "desktop/fonts" "${PACKAGES[@]}" || exit 1

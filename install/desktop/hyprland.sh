@@ -20,9 +20,7 @@ PACKAGES=(
   xdg-desktop-portal-hyprland
 )
 
-for pkg in "${PACKAGES[@]}"; do
-  kitana_install_required "desktop/hyprland" "$pkg" || exit 1
-done
+kitana_install_required_packages "desktop/hyprland" "${PACKAGES[@]}" || exit 1
 
 sudo mkdir -p /usr/share/wayland-sessions
 sudo tee /usr/share/wayland-sessions/kitana-hyprland.desktop >/dev/null <<EOF
