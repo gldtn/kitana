@@ -91,7 +91,7 @@ check_dir() {
 echo "Validating Kitana install..."
 echo
 
-for cmd in git yay Hyprland start-hyprland hyprctl sddm vicinae quickshell awww awww-daemon nmcli lua; do
+for cmd in git yay Hyprland start-hyprland hyprctl sddm quickshell awww awww-daemon nmcli lua; do
   check_command "$cmd"
 done
 
@@ -113,7 +113,6 @@ for pkg in \
   networkmanager \
   quickshell \
   qt6ct \
-  vicinae-bin \
   xdg-desktop-portal-hyprland; do
   check_package "$pkg"
 done
@@ -220,28 +219,6 @@ check_file "$HOME/.config/gtk-3.0/bookmarks" "GTK bookmarks: ~/.config/gtk-3.0/b
 check_file "$HOME/.config/gtk-4.0/settings.ini" "GTK 4 config: ~/.config/gtk-4.0/settings.ini" "GTK 4 config missing: ~/.config/gtk-4.0/settings.ini"
 check_file "$HOME/.config/Kvantum/kvantum.kvconfig" "Kvantum config: ~/.config/Kvantum/kvantum.kvconfig" "Kvantum config missing: ~/.config/Kvantum/kvantum.kvconfig"
 check_file "$HOME/.config/qt6ct/qt6ct.conf" "Qt6ct config: ~/.config/qt6ct/qt6ct.conf" "Qt6ct config missing: ~/.config/qt6ct/qt6ct.conf"
-check_file "$HOME/.config/vicinae/settings.json" "Vicinae config: ~/.config/vicinae/settings.json" "Vicinae config missing: ~/.config/vicinae/settings.json"
-
-if [ -f "$HOME/.config/vicinae/settings.json" ]; then
-  if grep -q '"system_info"[[:space:]]*:[[:space:]]*false' "$HOME/.config/vicinae/settings.json"; then
-    pass "Vicinae startup telemetry disabled"
-  else
-    fail "Vicinae startup telemetry is not disabled"
-  fi
-fi
-
-if pgrep -x vicinae-server >/dev/null 2>&1; then
-  if vicinae ping >/dev/null 2>&1; then
-    pass "Vicinae server responds to ping"
-  else
-    fail "Vicinae server is running but does not respond to ping"
-  fi
-elif [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
-  fail "Vicinae server is not running"
-else
-  warn "skipping Vicinae ping: server is not running outside Hyprland"
-fi
-
 if command -v gsettings >/dev/null 2>&1; then
   if [ "$(gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null || true)" = "'prefer-dark'" ]; then
     pass "GTK/libadwaita color scheme: prefer-dark"
@@ -340,6 +317,7 @@ for helper in \
   kitana-install-ghostty-nightly \
   kitana-install-nvim-gldtn \
   kitana-install-private-fonts \
+  kitana-launcher \
   kitana-pkg-add \
   kitana-quickshell \
   kitana-refresh-applications \
@@ -481,7 +459,7 @@ for quickshell_config in shell.qml Colors.qml qmldir; do
   fi
 done
 
-for quickshell_module in ClockPill NotificationPopups StatusGroup SystemPanel WallpaperGrid WorkspaceGroup; do
+for quickshell_module in AppLauncher ClockPill DashboardPanel NotificationPopups StatusGroup SystemPanel WallpaperGrid WorkspaceGroup; do
   if [ -f "$HOME/.config/quickshell/kitana/Modules/$quickshell_module.qml" ]; then
     pass "Quickshell module: $quickshell_module"
   else
@@ -499,6 +477,12 @@ if [ -f "$HOME/.config/quickshell/kitana/Services/NotificationService.qml" ]; th
   pass "Quickshell service: NotificationService"
 else
   fail "Quickshell service missing: NotificationService"
+fi
+
+if [ -f "$HOME/.config/quickshell/kitana/Services/AppSearchService.qml" ] && grep -q '^singleton AppSearchService 1.0 AppSearchService.qml$' "$HOME/.config/quickshell/kitana/Services/qmldir"; then
+  pass "Quickshell service: AppSearchService"
+else
+  fail "Quickshell service missing: AppSearchService"
 fi
 
 if [ -f "$HOME/.config/quickshell/kitana/Widgets/PanelRow.qml" ]; then

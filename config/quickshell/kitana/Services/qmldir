@@ -1,2 +1,3 @@
+singleton AppSearchService 1.0 AppSearchService.qml
 singleton NotificationService 1.0 NotificationService.qml
 singleton SystemStatus 1.0 SystemStatus.qml

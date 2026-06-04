@@ -15,6 +15,7 @@ ShellRoot {
     }
 
     WallpaperGrid {}
+    AppLauncher {}
 
     IpcHandler {
         target: "kitana-notifications"

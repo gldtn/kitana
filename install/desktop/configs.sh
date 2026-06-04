@@ -30,8 +30,6 @@ KVANTUM_CONFIG_DIR="$HOME/.config/Kvantum"
 KVANTUM_CONFIG_MARKER="Kitana managed Kvantum config"
 QT6CT_CONFIG_DIR="$HOME/.config/qt6ct"
 QT6CT_CONFIG_MARKER="Kitana managed Qt6ct config"
-VICINAE_CONFIG_DIR="$HOME/.config/vicinae"
-VICINAE_CONFIG_MARKER="Kitana managed Vicinae config"
 ZED_CONFIG_DIR="$HOME/.config/zed"
 QUICKSHELL_CONFIG_DIR="$HOME/.config/quickshell/kitana"
 
@@ -208,14 +206,6 @@ if [ ! -e "$QT6CT_CONFIG_DIR/qt6ct.conf" ] || grep -q "$QT6CT_CONFIG_MARKER" "$Q
   cp "$KITANA_DIR/config/qt6ct/qt6ct.conf" "$QT6CT_CONFIG_DIR/qt6ct.conf"
 else
   echo "Keeping existing Qt6ct config: $QT6CT_CONFIG_DIR/qt6ct.conf"
-fi
-
-mkdir -p "$VICINAE_CONFIG_DIR"
-
-if [ ! -e "$VICINAE_CONFIG_DIR/settings.json" ] || grep -q "$VICINAE_CONFIG_MARKER" "$VICINAE_CONFIG_DIR/settings.json"; then
-  cp "$KITANA_DIR/config/vicinae/settings.json" "$VICINAE_CONFIG_DIR/settings.json"
-else
-  echo "Keeping existing Vicinae config: $VICINAE_CONFIG_DIR/settings.json"
 fi
 
 if command -v gsettings >/dev/null 2>&1 && [ "${KITANA_SKIP_GSETTINGS:-0}" != "1" ]; then

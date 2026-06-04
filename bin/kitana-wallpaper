@@ -67,14 +67,12 @@ elif [ -z "$selected" ]; then
     exit 1
   fi
 
-  if command -v vicinae >/dev/null 2>&1; then
-    selected="$(printf '%s\n' "${wallpapers[@]}" | vicinae dmenu --navigation-title "Wallpapers" --placeholder "Choose wallpaper" || true)"
-  elif command -v fzf >/dev/null 2>&1; then
+  if command -v fzf >/dev/null 2>&1; then
     selected_name="$(printf '%s\n' "${wallpapers[@]##*/}" | fzf --prompt='Wallpaper > ' || true)"
     [ -n "$selected_name" ] || exit 0
     selected="$wall_dir/$selected_name"
   else
-    echo "Install vicinae or fzf to choose a wallpaper interactively."
+    echo "Install fzf or use kitana-wallpaper-grid to choose a wallpaper interactively."
     exit 1
   fi
 

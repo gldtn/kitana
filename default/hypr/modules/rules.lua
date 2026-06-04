@@ -55,17 +55,3 @@ hl.layer_rule({
   blur         = true,
   ignore_alpha = 0,
 })
-
--- hl.window_rule({
---   -- vicinae blur
---   layerrule = blur on, ignore_alpha 0, no_anim on, match:namespace vicinae
--- })
-hl.layer_rule({
-  -- attempting to reproduce prvious recommended rule by vicinae
-  name         = "vicinae-blur",
-  match        = { namespace = ".*(vicinae).*" },
-
-  no_anim      = true,
-  blur         = true,
-  ignore_alpha = 0,
-})

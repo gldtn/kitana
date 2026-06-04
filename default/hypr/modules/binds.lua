@@ -2,7 +2,7 @@
 ---- MY PROGRAMS ----
 ---------------------
 
-local launcher = "vicinae toggle"
+local launcher = "${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-launcher"
 local browser = "brave"
 local editor = "ghostty -e nvim"
 local guiEditor = "zeditor"

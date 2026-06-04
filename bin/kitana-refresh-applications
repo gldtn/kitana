@@ -5,6 +5,12 @@ set -euo pipefail
 KITANA_DIR="${KITANA_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 export PATH="$KITANA_DIR/bin:$PATH"
 
+mkdir -p "$HOME/.local/share/applications"
+
+if [ -d "$KITANA_DIR/applications/hidden" ]; then
+  cp "$KITANA_DIR"/applications/hidden/*.desktop "$HOME/.local/share/applications/"
+fi
+
 bash "$KITANA_DIR/install/apps/webapps.sh"
 
 if command -v update-desktop-database >/dev/null 2>&1; then

@@ -18,7 +18,6 @@ PACKAGES=(
   satty
   slurp
   udiskie
-  vicinae-bin
   xdg-desktop-portal-gtk
   xdg-user-dirs
   xdg-utils
