@@ -228,6 +228,13 @@ Rectangle {
         }
 
         StatusButton {
+            visible: Services.SystemStatus.micAvailable
+            icon: Services.SystemStatus.micIcon
+            label: ""
+            onClicked: if (root.systemPanel) root.systemPanel.toggle("audio")
+        }
+
+        StatusButton {
             icon: Services.SystemStatus.bluetoothIcon
             label: ""
             onClicked: if (root.systemPanel) root.systemPanel.toggle("bluetooth")
@@ -253,7 +260,7 @@ Rectangle {
         property string label: ""
         signal clicked
 
-        width: buttonRow.implicitWidth
+        width: visible ? buttonRow.implicitWidth : 0
         height: settings.iconPixelSize + 8
 
         Row {

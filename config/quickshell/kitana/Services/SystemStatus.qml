@@ -1,3 +1,5 @@
+// Kitana managed Quickshell service
+
 pragma Singleton
 
 import QtQuick
@@ -51,6 +53,14 @@ Singleton {
     readonly property string audioIcon: audioMuted || audioVolume === 0 ? "" : (audioVolume >= 60 ? "" : "")
     readonly property string audioLabel: audioMuted ? "muted" : audioVolume + "%"
 
+    property bool micAvailable: false
+    property bool micMuted: false
+    property int micVolume: 0
+    property string micSourceId: ""
+    property string micSource: ""
+    readonly property string micIcon: !micAvailable ? "󰍭" : (micMuted || micVolume === 0 ? "󰍭" : "󰍬")
+    readonly property string micLabel: !micAvailable ? "no mic" : (micMuted ? "muted" : micVolume + "%")
+
     property int brightness: 0
     property bool brightnessAvailable: false
 
@@ -58,6 +68,7 @@ Singleton {
         audioPoll.exec(["sh", "-c", "wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null | awk '{ printf \"%s %d\", ($0 ~ /MUTED/ ? \"muted\" : \"volume\"), $2 * 100 }'"]);
         audioSinkPoll.exec(["sh", "-c", "wpctl status 2>/dev/null | awk '/Sinks:/ { s=1; next } s && /\\*/ { sub(/^.*\\* +[0-9]+\\. +/, \"\"); sub(/ \\[vol:.*$/, \"\"); print; exit }'"]);
         audioSinksPoll.exec(["sh", "-c", "wpctl status 2>/dev/null | awk '/Sinks:/ { s=1; next } s && /^[[:space:]]*[│├└ ]*[ *]*[0-9]+\\./ { line=$0; gsub(/^[^0-9]*/, \"\", line); sub(/ \\[vol:.*$/, \"\", line); print line } s && /Sources:/ { exit }'"]);
+        micPoll.exec(["sh", "-c", "$HOME/.local/share/kitana/bin/kitana-audio-mic-status"]);
         networkPoll.exec(["sh", "-c", "nmcli -t -f TYPE,STATE,CONNECTION dev status 2>/dev/null | awk -F: '$2==\"connected\" { print $1 \"|\" $3; found=1; exit } END { exit found ? 0 : 1 }' || { iface=$(ip route get 1.1.1.1 2>/dev/null | sed -n 's/.* dev \\([^ ]*\\).*/\\1/p'); [ -n \"$iface\" ] && printf 'ethernet|%s' \"$iface\"; }"]);
         wifiStatePoll.exec(["nmcli", "radio", "wifi"]);
         wifiPoll.exec(["sh", "-c", "nmcli -t -f ACTIVE,SSID,SIGNAL,SECURITY dev wifi list 2>/dev/null | awk -F: '!seen[$2]++ && $2 != \"\" { print $1 \"|\" $2 \"|\" $3 \"|\" $4 }'"]);
@@ -115,6 +126,18 @@ Singleton {
         audioAction.exec(["wpctl", "set-default", id]);
     }
 
+    function toggleMicMute() {
+        if (micAvailable)
+            micAction.exec(["pactl", "set-source-mute", micSourceId, "toggle"]);
+    }
+
+    function setMicVolume(percent) {
+        if (!micAvailable)
+            return;
+        const clamped = Math.max(0, Math.min(100, Math.round(percent)));
+        micAction.exec(["pactl", "set-source-volume", micSourceId, clamped + "%"]);
+    }
+
     function setBrightness(percent) {
         const clamped = Math.max(1, Math.min(100, Math.round(percent)));
         brightnessAction.exec(["brightnessctl", "-c", "backlight", "set", clamped + "%"]);
@@ -159,6 +182,20 @@ Singleton {
                         sinks.push({ id: match[1], name: match[2] });
                 }
                 root.audioSinks = sinks;
+            }
+        }
+    }
+
+    Process {
+        id: micPoll
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const parts = text.trim().split("|");
+                root.micAvailable = parts.length >= 4 && parts[0].length > 0;
+                root.micSourceId = root.micAvailable ? parts[0] : "";
+                root.micSource = root.micAvailable ? (parts[1] || "Default microphone") : "";
+                root.micMuted = root.micAvailable && parts[2] === "yes";
+                root.micVolume = root.micAvailable ? parseInt(parts[3] || "0") : 0;
             }
         }
     }
@@ -218,5 +255,6 @@ Singleton {
     Process { id: wifiScan; onRunningChanged: if (!running) { root.wifiScanning = false; root.refresh(); } }
     Process { id: wifiConnect; onRunningChanged: if (!running) root.refresh() }
     Process { id: audioAction; onRunningChanged: if (!running) root.refresh() }
+    Process { id: micAction; onRunningChanged: if (!running) root.refresh() }
     Process { id: brightnessAction; onRunningChanged: if (!running) root.refresh() }
 }

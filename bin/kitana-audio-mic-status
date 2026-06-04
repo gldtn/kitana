@@ -1,0 +1,45 @@
+#!/bin/bash
+
+set -euo pipefail
+
+source_name="${1:-$(pactl get-default-source 2>/dev/null || true)}"
+
+available_source() {
+  local preferred="${1:-}"
+
+  pactl list sources 2>/dev/null | PREFERRED_SOURCE="$preferred" perl -0ne '
+    my $preferred = $ENV{"PREFERRED_SOURCE"} // "";
+    for my $source (split /\n(?=Source #)/) {
+      next unless $source =~ /\n\s*Name:\s*(\S+)/;
+      my $name = $1;
+      next if $name =~ /\.monitor$/;
+      next if $preferred ne "" && $name ne $preferred;
+
+      my $active_port = "";
+      $active_port = $1 if $source =~ /\n\s*Active Port:\s*(\S+)/;
+      next if $active_port ne "" && $source =~ /\n\s*\Q$active_port\E:.*not available/;
+
+      print "$name\n";
+      exit;
+    }
+  '
+}
+
+if [ -n "$source_name" ]; then
+  source_name="$(available_source "$source_name")"
+fi
+
+if [ -z "$source_name" ]; then
+  source_name="$(available_source)"
+fi
+
+if [ -z "$source_name" ]; then
+  printf '|||0\n'
+  exit 0
+fi
+
+mute="$(pactl get-source-mute "$source_name" 2>/dev/null | awk '{ print $2 }')"
+volume="$(pactl get-source-volume "$source_name" 2>/dev/null | grep -o '[0-9]\+%' | head -1 | tr -d %)"
+description="$(pactl list sources 2>/dev/null | awk -v source="$source_name" '$1 == "Name:" { active = ($2 == source) } active && $1 == "Description:" { sub(/^[ \t]*Description:[ \t]*/, ""); print; exit }')"
+
+printf '%s|%s|%s|%s\n' "$source_name" "${description:-$source_name}" "${mute:-no}" "${volume:-0}"

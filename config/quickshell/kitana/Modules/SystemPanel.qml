@@ -140,43 +140,81 @@ PanelWindow {
                 }
             }
 
-            Grid {
+            Row {
                 id: quickGrid
                 width: parent.width
-                columns: 2
-                rowSpacing: 10
-                columnSpacing: 10
+                height: implicitHeight
+                spacing: 10
 
-                QuickTile {
-                    icon: Services.SystemStatus.networkIcon
-                    title: Services.SystemStatus.networkKind === "wired" ? "Ethernet" : (Services.SystemStatus.networkKind === "wifi" ? "Wi-Fi" : "Network")
-                    subtitle: Services.SystemStatus.networkKind === "off" ? "Off" : "Connected"
-                    active: Services.SystemStatus.networkKind !== "off"
-                    onClicked: root.section = root.section === "network" ? "notifications" : "network"
+                Column {
+                    width: (quickGrid.width - quickGrid.spacing) / 2
+                    height: implicitHeight
+                    spacing: 10
+
+                    QuickTile {
+                        width: parent.width
+                        icon: Services.SystemStatus.networkIcon
+                        title: Services.SystemStatus.networkKind === "wired" ? "Ethernet" : (Services.SystemStatus.networkKind === "wifi" ? "Wi-Fi" : "Network")
+                        subtitle: Services.SystemStatus.networkKind === "off" ? "Off" : "Connected"
+                        active: Services.SystemStatus.networkKind !== "off"
+                        onClicked: root.section = root.section === "network" ? "notifications" : "network"
+                    }
+
+                    Row {
+                        visible: Services.SystemStatus.micAvailable
+                        width: parent.width
+                        height: visible ? implicitHeight : 0
+                        spacing: 10
+
+                        CompactIconTile {
+                            width: (parent.width - parent.spacing) / 2
+                            icon: Services.SystemStatus.audioIcon
+                            active: !Services.SystemStatus.audioMuted
+                            onClicked: root.section = root.section === "audio" ? "notifications" : "audio"
+                        }
+
+                        CompactIconTile {
+                            width: (parent.width - parent.spacing) / 2
+                            icon: Services.SystemStatus.micIcon
+                            active: Services.SystemStatus.micAvailable && !Services.SystemStatus.micMuted
+                            onClicked: root.section = root.section === "audio" ? "notifications" : "audio"
+                        }
+                    }
+
+                    QuickTile {
+                        visible: !Services.SystemStatus.micAvailable
+                        width: parent.width
+                        height: visible ? 64 : 0
+                        icon: Services.SystemStatus.audioIcon
+                        title: "Audio"
+                        subtitle: Services.SystemStatus.audioLabel
+                        active: !Services.SystemStatus.audioMuted
+                        onClicked: root.section = root.section === "audio" ? "notifications" : "audio"
+                    }
                 }
 
-                QuickTile {
-                    icon: Services.SystemStatus.bluetoothIcon
-                    title: "Bluetooth"
-                    subtitle: Services.SystemStatus.bluetoothEnabled ? "On" : "Off"
-                    active: Services.SystemStatus.bluetoothEnabled
-                    onClicked: root.section = root.section === "bluetooth" ? "notifications" : "bluetooth"
-                }
+                Column {
+                    width: (quickGrid.width - quickGrid.spacing) / 2
+                    height: implicitHeight
+                    spacing: 10
 
-                QuickTile {
-                    icon: Services.SystemStatus.audioIcon
-                    title: "Audio"
-                    subtitle: Services.SystemStatus.audioLabel
-                    active: !Services.SystemStatus.audioMuted
-                    onClicked: root.section = root.section === "audio" ? "notifications" : "audio"
-                }
+                    QuickTile {
+                        width: parent.width
+                        icon: Services.SystemStatus.bluetoothIcon
+                        title: "Bluetooth"
+                        subtitle: Services.SystemStatus.bluetoothEnabled ? "On" : "Off"
+                        active: Services.SystemStatus.bluetoothEnabled
+                        onClicked: root.section = root.section === "bluetooth" ? "notifications" : "bluetooth"
+                    }
 
-                QuickTile {
-                    icon: Services.NotificationService.doNotDisturb ? "󰂛" : "󰂚"
-                    title: "Do Not Disturb"
-                    subtitle: Services.NotificationService.doNotDisturb ? "On" : "Off"
-                    active: Services.NotificationService.doNotDisturb
-                    onClicked: Services.NotificationService.toggleDoNotDisturb()
+                    QuickTile {
+                        width: parent.width
+                        icon: Services.NotificationService.doNotDisturb ? "󰂛" : "󰂚"
+                        title: "Do Not Disturb"
+                        subtitle: Services.NotificationService.doNotDisturb ? "On" : "Off"
+                        active: Services.NotificationService.doNotDisturb
+                        onClicked: Services.NotificationService.toggleDoNotDisturb()
+                    }
                 }
             }
 
@@ -208,6 +246,17 @@ PanelWindow {
                     iconClickable: true
                     onIconClicked: Services.SystemStatus.toggleAudioMute()
                     onMoved: value => Services.SystemStatus.setAudioVolume(value)
+                }
+
+                SliderRow {
+                    visible: Services.SystemStatus.micAvailable
+                    height: visible ? 28 : 0
+                    icon: Services.SystemStatus.micIcon
+                    value: Services.SystemStatus.micVolume
+                    label: Services.SystemStatus.micLabel
+                    iconClickable: true
+                    onIconClicked: Services.SystemStatus.toggleMicMute()
+                    onMoved: value => Services.SystemStatus.setMicVolume(value)
                 }
 
                 SliderRow {
@@ -322,6 +371,42 @@ PanelWindow {
         }
     }
 
+    component CompactIconTile: Rectangle {
+        id: tile
+
+        property string icon: ""
+        property bool active: false
+        signal clicked
+
+        height: 64
+        radius: 13
+        color: mouse.containsMouse ? Colors.surfaceHover : Colors.surface
+
+        Rectangle {
+            anchors.centerIn: parent
+            width: 38
+            height: 38
+            radius: 12
+            color: tile.active ? Colors.accent : Colors.surfaceAlt
+
+            Text {
+                anchors.centerIn: parent
+                text: tile.icon
+                color: tile.active ? Colors.accentText : Colors.foreground
+                font.family: settings.fontFamily
+                font.pixelSize: 18
+            }
+        }
+
+        MouseArea {
+            id: mouse
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: tile.clicked()
+        }
+    }
+
     component QuickTile: Rectangle {
         id: tile
 
@@ -331,7 +416,7 @@ PanelWindow {
         property bool active: false
         signal clicked
 
-        width: (quickGrid.width - quickGrid.columnSpacing) / 2
+        width: parent ? parent.width : 0
         height: 64
         radius: 13
         color: mouse.containsMouse ? Colors.surfaceHover : Colors.surface
@@ -635,13 +720,37 @@ PanelWindow {
             contentWidth: width
             contentHeight: audioList.implicitHeight
 
-            DetailList {
+            Column {
                 id: audioList
+
                 width: parent.width
-                title: "Audio Outputs"
-                emptyText: "No output devices found"
-                modelData: Services.SystemStatus.audioSinks
-                delegateComponent: audioSinkRow
+                spacing: 10
+
+                Text {
+                    width: parent.width
+                    text: "Microphone"
+                    color: Colors.foreground
+                    font.family: settings.fontFamily
+                    font.pixelSize: 14
+                    font.weight: Font.Bold
+                }
+
+                DetailRow {
+                    icon: Services.SystemStatus.micIcon
+                    title: Services.SystemStatus.micAvailable ? Services.SystemStatus.micSource : "No microphone"
+                    subtitle: Services.SystemStatus.micLabel
+                    active: Services.SystemStatus.micAvailable && !Services.SystemStatus.micMuted
+                    clickable: Services.SystemStatus.micAvailable
+                    onClicked: Services.SystemStatus.toggleMicMute()
+                }
+
+                DetailList {
+                    width: parent.width
+                    title: "Audio Outputs"
+                    emptyText: "No output devices found"
+                    modelData: Services.SystemStatus.audioSinks
+                    delegateComponent: audioSinkRow
+                }
             }
         }
     }
