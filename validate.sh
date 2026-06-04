@@ -315,6 +315,7 @@ fi
 for helper in \
   kitana-git-config \
   kitana-hw-gpu \
+  kitana-browser \
   kitana-audio-mic-status \
   kitana-install-1password \
   kitana-install-browser \

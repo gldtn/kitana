@@ -3,7 +3,7 @@
 ---------------------
 
 local launcher = "${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-launcher"
-local browser = "brave"
+local browser = "${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-browser"
 local editor = "ghostty -e nvim"
 local guiEditor = "zeditor"
 local terminal = "ghostty"

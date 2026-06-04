@@ -70,8 +70,8 @@ echo ""
 
 # package:executable:description
 browsers=(
-    "brave-bin:brave:Fast and privacy-focused browser"
     "brave-origin-beta-bin:brave-origin-beta:Minimalist Brave Origin beta browser"
+    "brave-bin:brave:Fast and privacy-focused browser"
     "chromium:chromium:Open-source version of Chrome"
     "firefox:firefox:Popular open-source browser"
     "google-chrome:google-chrome-stable:Google's proprietary browser"

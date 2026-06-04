@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CONFIG_FILE="$HOME/.config/webapp-install.conf"
-BROWSER="brave"
+BROWSER="brave-origin-beta"
 
 if [ -f "$CONFIG_FILE" ]; then
     source "$CONFIG_FILE"
@@ -32,7 +32,7 @@ case "$BROWSER" in
         BROWSER_DESKTOP="zen-browser.desktop"
         ;;
     *)
-        BROWSER_DESKTOP="brave-browser.desktop"
+        BROWSER_DESKTOP="brave-origin-beta.desktop"
         ;;
 esac
 

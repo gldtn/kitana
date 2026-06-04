@@ -1,0 +1,26 @@
+#!/bin/bash
+
+set -euo pipefail
+
+CONFIG_FILE="$HOME/.config/webapp-install.conf"
+BROWSER="brave-origin-beta"
+
+if [ -f "$CONFIG_FILE" ]; then
+  # shellcheck disable=SC1090
+  source "$CONFIG_FILE"
+fi
+
+if command -v "$BROWSER" >/dev/null 2>&1; then
+  exec "$BROWSER" "$@"
+fi
+
+if command -v xdg-open >/dev/null 2>&1; then
+  if [ "$#" -gt 0 ]; then
+    exec xdg-open "$1"
+  fi
+
+  exec xdg-open "about:blank"
+fi
+
+echo "Configured browser is not available: $BROWSER" >&2
+exit 1
