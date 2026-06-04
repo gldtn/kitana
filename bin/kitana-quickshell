@@ -6,6 +6,7 @@ config_name="kitana"
 config_file="$HOME/.config/quickshell/$config_name/shell.qml"
 colors_file="$HOME/.config/quickshell/$config_name/Colors.qml"
 log_file="/tmp/kitana-quickshell.log"
+action="${1:-reload}"
 
 export QS_NO_RELOAD_POPUP=1
 
@@ -13,12 +14,80 @@ if ! command -v quickshell >/dev/null 2>&1; then
   exit 0
 fi
 
-if pgrep -x quickshell >/dev/null 2>&1; then
+case "$action" in
+  --start) action="start" ;;
+  --stop) action="stop" ;;
+  --restart) action="restart" ;;
+  --reload) action="reload" ;;
+esac
+
+is_running() {
+  quickshell ipc -c "$config_name" show >/dev/null 2>&1
+}
+
+wait_until_running() {
+  for _ in {1..20}; do
+    is_running && return 0
+    sleep 0.1
+  done
+
+  return 1
+}
+
+wait_until_stopped() {
+  for _ in {1..20}; do
+    ! is_running && return 0
+    sleep 0.1
+  done
+
+  return 1
+}
+
+start_quickshell() {
+  if is_running; then
+    return 0
+  fi
+
+  command -v notify-send >/dev/null 2>&1 && notify-send "Kitana" "Starting Quickshell" >/dev/null 2>&1 || true
+  quickshell --daemonize --no-duplicate --config "$config_name" >"$log_file" 2>&1
+  wait_until_running >/dev/null 2>&1 || true
+}
+
+stop_quickshell() {
+  quickshell kill -c "$config_name" >/dev/null 2>&1 || true
+  wait_until_stopped >/dev/null 2>&1 || true
+}
+
+reload_quickshell() {
+  if ! is_running; then
+    start_quickshell
+    return
+  fi
+
   [ -f "$colors_file" ] && touch "$colors_file"
   touch "$config_file"
   command -v notify-send >/dev/null 2>&1 && notify-send "Kitana" "Quickshell reload requested" >/dev/null 2>&1 || true
-  exit 0
-fi
+}
 
-command -v notify-send >/dev/null 2>&1 && notify-send "Kitana" "Starting Quickshell" >/dev/null 2>&1 || true
-exec quickshell --daemonize --no-duplicate --config "$config_name" >"$log_file" 2>&1
+case "$action" in
+  start)
+    start_quickshell
+    ;;
+  stop)
+    stop_quickshell
+    ;;
+  restart)
+    stop_quickshell
+    start_quickshell
+    ;;
+  reload)
+    reload_quickshell
+    ;;
+  -h|--help|help)
+    printf 'Usage: kitana-quickshell [start|stop|restart|reload]\n'
+    ;;
+  *)
+    printf 'Usage: kitana-quickshell [start|stop|restart|reload]\n' >&2
+    exit 2
+    ;;
+esac
