@@ -1,8 +1,10 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-# Script to create a web app launcher with a chosen browser
+set -euo pipefail
 
 KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
+ICON_DIR="$HOME/.local/share/applications/icons"
+CONFIG_FILE="$HOME/.config/webapp-install.conf"
 
 # shellcheck source=../install/lib/install.sh
 source "$KITANA_DIR/install/lib/install.sh"
@@ -10,8 +12,8 @@ source "$KITANA_DIR/install/lib/install.sh"
 BROWSER="brave"
 
 # Load browser from config file if it exists
-CONFIG_FILE="$HOME/.config/webapp-install.conf"
 if [ -f "$CONFIG_FILE" ]; then
+    # shellcheck disable=SC1090
     source "$CONFIG_FILE"
 fi
 
@@ -38,32 +40,91 @@ if [ -z "$BROWSER" ]; then
     fi
 fi
 
-if [ "$#" -ne 3 ]; then
+normalize_url() {
+    local url="$1"
+
+    if [[ ! "$url" =~ ^[a-zA-Z][a-zA-Z0-9+.-]*: ]]; then
+        url="https://$url"
+    fi
+
+    printf '%s\n' "$url"
+}
+
+download_icon() {
+    local icon_ref="$1"
+    local target="$2"
+
+    if [[ "$icon_ref" =~ ^https?:// ]]; then
+        curl -fsSL -o "$target" "$icon_ref"
+        [ -s "$target" ]
+    else
+        local source_path="$icon_ref"
+        if [ ! -e "$source_path" ]; then
+            source_path="$ICON_DIR/$icon_ref"
+        fi
+
+        [ -e "$source_path" ] || return 1
+        if [ "$source_path" = "$target" ]; then
+            [ -s "$target" ]
+        else
+            cp "$source_path" "$target"
+        fi
+    fi
+}
+
+favicon_url_for() {
+    local app_url="$1"
+
+    printf 'https://www.google.com/s2/favicons?domain=%s&sz=128\n' "$app_url"
+}
+
+if [ "$#" -lt 3 ]; then
     "$KITANA_DIR/bin/kitana-show-logo"
     echo -e "\e[32mLet's create a new web app you can start with the app launcher.\n\e[0m"
     APP_NAME=$(gum input --prompt "Name> " --placeholder "My favorite web app")
-    APP_URL=$(gum input --prompt "URL> " --placeholder "https://example.com")
-    ICON_URL=$(gum input --prompt "Icon URL> " --placeholder "See https://dashboardicons.com (must use PNG!)")
+    APP_URL=$(normalize_url "$(gum input --prompt "URL> " --placeholder "https://example.com")")
+    ICON_REF="$(favicon_url_for "$APP_URL")"
+    APP_EXEC=""
+    APP_MIME_TYPES=""
+    interactive=1
 else
     APP_NAME="$1"
-    APP_URL="$2"
-    ICON_URL="$3"
+    APP_URL=$(normalize_url "$2")
+    ICON_REF="$3"
+    APP_EXEC="${4:-}"
+    APP_MIME_TYPES="${5:-}"
+    interactive=0
 fi
 
-if [[ -z "$APP_NAME" || -z "$APP_URL" || -z "$ICON_URL" ]]; then
-    echo "You must set app name, app URL, and icon URL!"
+if [ -z "$APP_EXEC" ]; then
+    APP_EXEC="$KITANA_DIR/bin/kitana-webapp-launch \"$APP_URL\" \"$APP_NAME\""
+fi
+
+if [[ -z "$APP_NAME" || -z "$APP_URL" ]]; then
+    echo "You must set app name and app URL!"
     exit 1
 fi
 
-ICON_DIR="$HOME/.local/share/applications/icons"
 DESKTOP_FILE="$HOME/.local/share/applications/$APP_NAME.desktop"
 ICON_PATH="$ICON_DIR/$APP_NAME.png"
 
 mkdir -p "$ICON_DIR"
 
-if ! curl -sL -o "$ICON_PATH" "$ICON_URL"; then
-    echo "Error: Failed to download icon."
-    exit 1
+if [ -z "${ICON_REF:-}" ]; then
+    ICON_REF="$(favicon_url_for "$APP_URL")"
+fi
+
+if ! download_icon "$ICON_REF" "$ICON_PATH"; then
+    if [ "$interactive" -eq 1 ]; then
+        ICON_REF=$(gum input --prompt "Icon URL> " --placeholder "Could not fetch favicon. Enter PNG icon URL or local path")
+        if ! download_icon "$ICON_REF" "$ICON_PATH"; then
+            echo "Error: Failed to install icon."
+            exit 1
+        fi
+    else
+        echo "Error: Failed to install icon: $ICON_REF"
+        exit 1
+    fi
 fi
 
 cat >"$DESKTOP_FILE" <<EOF
@@ -71,16 +132,28 @@ cat >"$DESKTOP_FILE" <<EOF
 Version=1.0
 Name=$APP_NAME
 Comment=$APP_NAME
-Exec=$KITANA_DIR/bin/kitana-webapp-launch "$APP_URL" "$APP_NAME"
+Exec=$APP_EXEC
 Terminal=false
 Type=Application
 Icon=$ICON_PATH
 StartupNotify=true
 EOF
 
+if [ -n "$APP_MIME_TYPES" ]; then
+    printf 'MimeType=%s;\n' "${APP_MIME_TYPES%;}" >>"$DESKTOP_FILE"
+fi
+
 chmod +x "$DESKTOP_FILE"
 
-if [ "$#" -ne 3 ]; then
-    echo -e "You can now find $APP_NAME using the app launcher (SUPER + SPACE)\n"
+if [ -n "$APP_MIME_TYPES" ] && command -v xdg-mime >/dev/null 2>&1; then
+    IFS=';' read -r -a mime_types <<<"$APP_MIME_TYPES"
+    for mime_type in "${mime_types[@]}"; do
+        [ -n "$mime_type" ] || continue
+        xdg-mime default "$(basename "$DESKTOP_FILE")" "$mime_type"
+    done
+fi
+
+if [ "$interactive" -eq 1 ]; then
+    echo -e "You can now find $APP_NAME using the app launcher (SUPER + D)\n"
     "$KITANA_DIR/bin/kitana-show-done"
 fi

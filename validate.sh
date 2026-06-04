@@ -91,7 +91,7 @@ check_dir() {
 echo "Validating Kitana install..."
 echo
 
-for cmd in git yay Hyprland start-hyprland hyprctl sddm quickshell awww awww-daemon nmcli lua; do
+for cmd in git yay Hyprland start-hyprland hyprctl sddm quickshell awww awww-daemon nmcli nc lua; do
   check_command "$cmd"
 done
 
@@ -111,6 +111,7 @@ for pkg in \
   hyprpicker \
   hyprpolkitagent \
   networkmanager \
+  openbsd-netcat \
   quickshell \
   qt6ct \
   xdg-desktop-portal-hyprland; do
@@ -308,6 +309,7 @@ fi
 
 for helper in \
   kitana-git-config \
+  kitana-audio-mic-status \
   kitana-install-1password \
   kitana-install-browser \
   kitana-install-dropbox \
@@ -337,7 +339,10 @@ for helper in \
   kitana-theme-quickshell \
   kitana-theme-zed \
   kitana-theme-zed-update \
+  kitana-wallpaper \
+  kitana-wallpaper-watch \
   kitana-webapp-install \
+  kitana-webapp-handler-zoom \
   kitana-webapp-launch \
   kitana-webapp-remove; do
   if [ -x "$KITANA_DIR/bin/$helper" ]; then
