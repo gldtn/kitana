@@ -146,7 +146,3 @@ For Quickshell work, also check:
 - Do not amend commits unless explicitly requested.
 - Do not revert unrelated user changes.
 - Keep commit messages short and imperative.
-
-# Thanks
-
-Kitana is inspired by ideas and patterns from Omarchy and DankMaterial, adapted for Kitana's own structure and personal workflow.
