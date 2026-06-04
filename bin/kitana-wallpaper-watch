@@ -1,0 +1,43 @@
+#!/bin/bash
+
+set -euo pipefail
+
+KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
+runtime_dir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+signature="${HYPRLAND_INSTANCE_SIGNATURE:-}"
+
+[ -n "$signature" ] || exit 0
+
+socket="$runtime_dir/hypr/$signature/.socket2.sock"
+debounce_dir="$runtime_dir/kitana-wallpaper-restore.pending"
+
+restore_wallpaper() {
+  "$KITANA_DIR/bin/kitana-wallpaper" --restore >/dev/null 2>&1 || true
+}
+
+schedule_restore() {
+  if mkdir "$debounce_dir" 2>/dev/null; then
+    (
+      sleep 1
+      restore_wallpaper
+      rmdir "$debounce_dir" 2>/dev/null || true
+    ) &
+  fi
+}
+
+while true; do
+  if [ ! -S "$socket" ]; then
+    sleep 1
+    continue
+  fi
+
+  nc -U "$socket" 2>/dev/null | while IFS= read -r event; do
+    case "$event" in
+      monitoradded*|monitorremoved*)
+        schedule_restore
+        ;;
+    esac
+  done
+
+  sleep 1
+done

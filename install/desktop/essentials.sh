@@ -11,6 +11,7 @@ PACKAGES=(
   grim
   inetutils
   networkmanager
+  openbsd-netcat
   pamixer
   playerctl
   polkit
