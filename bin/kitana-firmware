@@ -31,9 +31,27 @@ require_fwupdmgr() {
 
 print_bios_info() {
   echo "System firmware information:"
+  local bios_info
 
   if command -v dmidecode >/dev/null 2>&1; then
-    sudo dmidecode -t bios -t system 2>/dev/null | grep -E '^(Manufacturer|Product Name|Version|Release Date|BIOS Revision|Firmware Revision):' || true
+    if ! bios_info="$(sudo dmidecode -t bios -t system 2>/dev/null)"; then
+      echo "Unable to read BIOS information with dmidecode."
+      return
+    fi
+
+    printf '%s\n' "$bios_info" | awk -F: '
+      /^[[:space:]]*(Manufacturer|Product Name|Version|Release Date|BIOS Revision|Firmware Revision):/ {
+        gsub(/^[[:space:]]+/, "", $1)
+        gsub(/^[[:space:]]+/, "", $2)
+        print $1 ": " $2
+        found = 1
+      }
+      END {
+        if (!found) {
+          print "No BIOS information found in dmidecode output."
+        }
+      }
+    '
   else
     echo "dmidecode is not installed."
   fi
