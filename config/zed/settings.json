@@ -50,8 +50,8 @@
     "tailwindcss": true
   },
   "theme": "Kitana Dynamic",
-  "icon_theme": "Flow Light",
-  "buffer_font_family": "Berkeley Mono Variable",
+  // "icon_theme": "Flow Light",
+  "buffer_font_family": "Ioskeley Mono",
   "buffer_font_size": 16,
   "ui_font_size": 18,
   "tab_size": 2,
@@ -235,7 +235,7 @@
     "shell": {
       "program": "/bin/bash"
     },
-    "font_family": "Berkeley Mono Variable",
+    "font_family": "IoskeleyMonoTerm Nerd Font",
     "font_size": 14,
     "working_directory": "current_project_directory"
   },

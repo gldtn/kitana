@@ -15,6 +15,7 @@ Temporary notes for clean-install testing and session handoff. Update this befor
   - `kitana-quickshell reload`
 - SDDM is Kitana-owned through `default/sddm/` and refreshed by `kitana-refresh-sddm`.
 - Optional/personal installs are explicit `kitana-install-*` commands, not installer flags.
+- Private fonts now install from a configurable private Git repo instead of Dropbox.
 
 ## Recently Verified
 
@@ -23,6 +24,10 @@ Temporary notes for clean-install testing and session handoff. Update this befor
 - Launcher search, icons, hidden app filtering, and keyboard behavior were tested interactively.
 - `kitana-quickshell start`, `stop`, `restart`, and `reload` were tested.
 - `kitana-refresh-applications` installs hidden desktop overrides into `~/.local/share/applications`.
+- Fresh install first-run visual state was verified:
+  - SDDM shows the Kitana wallpaper on the first reboot after install.
+  - Hyprland restores the seeded wallpaper and theme on first login.
+  - Quickshell starts without the routine `Quickshell reload requested` notification.
 
 ## Before Clean Install
 
@@ -34,11 +39,6 @@ Temporary notes for clean-install testing and session handoff. Update this befor
 
 ## Open Issues
 
-- Confirm on the next fresh install that first-run visual state is fixed, then remove this temporary note:
-  - SDDM should show the Kitana wallpaper on the first reboot after install.
-  - Hyprland should restore the seeded wallpaper and theme on first login.
-  - Quickshell should start without the routine `Quickshell reload requested` notification.
-  - Related fixes seed `~/.config/kitana/wallpaper`, `current-wallpaper`, and `theme` during config install, give `kitana-refresh-sddm` a bundled wallpaper fallback, and start Quickshell with `kitana-quickshell start` from Hyprland autostart.
 - Revisit real CAVA integration for the dashboard media visualizer. Current bars are synthetic; a later pass should add a small `cava` service/process parser with graceful fallback.
 
 ## Useful Commands
@@ -50,6 +50,8 @@ bash validate.sh
 kitana-refresh-applications
 kitana-refresh-configs
 kitana-refresh-sddm
+kitana-install-private-fonts --url https://github.com/gldtn/kitana-private-fonts.git
+kitana-install-private-fonts --current
 kitana-quickshell restart
 quickshell ipc -c kitana show
 quickshell log -c kitana --no-color

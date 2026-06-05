@@ -5,6 +5,7 @@ Personal, opinionated Arch Linux bootstrap and post-install setup.
 ## What this does
 
 - Installs core system, development, CLI, terminal, Hyprland ecosystem, and fonts.
+- Installs Ioskeley Mono for editors and IoskeleyMonoTerm Nerd Font for terminals.
 - Targets Hyprland 0.55+ with Lua-based config.
 - Runs as an interactive personal installer.
 - Prompts for a browser choice and applies MIME defaults based on that selection.
@@ -48,7 +49,19 @@ Optional/personal installs are available as individual commands:
 kitana-install-extras-crypto
 kitana-install-extras-media
 kitana-install-extras-wallpapers
+kitana-install-private-fonts
 ```
+
+To install private fonts from a private Git repo:
+
+```bash
+~/.local/share/kitana/bin/kitana-install-private-fonts --url https://github.com/gldtn/kitana-private-fonts.git
+~/.local/share/kitana/bin/kitana-install-private-fonts
+~/.local/share/kitana/bin/kitana-install-private-fonts --current
+~/.local/share/kitana/bin/kitana-install-private-fonts --reset
+```
+
+The private font helper clones or updates the configured repo in `~/.local/state/kitana/private-fonts`, installs all `.otf`, `.ttf`, `.otc`, and `.ttc` files into `~/.local/share/fonts/kitana-private`, and refreshes fontconfig. The repo URL is stored in `~/.config/kitana/private-fonts.conf`.
 
 To configure Git identity:
 
@@ -85,6 +98,7 @@ Browser choices include Brave, Brave Origin Beta, Chromium, Firefox, Google Chro
 - Customize Hyprland in `~/.config/hypr/custom/*.lua`; local custom modules load after Kitana defaults.
 - Kitana user settings live in `~/.config/kitana/config`, including `KITANA_WALLPAPER_DIR`.
 - Browser choice is stored in `~/.config/webapp-install.conf` and reused by Kitana web app helpers.
+- Private font repo choice is stored in `~/.config/kitana/private-fonts.conf` and reused by `kitana-install-private-fonts`.
 
 ## Thanks
 

@@ -2,62 +2,153 @@
 
 set -euo pipefail
 
-source_dir="${KITANA_PRIVATE_FONT_DIR:-$HOME/Dropbox/fonts}"
+config_dir="$HOME/.config/kitana"
+config_file="$config_dir/private-fonts.conf"
+repo_dir="${KITANA_PRIVATE_FONT_REPO_DIR:-$HOME/.local/state/kitana/private-fonts}"
 target_dir="${KITANA_PRIVATE_FONT_TARGET:-$HOME/.local/share/fonts/kitana-private}"
+repo_url="${KITANA_PRIVATE_FONT_REPO_URL:-}"
 
-fonts=(
-  "Berkeley Mono Variable.otf"
-  "MonoLisaVariableNormal.ttf"
-  "MonoLisaVariableItalic.ttf"
-)
+usage() {
+  printf 'Usage: %s [--current|--reset|--url <git-url>]\n' "$(basename "$0")"
+}
 
-echo "Installing Kitana private fonts..."
-echo "Source: $source_dir"
-echo "Target: $target_dir"
-
-if [ ! -d "$source_dir" ]; then
-  echo "Private font source directory not found: $source_dir"
-  echo "Sync Dropbox first, or set KITANA_PRIVATE_FONT_DIR=/path/to/fonts."
-  exit 1
-fi
-
-mkdir -p "$target_dir"
-
-installed=0
-missing=0
-
-for font in "${fonts[@]}"; do
-  source_file="$source_dir/$font"
-  target_file="$target_dir/$font"
-
-  if [ -f "$source_file" ]; then
-    cp -f "$source_file" "$target_file"
-    echo "Installed: $font"
-    installed=$((installed + 1))
-  else
-    echo "WARNING: missing private font: $source_file"
-    missing=$((missing + 1))
+load_config() {
+  if [ -f "$config_file" ]; then
+    # shellcheck disable=SC1090
+    source "$config_file"
+    repo_url="${KITANA_PRIVATE_FONT_REPO_URL:-$repo_url}"
   fi
+}
+
+save_config() {
+  mkdir -p "$config_dir"
+  printf 'KITANA_PRIVATE_FONT_REPO_URL=%q\n' "$repo_url" >"$config_file"
+}
+
+print_current() {
+  load_config
+  printf 'Private font repo: %s\n' "${repo_url:-not set}"
+  printf 'Repo checkout:     %s\n' "$repo_dir"
+  printf 'Install target:    %s\n' "$target_dir"
+}
+
+prompt_repo_url() {
+  if [ -n "$repo_url" ]; then
+    return 0
+  fi
+
+  if ! command -v gum >/dev/null 2>&1; then
+    echo "Private font repo URL is not configured."
+    echo "Run: $(basename "$0") --url https://github.com/gldtn/kitana-private-fonts.git"
+    exit 1
+  fi
+
+  repo_url="$(gum input --prompt "Private font repo> " --placeholder "https://github.com/gldtn/kitana-private-fonts.git")" || {
+    echo "Private font install cancelled."
+    exit 0
+  }
+
+  if [ -z "$repo_url" ]; then
+    echo "Private font install cancelled."
+    exit 0
+  fi
+
+  save_config
+}
+
+sync_repo() {
+  if ! command -v git >/dev/null 2>&1; then
+    echo "git is required to install private fonts."
+    exit 1
+  fi
+
+  mkdir -p "$(dirname "$repo_dir")"
+
+  if [ -d "$repo_dir/.git" ]; then
+    echo "Updating private font repo..."
+    git -C "$repo_dir" pull --ff-only
+  elif [ -e "$repo_dir" ]; then
+    echo "Private font checkout path already exists and is not a Git repo: $repo_dir"
+    exit 1
+  else
+    echo "Cloning private font repo..."
+    if ! git clone "$repo_url" "$repo_dir"; then
+      echo
+      echo "Could not clone private font repo."
+      echo "Make sure GitHub SSH auth is configured: ssh -T git@github.com"
+      exit 1
+    fi
+  fi
+}
+
+install_fonts() {
+  local installed=0
+  local font
+  local relative
+  local target_file
+
+  mkdir -p "$target_dir"
+
+  while IFS= read -r -d '' font; do
+    relative="${font#$repo_dir/}"
+    target_file="$target_dir/$(basename "$font")"
+    cp -f "$font" "$target_file"
+    echo "Installed: $relative"
+    installed=$((installed + 1))
+  done < <(find "$repo_dir" -type f \( -iname '*.otf' -o -iname '*.ttf' -o -iname '*.otc' -o -iname '*.ttc' \) -print0)
+
+  if [ "$installed" -eq 0 ]; then
+    echo "No font files found in $repo_dir."
+    echo "Add .otf, .ttf, .otc, or .ttc files to the private repo, then rerun this command."
+    exit 1
+  fi
+
+  fc-cache -f "$HOME/.local/share/fonts"
+
+  echo
+  echo "Installed $installed private font file(s)."
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --current)
+      print_current
+      exit 0
+      ;;
+    --reset)
+      rm -f "$config_file"
+      echo "Removed private font repo config: $config_file"
+      exit 0
+      ;;
+    --url)
+      if [ "$#" -lt 2 ]; then
+        usage >&2
+        exit 2
+      fi
+      repo_url="$2"
+      save_config
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      usage >&2
+      exit 2
+      ;;
+  esac
+  shift
 done
 
-if [ "$installed" -eq 0 ]; then
-  echo "No private fonts were installed."
-  exit 1
-fi
+load_config
+prompt_repo_url
+save_config
 
-fc-cache -f "$HOME/.local/share/fonts"
+echo "Installing Kitana private fonts..."
+echo "Source repo: $repo_url"
+echo "Repo checkout: $repo_dir"
+echo "Target: $target_dir"
 
-if command -v fc-match >/dev/null 2>&1; then
-  echo
-  echo "Fontconfig matches:"
-  fc-match "Berkeley Mono Variable" || true
-  fc-match "MonoLisa Variable" || true
-fi
-
-if [ "$missing" -gt 0 ]; then
-  echo
-  echo "Installed $installed private font(s), with $missing missing file(s)."
-else
-  echo
-  echo "Installed all Kitana private fonts."
-fi
+sync_repo
+install_fonts

@@ -8,7 +8,7 @@ config-file = ?kitana-theme.conf
 #term = "ghostty"
 
 # Font
-font-family = "Berkeley Mono Variable"
+font-family = "IoskeleyMonoTerm Nerd Font"
 font-style = Regular
 font-size = 12
 
