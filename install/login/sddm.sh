@@ -6,7 +6,7 @@ KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
 
 kitana_install_required "login/sddm" "sddm" || exit 1
 
-"$KITANA_DIR/bin/kitana-refresh-sddm"
+"$KITANA_DIR/bin/kitana-refresh" --sddm
 
 sudo systemctl enable sddm.service
 

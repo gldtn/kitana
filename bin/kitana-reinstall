@@ -5,23 +5,105 @@ set -euo pipefail
 KITANA_DIR="${KITANA_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 export PATH="$KITANA_DIR/bin:$PATH"
 
+targets=()
+prompt_reboot=1
+
+usage() {
+  cat <<EOF
+Usage: kitana-reinstall [--system] [--desktop] [--apps] [--configs] [--no-reboot-prompt]
+
+Rerun Kitana install or repair flows.
+
+Targets:
+  --system   Reinstall core system, firmware, CPU, and GPU packages
+  --desktop  Reinstall desktop packages and managed desktop files
+  --apps     Reinstall application packages and app integrations
+  --configs  Refresh Kitana-managed user configs
+
+With no target flags, Kitana runs configs, system, desktop, and apps.
+EOF
+}
+
 confirm() {
   if command -v gum >/dev/null 2>&1; then
     gum confirm "$1"
   else
+    local choice
     read -r -p "$1 [y/N]: " choice
     [[ "$choice" =~ ^[Yy]$ ]]
   fi
 }
 
-echo "This will reinstall Kitana desktop/apps and refresh Kitana-managed configs."
+add_target() {
+  local target="$1"
+  local existing
+
+  for existing in "${targets[@]}"; do
+    [ "$existing" = "$target" ] && return 0
+  done
+
+  targets+=("$target")
+}
+
+run_target() {
+  case "$1" in
+    configs)
+      kitana-refresh --configs
+      ;;
+    system)
+      bash "$KITANA_DIR/install/system.sh"
+      ;;
+    desktop)
+      bash "$KITANA_DIR/install-desktop.sh"
+      ;;
+    apps)
+      bash "$KITANA_DIR/install-apps.sh"
+      ;;
+  esac
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --system)
+      add_target system
+      ;;
+    --desktop)
+      add_target desktop
+      ;;
+    --apps)
+      add_target apps
+      ;;
+    --configs)
+      add_target configs
+      ;;
+    --no-reboot-prompt)
+      prompt_reboot=0
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      usage >&2
+      exit 2
+      ;;
+  esac
+  shift
+done
+
+if [ "${#targets[@]}" -eq 0 ]; then
+  targets=(configs system desktop apps)
+  echo "This will reinstall Kitana system, desktop/apps and refresh Kitana-managed configs."
+else
+  echo "This will run Kitana reinstall target(s): ${targets[*]}"
+fi
 
 if confirm "Continue?"; then
-  kitana-reinstall-configs
-  kitana-reinstall-desktop
-  kitana-reinstall-apps
+  for target in "${targets[@]}"; do
+    run_target "$target"
+  done
 
-  if confirm "System has been reinstalled. Reboot?"; then
+  if [ "$prompt_reboot" -eq 1 ] && confirm "System has been reinstalled. Reboot?"; then
     reboot
   fi
 fi

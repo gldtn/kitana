@@ -13,7 +13,7 @@ Temporary notes for clean-install testing and session handoff. Update this befor
   - `kitana-quickshell stop`
   - `kitana-quickshell restart`
   - `kitana-quickshell reload`
-- SDDM is Kitana-owned through `default/sddm/` and refreshed by `kitana-refresh-sddm`.
+- SDDM is Kitana-owned through `default/sddm/` and refreshed by `kitana-refresh --sddm`.
 - Optional/personal installs are explicit `kitana-install-*` commands, not installer flags.
 - Private fonts now install from a configurable private Git repo instead of Dropbox.
 
@@ -23,7 +23,7 @@ Temporary notes for clean-install testing and session handoff. Update this befor
 - `SUPER+D` opens the Kitana Quickshell launcher.
 - Launcher search, icons, hidden app filtering, and keyboard behavior were tested interactively.
 - `kitana-quickshell start`, `stop`, `restart`, and `reload` were tested.
-- `kitana-refresh-applications` installs hidden desktop overrides into `~/.local/share/applications`.
+- `kitana-refresh --applications` installs hidden desktop overrides into `~/.local/share/applications`.
 - Fresh install first-run visual state was verified:
   - SDDM shows the Kitana wallpaper on the first reboot after install.
   - Hyprland restores the seeded wallpaper and theme on first login.
@@ -47,9 +47,9 @@ Temporary notes for clean-install testing and session handoff. Update this befor
 git status --short
 git log --oneline -10
 bash validate.sh
-kitana-refresh-applications
-kitana-refresh-configs
-kitana-refresh-sddm
+kitana-refresh --applications
+kitana-refresh --configs
+kitana-refresh --sddm
 kitana-install-private-fonts --url https://github.com/gldtn/kitana-private-fonts.git
 kitana-install-private-fonts --current
 kitana-quickshell restart

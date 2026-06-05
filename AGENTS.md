@@ -16,8 +16,8 @@ All user-facing helper commands live in `bin/` and start with `kitana-`.
 Common prefixes:
 
 - `kitana-install-*` - install optional or personal software.
-- `kitana-refresh-*` - refresh generated or deployed files without reinstalling packages.
-- `kitana-reinstall*` - rerun broader install or repair flows.
+- `kitana-refresh` - refresh generated or deployed files without reinstalling packages.
+- `kitana-reinstall` - rerun broader install or repair flows.
 - `kitana-theme*` - theme generation and theme application.
 - `kitana-webapp-*` - web app desktop entry management and launching.
 
@@ -60,14 +60,15 @@ Do not edit live user config as the source of truth. Update repository files fir
 
 Preferred repair commands:
 
-- `kitana-refresh-applications`
-- `kitana-refresh-configs`
-- `kitana-refresh-sddm`
-- `kitana-refresh-wallpapers`
 - `kitana-reinstall`
-- `kitana-reinstall-apps`
-- `kitana-reinstall-configs`
-- `kitana-reinstall-desktop`
+- `kitana-reinstall --system`
+- `kitana-reinstall --desktop`
+- `kitana-reinstall --apps`
+- `kitana-reinstall --configs`
+- `kitana-refresh --applications`
+- `kitana-refresh --configs`
+- `kitana-refresh --sddm`
+- `kitana-refresh --wallpapers`
 
 Use targeted refresh commands when possible instead of rerunning the full installer.
 
@@ -108,8 +109,8 @@ Kitana owns its SDDM theme and greeter compositor config.
 
 - Source theme: `default/sddm/theme/`.
 - Source greeter compositor config: `default/sddm/hyprland.lua`.
-- Refresh command: `kitana-refresh-sddm`.
-- Test mode: `kitana-refresh-sddm --test-mode` or `sddm-greeter --test-mode --theme /usr/share/sddm/themes/kitana`.
+- Refresh command: `kitana-refresh --sddm`.
+- Test mode: `kitana-refresh --sddm --test-mode` or `sddm-greeter --test-mode --theme /usr/share/sddm/themes/kitana`.
 
 Do not enable SDDM autologin unless explicitly requested.
 
@@ -119,7 +120,7 @@ Application desktop entries and hidden overrides live in `applications/`.
 
 - Use `applications/hidden/*.desktop` for desktop entries that should be hidden from app launchers.
 - Hidden overrides should use the same basename as the system desktop entry and contain `NoDisplay=true`.
-- Run `kitana-refresh-applications` after changing application entries or hidden overrides.
+- Run `kitana-refresh --applications` after changing application entries or hidden overrides.
 - Kitana's Quickshell app search may also filter launcher noise directly when desktop entry overrides are not enough.
 
 # Validation

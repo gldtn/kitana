@@ -16,7 +16,7 @@ Personal, opinionated Arch Linux bootstrap and post-install setup.
 
 1. Run `bootstrap.sh` on a fresh Arch install.
 2. `install.sh` runs base system setup, then delegates to `install-desktop.sh` and `install-apps.sh`.
-3. Use `kitana-reinstall-*` and `kitana-refresh-*` commands after install to repair individual parts.
+3. Use targeted `kitana-reinstall` and `kitana-refresh` commands after install to repair individual parts.
 
 ## Bootstrap
 
@@ -26,7 +26,7 @@ Fresh full install:
 curl -fsSL https://raw.githubusercontent.com/gldtn/kitana/master/bootstrap.sh | bash
 ```
 
-The bootstrap runs the full installer. Use the `kitana-reinstall-*` and `kitana-refresh-*` commands after install to repair individual parts.
+The bootstrap runs the full installer. Use targeted `kitana-reinstall` and `kitana-refresh` commands after install to repair individual parts.
 
 Tracked install failures are written to `~/.local/state/kitana/install-failures.log`.
 The full install report is written to `~/.local/state/kitana/install-report.log`.
@@ -35,13 +35,14 @@ To repair or refresh Kitana pieces after install:
 
 ```bash
 kitana-reinstall
-kitana-reinstall-apps
-kitana-reinstall-desktop
-kitana-reinstall-configs
-kitana-refresh-applications
-kitana-refresh-configs
-kitana-refresh-sddm
-kitana-refresh-wallpapers
+kitana-reinstall --system
+kitana-reinstall --desktop
+kitana-reinstall --apps
+kitana-reinstall --configs
+kitana-refresh --applications
+kitana-refresh --configs
+kitana-refresh --sddm
+kitana-refresh --wallpapers
 ```
 
 Optional/personal installs are available as individual commands:

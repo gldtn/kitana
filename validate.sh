@@ -336,14 +336,8 @@ for helper in \
   kitana-launcher \
   kitana-pkg-add \
   kitana-quickshell \
-  kitana-refresh-applications \
-  kitana-refresh-configs \
-  kitana-refresh-sddm \
-  kitana-refresh-wallpapers \
+  kitana-refresh \
   kitana-reinstall \
-  kitana-reinstall-apps \
-  kitana-reinstall-configs \
-  kitana-reinstall-desktop \
   kitana-show-done \
   kitana-show-logo \
   kitana-theme \
