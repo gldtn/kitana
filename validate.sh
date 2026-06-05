@@ -91,7 +91,7 @@ check_dir() {
 echo "Validating Kitana install..."
 echo
 
-for cmd in git yay Hyprland start-hyprland hyprctl sddm quickshell awww awww-daemon nmcli nc lspci reflector rsync lua; do
+for cmd in git yay Hyprland start-hyprland hyprctl sddm quickshell awww awww-daemon nmcli nc lspci reflector rsync lua fwupdmgr dmidecode; do
   check_command "$cmd"
 done
 
@@ -111,12 +111,16 @@ for pkg in \
   hyprpaper \
   hyprpicker \
   hyprpolkitagent \
+  dmidecode \
+  fwupd \
+  linux-firmware \
   networkmanager \
   openbsd-netcat \
   pciutils \
   quickshell \
   reflector \
   rsync \
+  sof-firmware \
   qt6ct \
   xdg-desktop-portal-hyprland; do
   check_package "$pkg"
@@ -137,6 +141,7 @@ echo
 check_service_enabled bluetooth.service
 check_service_enabled NetworkManager.service
 check_service_enabled sddm.service
+check_service_enabled fwupd-refresh.timer
 
 if systemctl is-enabled iwd.service >/dev/null 2>&1; then
   fail "service should be disabled: iwd.service"
@@ -314,6 +319,8 @@ fi
 
 for helper in \
   kitana-git-config \
+  kitana-firmware \
+  kitana-hw-cpu \
   kitana-hw-gpu \
   kitana-browser \
   kitana-audio-mic-status \
@@ -359,8 +366,20 @@ for helper in \
   fi
 done
 
+if [ -x "$KITANA_DIR/bin/kitana-hw-cpu" ]; then
+  mapfile -t cpu_packages < <("$KITANA_DIR/bin/kitana-hw-cpu" --packages)
+  if [ "${#cpu_packages[@]}" -eq 0 ]; then
+    warn "No CPU microcode package detected by kitana-hw-cpu"
+  else
+    for pkg in "${cpu_packages[@]}"; do
+      check_package "$pkg"
+    done
+  fi
+fi
+
 if [ -x "$KITANA_DIR/bin/kitana-hw-gpu" ]; then
   mapfile -t gpu_packages < <("$KITANA_DIR/bin/kitana-hw-gpu" --packages)
+  mapfile -t gpu_tools < <("$KITANA_DIR/bin/kitana-hw-gpu" --tools)
   if [ "${#gpu_packages[@]}" -eq 0 ]; then
     warn "No GPU-specific packages detected by kitana-hw-gpu"
   else
@@ -373,6 +392,30 @@ if [ -x "$KITANA_DIR/bin/kitana-hw-gpu" ]; then
         pass "Vulkan ICD files installed"
       else
         fail "Vulkan ICD files missing: /usr/share/vulkan/icd.d/*.json"
+      fi
+    fi
+  fi
+
+  if [ "${#gpu_tools[@]}" -eq 0 ]; then
+    warn "No GPU diagnostic tools detected by kitana-hw-gpu"
+  else
+    for pkg in "${gpu_tools[@]}"; do
+      check_package "$pkg"
+    done
+
+    if printf '%s\n' "${gpu_tools[@]}" | grep -q '^vulkan-tools$'; then
+      if command -v vulkaninfo >/dev/null 2>&1; then
+        pass "GPU diagnostic command: vulkaninfo"
+      else
+        warn "GPU diagnostic command missing: vulkaninfo"
+      fi
+    fi
+
+    if printf '%s\n' "${gpu_tools[@]}" | grep -q '^libva-utils$'; then
+      if command -v vainfo >/dev/null 2>&1; then
+        pass "GPU diagnostic command: vainfo"
+      else
+        warn "GPU diagnostic command missing: vainfo"
       fi
     fi
   fi

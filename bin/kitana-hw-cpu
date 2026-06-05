@@ -1,0 +1,56 @@
+#!/bin/bash
+
+set -euo pipefail
+
+mode="${1:-summary}"
+vendor="unknown"
+
+detect_vendor() {
+  if grep -q '^vendor_id[[:space:]]*: AuthenticAMD$' /proc/cpuinfo 2>/dev/null; then
+    vendor="amd"
+  elif grep -q '^vendor_id[[:space:]]*: GenuineIntel$' /proc/cpuinfo 2>/dev/null; then
+    vendor="intel"
+  fi
+}
+
+print_packages() {
+  case "$vendor" in
+    amd) printf 'amd-ucode\n' ;;
+    intel) printf 'intel-ucode\n' ;;
+  esac
+}
+
+print_summary() {
+  echo "CPU vendor: $vendor"
+
+  if [ -r /proc/cpuinfo ]; then
+    echo
+    grep -m 1 '^model name' /proc/cpuinfo | sed 's/^model name[[:space:]]*:[[:space:]]*/CPU: /' || true
+  fi
+
+  echo
+  echo "Recommended packages:"
+  if [ "$vendor" = "unknown" ]; then
+    echo "  none"
+  else
+    print_packages | sed 's/^/  /'
+  fi
+}
+
+detect_vendor
+
+case "$mode" in
+  summary)
+    print_summary
+    ;;
+  --vendor)
+    printf '%s\n' "$vendor"
+    ;;
+  --packages)
+    print_packages
+    ;;
+  *)
+    echo "usage: kitana-hw-cpu [--vendor|--packages]" >&2
+    exit 1
+    ;;
+esac

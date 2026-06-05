@@ -6,6 +6,7 @@ Personal, opinionated Arch Linux bootstrap and post-install setup.
 
 - Installs core system, development, CLI, terminal, Hyprland ecosystem, and fonts.
 - Installs Ioskeley Mono for editors and IoskeleyMonoTerm Nerd Font for terminals.
+- Installs firmware support, CPU microcode, GPU diagnostics, and fwupd metadata refresh.
 - Targets Hyprland 0.55+ with Lua-based config.
 - Runs as an interactive personal installer.
 - Prompts for a browser choice and applies MIME defaults based on that selection.
@@ -71,6 +72,17 @@ To configure Git identity:
 ~/.local/share/kitana/bin/kitana-git-config --ensure
 ~/.local/share/kitana/bin/kitana-git-config --update
 ```
+
+To inspect and update system firmware manually:
+
+```bash
+~/.local/share/kitana/bin/kitana-firmware bios
+~/.local/share/kitana/bin/kitana-firmware devices
+~/.local/share/kitana/bin/kitana-firmware updates
+~/.local/share/kitana/bin/kitana-firmware update
+```
+
+Kitana installs `fwupd` and enables metadata refresh by default, but it never applies firmware updates automatically. `kitana-firmware update` shows the current BIOS/system information and asks for confirmation before running `fwupdmgr update`.
 
 To install or change the browser used by web apps:
 

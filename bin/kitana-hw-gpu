@@ -6,6 +6,7 @@ mode="${1:-summary}"
 gpu_paths=()
 vendors=()
 packages=()
+tools=()
 
 add_unique() {
   local value="$1"
@@ -32,6 +33,14 @@ add_package() {
 
   if add_unique "$package" "${packages[@]}" >/dev/null; then
     packages+=("$package")
+  fi
+}
+
+add_tool() {
+  local package="$1"
+
+  if add_unique "$package" "${tools[@]}" >/dev/null; then
+    tools+=("$package")
   fi
 }
 
@@ -103,6 +112,32 @@ select_packages() {
   done
 }
 
+select_tools() {
+  local vendor
+
+  for vendor in "${vendors[@]}"; do
+    case "$vendor" in
+      amd)
+        add_tool mesa-utils
+        add_tool vulkan-tools
+        add_tool libva-utils
+        add_tool nvtop
+        ;;
+      intel)
+        add_tool mesa-utils
+        add_tool vulkan-tools
+        add_tool libva-utils
+        add_tool intel-gpu-tools
+        ;;
+      nvidia)
+        add_tool vulkan-tools
+        add_tool nvtop
+        add_tool nvidia-settings
+        ;;
+    esac
+  done
+}
+
 print_summary() {
   local vendor
 
@@ -125,10 +160,21 @@ print_summary() {
       printf '  %s\n' "$vendor"
     done
   fi
+
+  echo
+  echo "Diagnostic tools:"
+  if [ "${#tools[@]}" -eq 0 ]; then
+    echo "  none"
+  else
+    for vendor in "${tools[@]}"; do
+      printf '  %s\n' "$vendor"
+    done
+  fi
 }
 
 detect_vendors
 select_packages
+select_tools
 
 case "$mode" in
   summary)
@@ -144,8 +190,13 @@ case "$mode" in
       printf '%s\n' "$package"
     done
     ;;
+  --tools)
+    for package in "${tools[@]}"; do
+      printf '%s\n' "$package"
+    done
+    ;;
   *)
-    echo "usage: kitana-hw-gpu [--vendors|--packages]" >&2
+    echo "usage: kitana-hw-gpu [--vendors|--packages|--tools]" >&2
     exit 1
     ;;
 esac

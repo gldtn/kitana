@@ -1,0 +1,79 @@
+#!/bin/bash
+
+set -euo pipefail
+
+command="${1:-devices}"
+
+usage() {
+  printf 'Usage: %s [bios|devices|updates|update]\n' "$(basename "$0")"
+}
+
+require_fwupdmgr() {
+  if ! command -v fwupdmgr >/dev/null 2>&1; then
+    echo "fwupdmgr is not installed. Run kitana-reinstall or install fwupd."
+    exit 1
+  fi
+}
+
+print_bios_info() {
+  echo "System firmware information:"
+
+  if command -v dmidecode >/dev/null 2>&1; then
+    sudo dmidecode -t bios -t system 2>/dev/null | grep -E '^(Manufacturer|Product Name|Version|Release Date|BIOS Revision|Firmware Revision):' || true
+  else
+    echo "dmidecode is not installed."
+  fi
+}
+
+confirm_update() {
+  if command -v gum >/dev/null 2>&1; then
+    gum confirm "Apply available firmware updates now? This may require a reboot."
+    return $?
+  fi
+
+  local answer
+  read -r -p "Apply available firmware updates now? This may require a reboot. [y/N] " answer
+  [[ "$answer" == "y" || "$answer" == "Y" ]]
+}
+
+refresh_metadata() {
+  fwupdmgr refresh --force
+}
+
+case "$command" in
+  bios)
+    require_fwupdmgr
+    print_bios_info
+    echo
+    fwupdmgr get-devices
+    ;;
+  devices)
+    require_fwupdmgr
+    fwupdmgr get-devices
+    ;;
+  updates)
+    require_fwupdmgr
+    refresh_metadata
+    fwupdmgr get-updates
+    ;;
+  update)
+    require_fwupdmgr
+    print_bios_info
+    echo
+    echo "Framework guidance: verify the current BIOS before updating."
+    echo
+    if confirm_update; then
+      refresh_metadata
+      fwupdmgr update
+    else
+      echo "Firmware update cancelled."
+    fi
+    ;;
+  -h|--help)
+    usage
+    ;;
+  *)
+    usage >&2
+    exit 2
+    ;;
+esac
