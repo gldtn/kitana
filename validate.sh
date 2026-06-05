@@ -271,7 +271,10 @@ for lua_module in \
   modules/binds.lua \
   modules/decorations.lua \
   modules/env.lua \
-  modules/rules.lua; do
+  modules/rules.lua \
+  apps/system.lua \
+  apps/1password.lua \
+  apps/bitwarden.lua; do
   if [ -f "$KITANA_DIR/default/hypr/$lua_module" ]; then
     pass "Kitana Hypr Lua default: $lua_module"
   else
@@ -592,7 +595,7 @@ if [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
 fi
 
 if command -v luac >/dev/null 2>&1; then
-  if luac -p "$KITANA_DIR/config/hypr/hyprland.lua" "$KITANA_DIR/config/hypr/kitana-theme.lua" "$KITANA_DIR/default/sddm/hyprland.lua" "$KITANA_DIR"/default/hypr/modules/*.lua; then
+  if luac -p "$KITANA_DIR/config/hypr/hyprland.lua" "$KITANA_DIR/config/hypr/kitana-theme.lua" "$KITANA_DIR/default/sddm/hyprland.lua" "$KITANA_DIR"/default/hypr/modules/*.lua "$KITANA_DIR"/default/hypr/apps/*.lua "$KITANA_DIR"/default/hypr/profiles/*.lua; then
     pass "Kitana Hypr Lua syntax"
   else
     fail "Kitana Hypr Lua syntax"

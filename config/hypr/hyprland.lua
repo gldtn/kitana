@@ -20,8 +20,18 @@ local default_modules = {
   "binds",
 }
 
+local default_app_modules = {
+  "system",
+  "1password",
+  "bitwarden",
+}
+
 for _, module in ipairs(default_modules) do
   require("default.hypr.modules." .. module)
+end
+
+for _, module in ipairs(default_app_modules) do
+  require("default.hypr.apps." .. module)
 end
 
 -- Local overrides and extensions.

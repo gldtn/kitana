@@ -39,7 +39,12 @@ Temporary notes for clean-install testing and session handoff. Update this befor
 
 ## Open Issues
 
+- None currently tracked.
+
+## TODO
+
 - Revisit real CAVA integration for the dashboard media visualizer. Current bars are synthetic; a later pass should add a small `cava` service/process parser with graceful fallback.
+- Revisit theme-specific blur coordination between Hyprland and Quickshell. Hyprland now has blur profiles, but Quickshell still owns separate alpha/color tokens in `Colors.qml`; later theme generation could set both together.
 
 ## Useful Commands
 
