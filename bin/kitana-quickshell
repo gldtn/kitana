@@ -48,7 +48,6 @@ start_quickshell() {
     return 0
   fi
 
-  command -v notify-send >/dev/null 2>&1 && notify-send "Kitana" "Starting Quickshell" >/dev/null 2>&1 || true
   quickshell --daemonize --no-duplicate --config "$config_name" >"$log_file" 2>&1
   wait_until_running >/dev/null 2>&1 || true
 }
@@ -66,7 +65,6 @@ reload_quickshell() {
 
   [ -f "$colors_file" ] && touch "$colors_file"
   touch "$config_file"
-  command -v notify-send >/dev/null 2>&1 && notify-send "Kitana" "Quickshell reload requested" >/dev/null 2>&1 || true
 }
 
 case "$action" in

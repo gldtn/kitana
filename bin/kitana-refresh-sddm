@@ -8,6 +8,7 @@ TARGET_THEME="/usr/share/sddm/themes/kitana"
 TARGET_HYPRLAND="/usr/share/sddm/hyprland.lua"
 WAYLAND_CONF="/etc/sddm.conf.d/10-wayland.conf"
 THEME_CONF="/etc/sddm.conf.d/20-theme.conf"
+DEFAULT_BACKGROUND="$KITANA_DIR/default/wallpapers/kitana-wallpaper-001.jpg"
 
 DRY_RUN=0
 RUN_TEST=0
@@ -114,6 +115,8 @@ run sudo cp -r "$SOURCE_THEME" "$TARGET_THEME"
 
 if [ -e "$HOME/.config/kitana/current-wallpaper" ]; then
   run sudo cp -L "$HOME/.config/kitana/current-wallpaper" "$TARGET_THEME/background"
+elif [ -f "$DEFAULT_BACKGROUND" ]; then
+  run sudo cp "$DEFAULT_BACKGROUND" "$TARGET_THEME/background"
 fi
 
 write_wayland_conf

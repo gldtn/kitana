@@ -45,6 +45,7 @@ env_wallpaper_dir="${KITANA_WALLPAPER_DIR:-}"
 # shellcheck disable=SC1090
 source "$KITANA_CONFIG_FILE"
 WALLPAPER_DIR="${env_wallpaper_dir:-${KITANA_WALLPAPER_DIR:-$HOME/.config/kitana/wallpapers}}"
+KITANA_THEME="${KITANA_THEME:-catppuccin-mocha}"
 
 mkdir -p "$WALLPAPER_DIR"
 
@@ -62,6 +63,21 @@ for wallpaper in "$KITANA_DIR"/default/wallpapers/*; do
     ln -sfn "$wallpaper" "$target"
   fi
 done
+
+default_wallpaper="$WALLPAPER_DIR/kitana-wallpaper-001.jpg"
+if [ ! -f "$default_wallpaper" ]; then
+  default_wallpaper="$KITANA_DIR/default/wallpapers/kitana-wallpaper-001.jpg"
+fi
+
+if [ -f "$default_wallpaper" ]; then
+  if [ ! -f "$KITANA_CONFIG_DIR/wallpaper" ]; then
+    printf '%s\n' "$default_wallpaper" >"$KITANA_CONFIG_DIR/wallpaper"
+  fi
+
+  if [ ! -e "$KITANA_CONFIG_DIR/current-wallpaper" ]; then
+    ln -sfn "$default_wallpaper" "$KITANA_CONFIG_DIR/current-wallpaper"
+  fi
+fi
 
 if [ -L "$HYPR_CONFIG_DIR" ]; then
   target=$(readlink "$HYPR_CONFIG_DIR")
@@ -295,3 +311,7 @@ for quickshell_custom in "$KITANA_DIR"/config/quickshell/kitana/custom/*.qml; do
     echo "Keeping existing Quickshell custom config: $target"
   fi
 done
+
+if [ ! -f "$KITANA_CONFIG_DIR/theme" ]; then
+  "$KITANA_DIR/bin/kitana-theme" "$KITANA_THEME" >/dev/null 2>&1 || true
+fi

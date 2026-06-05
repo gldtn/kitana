@@ -34,6 +34,11 @@ Temporary notes for clean-install testing and session handoff. Update this befor
 
 ## Open Issues
 
+- Confirm on the next fresh install that first-run visual state is fixed, then remove this temporary note:
+  - SDDM should show the Kitana wallpaper on the first reboot after install.
+  - Hyprland should restore the seeded wallpaper and theme on first login.
+  - Quickshell should start without the routine `Quickshell reload requested` notification.
+  - Related fixes seed `~/.config/kitana/wallpaper`, `current-wallpaper`, and `theme` during config install, give `kitana-refresh-sddm` a bundled wallpaper fallback, and start Quickshell with `kitana-quickshell start` from Hyprland autostart.
 - Revisit real CAVA integration for the dashboard media visualizer. Current bars are synthetic; a later pass should add a small `cava` service/process parser with graceful fallback.
 
 ## Useful Commands
