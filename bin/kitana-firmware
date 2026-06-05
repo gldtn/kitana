@@ -30,17 +30,17 @@ require_fwupdmgr() {
 }
 
 print_bios_info() {
-  echo "System firmware information:"
-
   if command -v dmidecode >/dev/null 2>&1; then
     if ! sudo -v; then
       echo "Unable to authenticate for BIOS information."
       return
     fi
 
+    echo "System firmware information:"
     print_dmidecode_fields "BIOS" "bios" "Vendor|Version|Release Date|BIOS Revision|Firmware Revision"
     print_dmidecode_fields "System" "system" "Manufacturer|Product Name|Version"
   else
+    echo "System firmware information:"
     echo "dmidecode is not installed."
   fi
 }
