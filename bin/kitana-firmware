@@ -31,48 +31,47 @@ require_fwupdmgr() {
 
 print_bios_info() {
   echo "System firmware information:"
-  local bios_info
 
   if command -v dmidecode >/dev/null 2>&1; then
-    if ! bios_info="$(sudo dmidecode -t bios -t system 2>/dev/null)"; then
-      echo "Unable to read BIOS information with dmidecode."
+    if ! sudo -v; then
+      echo "Unable to authenticate for BIOS information."
       return
     fi
 
-    printf '%s\n' "$bios_info" | awk -F: '
-      /^[[:space:]]*BIOS Information$/ {
-        section = "BIOS"
-        print "BIOS:"
-        next
-      }
-      /^[[:space:]]*System Information$/ {
-        section = "System"
-        print "System:"
-        next
-      }
-      section == "BIOS" && /^[[:space:]]*(Vendor|Version|Release Date|BIOS Revision|Firmware Revision):/ {
-        gsub(/^[[:space:]]+/, "", $1)
-        gsub(/^[[:space:]]+/, "", $2)
-        print "  " $1 ": " $2
-        found = 1
-        next
-      }
-      section == "System" && /^[[:space:]]*(Manufacturer|Product Name|Version):/ {
-        gsub(/^[[:space:]]+/, "", $1)
-        gsub(/^[[:space:]]+/, "", $2)
-        print "  " $1 ": " $2
-        found = 1
-        next
-      }
-      END {
-        if (!found) {
-          print "No BIOS information found in dmidecode output."
-        }
-      }
-    '
+    print_dmidecode_fields "BIOS" "bios" "Vendor|Version|Release Date|BIOS Revision|Firmware Revision"
+    print_dmidecode_fields "System" "system" "Manufacturer|Product Name|Version"
   else
     echo "dmidecode is not installed."
   fi
+}
+
+print_dmidecode_fields() {
+  local label="$1"
+  local type="$2"
+  local fields="$3"
+  local info
+
+  echo "$label:"
+
+  if ! info="$(sudo -n dmidecode -t "$type" 2>/dev/null)"; then
+    echo "  Unable to read $label information with dmidecode."
+    return
+  fi
+
+  printf '%s\n' "$info" | awk -F: -v fields="$fields" '
+    BEGIN { pattern = "^[[:space:]]*(" fields "):" }
+    $0 ~ pattern {
+      gsub(/^[[:space:]]+/, "", $1)
+      gsub(/^[[:space:]]+/, "", $2)
+      print "  " $1 ": " $2
+      found = 1
+    }
+    END {
+      if (!found) {
+        print "  No matching fields found."
+      }
+    }
+  '
 }
 
 confirm_update() {
