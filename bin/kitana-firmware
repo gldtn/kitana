@@ -2,10 +2,24 @@
 
 set -euo pipefail
 
-command="${1:-devices}"
+command="${1:---help}"
 
 usage() {
-  printf 'Usage: %s [bios|devices|updates|update]\n' "$(basename "$0")"
+  cat <<EOF
+Usage: $(basename "$0") [bios|devices|updates|update]
+
+Inspect and update system firmware through fwupd.
+
+Commands:
+  bios     Show current system/BIOS information, then list fwupd devices
+  devices  List firmware-capable devices known to fwupd
+  updates  Refresh LVFS metadata and show available firmware updates
+  update   Show current BIOS information, show available updates, confirm, then apply updates
+
+Notes:
+  Kitana installs fwupd and refreshes firmware metadata, but never applies firmware updates automatically.
+  Firmware updates may require a reboot if updates are installed.
+EOF
 }
 
 require_fwupdmgr() {
@@ -26,7 +40,7 @@ print_bios_info() {
 }
 
 confirm_update() {
-  if command -v gum >/dev/null 2>&1; then
+  if [ -t 0 ] && [ -t 1 ] && command -v gum >/dev/null 2>&1; then
     gum confirm "Apply available firmware updates now? This may require a reboot."
     return $?
   fi
@@ -54,16 +68,22 @@ case "$command" in
   updates)
     require_fwupdmgr
     refresh_metadata
-    fwupdmgr get-updates
+    fwupdmgr get-updates || true
     ;;
   update)
     require_fwupdmgr
     print_bios_info
     echo
-    echo "Framework guidance: verify the current BIOS before updating."
+    echo "Verify the current BIOS/firmware version before updating."
+    echo
+    refresh_metadata
+    if ! fwupdmgr get-updates; then
+      echo
+      echo "No firmware updates to apply."
+      exit 0
+    fi
     echo
     if confirm_update; then
-      refresh_metadata
       fwupdmgr update
     else
       echo "Firmware update cancelled."
