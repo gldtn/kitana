@@ -40,11 +40,29 @@ print_bios_info() {
     fi
 
     printf '%s\n' "$bios_info" | awk -F: '
-      /^[[:space:]]*(Manufacturer|Product Name|Version|Release Date|BIOS Revision|Firmware Revision):/ {
+      /^[[:space:]]*BIOS Information$/ {
+        section = "BIOS"
+        print "BIOS:"
+        next
+      }
+      /^[[:space:]]*System Information$/ {
+        section = "System"
+        print "System:"
+        next
+      }
+      section == "BIOS" && /^[[:space:]]*(Vendor|Version|Release Date|BIOS Revision|Firmware Revision):/ {
         gsub(/^[[:space:]]+/, "", $1)
         gsub(/^[[:space:]]+/, "", $2)
-        print $1 ": " $2
+        print "  " $1 ": " $2
         found = 1
+        next
+      }
+      section == "System" && /^[[:space:]]*(Manufacturer|Product Name|Version):/ {
+        gsub(/^[[:space:]]+/, "", $1)
+        gsub(/^[[:space:]]+/, "", $2)
+        print "  " $1 ": " $2
+        found = 1
+        next
       }
       END {
         if (!found) {
