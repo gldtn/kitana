@@ -4,6 +4,7 @@ echo "Installing fonts..."
 
 PACKAGES=(
   curl
+  gnome-font-viewer
   noto-fonts
   noto-fonts-cjk
   noto-fonts-emoji
