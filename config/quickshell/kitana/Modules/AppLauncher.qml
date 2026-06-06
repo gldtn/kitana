@@ -170,9 +170,7 @@ PanelWindow {
         Rectangle {
             width: root.cardWidth
             height: root.cardHeight
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: Math.max(72, Math.floor(parent.height * 0.12))
+            anchors.centerIn: parent
             radius: 18
             color: Colors.panelBackground
             border.color: Colors.panelBorder
@@ -378,6 +376,13 @@ PanelWindow {
                             font.pixelSize: 14
                         }
                     }
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    height: 1
+                    color: Colors.panelBorder
+                    opacity: 0.55
                 }
 
                 Text {
