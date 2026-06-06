@@ -49,9 +49,11 @@ Install guidance:
 - `bin/` - executable `kitana-*` helper commands.
 - `config/` - user-facing configs copied into `~/.config` or `$HOME`.
 - `default/` - Kitana defaults, assets, Hyprland Lua modules, wallpapers, SDDM theme source, and other deployed defaults.
+- `default/xcompose` - base XCompose shortcuts deployed to `~/.XCompose`; keyboard presets are managed by `kitana-keyboard`.
 - `install/` - install stages and shared install libraries.
 - `lib/` - shared non-install libraries.
 - `themes/` - Kitana theme palettes and theme helpers.
+- `TODO.md` - tracked follow-up work and deferred improvements.
 - `vendor/` - bundled upstream data used by generators.
 
 Do not edit live user config as the source of truth. Update repository files first, then use the relevant refresh command or install script to deploy.

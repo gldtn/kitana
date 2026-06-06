@@ -4,14 +4,15 @@
 
 hl.config({
   input = {
-    -- Use multiple keyboard layouts and switch between them with Alt + Space
-    kb_layout = "us,us",
-    kb_variant = ",intl",
+    -- Use a plain US keyboard by default. Right Super is the Compose key.
+    -- Run `kitana-keyboard --pt-br` for Brazilian Portuguese US-International behavior.
+    kb_layout = "us",
+    kb_variant = "",
     kb_model = "",
-    kb_options = "grp:alt_space_toggle",
+    kb_options = "compose:rwin",
     -- Change speed of keyboard repeat
     repeat_rate = 40,
-    repeat_delay = 600,
+    repeat_delay = 250,
     -- Start with numlock on by default
     numlock_by_default = true,
     -- Follow Mouse Cursor
@@ -19,12 +20,41 @@ hl.config({
     sensitivity = 0,
 
     touchpad = {
+      -- Use natural (inverse) scrolling.
       natural_scroll = false,
+      -- Use two-finger clicks for right-click instead of lower-right corner.
+      clickfinger_behavior = true,
+      -- Control the speed of your scrolling.
+      scroll_factor = 0.4,
+
+      -- Enable the touchpad while typing.
+      -- disable_while_typing = false,
+
+      -- Left-click-and-drag with three fingers.
+      -- drag_3fg = 1,
     },
   },
 })
 
-hl.device({
-  name = "epic-mouse-v1",
-  sensitivity = -0.5,
+-- Scroll nicely in the terminal.
+hl.window_rule({
+  name  = "terminal-touchpad-scroll",
+  match = { class = "^(Alacritty|kitty|foot)$" },
+
+  scroll_touchpad = 1.5,
 })
+
+hl.window_rule({
+  name  = "ghostty-touchpad-scroll",
+  match = { class = "^(com.mitchellh.ghostty)$" },
+
+  scroll_touchpad = 0.2,
+})
+
+-- Enable touchpad gestures for changing workspaces.
+-- See https://wiki.hypr.land/Configuring/Advanced-and-Cool/Gestures/
+-- hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
+
+-- Enable touchpad gestures for moving focus (helpful on scrolling layout).
+-- hl.gesture({ fingers = 3, direction = "left", action = function() hl.dispatch(hl.dsp.focus({ direction = "l" })) end })
+-- hl.gesture({ fingers = 3, direction = "right", action = function() hl.dispatch(hl.dsp.focus({ direction = "r" })) end })

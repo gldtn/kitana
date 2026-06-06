@@ -38,4 +38,5 @@ end
 -- To override a default module, require the module on the list below and
 -- create the module in ~/.config/hypr/custom/.. See examples;
 require("hypr.custom.monitors")
+require("hypr.custom.input")
 require("hypr.custom.binds")

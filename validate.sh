@@ -313,7 +313,7 @@ for lua_module in \
   fi
 done
 
-for custom_module in monitors binds; do
+for custom_module in monitors input binds; do
   if [ -f "$HOME/.config/hypr/custom/$custom_module.lua" ]; then
     pass "Hypr custom module: $custom_module"
   else
@@ -356,6 +356,7 @@ for helper in \
   kitana-firmware \
   kitana-hw-cpu \
   kitana-hw-gpu \
+  kitana-keyboard \
   kitana-browser \
   kitana-audio-mic-status \
   kitana-install-1password \
@@ -486,6 +487,18 @@ if [ -x "$KITANA_DIR/bin/kitana-wallpaper-grid" ]; then
   pass "Kitana wallpaper grid helper: bin/kitana-wallpaper-grid"
 else
   fail "Kitana wallpaper grid helper missing or not executable: bin/kitana-wallpaper-grid"
+fi
+
+if [ -f "$KITANA_DIR/default/xcompose" ]; then
+  pass "Kitana XCompose default: default/xcompose"
+else
+  fail "Kitana XCompose default missing: default/xcompose"
+fi
+
+if [ -f "$HOME/.XCompose" ]; then
+  pass "XCompose config: ~/.XCompose"
+else
+  warn "XCompose config missing: ~/.XCompose"
 fi
 
 if [ -f "$KITANA_DIR/config/quickshell/kitana/Modules/WallpaperGrid.qml" ]; then

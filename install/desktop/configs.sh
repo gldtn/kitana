@@ -20,6 +20,8 @@ GHOSTTY_CONFIG_DIR="$HOME/.config/ghostty"
 GHOSTTY_CONFIG_MARKER="Kitana managed Ghostty config"
 STARSHIP_CONFIG_DIR="$HOME/.config/starship"
 STARSHIP_CONFIG_MARKER="Kitana managed Starship config"
+XCOMPOSE_FILE="$HOME/.XCompose"
+XCOMPOSE_MARKER="Kitana managed XCompose"
 GTK3_CONFIG_DIR="$HOME/.config/gtk-3.0"
 GTK4_CONFIG_DIR="$HOME/.config/gtk-4.0"
 GTK2_CONFIG_FILE="$HOME/.gtkrc-2.0"
@@ -110,7 +112,7 @@ else
   echo "Keeping existing Hypr theme config: $HYPR_THEME_FILE"
 fi
 
-for custom_module in monitors binds; do
+for custom_module in monitors input binds; do
   custom_file="$HYPR_CONFIG_DIR/custom/$custom_module.lua"
 
   if [ ! -e "$custom_file" ]; then
@@ -178,6 +180,12 @@ if [ ! -e "$STARSHIP_CONFIG_DIR/starship.toml" ] || grep -q "$STARSHIP_CONFIG_MA
   cp "$KITANA_DIR/config/starship.toml" "$STARSHIP_CONFIG_DIR/starship.toml"
 else
   echo "Keeping existing Starship config: $STARSHIP_CONFIG_DIR/starship.toml"
+fi
+
+if [ ! -e "$XCOMPOSE_FILE" ] || grep -q "$XCOMPOSE_MARKER" "$XCOMPOSE_FILE"; then
+  cp "$KITANA_DIR/default/xcompose" "$XCOMPOSE_FILE"
+else
+  echo "Keeping existing XCompose: $XCOMPOSE_FILE"
 fi
 
 mkdir -p "$GTK3_CONFIG_DIR" "$GTK4_CONFIG_DIR" "$KVANTUM_CONFIG_DIR" "$QT6CT_CONFIG_DIR"

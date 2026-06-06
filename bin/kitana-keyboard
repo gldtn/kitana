@@ -1,0 +1,215 @@
+#!/bin/bash
+
+set -euo pipefail
+
+KITANA_DIR="${KITANA_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+XCOMPOSE_SOURCE="$KITANA_DIR/default/xcompose"
+XCOMPOSE_TARGET="$HOME/.XCompose"
+HYPR_CUSTOM_INPUT="$HOME/.config/hypr/custom/input.lua"
+HYPR_INPUT_MARKER="Kitana managed keyboard input override"
+XCOMPOSE_MANAGED_MARKER="Kitana managed XCompose"
+PT_BR_MARKER="Match Windows/macOS US-International behavior for Brazilian Portuguese"
+
+action="deploy"
+force=0
+pt_br=0
+refresh=0
+
+usage() {
+  cat <<EOF
+Usage: kitana-keyboard [add|remove] [--pt-br|--brazilian-portuguese] [--refresh] [--force]
+
+Manage Kitana keyboard input defaults.
+
+Commands:
+  add --pt-br       Enable Brazilian Portuguese US-International behavior
+  remove --pt-br    Remove Kitana-managed Brazilian Portuguese behavior
+
+Options:
+  --pt-br, --brazilian-portuguese  Select Brazilian Portuguese preset
+  --refresh                       Restart fcitx5 if available and reload Hyprland
+  --force                         Overwrite existing ~/.XCompose or custom input override
+
+Compatibility:
+  kitana-keyboard --pt-br behaves like kitana-keyboard add --pt-br.
+EOF
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    add|remove)
+      action="$1"
+      ;;
+    --pt-br|--brazilian-portuguese)
+      pt_br=1
+      if [ "$action" = "deploy" ]; then
+        action="add"
+      fi
+      ;;
+    --refresh)
+      refresh=1
+      ;;
+    --force)
+      force=1
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      usage >&2
+      exit 2
+      ;;
+  esac
+  shift
+done
+
+deploy_xcompose() {
+  if [ ! -f "$XCOMPOSE_SOURCE" ]; then
+    echo "Missing Kitana XCompose source: $XCOMPOSE_SOURCE" >&2
+    return 1
+  fi
+
+  if [ "$force" -eq 1 ] || [ ! -e "$XCOMPOSE_TARGET" ] || grep -q "$XCOMPOSE_MANAGED_MARKER" "$XCOMPOSE_TARGET" 2>/dev/null; then
+    cp "$XCOMPOSE_SOURCE" "$XCOMPOSE_TARGET"
+  else
+    echo "Keeping existing XCompose: $XCOMPOSE_TARGET"
+  fi
+}
+
+ensure_custom_input() {
+  mkdir -p "$(dirname "$HYPR_CUSTOM_INPUT")"
+
+  if [ ! -e "$HYPR_CUSTOM_INPUT" ]; then
+    cat >"$HYPR_CUSTOM_INPUT" <<'EOF'
+-- Local Hypr customizations for input.
+-- This file is loaded after Kitana defaults.
+EOF
+  fi
+}
+
+is_empty_custom_input() {
+  [ -f "$HYPR_CUSTOM_INPUT" ] || return 1
+  grep -q '^-- Local Hypr customizations for input\.$' "$HYPR_CUSTOM_INPUT" && \
+    grep -q '^-- This file is loaded after Kitana defaults\.$' "$HYPR_CUSTOM_INPUT" && \
+    ! grep -q '^hl\.' "$HYPR_CUSTOM_INPUT"
+}
+
+append_pt_br_xcompose() {
+  grep -q "$PT_BR_MARKER" "$XCOMPOSE_TARGET" 2>/dev/null && return 0
+
+  local tmp_file
+  tmp_file="$(mktemp)"
+  awk '{ lines[NR] = $0 } END { n = NR; while (n > 0 && lines[n] == "") n--; for (i = 1; i <= n; i++) print lines[i] }' "$XCOMPOSE_TARGET" >"$tmp_file"
+  cp "$tmp_file" "$XCOMPOSE_TARGET"
+  rm -f "$tmp_file"
+
+  cat >>"$XCOMPOSE_TARGET" <<'EOF'
+
+# Match Windows/macOS US-International behavior for Brazilian Portuguese.
+<dead_acute> <c> : "ç" ccedilla
+<dead_acute> <C> : "Ç" Ccedilla
+EOF
+}
+
+remove_pt_br_xcompose() {
+  [ -f "$XCOMPOSE_TARGET" ] || return 0
+
+  local tmp_file
+  tmp_file="$(mktemp)"
+  awk '
+    /^# Match Windows\/macOS US-International behavior for Brazilian Portuguese\.$/ { skip = 3; next }
+    skip > 0 { skip--; next }
+    /^$/ { blanks++; if (blanks > 1) next }
+    !/^$/ { blanks = 0 }
+    { print }
+  ' "$XCOMPOSE_TARGET" >"$tmp_file"
+  cp "$tmp_file" "$XCOMPOSE_TARGET"
+  rm -f "$tmp_file"
+}
+
+write_pt_br_hypr_input() {
+  mkdir -p "$(dirname "$HYPR_CUSTOM_INPUT")"
+
+  if [ "$force" -ne 1 ] && [ -e "$HYPR_CUSTOM_INPUT" ] && ! grep -q "$HYPR_INPUT_MARKER" "$HYPR_CUSTOM_INPUT" && ! is_empty_custom_input; then
+    echo "Keeping existing Hypr custom input: $HYPR_CUSTOM_INPUT"
+    echo "Run with --force to replace it with the Kitana PT-BR preset."
+    return 0
+  fi
+
+  cat >"$HYPR_CUSTOM_INPUT" <<EOF
+-- $HYPR_INPUT_MARKER
+-- This file is loaded after Kitana defaults.
+
+hl.config({
+  input = {
+    kb_layout = "us,us",
+    kb_variant = ",intl",
+    kb_options = "compose:rwin",
+  },
+})
+
+hl.bind("CTRL + BackSpace", hl.dsp.exec_cmd("hyprctl switchxkblayout all next"), { description = "Switch keyboard layout" })
+EOF
+}
+
+remove_pt_br_hypr_input() {
+  ensure_custom_input
+
+  if grep -q "$HYPR_INPUT_MARKER" "$HYPR_CUSTOM_INPUT"; then
+    cat >"$HYPR_CUSTOM_INPUT" <<'EOF'
+-- Local Hypr customizations for input.
+-- This file is loaded after Kitana defaults.
+EOF
+  else
+    echo "Keeping existing Hypr custom input: $HYPR_CUSTOM_INPUT"
+  fi
+}
+
+refresh_keyboard() {
+  if command -v fcitx5 >/dev/null 2>&1; then
+    pkill fcitx5 >/dev/null 2>&1 || true
+    setsid fcitx5 >/dev/null 2>&1 &
+  fi
+
+  if command -v hyprctl >/dev/null 2>&1; then
+    hyprctl reload >/dev/null 2>&1 || true
+  fi
+}
+
+case "$action" in
+  deploy)
+    deploy_xcompose
+    ;;
+  add)
+    if [ "$pt_br" -ne 1 ]; then
+      usage >&2
+      exit 2
+    fi
+
+    deploy_xcompose
+    append_pt_br_xcompose
+    write_pt_br_hypr_input
+    refresh_keyboard
+    echo "Brazilian Portuguese keyboard support enabled."
+    echo "Keyboard layout switch: Ctrl + Backspace"
+    echo "Compose key: Right Super"
+    ;;
+  remove)
+    if [ "$pt_br" -ne 1 ]; then
+      usage >&2
+      exit 2
+    fi
+
+    remove_pt_br_xcompose
+    remove_pt_br_hypr_input
+    refresh_keyboard
+    echo "Brazilian Portuguese keyboard support removed."
+    ;;
+esac
+
+if [ "$refresh" -eq 1 ] && [ "$action" = "deploy" ]; then
+  refresh_keyboard
+fi
+
+echo "Keyboard configuration refreshed."
