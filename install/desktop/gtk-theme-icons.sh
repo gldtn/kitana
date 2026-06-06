@@ -76,6 +76,25 @@ apply_gtk_settings() {
   fi
 }
 
+backup_gtk4_css_overrides() {
+  local gtk4_config_dir="$HOME/.config/gtk-4.0"
+  local css_file backup_file
+
+  [ "${KITANA_KEEP_GTK4_CSS:-0}" != "1" ] || return 0
+
+  for css_file in gtk.css gtk-dark.css; do
+    [ -e "$gtk4_config_dir/$css_file" ] || continue
+
+    backup_file="$gtk4_config_dir/$css_file.kitana-backup"
+    if [ -e "$backup_file" ]; then
+      backup_file="$gtk4_config_dir/$css_file.kitana-backup.$(date +%Y%m%d%H%M%S)"
+    fi
+
+    mv "$gtk4_config_dir/$css_file" "$backup_file"
+  done
+}
+
+backup_gtk4_css_overrides
 apply_gtk_settings
 
 if command -v gsettings >/dev/null 2>&1 && [ "${KITANA_SKIP_GSETTINGS:-0}" != "1" ]; then

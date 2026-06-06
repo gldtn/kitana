@@ -11,7 +11,6 @@ PACKAGES=(
   gtk4
   kvantum
   kvantum-gt5
-  materia-gtk-theme
   qt5-wayland
   qt6ct
   qt6-declarative
