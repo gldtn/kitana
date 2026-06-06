@@ -18,6 +18,7 @@ source_script "apps/productivity.sh"
 source_script "apps/media.sh"
 source_script "apps/files.sh"
 source_script "apps/managers.sh"
+source_script "apps/browser-flags.sh"
 
 echo "Let's install your preferred browser..."
 kitana-install-browser --apply-mime
