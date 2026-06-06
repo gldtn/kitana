@@ -5,10 +5,8 @@ set -euo pipefail
 echo "Installing GTK theme and icon theme..."
 
 KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
-GRAPHITE_THEME_ARGS="${GRAPHITE_THEME_ARGS:---theme default --color dark --tweaks normal darker rimless --size standard --libadwaita}"
-TELA_ICON_ARGS="${TELA_ICON_ARGS:-black}"
-GTK_THEME_NAME="${GTK_THEME_NAME:-Graphite-Dark}"
-GTK_ICON_THEME_NAME="${GTK_ICON_THEME_NAME:-Tela-circle-black}"
+GTK_THEME_NAME="${GTK_THEME_NAME:-Adwaita-dark}"
+GTK_ICON_THEME_NAME="${GTK_ICON_THEME_NAME:-Yaru-blue-dark}"
 
 theme_exists() {
   [ -d "$HOME/.local/share/themes/$1" ] || [ -d "$HOME/.themes/$1" ] || [ -d "/usr/share/themes/$1" ]
@@ -78,24 +76,11 @@ apply_gtk_settings() {
   fi
 }
 
-tmpdir="$(mktemp -d)"
-trap 'rm -rf "$tmpdir"' EXIT
-
-git clone --depth 1 https://github.com/vinceliuice/Graphite-gtk-theme.git "$tmpdir/Graphite-gtk-theme"
-
-(
-  cd "$tmpdir/Graphite-gtk-theme"
-  ./install.sh $GRAPHITE_THEME_ARGS
-)
-
-git clone --depth 1 https://github.com/vinceliuice/Tela-circle-icon-theme.git "$tmpdir/Tela-circle-icon-theme"
-
-(
-  cd "$tmpdir/Tela-circle-icon-theme"
-  ./install.sh $TELA_ICON_ARGS
-)
-
 apply_gtk_settings
+
+if command -v gtk-update-icon-cache >/dev/null 2>&1 && [ -d /usr/share/icons/Yaru ]; then
+  sudo gtk-update-icon-cache /usr/share/icons/Yaru >/dev/null 2>&1 || true
+fi
 
 if command -v gsettings >/dev/null 2>&1 && [ "${KITANA_SKIP_GSETTINGS:-0}" != "1" ]; then
   gsettings set org.gnome.desktop.interface color-scheme prefer-dark >/dev/null 2>&1 || true

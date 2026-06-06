@@ -18,6 +18,7 @@ PACKAGES=(
   qt6-quickcontrols2
   qt6-svg
   qt6-wayland
+  yaru-icon-theme
 )
 
 OPTIONAL_PACKAGES=(
