@@ -38,12 +38,69 @@ add_target() {
   targets+=("$target")
 }
 
+desktop_entry_hides() {
+  grep -Eiq '^[[:space:]]*(NoDisplay|Hidden)[[:space:]]*=[[:space:]]*true[[:space:]]*$' "$1"
+}
+
+write_hidden_desktop_override() {
+  local source_file="$1"
+  local desktop_id="${source_file##*/}"
+  local target_file="$HOME/.local/share/applications/$desktop_id"
+  local system_file="/usr/share/applications/$desktop_id"
+  local base_file="$source_file"
+  local tmp_file
+
+  [ -f "$system_file" ] && base_file="$system_file"
+  tmp_file="$(mktemp)"
+
+  grep -Eiv '^[[:space:]]*(NoDisplay|Hidden|X-Kitana-Managed)[[:space:]]*=' "$base_file" > "$tmp_file" || true
+
+  if grep -q '^\[Desktop Entry\]' "$tmp_file"; then
+    cp "$tmp_file" "$target_file"
+  else
+    {
+      printf '[Desktop Entry]\n'
+      grep -Ev '^\[Desktop Entry\]$' "$tmp_file" || true
+    } > "$target_file"
+  fi
+
+  {
+    printf 'NoDisplay=true\n'
+    printf 'X-Kitana-Managed=true\n'
+  } >> "$target_file"
+
+  rm -f "$tmp_file"
+}
+
 refresh_applications() {
   mkdir -p "$HOME/.local/share/applications"
+  rm -f "$HOME/.local/share/applications/kitana-hidden-desktop-ids"
 
   if [ -d "$KITANA_DIR/applications/hidden" ]; then
-    cp "$KITANA_DIR"/applications/hidden/*.desktop "$HOME/.local/share/applications/"
+    local desktop_file
+    for desktop_file in "$KITANA_DIR"/applications/hidden/*.desktop; do
+      [ -e "$desktop_file" ] || continue
+      local target_file="$HOME/.local/share/applications/${desktop_file##*/}"
+
+      if desktop_entry_hides "$desktop_file"; then
+        write_hidden_desktop_override "$desktop_file"
+      elif [ -f "$target_file" ] && grep -q '^X-Kitana-Managed=true$' "$target_file"; then
+        rm -f "$target_file"
+      fi
+    done
   fi
+
+  local target_file desktop_id source_file
+  for target_file in "$HOME/.local/share/applications"/*.desktop; do
+    [ -e "$target_file" ] || continue
+    grep -q '^X-Kitana-Managed=true$' "$target_file" || continue
+    desktop_id="${target_file##*/}"
+    source_file="$KITANA_DIR/applications/hidden/$desktop_id"
+
+    if [ ! -f "$source_file" ] || ! desktop_entry_hides "$source_file"; then
+      rm -f "$target_file"
+    fi
+  done
 
   bash "$KITANA_DIR/install/apps/webapps.sh"
 

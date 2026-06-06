@@ -10,47 +10,6 @@ Singleton {
 
     property var applications: []
     readonly property int maxResults: 12
-    readonly property var hiddenDesktopIds: [
-        "avahi-discover.desktop",
-        "bssh.desktop",
-        "btop.desktop",
-        "bvnc.desktop",
-        "cmake-gui.desktop",
-        "cups.desktop",
-        "dropbox.desktop",
-        "electron34.desktop",
-        "electron36.desktop",
-        "electron37.desktop",
-        "fcitx5-configtool.desktop",
-        "fcitx5-wayland-launcher.desktop",
-        "foot-server.desktop",
-        "footclient.desktop",
-        "java-java-openjdk.desktop",
-        "jconsole-java-openjdk.desktop",
-        "jshell-java-openjdk.desktop",
-        "kbd-layout-viewer5.desktop",
-        "kcm_fcitx5.desktop",
-        "kcm_kaccounts.desktop",
-        "kvantummanager.desktop",
-        "libreoffice-base.desktop",
-        "libreoffice-draw.desktop",
-        "libreoffice-math.desktop",
-        "libreoffice-startcenter.desktop",
-        "libreoffice-xsltfilter.desktop",
-        "limine-snapper-restore.desktop",
-        "lstopo.desktop",
-        "org.fcitx.fcitx5-config-qt.desktop",
-        "org.fcitx.fcitx5-migrator.desktop",
-        "org.fcitx.fcitx5-qt5-gui-wrapper.desktop",
-        "org.fcitx.fcitx5-qt6-gui-wrapper.desktop",
-        "org.fcitx.fcitx5.desktop",
-        "qv4l2.desktop",
-        "qvidcap.desktop",
-        "uuctl.desktop",
-        "wiremix.desktop",
-        "xgps.desktop",
-        "xgpsspeed.desktop"
-    ]
 
     function refresh(): void {
         applications = DesktopEntries.applications.values.filter(app => isVisible(app));
@@ -67,8 +26,6 @@ Singleton {
         const comment = normalize(app.comment);
         const hiddenText = [id, name, exec, comment].join(" ");
 
-        if (hiddenDesktopIds.includes(id))
-            return false;
         if (name === "dropbox" || exec === "dropbox" || exec.startsWith("dropbox "))
             return false;
         if (name.indexOf("avahi") !== -1 && name.indexOf("browser") !== -1)

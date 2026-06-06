@@ -4,8 +4,8 @@ echo "Installing media apps..."
 
 PACKAGES=(
   cava
+  celluloid
   imv
-  mpv
   obs-studio
 )
 
