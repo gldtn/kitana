@@ -6,7 +6,7 @@ echo "Installing GTK theme and icon theme..."
 
 KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
 GTK_THEME_NAME="${GTK_THEME_NAME:-Adwaita-dark}"
-GTK_ICON_THEME_NAME="${GTK_ICON_THEME_NAME:-Yaru-blue-dark}"
+GTK_ICON_THEME_NAME="${GTK_ICON_THEME_NAME:-Adwaita}"
 
 theme_exists() {
   [ -d "$HOME/.local/share/themes/$1" ] || [ -d "$HOME/.themes/$1" ] || [ -d "/usr/share/themes/$1" ]
@@ -77,10 +77,6 @@ apply_gtk_settings() {
 }
 
 apply_gtk_settings
-
-if command -v gtk-update-icon-cache >/dev/null 2>&1 && [ -d /usr/share/icons/Yaru ]; then
-  sudo gtk-update-icon-cache /usr/share/icons/Yaru >/dev/null 2>&1 || true
-fi
 
 if command -v gsettings >/dev/null 2>&1 && [ "${KITANA_SKIP_GSETTINGS:-0}" != "1" ]; then
   gsettings set org.gnome.desktop.interface color-scheme prefer-dark >/dev/null 2>&1 || true

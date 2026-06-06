@@ -228,8 +228,8 @@ if command -v gsettings >/dev/null 2>&1 && [ "${KITANA_SKIP_GSETTINGS:-0}" != "1
   gsettings set org.gnome.desktop.interface color-scheme prefer-dark >/dev/null 2>&1 || true
   gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark >/dev/null 2>&1 || true
 
-  if [ -d "$HOME/.local/share/icons/Yaru-blue-dark" ] || [ -d "$HOME/.icons/Yaru-blue-dark" ] || [ -d /usr/share/icons/Yaru-blue-dark ]; then
-    gsettings set org.gnome.desktop.interface icon-theme Yaru-blue-dark >/dev/null 2>&1 || true
+  if [ -d "$HOME/.local/share/icons/Adwaita" ] || [ -d "$HOME/.icons/Adwaita" ] || [ -d /usr/share/icons/Adwaita ]; then
+    gsettings set org.gnome.desktop.interface icon-theme Adwaita >/dev/null 2>&1 || true
   fi
 fi
 

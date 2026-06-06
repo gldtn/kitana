@@ -44,7 +44,7 @@ Temporary notes for clean-install testing and session handoff. Update this befor
 ## TODO
 
 - Design a Kitana first-run stage, likely triggered once from Hyprland autostart with per-step markers under `~/.local/state/kitana/first-run/`. Candidate first-run tasks:
-  - Apply live GNOME/GTK settings (`Adwaita-dark`, `Yaru-blue-dark`, `prefer-dark`) and update the Yaru icon cache after first login.
+  - Apply live GNOME/GTK settings (`Adwaita-dark`, `Adwaita`, `prefer-dark`) after first login.
   - Show a welcome/keybinding notification once Quickshell/notifications are actually running.
   - Configure optional hardening like `ufw` explicitly as a first-run/user-visible choice instead of silently enabling it during reinstall.
   - Handle user-session services that need a running session, such as future battery monitoring or OSD services.

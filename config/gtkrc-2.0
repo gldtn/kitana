@@ -1,7 +1,7 @@
 # Kitana managed GTK 2 config
 
 gtk-theme-name="Adwaita-dark"
-gtk-icon-theme-name="Yaru-blue-dark"
+gtk-icon-theme-name="Adwaita"
 gtk-font-name="Ioskeley Mono Medium 12"
 gtk-cursor-theme-name="Adwaita"
 gtk-cursor-theme-size=24
