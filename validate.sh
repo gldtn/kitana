@@ -25,11 +25,27 @@ check_command() {
   fi
 }
 
+check_optional_command() {
+  if command -v "$1" >/dev/null 2>&1; then
+    pass "command: $1"
+  else
+    warn "command missing: $1"
+  fi
+}
+
 check_package() {
   if pacman -Q "$1" >/dev/null 2>&1; then
     pass "package: $1"
   else
     fail "package missing: $1"
+  fi
+}
+
+check_optional_package() {
+  if pacman -Q "$1" >/dev/null 2>&1; then
+    pass "package: $1"
+  else
+    warn "package missing: $1"
   fi
 }
 
@@ -53,6 +69,14 @@ check_service_enabled() {
     pass "service enabled: $1"
   else
     fail "service not enabled: $1"
+  fi
+}
+
+check_optional_service_enabled() {
+  if systemctl is-enabled "$1" >/dev/null 2>&1; then
+    pass "service enabled: $1"
+  else
+    warn "service not enabled: $1"
   fi
 }
 
@@ -142,6 +166,13 @@ check_service_enabled bluetooth.service
 check_service_enabled NetworkManager.service
 check_service_enabled sddm.service
 check_service_enabled fwupd-refresh.timer
+
+for pkg in ccid libfido2 pcsclite pcsc-tools yubikey-manager; do
+  check_optional_package "$pkg"
+done
+check_optional_command ykman
+check_optional_command pcsc_scan
+check_optional_service_enabled pcscd.socket
 
 if systemctl is-enabled iwd.service >/dev/null 2>&1; then
   fail "service should be disabled: iwd.service"

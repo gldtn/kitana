@@ -51,6 +51,7 @@ Temporary notes for clean-install testing and session handoff. Update this befor
   - Keep package installation, config file deployment, SDDM setup, firmware metadata refresh, and hardware package detection in install/reinstall stages rather than first-run.
 - Revisit real CAVA integration for the dashboard media visualizer. Current bars are synthetic; a later pass should add a small `cava` service/process parser with graceful fallback.
 - Revisit theme-specific blur coordination between Hyprland and Quickshell. Hyprland now has blur profiles, but Quickshell still owns separate alpha/color tokens in `Colors.qml`; later theme generation could set both together.
+- Consider Bitwarden lock separately after confirming the right command/session behavior.
 
 ## Useful Commands
 
