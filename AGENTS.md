@@ -120,6 +120,8 @@ Application desktop entries and hidden overrides live in `applications/`.
 
 - Use `applications/hidden/*.desktop` for desktop entries that should be hidden from app launchers.
 - Hidden overrides should use the same basename as the system desktop entry and contain `NoDisplay=true`.
+- User-specific hidden entry overrides live in `~/.config/kitana/applications/hidden/*.desktop` and take precedence over Kitana defaults.
+- Set `NoDisplay=false` in a user override to unhide a Kitana default-hidden app without changing the repo.
 - Run `kitana-refresh --applications` after changing application entries or hidden overrides.
 - Kitana's Quickshell app search may also filter launcher noise directly when desktop entry overrides are not enough.
 

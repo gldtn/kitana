@@ -4,6 +4,8 @@ set -euo pipefail
 
 KITANA_DIR="${KITANA_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 export PATH="$KITANA_DIR/bin:$PATH"
+KITANA_HIDDEN_APPLICATIONS_DIR="$KITANA_DIR/applications/hidden"
+USER_HIDDEN_APPLICATIONS_DIR="$HOME/.config/kitana/applications/hidden"
 
 sddm_dry_run=0
 sddm_test_mode=0
@@ -42,6 +44,18 @@ desktop_entry_hides() {
   grep -Eiq '^[[:space:]]*(NoDisplay|Hidden)[[:space:]]*=[[:space:]]*true[[:space:]]*$' "$1"
 }
 
+hidden_desktop_source() {
+  local desktop_id="$1"
+  local user_file="$USER_HIDDEN_APPLICATIONS_DIR/$desktop_id"
+  local kitana_file="$KITANA_HIDDEN_APPLICATIONS_DIR/$desktop_id"
+
+  if [ -f "$user_file" ]; then
+    printf '%s\n' "$user_file"
+  elif [ -f "$kitana_file" ]; then
+    printf '%s\n' "$kitana_file"
+  fi
+}
+
 write_hidden_desktop_override() {
   local source_file="$1"
   local desktop_id="${source_file##*/}"
@@ -73,31 +87,34 @@ write_hidden_desktop_override() {
 }
 
 refresh_applications() {
-  mkdir -p "$HOME/.local/share/applications"
+  mkdir -p "$HOME/.local/share/applications" "$USER_HIDDEN_APPLICATIONS_DIR"
   rm -f "$HOME/.local/share/applications/kitana-hidden-desktop-ids"
 
-  if [ -d "$KITANA_DIR/applications/hidden" ]; then
-    local desktop_file
-    for desktop_file in "$KITANA_DIR"/applications/hidden/*.desktop; do
+  local hidden_dir desktop_file desktop_id source_file target_file
+  for hidden_dir in "$KITANA_HIDDEN_APPLICATIONS_DIR" "$USER_HIDDEN_APPLICATIONS_DIR"; do
+    [ -d "$hidden_dir" ] || continue
+    for desktop_file in "$hidden_dir"/*.desktop; do
       [ -e "$desktop_file" ] || continue
-      local target_file="$HOME/.local/share/applications/${desktop_file##*/}"
+      desktop_id="${desktop_file##*/}"
+      source_file="$(hidden_desktop_source "$desktop_id")"
+      [ -n "$source_file" ] || continue
+      target_file="$HOME/.local/share/applications/$desktop_id"
 
-      if desktop_entry_hides "$desktop_file"; then
-        write_hidden_desktop_override "$desktop_file"
+      if desktop_entry_hides "$source_file"; then
+        write_hidden_desktop_override "$source_file"
       elif [ -f "$target_file" ] && grep -q '^X-Kitana-Managed=true$' "$target_file"; then
         rm -f "$target_file"
       fi
     done
-  fi
+  done
 
-  local target_file desktop_id source_file
   for target_file in "$HOME/.local/share/applications"/*.desktop; do
     [ -e "$target_file" ] || continue
     grep -q '^X-Kitana-Managed=true$' "$target_file" || continue
     desktop_id="${target_file##*/}"
-    source_file="$KITANA_DIR/applications/hidden/$desktop_id"
+    source_file="$(hidden_desktop_source "$desktop_id")"
 
-    if [ ! -f "$source_file" ] || ! desktop_entry_hides "$source_file"; then
+    if [ -z "$source_file" ] || ! desktop_entry_hides "$source_file"; then
       rm -f "$target_file"
     fi
   done
