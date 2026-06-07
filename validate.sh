@@ -104,6 +104,19 @@ check_file() {
   fi
 }
 
+check_file_contains() {
+  local file="$1"
+  local pattern="$2"
+  local ok_message="$3"
+  local fail_message="$4"
+
+  if [ -f "$file" ] && grep -q -- "$pattern" "$file"; then
+    pass "$ok_message"
+  else
+    fail "$fail_message"
+  fi
+}
+
 check_dir() {
   if [ -d "$1" ]; then
     pass "$2"
@@ -129,6 +142,7 @@ echo
 for pkg in \
   awww \
   bluez \
+  desktop-file-utils \
   hyprland \
   hyprqt6engine \
   hyprlock \
@@ -145,6 +159,7 @@ for pkg in \
   quickshell \
   reflector \
   rsync \
+  shared-mime-info \
   sof-firmware \
   qt6ct \
   xdg-desktop-portal-hyprland; do
@@ -520,6 +535,58 @@ if [ -f "$HOME/.XCompose" ]; then
   fi
 else
   warn "XCompose config missing: ~/.XCompose"
+fi
+
+echo
+
+for browser_flags in brave-flags.conf chromium-flags.conf google-chrome-flags.conf; do
+  check_file_contains "$HOME/.config/$browser_flags" '^# Kitana managed browser flags$' "Browser flags: ~/.config/$browser_flags" "Browser flags missing or unmanaged: ~/.config/$browser_flags"
+  check_file_contains "$HOME/.config/$browser_flags" '^--ozone-platform-hint=wayland$' "Browser Wayland flag: $browser_flags" "Browser Wayland flag missing: ~/.config/$browser_flags"
+  check_file_contains "$HOME/.config/$browser_flags" 'WebRTCPipeWireCapturer' "Browser PipeWire capture flag: $browser_flags" "Browser PipeWire capture flag missing: ~/.config/$browser_flags"
+done
+
+if [ -L "$HOME/.config/brave-origin-beta-flags.conf" ] && [ "$(readlink "$HOME/.config/brave-origin-beta-flags.conf")" = "brave-flags.conf" ]; then
+  pass "Browser flags symlink: brave-origin-beta-flags.conf -> brave-flags.conf"
+elif [ -e "$HOME/.config/brave-origin-beta-flags.conf" ]; then
+  warn "Browser flags Brave beta path is not Kitana symlink: ~/.config/brave-origin-beta-flags.conf"
+else
+  fail "Browser flags Brave beta symlink missing: ~/.config/brave-origin-beta-flags.conf"
+fi
+
+if [ -d "$KITANA_DIR/applications/hidden" ]; then
+  hidden_checked=0
+  for hidden_desktop in "$KITANA_DIR"/applications/hidden/*.desktop; do
+    [ -e "$hidden_desktop" ] || continue
+    desktop_id="${hidden_desktop##*/}"
+    hidden_source="$hidden_desktop"
+    user_hidden_desktop="$HOME/.config/kitana/applications/hidden/$desktop_id"
+    target_desktop="$HOME/.local/share/applications/$desktop_id"
+    hidden_checked=1
+
+    if [ -f "$user_hidden_desktop" ]; then
+      hidden_source="$user_hidden_desktop"
+    fi
+
+    if grep -Eiq '^[[:space:]]*(NoDisplay|Hidden)[[:space:]]*=[[:space:]]*true[[:space:]]*$' "$hidden_source"; then
+      if [ -f "$target_desktop" ] && grep -q '^NoDisplay=true$' "$target_desktop" && grep -q '^X-Kitana-Managed=true$' "$target_desktop"; then
+        pass "Hidden desktop override: $desktop_id"
+      else
+        warn "Hidden desktop override missing or unmanaged: $target_desktop"
+      fi
+    elif [ -f "$user_hidden_desktop" ] && grep -Eiq '^[[:space:]]*(NoDisplay|Hidden)[[:space:]]*=[[:space:]]*false[[:space:]]*$' "$user_hidden_desktop"; then
+      if [ ! -e "$target_desktop" ] || ! grep -q '^X-Kitana-Managed=true$' "$target_desktop"; then
+        pass "Hidden desktop user override: $desktop_id"
+      else
+        warn "Hidden desktop user override not applied: $target_desktop"
+      fi
+    fi
+  done
+
+  if [ "$hidden_checked" -eq 0 ]; then
+    warn "No Kitana hidden desktop defaults found"
+  fi
+else
+  fail "Kitana hidden desktop defaults missing: applications/hidden"
 fi
 
 if [ -f "$KITANA_DIR/config/quickshell/kitana/Modules/WallpaperGrid.qml" ]; then

@@ -8,6 +8,7 @@ PACKAGES=(
   bluez-utils
   brightnessctl
   ddcutil
+  desktop-file-utils
   grim
   inetutils
   networkmanager
@@ -17,6 +18,7 @@ PACKAGES=(
   polkit
   quickshell
   satty
+  shared-mime-info
   slurp
   udiskie
   xdg-desktop-portal-gtk

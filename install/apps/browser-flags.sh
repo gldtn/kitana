@@ -2,6 +2,7 @@
 
 echo "Installing browser flags..."
 
+KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
 BROWSER_FLAGS_SOURCE_DIR="$KITANA_DIR/config/browser-flags"
 BROWSER_FLAGS_TARGET_DIR="$HOME/.config"
 BROWSER_FLAGS_MARKER="Kitana managed browser flags"
