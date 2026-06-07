@@ -30,7 +30,7 @@ hl.window_rule({
 
 hl.window_rule({
   name  = "utility-apps-float",
-  match = { class = "^(org.gnome.Calculator|pavucontrol|blueman-manager|nm-connection-editor|com.gabm.satty)$" },
+  match = { class = "^(org.gnome.Calculator|org.gnome.seahorse.Application|seahorse|pavucontrol|blueman-manager|nm-connection-editor|com.gabm.satty)$" },
 
   tag   = "+floating-window",
 })

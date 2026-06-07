@@ -113,6 +113,12 @@ Browser choices include Brave, Brave Origin Beta, Chromium, Firefox, Google Chro
 - Browser choice is stored in `~/.config/webapp-install.conf` and reused by Kitana web app helpers.
 - Private font repo choice is stored in `~/.config/kitana/private-fonts.conf` and reused by `kitana-install-private-fonts`.
 
+## Secrets And Keyring
+
+Kitana installs `gnome-keyring` and `seahorse` as the default Secret Service compatibility layer. This gives desktop apps a standard place to store app tokens, OAuth sessions, and other non-browser secrets.
+
+Kitana does not force GNOME Keyring as the preferred password manager, browser password store, or SSH agent. Browser flags intentionally avoid `--password-store=gnome-libsecret`, so users can choose browser sync, 1Password, Bitwarden, KeePassXC, or another password manager without Kitana overriding that choice.
+
 ## Thanks
 
 Kitana is inspired by ideas and patterns from Omarchy and DankMaterial, adapted for Kitana's own structure and personal workflow.
