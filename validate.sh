@@ -379,6 +379,7 @@ for helper in \
   kitana-hw-cpu \
   kitana-hw-gpu \
   kitana-keyboard \
+  kitana-osd \
   kitana-browser \
   kitana-audio-mic-status \
   kitana-install-1password \
@@ -662,7 +663,7 @@ for quickshell_config in shell.qml Colors.qml qmldir; do
   fi
 done
 
-for quickshell_module in AppLauncher ClockPill DashboardPanel NotificationPopups StatusGroup SystemPanel WallpaperGrid WorkspaceGroup; do
+for quickshell_module in AppLauncher ClockPill DashboardPanel NotificationPopups OsdPopup StatusGroup SystemPanel WallpaperGrid WorkspaceGroup; do
   if [ -f "$HOME/.config/quickshell/kitana/Modules/$quickshell_module.qml" ]; then
     pass "Quickshell module: $quickshell_module"
   else
@@ -698,6 +699,18 @@ if [ -f "$HOME/.config/quickshell/kitana/Services/MediaService.qml" ] && grep -q
   pass "Quickshell service: MediaService"
 else
   fail "Quickshell service missing: MediaService"
+fi
+
+if [ -f "$HOME/.config/quickshell/kitana/Services/OsdService.qml" ] && grep -q '^singleton OsdService 1.0 OsdService.qml$' "$HOME/.config/quickshell/kitana/Services/qmldir"; then
+  pass "Quickshell service: OsdService"
+else
+  fail "Quickshell service missing: OsdService"
+fi
+
+if [ -f "$HOME/.config/quickshell/kitana/shell.qml" ] && grep -q 'target: "kitana-osd"' "$HOME/.config/quickshell/kitana/shell.qml"; then
+  pass "Quickshell IPC: kitana-osd"
+else
+  fail "Quickshell IPC missing: kitana-osd"
 fi
 
 if [ -f "$HOME/.config/quickshell/kitana/Widgets/PanelRow.qml" ]; then

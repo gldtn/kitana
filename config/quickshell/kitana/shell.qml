@@ -22,6 +22,14 @@ ShellRoot {
     AppLauncher {}
 
     IpcHandler {
+        target: "kitana-osd"
+
+        function display(payload: string): void {
+            Services.OsdService.showPayload(payload);
+        }
+    }
+
+    IpcHandler {
         target: "kitana-notifications"
 
         function dismissLast(): void { Services.NotificationService.dismissLast(); }
@@ -69,6 +77,10 @@ ShellRoot {
             }
 
             NotificationPopups {
+                panelScreen: modelData
+            }
+
+            OsdPopup {
                 panelScreen: modelData
             }
 

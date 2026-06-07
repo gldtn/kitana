@@ -1,0 +1,72 @@
+#!/bin/bash
+
+set -euo pipefail
+
+usage() {
+  cat <<EOF
+Usage: kitana-osd <volume-up|volume-down|volume-mute|mic-mute|brightness-up|brightness-down>
+
+Apply a media-key action and show Kitana's Quickshell OSD.
+EOF
+}
+
+notify_osd() {
+  local kind="$1"
+  local title="$2"
+  local value="$3"
+  local muted="${4:-false}"
+
+  if command -v quickshell >/dev/null 2>&1; then
+    quickshell ipc -c kitana call kitana-osd display "$kind|$title|$value|$muted" >/dev/null 2>&1 || true
+  fi
+}
+
+audio_status() {
+  wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null | awk '{ printf "%d|%s\n", $2 * 100, ($0 ~ /MUTED/ ? "true" : "false") }'
+}
+
+mic_status() {
+  "$HOME/.local/share/kitana/bin/kitana-audio-mic-status" 2>/dev/null | awk -F'|' '{ printf "%d|%s\n", ($4 == "" ? 0 : $4), ($3 == "yes" ? "true" : "false") }'
+}
+
+brightness_status() {
+  brightnessctl -c backlight -m 2>/dev/null | awk -F, '{ gsub(/%/, "", $4); print $4 }'
+}
+
+case "${1:-}" in
+  volume-up)
+    wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+
+    IFS='|' read -r value muted < <(audio_status)
+    notify_osd volume Volume "$value" "$muted"
+    ;;
+  volume-down)
+    wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
+    IFS='|' read -r value muted < <(audio_status)
+    notify_osd volume Volume "$value" "$muted"
+    ;;
+  volume-mute)
+    wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+    IFS='|' read -r value muted < <(audio_status)
+    notify_osd volume Volume "$value" "$muted"
+    ;;
+  mic-mute)
+    wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
+    IFS='|' read -r value muted < <(mic_status)
+    notify_osd mic Microphone "$value" "$muted"
+    ;;
+  brightness-up)
+    brightnessctl -e4 -n2 set 5%+
+    notify_osd brightness Brightness "$(brightness_status)" false
+    ;;
+  brightness-down)
+    brightnessctl -e4 -n2 set 5%-
+    notify_osd brightness Brightness "$(brightness_status)" false
+    ;;
+  -h|--help)
+    usage
+    ;;
+  *)
+    usage >&2
+    exit 2
+    ;;
+esac
