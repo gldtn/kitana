@@ -497,6 +497,20 @@ fi
 
 if [ -f "$HOME/.XCompose" ]; then
   pass "XCompose config: ~/.XCompose"
+
+  if grep -q '^<Multi_key> <m> <y> : "👍" # yes$' "$HOME/.XCompose" && grep -q '^<Multi_key> <space> <space> : "—"$' "$HOME/.XCompose"; then
+    pass "XCompose Kitana defaults"
+  else
+    warn "XCompose Kitana defaults missing or customized: ~/.XCompose"
+  fi
+
+  if grep -q '^# Match Windows/macOS US-International behavior for Brazilian Portuguese\.$' "$HOME/.XCompose"; then
+    if grep -q '^<dead_acute> <c> : "ç" ccedilla$' "$HOME/.XCompose" && grep -q '^<dead_acute> <C> : "Ç" Ccedilla$' "$HOME/.XCompose"; then
+      pass "XCompose PT-BR overrides"
+    else
+      fail "XCompose PT-BR marker present but overrides missing: ~/.XCompose"
+    fi
+  fi
 else
   warn "XCompose config missing: ~/.XCompose"
 fi

@@ -65,13 +65,23 @@ while [ "$#" -gt 0 ]; do
 done
 
 deploy_xcompose() {
+  local tmp_file
+
   if [ ! -f "$XCOMPOSE_SOURCE" ]; then
     echo "Missing Kitana XCompose source: $XCOMPOSE_SOURCE" >&2
     return 1
   fi
 
-  if [ "$force" -eq 1 ] || [ ! -e "$XCOMPOSE_TARGET" ] || grep -q "$XCOMPOSE_MANAGED_MARKER" "$XCOMPOSE_TARGET" 2>/dev/null; then
-    cp "$XCOMPOSE_SOURCE" "$XCOMPOSE_TARGET"
+  if [ "$force" -eq 1 ] || [ ! -e "$XCOMPOSE_TARGET" ] || grep -q "$XCOMPOSE_MANAGED_MARKER" "$XCOMPOSE_TARGET" 2>/dev/null || cmp -s "$XCOMPOSE_SOURCE" "$XCOMPOSE_TARGET" || grep -q "$PT_BR_MARKER" "$XCOMPOSE_TARGET" 2>/dev/null; then
+    tmp_file="$(mktemp)"
+    cp "$XCOMPOSE_SOURCE" "$tmp_file"
+
+    if grep -q "$PT_BR_MARKER" "$XCOMPOSE_TARGET" 2>/dev/null; then
+      awk '/^# Match Windows\/macOS US-International behavior for Brazilian Portuguese\.$/ { print ""; print; getline; print; getline; print; exit }' "$XCOMPOSE_TARGET" >>"$tmp_file"
+    fi
+
+    cp "$tmp_file" "$XCOMPOSE_TARGET"
+    rm -f "$tmp_file"
   else
     echo "Keeping existing XCompose: $XCOMPOSE_TARGET"
   fi

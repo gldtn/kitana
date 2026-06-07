@@ -22,6 +22,7 @@ STARSHIP_CONFIG_DIR="$HOME/.config/starship"
 STARSHIP_CONFIG_MARKER="Kitana managed Starship config"
 XCOMPOSE_FILE="$HOME/.XCompose"
 XCOMPOSE_MARKER="Kitana managed XCompose"
+XCOMPOSE_PT_BR_MARKER="Match Windows/macOS US-International behavior for Brazilian Portuguese"
 GTK3_CONFIG_DIR="$HOME/.config/gtk-3.0"
 GTK4_CONFIG_DIR="$HOME/.config/gtk-4.0"
 GTK2_CONFIG_FILE="$HOME/.gtkrc-2.0"
@@ -182,10 +183,28 @@ else
   echo "Keeping existing Starship config: $STARSHIP_CONFIG_DIR/starship.toml"
 fi
 
-if [ ! -e "$XCOMPOSE_FILE" ] || grep -q "$XCOMPOSE_MARKER" "$XCOMPOSE_FILE"; then
-  cp "$KITANA_DIR/default/xcompose" "$XCOMPOSE_FILE"
+install_xcompose() {
+  local tmp_file
+
+  if [ ! -e "$XCOMPOSE_FILE" ] || grep -q "$XCOMPOSE_MARKER" "$XCOMPOSE_FILE" || cmp -s "$KITANA_DIR/default/xcompose" "$XCOMPOSE_FILE" || grep -q "$XCOMPOSE_PT_BR_MARKER" "$XCOMPOSE_FILE"; then
+    tmp_file="$(mktemp)"
+    cp "$KITANA_DIR/default/xcompose" "$tmp_file"
+
+    if grep -q "$XCOMPOSE_PT_BR_MARKER" "$XCOMPOSE_FILE" 2>/dev/null; then
+      awk '/^# Match Windows\/macOS US-International behavior for Brazilian Portuguese\.$/ { print ""; print; getline; print; getline; print; exit }' "$XCOMPOSE_FILE" >>"$tmp_file"
+    fi
+
+    cp "$tmp_file" "$XCOMPOSE_FILE"
+    rm -f "$tmp_file"
+  else
+    echo "Keeping existing XCompose: $XCOMPOSE_FILE"
+  fi
+}
+
+if [ -f "$KITANA_DIR/default/xcompose" ]; then
+  install_xcompose
 else
-  echo "Keeping existing XCompose: $XCOMPOSE_FILE"
+  echo "Missing Kitana XCompose source: $KITANA_DIR/default/xcompose"
 fi
 
 mkdir -p "$GTK3_CONFIG_DIR" "$GTK4_CONFIG_DIR" "$KVANTUM_CONFIG_DIR" "$QT6CT_CONFIG_DIR"
