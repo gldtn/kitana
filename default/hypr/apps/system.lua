@@ -16,7 +16,7 @@ hl.window_rule({
 
 hl.window_rule({
   name  = "media-viewers-float",
-  match = { class = "^(imv|mpv|vlc|celluloid|Celluloid|io.github.celluloid_player.Celluloid)$" },
+  match = { class = "^(imv|mpv|vlc|celluloid|Celluloid|io.github.celluloid_player.Celluloid|org.gnome.Papers|org.gnome.Evince)$" },
 
   tag   = "+floating-window",
 })

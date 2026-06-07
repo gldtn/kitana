@@ -125,6 +125,14 @@ xdg-mime default imv.desktop image/webp
 xdg-mime default imv.desktop image/bmp
 xdg-mime default imv.desktop image/tiff
 
+# Open PDF documents with GNOME Papers
+PDF_DESKTOP="org.gnome.Papers.desktop"
+if [ -f "/usr/share/applications/$PDF_DESKTOP" ] || [ -f "$HOME/.local/share/applications/$PDF_DESKTOP" ]; then
+    xdg-mime default "$PDF_DESKTOP" application/pdf
+else
+    echo "Papers desktop entry not found; keeping existing PDF handler."
+fi
+
 # Open video files with Celluloid
 VIDEO_DESKTOP="io.github.celluloid_player.Celluloid.desktop"
 if [ ! -f "/usr/share/applications/$VIDEO_DESKTOP" ] && [ ! -f "$HOME/.local/share/applications/$VIDEO_DESKTOP" ]; then

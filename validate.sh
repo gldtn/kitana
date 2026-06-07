@@ -140,6 +140,7 @@ for pkg in \
   linux-firmware \
   networkmanager \
   openbsd-netcat \
+  papers \
   pciutils \
   quickshell \
   reflector \
@@ -153,6 +154,12 @@ done
 check_any_package "ghostty" ghostty ghostty-nightly-bin
 check_any_package "sddm" sddm sddm-git
 check_package "libappindicator"
+
+if [ -f /usr/share/applications/org.gnome.Papers.desktop ] || [ -f "$HOME/.local/share/applications/org.gnome.Papers.desktop" ]; then
+  pass "PDF viewer desktop entry: org.gnome.Papers.desktop"
+else
+  fail "PDF viewer desktop entry missing: org.gnome.Papers.desktop"
+fi
 
 echo
 
@@ -684,6 +691,12 @@ echo
 if command -v xdg-mime >/dev/null 2>&1; then
   printf 'Default browser handler: %s\n' "$(xdg-mime query default x-scheme-handler/https 2>/dev/null || true)"
   printf 'Default file handler: %s\n' "$(xdg-mime query default inode/directory 2>/dev/null || true)"
+
+  if [ "$(xdg-mime query default application/pdf 2>/dev/null || true)" = "org.gnome.Papers.desktop" ]; then
+    pass "Default PDF handler: org.gnome.Papers.desktop"
+  else
+    fail "Default PDF handler is not Papers: $(xdg-mime query default application/pdf 2>/dev/null || true)"
+  fi
 else
   fail "command missing: xdg-mime"
 fi
