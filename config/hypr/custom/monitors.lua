@@ -4,8 +4,8 @@
 
 -- See https://wiki.hypr.land/Configuring/Basics/Monitors/
 
-local monitor1 = "DP-1"
-local monitor2 = "DP-4"
+-- local monitor1 = "DP-1"
+-- local monitor2 = "DP-4"
 
 -- hl.monitor({
 -- 	output = monitor1,

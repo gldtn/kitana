@@ -1,2 +1,2 @@
--- Local Hypr customizations for bindings.
+-- Local Hypr customizations for input.
 -- This file is loaded after Kitana defaults.

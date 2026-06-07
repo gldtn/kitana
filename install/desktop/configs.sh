@@ -115,12 +115,17 @@ fi
 
 for custom_module in monitors input binds; do
   custom_file="$HYPR_CONFIG_DIR/custom/$custom_module.lua"
+  custom_source="$KITANA_DIR/config/hypr/custom/$custom_module.lua"
 
   if [ ! -e "$custom_file" ]; then
-    cat >"$custom_file" <<EOF
+    if [ -f "$custom_source" ]; then
+      cp "$custom_source" "$custom_file"
+    else
+      cat >"$custom_file" <<EOF
 -- Local Hypr customizations for $custom_module.
 -- This file is loaded after Kitana defaults.
 EOF
+    fi
   fi
 done
 
