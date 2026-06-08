@@ -10,5 +10,6 @@
 - Revisit theme-specific blur coordination between Hyprland and Quickshell. Hyprland now has blur profiles, but Quickshell still owns separate alpha/color tokens in `Colors.qml`; later theme generation could set both together.
 - Consider optional Plymouth boot splash support for a smoother branded boot after Limine. Keep it opt-in for non-encrypted installs, and provide a migration/helper for existing Kitana installs that installs Plymouth, configures mkinitcpio/kernel args, applies a Kitana theme, regenerates initramfs, and validates rollback safety.
 - Consider Bitwarden lock separately after confirming the right command/session behavior.
+- Improve Bluetooth audio routing for multiple connected devices. Detect personal earbuds/headsets such as AirPods, Pixel Buds, and similar Bluetooth audio devices, then safely switch the default PipeWire sink to them when they connect and fall back to the preferred speaker sink, such as Audioengine HD3, when they disconnect. Keep Bluetooth connection management separate from audio routing and avoid surprising changes for non-earbud devices.
 - Remove the separate `papers` install once Sushi 51 is released and packaged with Papers support, so Kitana does not request Papers twice.
 - Consider adding Kitana Hyprland helper functions for common patterns like window rules, binds, launchers, and notifications.
