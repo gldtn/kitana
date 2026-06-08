@@ -1,0 +1,158 @@
+#!/bin/bash
+
+set -euo pipefail
+
+KITANA_DIR="${KITANA_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+export PATH="$KITANA_DIR/bin:$PATH"
+
+package=""
+repo_url="${KITANA_NVIM_REPO:-}"
+nvim_dir="$HOME/.config/nvim"
+backup_paths=(
+  "$HOME/.config/nvim"
+  "$HOME/.local/share/nvim"
+  "$HOME/.local/state/nvim"
+  "$HOME/.cache/nvim"
+)
+
+usage() {
+  cat <<EOF
+Usage: kitana-install-extras-nvim [--stable|--git] [--repo URL]
+
+Install Neovim and optionally install a user-provided config repo.
+
+Options:
+  --stable    Install repo package: neovim
+  --git       Install AUR package: neovim-git
+  --repo URL  Clone or update URL into ~/.config/nvim
+EOF
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --stable)
+      package="neovim"
+      ;;
+    --git)
+      package="neovim-git"
+      ;;
+    --repo)
+      if [ "$#" -lt 2 ]; then
+        usage >&2
+        exit 2
+      fi
+      repo_url="$2"
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      usage >&2
+      exit 2
+      ;;
+  esac
+  shift
+done
+
+choose_package() {
+  if [ -n "$package" ]; then
+    return 0
+  fi
+
+  if command -v gum >/dev/null 2>&1; then
+    local choice
+    choice="$(gum choose --header "Select Neovim package:" "neovim:Stable repo package" "neovim-git:Latest git package")"
+    package="${choice%%:*}"
+  else
+    printf 'Select Neovim package [neovim/neovim-git] (default: neovim): '
+    read -r package
+    package="${package:-neovim}"
+  fi
+
+  case "$package" in
+    neovim|neovim-git) ;;
+    *)
+      echo "Unknown Neovim package: $package" >&2
+      exit 2
+      ;;
+  esac
+}
+
+choose_repo() {
+  if [ -n "$repo_url" ]; then
+    return 0
+  fi
+
+  if command -v gum >/dev/null 2>&1; then
+    repo_url="$(gum input --placeholder "Optional Neovim config repo URL")"
+  else
+    printf 'Optional Neovim config repo URL (blank to skip): '
+    read -r repo_url
+  fi
+}
+
+backup_path() {
+  local path="$1"
+  local backup_path="$path.bak"
+
+  [ -e "$path" ] || [ -L "$path" ] || return 0
+
+  if [ -e "$backup_path" ] || [ -L "$backup_path" ]; then
+    backup_path="$path.bak.$(date +%Y%m%d%H%M%S)"
+  fi
+
+  echo "Backing up $path to $backup_path"
+  mv "$path" "$backup_path"
+}
+
+backup_existing_nvim() {
+  local path
+
+  for path in "${backup_paths[@]}"; do
+    backup_path "$path"
+  done
+}
+
+install_package() {
+  case "$package" in
+    neovim)
+      if pacman -Q neovim-git >/dev/null 2>&1; then
+        echo "Removing neovim-git before installing neovim..."
+        sudo pacman -R --noconfirm neovim-git
+      fi
+      ;;
+    neovim-git)
+      if pacman -Q neovim >/dev/null 2>&1 && ! pacman -Q neovim-git >/dev/null 2>&1; then
+        echo "Removing neovim before installing neovim-git..."
+        sudo pacman -R --noconfirm neovim
+      fi
+      ;;
+  esac
+
+  kitana-pkg-add "$package"
+}
+
+install_repo() {
+  local origin_url=""
+
+  [ -n "$repo_url" ] || return 0
+  mkdir -p "$HOME/.config"
+
+  if [ -d "$nvim_dir/.git" ]; then
+    origin_url="$(git -C "$nvim_dir" remote get-url origin 2>/dev/null || true)"
+    if [ "$origin_url" = "$repo_url" ]; then
+      git -C "$nvim_dir" pull --ff-only
+      return 0
+    fi
+  fi
+
+  backup_existing_nvim
+  git clone "$repo_url" "$nvim_dir"
+}
+
+choose_package
+choose_repo
+install_package
+install_repo

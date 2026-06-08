@@ -3,24 +3,6 @@
 set -euo pipefail
 
 KITANA_DIR="${KITANA_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
-export PATH="$KITANA_DIR/bin:$PATH"
-
 repo_url="${KITANA_NVIM_REPO:-https://github.com/gldtn/nvim.git}"
-nvim_dir="$HOME/.config/nvim"
 
-kitana-pkg-add neovim-git
-
-mkdir -p "$HOME/.config"
-
-if [ -d "$nvim_dir/.git" ]; then
-  origin_url="$(git -C "$nvim_dir" remote get-url origin 2>/dev/null || true)"
-  if [ "$origin_url" = "$repo_url" ] || [ "$origin_url" = "git@github.com:gldtn/nvim.git" ]; then
-    git -C "$nvim_dir" pull --ff-only
-  else
-    echo "Keeping existing Neovim config with different origin: $origin_url"
-  fi
-elif [ -e "$nvim_dir" ]; then
-  echo "Keeping existing Neovim config: $nvim_dir"
-else
-  git clone "$repo_url" "$nvim_dir"
-fi
+exec "$KITANA_DIR/bin/kitana-install-extras-nvim" --git --repo "$repo_url"

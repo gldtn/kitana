@@ -390,6 +390,7 @@ for helper in \
   kitana-install-dropbox \
   kitana-install-extras-crypto \
   kitana-install-extras-media \
+  kitana-install-extras-nvim \
   kitana-install-extras-wallpapers \
   kitana-install-ghostty-nightly \
   kitana-install-nvim-gldtn \

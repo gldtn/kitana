@@ -50,9 +50,20 @@ Optional/personal installs are available as individual commands:
 ```bash
 kitana-install-extras-crypto
 kitana-install-extras-media
+kitana-install-extras-nvim
 kitana-install-extras-wallpapers
 kitana-install-private-fonts
 ```
+
+To install Neovim after Kitana is already installed:
+
+```bash
+~/.local/share/kitana/bin/kitana-install-extras-nvim
+~/.local/share/kitana/bin/kitana-install-extras-nvim --stable
+~/.local/share/kitana/bin/kitana-install-extras-nvim --git --repo https://github.com/example/nvim.git
+```
+
+The Neovim helper lets users choose stable `neovim` or `neovim-git`, optionally clones a user-provided config repo into `~/.config/nvim`, and backs up existing Neovim config/data/cache paths before replacing them.
 
 To install private fonts from a private Git repo:
 
