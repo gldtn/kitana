@@ -10,11 +10,10 @@ PACKAGES=(
   gtk3
   gtk4
   kvantum
-  kvantum-gt5
+  kvantum-qt5
   qt5-wayland
   qt6ct
   qt6-declarative
-  qt6-quickcontrols2
   qt6-svg
   qt6-wayland
 )
