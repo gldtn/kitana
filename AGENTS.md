@@ -52,11 +52,26 @@ Install guidance:
 - `default/xcompose` - base XCompose shortcuts deployed to `~/.XCompose`; keyboard presets are managed by `kitana-keyboard`.
 - `install/` - install stages and shared install libraries.
 - `lib/` - shared non-install libraries.
+- `NOTES.md` - temporary clean-install testing notes and session handoff context.
 - `themes/` - Kitana theme palettes and theme helpers.
 - `TODO.md` - tracked follow-up work and deferred improvements.
 - `vendor/` - bundled upstream data used by generators.
 
 Do not edit live user config as the source of truth. Update repository files first, then use the relevant refresh command or install script to deploy.
+
+Many deployed configs are intentionally preserved once the user has edited them. Before changing refresh/install behavior, check the marker strings in `install/desktop/configs.sh` so user-owned files are not overwritten accidentally.
+
+# Fresh Install Diagnostics
+
+Fresh installs start from `bootstrap.sh`, then `install.sh`, then `install-desktop.sh` and `install-apps.sh`.
+
+Install logs:
+
+- `~/.local/state/kitana/install-report.log` - full install report.
+- `~/.local/state/kitana/install-failures.log` - tracked failures needing review.
+- `~/.local/state/kitana/package-logs/` - per-package command output logs.
+
+When diagnosing a fresh install, inspect these logs before changing installer code. Optional package failures may be logged and intentionally non-fatal.
 
 # Refresh And Repair
 
@@ -73,6 +88,20 @@ Preferred repair commands:
 - `kitana-refresh --wallpapers`
 
 Use targeted refresh commands when possible instead of rerunning the full installer.
+
+# Themes
+
+Theme definitions live in `themes/*.lua`; shared theme loading and color resolution lives in `lib/kitana-theme.lua`.
+
+Theme application flow:
+
+- `kitana-theme THEME` applies the selected theme and writes `~/.config/kitana/theme`.
+- `kitana-theme-quickshell` generates Quickshell colors.
+- `kitana-theme-ghostty` updates Ghostty theme state.
+- `kitana-theme-zed` writes `~/.config/zed/themes/kitana-dynamic.json`, often from `vendor/zed/*.json`.
+- `kitana-theme-hypr` writes `~/.config/hypr/kitana-theme.lua` and reloads Hyprland when available.
+
+When adding or editing themes, update `lib/kitana-theme.lua` ordering/mappings as needed and validate generated consumers with the smallest relevant command.
 
 # Quickshell
 
