@@ -14,8 +14,9 @@ echo
 curl -fsSL "$LOGO_URL" || true
 echo
 
-# Install git if not present
-pacman -Q git &>/dev/null || sudo pacman -Sy --noconfirm --needed git
+# Install git if not present. Refresh the keyring first to avoid stale
+# signature failures on fresh or partially updated Arch installs.
+pacman -Q git &>/dev/null || sudo pacman -Sy --noconfirm --needed archlinux-keyring git
 
 if [ -d "$KITANA_DIR/.git" ]; then
   echo -e "\nUpdating Kitana..."

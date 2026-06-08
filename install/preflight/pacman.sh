@@ -16,22 +16,77 @@ PREFLIGHT_PACKAGES=(
   rsync
 )
 
-if sudo pacman -Syu --noconfirm --needed "${PREFLIGHT_PACKAGES[@]}"; then
-  :
-else
-  exit_code=$?
-  kitana_log_failure "preflight/pacman" "packages" "sudo pacman -Syu --noconfirm --needed ${PREFLIGHT_PACKAGES[*]}" "$exit_code" "sudo pacman -Syu"
+repair_corrupted_pacman_cache() {
+  local log_file="$1"
+  local repaired=0
+  local package_file
+
+  while read -r package_file; do
+    [ -n "$package_file" ] || continue
+    case "$package_file" in
+      /var/cache/pacman/pkg/*)
+        echo "Removing corrupted cached package: $package_file"
+        sudo rm -f "$package_file" "$package_file.sig"
+        repaired=1
+        ;;
+    esac
+  done < <(grep -Eo '/var/cache/pacman/pkg/[^ ]+' "$log_file" | sed 's/[.:,;)]$//' | sort -u)
+
+  [ "$repaired" -eq 1 ]
+}
+
+run_pacman_with_cache_repair() {
+  local phase="$1"
+  local item="$2"
+  local manual="$3"
+  shift 3
+
+  local command=("$@")
+  local log_file exit_code
+  log_file="$(mktemp)"
+
+  if "${command[@]}" > >(tee "$log_file") 2>&1; then
+    rm -f "$log_file"
+    return 0
+  fi
+
+  exit_code="$?"
+
+  if grep -qiE 'invalid or corrupted package|is corrupted' "$log_file" && repair_corrupted_pacman_cache "$log_file"; then
+    echo "Refreshing Arch keyring before retrying pacman..."
+    sudo pacman -Sy --noconfirm --needed archlinux-keyring || true
+
+    if "${command[@]}" > >(tee "$log_file.retry") 2>&1; then
+      rm -f "$log_file" "$log_file.retry"
+      return 0
+    fi
+
+    exit_code="$?"
+    log_file="$log_file.retry"
+  fi
+
+  kitana_log_failure "$phase" "$item" "${command[*]}" "$exit_code" "$manual" "$log_file"
   exit "$exit_code"
-fi
+}
+
+run_pacman_with_cache_repair \
+  "preflight/pacman" \
+  "keyring" \
+  "sudo pacman -Sy archlinux-keyring" \
+  sudo pacman -Sy --noconfirm --needed archlinux-keyring
+
+run_pacman_with_cache_repair \
+  "preflight/pacman" \
+  "packages" \
+  "sudo pacman -Syu" \
+  sudo pacman -Syu --noconfirm --needed "${PREFLIGHT_PACKAGES[@]}"
 
 if sudo reflector --latest 20 --protocol https --sort rate --save /etc/pacman.d/mirrorlist; then
-  if sudo pacman -Syyu --noconfirm; then
-    :
-  else
-    exit_code=$?
-    kitana_log_failure "preflight/pacman" "mirror-sync" "sudo pacman -Syyu --noconfirm" "$exit_code" "sudo pacman -Syyu"
-    exit "$exit_code"
-  fi
+  run_pacman_with_cache_repair \
+    "preflight/pacman" \
+    "mirror-sync" \
+    "sudo pacman -Syyu" \
+    sudo pacman -Syyu --noconfirm
 else
   exit_code=$?
   kitana_log_failure "preflight/pacman" "reflector" "sudo reflector --latest 20 --protocol https --sort rate --save /etc/pacman.d/mirrorlist" "$exit_code" "sudo reflector"
