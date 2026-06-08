@@ -382,9 +382,11 @@ for helper in \
   kitana-keyboard \
   kitana-osd \
   kitana-browser \
+  kitana-password-manager \
   kitana-audio-mic-status \
   kitana-install-1password \
   kitana-install-browser \
+  kitana-install-password-manager \
   kitana-install-dropbox \
   kitana-install-extras-crypto \
   kitana-install-extras-media \

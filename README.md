@@ -107,6 +107,16 @@ To install or change the browser used by web apps:
 
 Browser choices include Brave, Brave Origin Beta, Chromium, Firefox, Google Chrome, Qutebrowser, and Zen Browser.
 
+To install or change the password manager used by the Kitana hotkey:
+
+```bash
+~/.local/share/kitana/bin/kitana-install-password-manager
+~/.local/share/kitana/bin/kitana-install-password-manager --current
+~/.local/share/kitana/bin/kitana-install-password-manager --set-default
+```
+
+Password manager choices include 1Password, Bitwarden, KeePassXC, or no configured hotkey target.
+
 ## Repository layout
 
 - `applications/` is reserved for Kitana-managed desktop entry templates and launchers.
@@ -122,6 +132,7 @@ Browser choices include Brave, Brave Origin Beta, Chromium, Firefox, Google Chro
 - Customize Hyprland in `~/.config/hypr/custom/*.lua`; local custom modules load after Kitana defaults.
 - Kitana user settings live in `~/.config/kitana/config`, including `KITANA_WALLPAPER_DIR`.
 - Browser choice is stored in `~/.config/webapp-install.conf` and reused by Kitana web app helpers.
+- Password manager choice is stored in `~/.config/kitana/password-manager.conf` and reused by the Kitana password-manager hotkey.
 - Private font repo choice is stored in `~/.config/kitana/private-fonts.conf` and reused by `kitana-install-private-fonts`.
 
 ## Secrets And Keyring

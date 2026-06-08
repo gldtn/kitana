@@ -8,7 +8,7 @@ local editor = "ghostty -e nvim"
 local guiEditor = "zeditor"
 local terminal = "ghostty"
 local fileManager = "nautilus --new-window"
-local passwordManager = "1password"
+local passwordManager = "${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-password-manager"
 local activityManager = "ghostty -e btop"
 -- TODO: the following need a web apps launcher to work, see Omarchy web app launcher
 local webappLauncher = "~/.local/share/kitana/bin/kitana-webapp-launch"

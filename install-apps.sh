@@ -23,6 +23,9 @@ source_script "apps/browser-flags.sh"
 echo "Let's install your preferred browser..."
 kitana-install-browser --apply-mime
 
+echo "Let's configure your preferred password manager..."
+kitana-install-password-manager
+
 kitana-git-config --ensure
 
 source_script "apps/webapps.sh"

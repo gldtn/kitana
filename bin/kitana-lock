@@ -6,7 +6,16 @@ if pgrep -x hyprlock >/dev/null 2>&1; then
   exit 0
 fi
 
-if command -v 1password >/dev/null 2>&1 && pgrep -x 1password >/dev/null 2>&1; then
+password_manager=""
+password_manager_config="$HOME/.config/kitana/password-manager.conf"
+
+if [ -f "$password_manager_config" ]; then
+  # shellcheck disable=SC1090
+  source "$password_manager_config"
+  password_manager="${PASSWORD_MANAGER:-}"
+fi
+
+if [ "$password_manager" = "1password" ] && command -v 1password >/dev/null 2>&1 && pgrep -x 1password >/dev/null 2>&1; then
   1password --lock >/dev/null 2>&1 &
 fi
 
