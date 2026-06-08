@@ -16,6 +16,7 @@ Temporary notes for clean-install testing and session handoff. Update this befor
 - SDDM is Kitana-owned through `default/sddm/` and refreshed by `kitana-refresh --sddm`.
 - Optional/personal installs are explicit `kitana-install-*` commands, not installer flags.
 - Private fonts now install from a configurable private Git repo instead of Dropbox.
+- Arch USB media can be prepared with `bin/kitana-arch-usb`; the helper was added in `a232cf9` and pushed to `origin/master`.
 
 ## Recently Verified
 
@@ -28,6 +29,8 @@ Temporary notes for clean-install testing and session handoff. Update this befor
   - SDDM shows the Kitana wallpaper on the first reboot after install.
   - Hyprland restores the seeded wallpaper and theme on first login.
   - Quickshell starts without the routine `Quickshell reload requested` notification.
+- `bin/kitana-arch-usb --download-only`, `--help`, and `--list` were checked; `/dev/sda` was written successfully and reappeared as Arch install media labeled `ARCH_202606` with `ARCHISO_EFI`.
+- `bash validate.sh` passed after adding `kitana-arch-usb` to validation.
 
 ## Before Clean Install
 
@@ -35,11 +38,19 @@ Temporary notes for clean-install testing and session handoff. Update this befor
 - Push the latest commits if this machine may be wiped.
 - Run `git status --short` and ensure only intentional changes remain.
 - Run `bash validate.sh` if the current install is still available.
+- Confirm the fresh machine pulls at least commit `a232cf9` before testing the new Arch USB helper or README instructions.
 - Record any open issues in the section below.
 
 ## Open Issues
 
 - None currently tracked.
+
+## Fresh Machine Test Focus
+
+- Run the normal bootstrap from the README and confirm the installer still completes from a clean Arch environment.
+- After first reboot, verify SDDM, Hyprland, Quickshell, wallpaper/theme state, launcher bind, browser handlers, and `bash validate.sh`.
+- If the Arch USB helper is tested again, prefer `kitana-arch-usb --list` first, then `--select --unmount`; confirm the selected device is a whole disk and not the internal NVMe.
+- Plymouth is intentionally not configured yet. It is tracked in `TODO.md` as optional future boot polish with a migration/helper for existing installs.
 
 ## TODO
 
@@ -57,6 +68,9 @@ kitana-refresh --sddm
 kitana-install-private-fonts --url https://github.com/gldtn/kitana-private-fonts.git
 kitana-install-private-fonts --current
 kitana-quickshell restart
+bin/kitana-arch-usb --list
+bin/kitana-arch-usb --download-only
+bin/kitana-arch-usb --select --unmount
 quickshell ipc -c kitana show
 quickshell log -c kitana --no-color
 ```
