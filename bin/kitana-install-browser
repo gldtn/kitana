@@ -84,6 +84,57 @@ save_browser_choice() {
     printf 'BROWSER=%s\n' "$1" >"$CONFIG_FILE"
 }
 
+seed_brave_defaults() {
+    local browser_exec="$1"
+    local local_state=""
+    local experiment="brave-change-active-tab-on-scroll-event"
+    local disabled_experiment="$experiment@2"
+    local tmp_file
+
+    case "$browser_exec" in
+        brave)
+            local_state="$HOME/.config/BraveSoftware/Brave-Browser/Local State"
+            ;;
+        brave-origin-beta)
+            local_state="$HOME/.config/BraveSoftware/Brave-Origin-Beta/Local State"
+            ;;
+        *)
+            return 0
+            ;;
+    esac
+
+    if [ -f "$local_state" ] && grep -q "\"$experiment@" "$local_state"; then
+        return 0
+    fi
+
+    mkdir -p "$(dirname "$local_state")"
+
+    if [ ! -f "$local_state" ]; then
+        printf '{"browser":{"enabled_labs_experiments":["%s"]}}\n' "$disabled_experiment" >"$local_state"
+        return 0
+    fi
+
+    if ! command -v jq >/dev/null 2>&1; then
+        echo "Skipping Brave tab-scroll default; jq is not available."
+        return 0
+    fi
+
+    tmp_file="$(mktemp)"
+    if jq --arg experiment "$experiment" --arg disabled_experiment "$disabled_experiment" '
+        if (.browser.enabled_labs_experiments // [] | any(startswith($experiment + "@"))) then
+            .
+        else
+            .browser.enabled_labs_experiments = ((.browser.enabled_labs_experiments // []) + [$disabled_experiment])
+        end
+    ' "$local_state" >"$tmp_file"; then
+        cp "$tmp_file" "$local_state"
+    else
+        echo "Skipping Brave tab-scroll default; could not update: $local_state"
+    fi
+
+    rm -f "$tmp_file"
+}
+
 install_browser_package() {
     local pkg_name="$1"
     local browser_exec="$2"
@@ -94,6 +145,7 @@ install_browser_package() {
     echo "Installing $pkg_name..."
     if kitana_run_logged "apps/browser" "$pkg_name" "browser" "${command[@]}"; then
         save_browser_choice "$browser_exec"
+        seed_brave_defaults "$browser_exec"
         gum style --foreground 2 "Successfully installed $pkg_name!"
         return 0
     fi
@@ -104,6 +156,7 @@ install_browser_package() {
     echo "$pkg_name install failed. Retrying with a clean AUR build..."
     if kitana_run_logged "apps/browser" "$pkg_name" "browser-clean-retry" "${retry[@]}"; then
         save_browser_choice "$browser_exec"
+        seed_brave_defaults "$browser_exec"
         kitana_log_report "Browser package succeeded after clean retry: $pkg_name"
         gum style --foreground 2 "Successfully installed $pkg_name after clean retry!"
         return 0
@@ -114,6 +167,7 @@ install_browser_package() {
 
     if command -v "$browser_exec" >/dev/null 2>&1; then
         save_browser_choice "$browser_exec"
+        seed_brave_defaults "$browser_exec"
         echo "WARNING: $pkg_name failed, but $browser_exec is already available. Continuing."
         return 0
     fi
@@ -131,6 +185,7 @@ set_default_browser() {
     fi
 
     save_browser_choice "$browser_exec"
+    seed_brave_defaults "$browser_exec"
     bash "$KITANA_DIR/install/apps/mimetypes.sh"
     gum style --foreground 2 "Default browser set to $browser_exec."
 }
