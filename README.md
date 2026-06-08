@@ -85,6 +85,17 @@ To inspect and update system firmware manually:
 
 Kitana installs `fwupd` and enables metadata refresh by default, but it never applies firmware updates automatically. `kitana-firmware update` shows the current BIOS/system information and asks for confirmation before running `fwupdmgr update`.
 
+To download and write a bootable Arch Linux USB:
+
+```bash
+~/.local/share/kitana/bin/kitana-arch-usb --download-only
+~/.local/share/kitana/bin/kitana-arch-usb --list
+~/.local/share/kitana/bin/kitana-arch-usb --select --unmount
+~/.local/share/kitana/bin/kitana-arch-usb --device /dev/sdX --unmount
+```
+
+`kitana-arch-usb` downloads the latest Arch ISO, verifies it against Arch's SHA-256 checksum file, and only writes after an explicit whole-device selection and confirmation. It overwrites the target device completely.
+
 To install or change the browser used by web apps:
 
 ```bash

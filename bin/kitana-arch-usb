@@ -1,0 +1,244 @@
+#!/bin/bash
+
+set -euo pipefail
+
+ARCH_ISO_BASE_URL="https://geo.mirror.pkgbuild.com/iso/latest"
+ARCH_ISO_NAME="archlinux-x86_64.iso"
+DOWNLOAD_DIR="$HOME/Downloads/iso"
+DEVICE=""
+ISO_PATH=""
+DOWNLOAD=1
+WRITE=0
+YES=0
+UNMOUNT=0
+SELECT=0
+
+usage() {
+  cat <<EOF
+Usage: kitana-arch-usb [options]
+
+Download, verify, and write the latest Arch Linux ISO to a USB drive.
+
+Options:
+  --list                 List candidate removable block devices
+  --download-only        Download and verify the ISO, but do not write it
+  --select               Select target disk interactively with gum
+  --device /dev/sdX      Target whole block device to overwrite
+  --iso /path/file.iso   Use an existing ISO instead of downloading latest
+  --dir /path            Download directory (default: ~/Downloads/iso)
+  --unmount              Unmount mounted partitions on the target before writing
+  --yes                  Skip interactive confirmation prompt
+  -h, --help             Show this help
+
+Examples:
+  kitana-arch-usb --download-only
+  kitana-arch-usb --list
+  kitana-arch-usb --select
+  kitana-arch-usb --device /dev/sda
+  kitana-arch-usb --device /dev/sda --unmount
+
+Safety:
+  This overwrites the target device completely. Always pass the whole disk
+  device, such as /dev/sda or /dev/nvme1n1, not a partition like /dev/sda1.
+EOF
+}
+
+die() {
+  echo "Error: $*" >&2
+  exit 1
+}
+
+require_command() {
+  command -v "$1" >/dev/null 2>&1 || die "command missing: $1"
+}
+
+list_devices() {
+  require_command lsblk
+  lsblk -o NAME,PATH,TYPE,TRAN,RM,SIZE,MODEL,MOUNTPOINTS
+}
+
+select_device() {
+  local selection
+
+  require_command lsblk
+  require_command gum
+
+  selection="$({
+    while read -r path type tran removable size model; do
+      [ "$type" = "disk" ] || continue
+      { [ "$tran" = "usb" ] || [ "$removable" = "1" ]; } || continue
+      printf '%s\t%s\t%s\t%s\t%s\n' "$path" "${tran:-unknown}" "$removable" "$size" "${model:-unknown}"
+    done < <(lsblk -dn -o PATH,TYPE,TRAN,RM,SIZE,MODEL)
+  } | gum choose --header "Select USB target disk to overwrite" || true)"
+  [ -n "$selection" ] || die "no device selected"
+
+  DEVICE="${selection%%$'\t'*}"
+  WRITE=1
+}
+
+is_partition() {
+  local type
+  type="$(lsblk -dn -o TYPE "$1" 2>/dev/null || true)"
+  [ "$type" = "part" ]
+}
+
+is_whole_disk() {
+  local type
+  type="$(lsblk -dn -o TYPE "$1" 2>/dev/null || true)"
+  [ "$type" = "disk" ]
+}
+
+device_has_mounts() {
+  lsblk -nr -o MOUNTPOINTS "$1" | grep -q '[^[:space:]]'
+}
+
+unmount_device() {
+  local mounts
+  mapfile -t mounts < <(lsblk -nr -o MOUNTPOINTS "$DEVICE" | grep '[^[:space:]]' || true)
+
+  if [ "${#mounts[@]}" -eq 0 ]; then
+    return 0
+  fi
+
+  echo "Unmounting mounted partitions on $DEVICE..."
+  for mountpoint in "${mounts[@]}"; do
+    sudo umount "$mountpoint"
+  done
+}
+
+download_iso() {
+  local iso_url="$ARCH_ISO_BASE_URL/$ARCH_ISO_NAME"
+  local checksum_url="$ARCH_ISO_BASE_URL/sha256sums.txt"
+  local checksum_file="$DOWNLOAD_DIR/sha256sums.txt"
+
+  require_command curl
+  require_command sha256sum
+
+  mkdir -p "$DOWNLOAD_DIR"
+  ISO_PATH="$DOWNLOAD_DIR/$ARCH_ISO_NAME"
+
+  echo "Downloading Arch Linux ISO..."
+  curl -fL --continue-at - --output "$ISO_PATH" "$iso_url"
+
+  echo "Downloading checksum file..."
+  curl -fL --output "$checksum_file" "$checksum_url"
+
+  echo "Verifying ISO checksum..."
+  (
+    cd "$DOWNLOAD_DIR"
+    grep "  $ARCH_ISO_NAME\$" sha256sums.txt | sha256sum -c -
+  )
+
+  echo "ISO ready: $ISO_PATH"
+}
+
+confirm_write() {
+  local answer
+
+  echo
+  echo "Target device: $DEVICE"
+  lsblk -o NAME,PATH,TRAN,RM,SIZE,MODEL,MOUNTPOINTS "$DEVICE"
+  echo
+  echo "ISO: $ISO_PATH"
+  echo
+  echo "This will overwrite all data on $DEVICE."
+
+  if [ "$YES" -eq 1 ]; then
+    return 0
+  fi
+
+  read -r -p "Type WRITE $DEVICE to continue: " answer
+  [ "$answer" = "WRITE $DEVICE" ] || die "cancelled"
+}
+
+write_iso() {
+  require_command lsblk
+  require_command dd
+  require_command sync
+  require_command sudo
+
+  [ -n "$DEVICE" ] || die "missing --device"
+  [ -b "$DEVICE" ] || die "not a block device: $DEVICE"
+  is_partition "$DEVICE" && die "target is a partition, use the whole disk instead: $DEVICE"
+  is_whole_disk "$DEVICE" || die "target is not a whole disk: $DEVICE"
+  [ -f "$ISO_PATH" ] || die "ISO not found: $ISO_PATH"
+
+  if device_has_mounts "$DEVICE"; then
+    if [ "$UNMOUNT" -eq 1 ]; then
+      unmount_device
+    else
+      die "$DEVICE has mounted partitions. Re-run with --unmount after verifying the target."
+    fi
+  fi
+
+  confirm_write
+
+  echo "Writing ISO to $DEVICE..."
+  sudo dd if="$ISO_PATH" of="$DEVICE" bs=4M status=progress oflag=sync conv=fsync
+  sync
+  echo "Arch Linux USB is ready: $DEVICE"
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --list)
+      list_devices
+      exit 0
+      ;;
+    --download-only)
+      WRITE=0
+      ;;
+    --select)
+      SELECT=1
+      WRITE=1
+      ;;
+    --device)
+      DEVICE="${2:-}"
+      [ -n "$DEVICE" ] || die "missing value for --device"
+      WRITE=1
+      shift
+      ;;
+    --iso)
+      ISO_PATH="${2:-}"
+      [ -n "$ISO_PATH" ] || die "missing value for --iso"
+      DOWNLOAD=0
+      shift
+      ;;
+    --dir)
+      DOWNLOAD_DIR="${2:-}"
+      [ -n "$DOWNLOAD_DIR" ] || die "missing value for --dir"
+      shift
+      ;;
+    --unmount)
+      UNMOUNT=1
+      ;;
+    --yes)
+      YES=1
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      usage >&2
+      exit 2
+      ;;
+  esac
+  shift
+done
+
+if [ "$SELECT" -eq 1 ]; then
+  select_device
+fi
+
+if [ "$DOWNLOAD" -eq 1 ]; then
+  download_iso
+fi
+
+if [ "$WRITE" -eq 1 ]; then
+  write_iso
+elif [ "$DOWNLOAD" -eq 1 ]; then
+  echo "Download complete. Use --device /dev/sdX to write a bootable USB."
+else
+  echo "ISO selected: $ISO_PATH"
+fi

@@ -8,6 +8,7 @@
   - Keep package installation, config file deployment, SDDM setup, firmware metadata refresh, and hardware package detection in install/reinstall stages rather than first-run.
 - Revisit real CAVA integration for the dashboard media visualizer. Current bars are synthetic; a later pass should add a small `cava` service/process parser with graceful fallback.
 - Revisit theme-specific blur coordination between Hyprland and Quickshell. Hyprland now has blur profiles, but Quickshell still owns separate alpha/color tokens in `Colors.qml`; later theme generation could set both together.
+- Consider optional Plymouth boot splash support for a smoother branded boot after Limine. Keep it opt-in for non-encrypted installs, and provide a migration/helper for existing Kitana installs that installs Plymouth, configures mkinitcpio/kernel args, applies a Kitana theme, regenerates initramfs, and validates rollback safety.
 - Consider Bitwarden lock separately after confirming the right command/session behavior.
 - Remove the separate `papers` install once Sushi 51 is released and packaged with Papers support, so Kitana does not request Papers twice.
 - Consider adding Kitana Hyprland helper functions for common patterns like window rules, binds, launchers, and notifications.

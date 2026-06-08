@@ -374,6 +374,7 @@ else
 fi
 
 for helper in \
+  kitana-arch-usb \
   kitana-git-config \
   kitana-firmware \
   kitana-hw-cpu \
