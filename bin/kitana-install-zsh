@@ -1,0 +1,126 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+KITANA_DIR="${KITANA_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+ZSHRC_SOURCE="$KITANA_DIR/config/zsh/.zshrc"
+ZSHRC_TARGET="$HOME/.zshrc"
+ZSHRC_MARKER="Kitana managed Zsh entrypoint"
+
+export PATH="$KITANA_DIR/bin:$PATH"
+
+# shellcheck source=../install/lib/install.sh
+source "$KITANA_DIR/install/lib/install.sh"
+
+usage() {
+  cat <<EOF
+Usage: kitana-install-zsh [--no-chsh]
+
+Install zsh support and optionally make zsh the login shell.
+
+Options:
+  --no-chsh   Install zsh and deploy config without changing the login shell
+  -h, --help  Show this help
+EOF
+}
+
+confirm() {
+  if command -v gum >/dev/null 2>&1; then
+    gum confirm "$1"
+  else
+    local answer
+    read -r -p "$1 [y/N]: " answer
+    [[ "$answer" =~ ^[Yy]$ ]]
+  fi
+}
+
+install_packages() {
+  if ! command -v yay >/dev/null 2>&1; then
+    echo "Error: yay is not installed. Please install it first."
+    exit 1
+  fi
+
+  kitana_install_required_packages "apps/zsh" zsh zsh-completions || exit 1
+}
+
+deploy_zshrc() {
+  if [ ! -f "$ZSHRC_SOURCE" ]; then
+    echo "Error: zsh config source missing: $ZSHRC_SOURCE" >&2
+    exit 1
+  fi
+
+  if [ ! -e "$ZSHRC_TARGET" ] || grep -q "$ZSHRC_MARKER" "$ZSHRC_TARGET"; then
+    cp "$ZSHRC_SOURCE" "$ZSHRC_TARGET"
+    echo "Installed Kitana zsh config: $ZSHRC_TARGET"
+  else
+    echo "Keeping existing zsh config: $ZSHRC_TARGET"
+    echo "Kitana zsh defaults are available at: $ZSHRC_SOURCE"
+  fi
+}
+
+show_shells() {
+  local current_shell="${SHELL:-unknown}"
+  local passwd_shell=""
+  local zsh_path=""
+
+  passwd_shell="$(getent passwd "$USER" | cut -d: -f7 || true)"
+  zsh_path="$(command -v zsh || true)"
+
+  echo "Current SHELL: $current_shell"
+  [ -n "$passwd_shell" ] && echo "Login shell: $passwd_shell"
+  [ -n "$zsh_path" ] && echo "Target zsh: $zsh_path"
+}
+
+change_shell() {
+  local zsh_path
+  zsh_path="$(command -v zsh || true)"
+
+  [ -n "$zsh_path" ] || {
+    echo "Error: zsh is not installed." >&2
+    exit 1
+  }
+
+  if [ "${SHELL:-}" = "$zsh_path" ]; then
+    echo "zsh is already the current shell."
+    return 0
+  fi
+
+  show_shells
+  echo
+
+  if confirm "Make zsh your login shell?"; then
+    chsh -s "$zsh_path" "$USER"
+    echo "Login shell changed to $zsh_path. Log out and back in for it to take effect."
+  else
+    echo "Login shell unchanged. Run kitana-install-zsh again when ready."
+  fi
+}
+
+change_login_shell=1
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --no-chsh)
+      change_login_shell=0
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      usage >&2
+      exit 2
+      ;;
+  esac
+  shift
+done
+
+install_packages
+deploy_zshrc
+
+if [ "$change_login_shell" -eq 1 ]; then
+  change_shell
+else
+  show_shells
+  echo "Login shell unchanged because --no-chsh was used."
+fi

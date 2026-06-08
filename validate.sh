@@ -394,6 +394,7 @@ for helper in \
   kitana-install-ghostty-nightly \
   kitana-install-nvim-gldtn \
   kitana-install-private-fonts \
+  kitana-install-zsh \
   kitana-launcher \
   kitana-pkg-add \
   kitana-quickshell \

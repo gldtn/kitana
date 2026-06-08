@@ -117,6 +117,15 @@ To install or change the password manager used by the Kitana hotkey:
 
 Password manager choices include 1Password, Bitwarden, KeePassXC, or no configured hotkey target.
 
+To install zsh after Kitana is already installed:
+
+```bash
+~/.local/share/kitana/bin/kitana-install-zsh
+~/.local/share/kitana/bin/kitana-install-zsh --no-chsh
+```
+
+Zsh is intentionally not part of the default install path yet. The helper installs `zsh` and `zsh-completions`, deploys a minimal Kitana zsh config, and asks before changing the login shell.
+
 ## Repository layout
 
 - `applications/` is reserved for Kitana-managed desktop entry templates and launchers.
@@ -133,6 +142,7 @@ Password manager choices include 1Password, Bitwarden, KeePassXC, or no configur
 - Kitana user settings live in `~/.config/kitana/config`, including `KITANA_WALLPAPER_DIR`.
 - Browser choice is stored in `~/.config/webapp-install.conf` and reused by Kitana web app helpers.
 - Password manager choice is stored in `~/.config/kitana/password-manager.conf` and reused by the Kitana password-manager hotkey.
+- Zsh is optional and can be installed after setup with `kitana-install-zsh`; Bash remains the default install shell path.
 - Private font repo choice is stored in `~/.config/kitana/private-fonts.conf` and reused by `kitana-install-private-fonts`.
 
 ## Secrets And Keyring

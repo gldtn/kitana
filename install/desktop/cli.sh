@@ -13,7 +13,7 @@ PACKAGES=(
   gzip
   jq
   less
-  man
+  man-db
   plocate
   ripgrep
   starship
@@ -22,8 +22,6 @@ PACKAGES=(
   wget
   whois
   zoxide
-  zsh
-  zsh-completion
 )
 
 kitana_install_required_packages "desktop/cli" "${PACKAGES[@]}" || exit 1
