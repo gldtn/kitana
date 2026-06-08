@@ -107,12 +107,29 @@ Singleton {
     function connectBluetoothDevice(device) {
         if (!device)
             return;
-        if (device.connected)
-            device.disconnect();
-        else {
-            device.trusted = true;
-            device.connect();
+
+        const address = device.address || "";
+        if (!address)
+            return;
+
+        if (device.connected) {
+            bluetoothAction.exec(["bluetoothctl", "disconnect", address]);
+        } else if (device.paired) {
+            bluetoothAction.exec(["sh", "-c", "bluetoothctl trust \"$1\" && bluetoothctl connect \"$1\"", "kitana-bluetooth", address]);
+        } else {
+            bluetoothAction.exec(["sh", "-c", "bluetoothctl trust \"$1\" && bluetoothctl pair \"$1\" && bluetoothctl connect \"$1\"", "kitana-bluetooth", address]);
         }
+    }
+
+    function forgetBluetoothDevice(device) {
+        if (!device)
+            return;
+
+        const address = device.address || "";
+        if (!address)
+            return;
+
+        bluetoothAction.exec(["bluetoothctl", "remove", address]);
     }
 
     function toggleWifi() {
@@ -319,4 +336,5 @@ Singleton {
     Process { id: micAction; onRunningChanged: if (!running) root.refresh() }
     Process { id: brightnessAction; onRunningChanged: if (!running) root.refresh() }
     Process { id: keyboardAction; onRunningChanged: if (!running) root.refresh() }
+    Process { id: bluetoothAction; onRunningChanged: if (!running) root.refresh() }
 }

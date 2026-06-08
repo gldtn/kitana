@@ -814,13 +814,99 @@ PanelWindow {
     Component {
         id: bluetoothDeviceRow
 
-        DetailRow {
+        Rectangle {
+            id: bluetoothRow
+
             required property var modelData
-            icon: modelData.connected ? "󰂱" : "󰂯"
-            title: modelData.name || modelData.deviceName || modelData.address || "Unknown device"
-            subtitle: modelData.connected ? "Connected" : (modelData.paired || modelData.trusted ? "Paired" : "Available")
-            active: modelData.connected
-            onClicked: Services.SystemStatus.connectBluetoothDevice(modelData)
+
+            readonly property bool saved: modelData.paired || modelData.trusted
+            readonly property string title: modelData.name || modelData.deviceName || modelData.address || "Unknown device"
+            readonly property string subtitle: modelData.connected ? "Connected" : (modelData.paired ? "Paired" : (modelData.trusted ? "Trusted" : "Available"))
+
+            width: parent ? parent.width : 0
+            height: 48
+            radius: 11
+            color: rowMouse.containsMouse ? Colors.surfaceHover : Colors.surface
+            border.color: modelData.connected ? Colors.panelBorderStrong : "transparent"
+            border.width: modelData.connected ? 1 : 0
+
+            Text {
+                id: bluetoothIcon
+                anchors.left: parent.left
+                anchors.leftMargin: 9
+                anchors.verticalCenter: parent.verticalCenter
+                width: 24
+                text: modelData.connected ? "󰂱" : "󰂯"
+                color: modelData.connected ? Colors.accent : Colors.foreground
+                font.family: settings.fontFamily
+                font.pixelSize: 16
+            }
+
+            Column {
+                anchors.left: bluetoothIcon.right
+                anchors.right: forgetButton.visible ? forgetButton.left : parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.leftMargin: 10
+                anchors.rightMargin: 8
+
+                Text {
+                    width: parent.width
+                    text: bluetoothRow.title
+                    color: Colors.foreground
+                    elide: Text.ElideRight
+                    font.family: settings.fontFamily
+                    font.pixelSize: settings.textPixelSize
+                    font.weight: Font.Bold
+                }
+
+                Text {
+                    width: parent.width
+                    text: bluetoothRow.subtitle
+                    color: Colors.muted
+                    elide: Text.ElideRight
+                    font.family: settings.fontFamily
+                    font.pixelSize: settings.textPixelSize - 1
+                }
+            }
+
+            Rectangle {
+                id: forgetButton
+                anchors.right: parent.right
+                anchors.rightMargin: 8
+                anchors.verticalCenter: parent.verticalCenter
+                visible: bluetoothRow.saved && !modelData.connected
+                width: visible ? 30 : 0
+                height: 30
+                radius: 9
+                color: forgetMouse.containsMouse ? Colors.surfaceHighlight : Colors.surfaceAlt
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "󰆴"
+                    color: forgetMouse.containsMouse ? Colors.danger : Colors.muted
+                    font.family: settings.fontFamily
+                    font.pixelSize: 14
+                }
+
+                MouseArea {
+                    id: forgetMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: Services.SystemStatus.forgetBluetoothDevice(bluetoothRow.modelData)
+                }
+            }
+
+            MouseArea {
+                id: rowMouse
+                anchors.left: parent.left
+                anchors.right: forgetButton.visible ? forgetButton.left : parent.right
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: Services.SystemStatus.connectBluetoothDevice(bluetoothRow.modelData)
+            }
         }
     }
 
