@@ -215,6 +215,15 @@ PanelWindow {
                         active: Services.NotificationService.doNotDisturb
                         onClicked: Services.NotificationService.toggleDoNotDisturb()
                     }
+
+                    QuickTile {
+                        width: parent.width
+                        icon: "󰌌"
+                        title: "Keyboard " + Services.SystemStatus.keyboardLayoutLabel
+                        subtitle: Services.SystemStatus.keyboardLayoutLongLabel
+                        active: true
+                        onClicked: Services.SystemStatus.nextKeyboardLayout()
+                    }
                 }
             }
 

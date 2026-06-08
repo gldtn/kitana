@@ -4,12 +4,12 @@
 
 hl.config({
   input = {
-    -- Use a plain US keyboard by default. Right Super is the Compose key.
+    -- Use a plain US keyboard by default. Insert is the Compose key.
     -- Run `kitana-keyboard --pt-br` for Brazilian Portuguese US-International behavior.
     kb_layout = "us",
     kb_variant = "",
     kb_model = "",
-    kb_options = "compose:rwin",
+    kb_options = "compose:ins",
     -- Change speed of keyboard repeat
     repeat_rate = 40,
     repeat_delay = 250,

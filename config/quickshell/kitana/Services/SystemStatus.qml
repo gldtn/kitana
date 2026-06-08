@@ -64,6 +64,24 @@ Singleton {
     property int brightness: 0
     property bool brightnessAvailable: false
 
+    property string keyboardLayoutLabel: "US"
+    property string keyboardLayoutLongLabel: "English (US)"
+
+    function compactKeyboardLabel(keymap, layout, variant) {
+        const normalizedKeymap = (keymap || "").toLowerCase();
+        const normalizedLayout = (layout || "").toLowerCase();
+        const normalizedVariant = (variant || "").toLowerCase();
+
+        if (normalizedLayout === "br" || normalizedKeymap.indexOf("brazil") !== -1 || normalizedKeymap.indexOf("portuguese") !== -1)
+            return "PT-BR";
+        if (normalizedVariant === "intl" || normalizedKeymap.indexOf("intl") !== -1 || normalizedKeymap.indexOf("international") !== -1)
+            return "US-INTL";
+        if (normalizedLayout === "us" || normalizedKeymap.indexOf("english (us") !== -1)
+            return "US";
+
+        return (layout || keymap || "KB").toUpperCase().slice(0, 8);
+    }
+
     function refresh() {
         audioPoll.exec(["sh", "-c", "wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null | awk '{ printf \"%s %d\", ($0 ~ /MUTED/ ? \"muted\" : \"volume\"), $2 * 100 }'"]);
         audioSinkPoll.exec(["sh", "-c", "wpctl status 2>/dev/null | awk '/Sinks:/ { s=1; next } s && /\\*/ { sub(/^.*\\* +[0-9]+\\. +/, \"\"); sub(/ \\[vol:.*$/, \"\"); print; exit }'"]);
@@ -73,6 +91,7 @@ Singleton {
         wifiStatePoll.exec(["nmcli", "radio", "wifi"]);
         wifiPoll.exec(["sh", "-c", "nmcli -t -f ACTIVE,SSID,SIGNAL,SECURITY dev wifi list 2>/dev/null | awk -F: '!seen[$2]++ && $2 != \"\" { print $1 \"|\" $2 \"|\" $3 \"|\" $4 }'"]);
         brightnessPoll.exec(["sh", "-c", "brightnessctl -c backlight -m 2>/dev/null | awk -F, '{ gsub(/%/, \"\", $4); print $4 }'"]);
+        keyboardPoll.exec(["hyprctl", "devices", "-j"]);
     }
 
     function toggleBluetooth() {
@@ -141,6 +160,10 @@ Singleton {
     function setBrightness(percent) {
         const clamped = Math.max(1, Math.min(100, Math.round(percent)));
         brightnessAction.exec(["brightnessctl", "-c", "backlight", "set", clamped + "%"]);
+    }
+
+    function nextKeyboardLayout() {
+        keyboardAction.exec(["hyprctl", "switchxkblayout", "all", "next"]);
     }
 
     Timer {
@@ -251,10 +274,49 @@ Singleton {
         }
     }
 
+    Process {
+        id: keyboardPoll
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    const devices = JSON.parse(text.trim() || "{}");
+                    const keyboards = devices.keyboards || [];
+                    let keyboard = null;
+
+                    for (const item of keyboards) {
+                        if (item && item.main) {
+                            keyboard = item;
+                            break;
+                        }
+                    }
+
+                    if (!keyboard && keyboards.length > 0)
+                        keyboard = keyboards[0];
+                    if (!keyboard)
+                        return;
+
+                    const index = keyboard.active_layout_index || 0;
+                    const layouts = (keyboard.layout || "").split(",");
+                    const variants = (keyboard.variant || "").split(",");
+                    const layout = layouts[index] || layouts[0] || "";
+                    const variant = variants[index] || "";
+                    const keymap = keyboard.active_keymap || layout || "Keyboard";
+
+                    root.keyboardLayoutLongLabel = keymap;
+                    root.keyboardLayoutLabel = root.compactKeyboardLabel(keymap, layout, variant);
+                } catch (error) {
+                    root.keyboardLayoutLabel = "KB";
+                    root.keyboardLayoutLongLabel = "Keyboard layout unavailable";
+                }
+            }
+        }
+    }
+
     Process { id: wifiToggle; onRunningChanged: if (!running) root.refresh() }
     Process { id: wifiScan; onRunningChanged: if (!running) { root.wifiScanning = false; root.refresh(); } }
     Process { id: wifiConnect; onRunningChanged: if (!running) root.refresh() }
     Process { id: audioAction; onRunningChanged: if (!running) root.refresh() }
     Process { id: micAction; onRunningChanged: if (!running) root.refresh() }
     Process { id: brightnessAction; onRunningChanged: if (!running) root.refresh() }
+    Process { id: keyboardAction; onRunningChanged: if (!running) root.refresh() }
 }

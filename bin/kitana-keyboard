@@ -155,7 +155,7 @@ hl.config({
   input = {
     kb_layout = "us,us",
     kb_variant = ",intl",
-    kb_options = "compose:rwin",
+    kb_options = "compose:ins",
   },
 })
 
@@ -203,7 +203,7 @@ case "$action" in
     refresh_keyboard
     echo "Brazilian Portuguese keyboard support enabled."
     echo "Keyboard layout switch: Ctrl + Backspace"
-    echo "Compose key: Right Super"
+    echo "Compose key: Insert"
     ;;
   remove)
     if [ "$pt_br" -ne 1 ]; then
