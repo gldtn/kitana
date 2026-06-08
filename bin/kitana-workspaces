@@ -6,9 +6,28 @@ if ! command -v hyprctl >/dev/null 2>&1; then
   exit 0
 fi
 
-monitors_json="$(hyprctl monitors -j)"
+lock_file="${XDG_RUNTIME_DIR:-/tmp}/kitana-workspaces.lock"
+exec 9>"$lock_file"
+flock -n 9 || exit 0
 
-python - "$monitors_json" <<'PY' | while IFS= read -r rule; do
+monitors_json=""
+
+refresh_monitors_json() {
+  monitors_json="$(hyprctl monitors -j 2>/dev/null || true)"
+  [ -n "$monitors_json" ] && [ "$monitors_json" != "[]" ]
+}
+
+for _ in {1..10}; do
+  if refresh_monitors_json; then
+    break
+  fi
+  sleep 0.5
+done
+
+refresh_monitors_json || exit 0
+
+apply_workspace_rules() {
+  python - "$monitors_json" <<'PY' | while IFS= read -r rule; do
 import json
 import sys
 
@@ -31,10 +50,17 @@ else:
     for workspace in range(6, 11):
         emit(workspace, monitors[1])
 PY
-  workspace="${rule%%$'\t'*}"
-  monitor="${rule#*$'\t'}"
-  hyprctl eval "hl.workspace_rule({ workspace = \"$workspace\", monitor = \"$monitor\", persistent = true })" >/dev/null 2>&1 || true
-done
+    workspace="${rule%%$'\t'*}"
+    monitor="${rule#*$'\t'}"
+    hyprctl eval "hl.workspace_rule({ workspace = \"$workspace\", monitor = \"$monitor\", persistent = true })" >/dev/null 2>&1 || true
+    hyprctl dispatch moveworkspacetomonitor "$workspace $monitor" >/dev/null 2>&1 || true
+  done
+}
+
+apply_workspace_rules
+sleep 1
+refresh_monitors_json || exit 0
+apply_workspace_rules
 
 active_workspace="$(hyprctl activeworkspace -j | python -c 'import json, sys; print(json.load(sys.stdin).get("id", 1))' 2>/dev/null || printf '1')"
 
