@@ -1,0 +1,3 @@
+[workspace]
+members = ["tools/kitana-bluetooth-pair"]
+resolver = "2"

@@ -128,7 +128,7 @@ check_dir() {
 echo "Validating Kitana install..."
 echo
 
-for cmd in git yay Hyprland start-hyprland hyprctl sddm quickshell awww awww-daemon nmcli nc lspci reflector rsync lua fwupdmgr dmidecode; do
+for cmd in git yay Hyprland start-hyprland hyprctl sddm quickshell awww awww-daemon nmcli nc lspci reflector rsync lua fwupdmgr dmidecode cargo rustc; do
   check_command "$cmd"
 done
 
@@ -159,6 +159,7 @@ for pkg in \
   quickshell \
   reflector \
   rsync \
+  rust \
   shared-mime-info \
   sof-firmware \
   qt6ct \

@@ -643,22 +643,85 @@ PanelWindow {
             contentWidth: width
             contentHeight: bluetoothList.implicitHeight
 
-            DetailList {
+            Column {
                 id: bluetoothList
+
+                readonly property bool empty: Services.SystemStatus.bluetoothSavedDevices.length === 0 && Services.SystemStatus.bluetoothAvailableDevices.length === 0
+
                 width: parent.width
-                title: "Bluetooth"
-                emptyText: Services.SystemStatus.bluetoothEnabled ? "No devices found" : "Bluetooth is off"
-                modelData: Services.SystemStatus.bluetoothDevices
-                delegateComponent: bluetoothDeviceRow
-                actionVisible: Services.SystemStatus.bluetoothAvailable
-                actionIcon: Services.SystemStatus.bluetoothDiscovering ? "󰑓" : "󰂯"
-                actionTitle: Services.SystemStatus.bluetoothDiscovering ? "Scanning for devices" : (Services.SystemStatus.bluetoothEnabled ? "Scan for devices" : "Turn Bluetooth on")
-                actionSubtitle: Services.SystemStatus.bluetoothEnabled ? "Click to refresh nearby devices" : "Click to enable adapter"
-                onActionClicked: {
-                    if (!Services.SystemStatus.bluetoothEnabled)
-                        Services.SystemStatus.toggleBluetooth();
-                    else
-                        Services.SystemStatus.toggleBluetoothScan();
+                spacing: 10
+
+                Text {
+                    width: bluetoothList.width
+                    text: "Bluetooth"
+                    color: Colors.foreground
+                    font.family: settings.fontFamily
+                    font.pixelSize: 14
+                    font.weight: Font.Bold
+                }
+
+                DetailRow {
+                    visible: Services.SystemStatus.bluetoothAvailable
+                    icon: Services.SystemStatus.bluetoothDiscovering ? "󰑓" : "󰂯"
+                    title: Services.SystemStatus.bluetoothDiscovering ? "Scanning for devices" : (Services.SystemStatus.bluetoothEnabled ? "Scan for devices" : "Turn Bluetooth on")
+                    subtitle: Services.SystemStatus.bluetoothEnabled ? "Click to refresh nearby devices" : "Click to enable adapter"
+                    active: Services.SystemStatus.bluetoothDiscovering
+                    onClicked: {
+                        if (!Services.SystemStatus.bluetoothEnabled)
+                            Services.SystemStatus.toggleBluetooth();
+                        else
+                            Services.SystemStatus.toggleBluetoothScan();
+                    }
+                }
+
+                Text {
+                    width: bluetoothList.width
+                    visible: bluetoothList.empty
+                    text: Services.SystemStatus.bluetoothEnabled ? "No devices found" : "Bluetooth is off"
+                    color: Colors.muted
+                    horizontalAlignment: Text.AlignHCenter
+                    font.family: settings.fontFamily
+                    font.pixelSize: settings.textPixelSize
+                }
+
+                Repeater {
+                    model: Services.SystemStatus.bluetoothSavedDevices
+                    delegate: bluetoothDeviceRow
+                }
+
+                Row {
+                    visible: Services.SystemStatus.bluetoothSavedDevices.length > 0 && Services.SystemStatus.bluetoothAvailableDevices.length > 0
+                    width: bluetoothList.width
+                    height: visible ? 18 : 0
+                    spacing: 10
+
+                    Rectangle {
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 42
+                        height: 1
+                        color: Colors.panelBorder
+                    }
+
+                    Text {
+                        id: nearbyDividerLabel
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "Nearby devices"
+                        color: Colors.muted
+                        font.family: settings.fontFamily
+                        font.pixelSize: settings.textPixelSize - 2
+                    }
+
+                    Rectangle {
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: parent.width - 42 - parent.spacing * 2 - nearbyDividerLabel.implicitWidth
+                        height: 1
+                        color: Colors.panelBorder
+                    }
+                }
+
+                Repeater {
+                    model: Services.SystemStatus.bluetoothAvailableDevices
+                    delegate: bluetoothDeviceRow
                 }
             }
         }
@@ -821,7 +884,8 @@ PanelWindow {
 
             readonly property bool saved: modelData.paired || modelData.trusted
             readonly property string title: modelData.name || modelData.deviceName || modelData.address || "Unknown device"
-            readonly property string subtitle: modelData.pairing ? "Pairing..." : (modelData.connected ? "Connected" : (modelData.paired ? "Paired" : (modelData.trusted ? "Trusted" : "Available")))
+            readonly property string subtitle: Services.SystemStatus.bluetoothDeviceStatus(modelData)
+            readonly property var actionButton: disconnectButton.visible ? disconnectButton : (forgetButton.visible ? forgetButton : null)
 
             width: parent ? parent.width : 0
             height: 48
@@ -844,7 +908,7 @@ PanelWindow {
 
             Column {
                 anchors.left: bluetoothIcon.right
-                anchors.right: forgetButton.visible ? forgetButton.left : parent.right
+                anchors.right: bluetoothRow.actionButton ? bluetoothRow.actionButton.left : parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.leftMargin: 10
                 anchors.rightMargin: 8
@@ -866,6 +930,34 @@ PanelWindow {
                     elide: Text.ElideRight
                     font.family: settings.fontFamily
                     font.pixelSize: settings.textPixelSize - 1
+                }
+            }
+
+            Rectangle {
+                id: disconnectButton
+                anchors.right: parent.right
+                anchors.rightMargin: 8
+                anchors.verticalCenter: parent.verticalCenter
+                visible: modelData.connected
+                width: visible ? 30 : 0
+                height: 30
+                radius: 9
+                color: disconnectMouse.containsMouse ? Colors.surfaceHighlight : Colors.surfaceAlt
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "󰍃"
+                    color: disconnectMouse.containsMouse ? Colors.danger : Colors.muted
+                    font.family: settings.fontFamily
+                    font.pixelSize: 14
+                }
+
+                MouseArea {
+                    id: disconnectMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: Services.SystemStatus.disconnectBluetoothDevice(bluetoothRow.modelData)
                 }
             }
 
@@ -897,14 +989,39 @@ PanelWindow {
                 }
             }
 
+            Rectangle {
+                id: actionTooltip
+                visible: disconnectMouse.containsMouse || forgetMouse.containsMouse
+                z: 3
+                x: Math.max(8, (bluetoothRow.actionButton ? bluetoothRow.actionButton.x : bluetoothRow.width) - width - 8)
+                anchors.verticalCenter: parent.verticalCenter
+                width: actionTooltipLabel.implicitWidth + 14
+                height: 22
+                radius: 8
+                color: Colors.panelBackground
+                border.color: Colors.panelBorder
+                border.width: 1
+
+                Text {
+                    id: actionTooltipLabel
+                    anchors.centerIn: parent
+                    text: disconnectMouse.containsMouse ? "Disconnect" : "Forget"
+                    color: Colors.foreground
+                    font.family: settings.fontFamily
+                    font.pixelSize: settings.textPixelSize - 2
+                    font.weight: Font.DemiBold
+                }
+            }
+
             MouseArea {
                 id: rowMouse
                 anchors.left: parent.left
-                anchors.right: forgetButton.visible ? forgetButton.left : parent.right
+                anchors.right: bluetoothRow.actionButton ? bluetoothRow.actionButton.left : parent.right
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
+                enabled: !modelData.connected
                 hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
+                cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
                 onClicked: Services.SystemStatus.connectBluetoothDevice(bluetoothRow.modelData)
             }
         }

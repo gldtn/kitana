@@ -16,7 +16,6 @@ PACKAGES=(
   pamixer
   playerctl
   polkit
-  python-gobject
   quickshell
   satty
   shared-mime-info

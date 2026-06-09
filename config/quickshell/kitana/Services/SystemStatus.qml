@@ -19,6 +19,8 @@ Singleton {
     readonly property bool bluetoothEnabled: bluetoothAdapter ? bluetoothAdapter.enabled : false
     readonly property bool bluetoothDiscovering: bluetoothAdapter ? bluetoothAdapter.discovering : false
     readonly property var bluetoothDevices: bluetoothAdapter && bluetoothAdapter.devices ? bluetoothAdapter.devices.values : []
+    readonly property var bluetoothSavedDevices: sortedBluetoothDevices(true)
+    readonly property var bluetoothAvailableDevices: sortedBluetoothDevices(false)
     readonly property int bluetoothConnectedCount: {
         let count = 0;
         for (const device of bluetoothDevices) {
@@ -30,6 +32,8 @@ Singleton {
     readonly property string bluetoothIcon: !bluetoothEnabled ? "󰂲" : (bluetoothConnectedCount > 0 ? "󰂱" : "󰂯")
     readonly property string bluetoothLabel: !bluetoothAvailable ? "none" : (!bluetoothEnabled ? "off" : (bluetoothConnectedCount > 0 ? bluetoothConnectedCount + "" : "on"))
     property string bluetoothPendingPairAddress: ""
+    property int bluetoothPairFinalizeAttempts: 0
+    property int bluetoothPairAudioTicks: 0
 
     readonly property var networkDevices: Networking.devices ? Networking.devices.values : []
     readonly property var wifiDevice: networkDeviceByType(DeviceType.Wifi, false)
@@ -139,8 +143,10 @@ Singleton {
         if (device.pairing) {
             device.cancelPair();
             bluetoothPendingPairAddress = "";
+            bluetoothPairFinalizeAttempts = 0;
+            bluetoothPairAudioTicks = 0;
         } else if (device.connected) {
-            device.disconnect();
+            return;
         } else if (device.paired) {
             device.trusted = true;
             device.connect();
@@ -149,9 +155,18 @@ Singleton {
                 return;
 
             bluetoothPendingPairAddress = address;
+            bluetoothPairFinalizeAttempts = 0;
+            bluetoothPairAudioTicks = 0;
             bluetoothPairAction.exec([kitanaDir + "/bin/kitana-bluetooth-pair", address]);
             bluetoothPairFinalize.start();
         }
+    }
+
+    function disconnectBluetoothDevice(device) {
+        if (!device || !device.connected)
+            return;
+
+        device.disconnect();
     }
 
     function forgetBluetoothDevice(device) {
@@ -167,6 +182,8 @@ Singleton {
         device.forget();
         if (bluetoothPendingPairAddress === address)
             bluetoothPendingPairAddress = "";
+        bluetoothPairFinalizeAttempts = 0;
+        bluetoothPairAudioTicks = 0;
     }
 
     function bluetoothDeviceByAddress(address) {
@@ -178,6 +195,80 @@ Singleton {
         return null;
     }
 
+    function bluetoothDeviceSaved(device) {
+        return device && (device.connected || device.paired || device.trusted);
+    }
+
+    function bluetoothDeviceTitle(device) {
+        return device ? (device.name || device.deviceName || device.address || "Unknown device") : "Unknown device";
+    }
+
+    function sortedBluetoothDevices(savedOnly) {
+        const items = [];
+        for (const device of bluetoothDevices) {
+            if (device && bluetoothDeviceSaved(device) === savedOnly)
+                items.push(device);
+        }
+
+        return items.sort((left, right) => (right.connected - left.connected) || bluetoothDeviceTitle(left).localeCompare(bluetoothDeviceTitle(right)));
+    }
+
+    function bluetoothDeviceStatus(device) {
+        if (!device)
+            return "Available";
+
+        const address = device.address || "";
+        if (address && bluetoothPendingPairAddress === address) {
+            if (bluetoothDeviceAudioActive(device))
+                return "Connected";
+            if (device.connected || device.paired || device.trusted)
+                return "Connecting audio...";
+            return "Pairing...";
+        }
+
+        if (device.pairing)
+            return "Pairing...";
+        if (device.connected)
+            return "Connected";
+        if (device.paired)
+            return "Paired";
+        if (device.trusted)
+            return "Trusted";
+        return "Available";
+    }
+
+    function bluetoothAddressFragment(address) {
+        return (address || "").split(":").join("_").toLowerCase();
+    }
+
+    function bluetoothAudioSinkForDevice(device) {
+        if (!device)
+            return null;
+
+        const address = (device.address || "").toUpperCase();
+        const macFragment = bluetoothAddressFragment(address);
+        for (const node of pipewireAudioSinks) {
+            if (!node)
+                continue;
+
+            const props = node.properties || {};
+            const nodeAddress = (props["api.bluez5.address"] || props["bluez5.address"] || "").toUpperCase();
+            const name = (node.name || "").toLowerCase();
+
+            if (address && nodeAddress === address)
+                return node;
+            if (macFragment && name.indexOf(macFragment) !== -1)
+                return node;
+        }
+
+        return null;
+    }
+
+    function bluetoothDeviceAudioActive(device) {
+        const sink = bluetoothAudioSinkForDevice(device);
+        return sink && audioSinkNode && sink.id === audioSinkNode.id;
+    }
+
     Timer {
         id: bluetoothPairFinalize
         interval: 500
@@ -187,15 +278,35 @@ Singleton {
             if (!device) {
                 stop();
                 root.bluetoothPendingPairAddress = "";
-            } else if (device.paired) {
+                root.bluetoothPairFinalizeAttempts = 0;
+                root.bluetoothPairAudioTicks = 0;
+            } else if (bluetoothPairAction.running) {
+                return;
+            } else if (root.bluetoothDeviceAudioActive(device)) {
+                root.bluetoothPairAudioTicks++;
+                if (root.bluetoothPairAudioTicks >= 2) {
+                    stop();
+                    root.bluetoothPendingPairAddress = "";
+                    root.bluetoothPairFinalizeAttempts = 0;
+                    root.bluetoothPairAudioTicks = 0;
+                }
+            } else if (device.connected || device.paired || device.trusted) {
+                root.bluetoothPairAudioTicks = 0;
                 device.trusted = true;
-                if (!device.connected)
+                if (!device.connected && root.bluetoothPairFinalizeAttempts % 4 === 0)
                     device.connect();
-                stop();
-                root.bluetoothPendingPairAddress = "";
+                root.bluetoothPairFinalizeAttempts++;
+                if (root.bluetoothPairFinalizeAttempts >= 40) {
+                    stop();
+                    root.bluetoothPendingPairAddress = "";
+                    root.bluetoothPairFinalizeAttempts = 0;
+                    root.bluetoothPairAudioTicks = 0;
+                }
             } else if (!device.pairing && !bluetoothPairAction.running) {
                 stop();
                 root.bluetoothPendingPairAddress = "";
+                root.bluetoothPairFinalizeAttempts = 0;
+                root.bluetoothPairAudioTicks = 0;
             }
         }
     }
