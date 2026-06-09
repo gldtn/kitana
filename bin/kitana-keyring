@@ -1,0 +1,216 @@
+#!/bin/bash
+
+set -euo pipefail
+
+open_seahorse=0
+
+usage() {
+  cat <<EOF
+Usage: kitana-keyring [--open-seahorse]
+
+Diagnose GNOME Keyring / Secret Service availability for apps such as 1Password.
+
+Options:
+  --open-seahorse  Open Seahorse after printing diagnostics
+  -h, --help       Show this help
+EOF
+}
+
+info() {
+  printf 'INFO: %s\n' "$*"
+}
+
+pass() {
+  printf 'PASS: %s\n' "$*"
+}
+
+warn() {
+  printf 'WARN: %s\n' "$*"
+}
+
+fail() {
+  printf 'FAIL: %s\n' "$*"
+}
+
+have_command() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+read_alias_path() {
+  local alias_name="$1"
+  local output=""
+
+  output="$(busctl --user call org.freedesktop.secrets /org/freedesktop/secrets org.freedesktop.Secret.Service ReadAlias s "$alias_name" 2>/dev/null || true)"
+  if [ -n "$output" ]; then
+    printf '%s\n' "${output#o }" | tr -d '"'
+  fi
+}
+
+collection_exists() {
+  local path="$1"
+
+  [ -n "$path" ] || return 1
+  [ "$path" != "/" ] || return 1
+  busctl --user introspect org.freedesktop.secrets "$path" >/dev/null 2>&1
+}
+
+is_session_collection() {
+  local path="$1"
+
+  [ "$path" = "/org/freedesktop/secrets/collection/session" ]
+}
+
+collection_locked() {
+  local path="$1"
+  local output=""
+
+  output="$(busctl --user get-property org.freedesktop.secrets "$path" org.freedesktop.Secret.Collection Locked 2>/dev/null || true)"
+  case "$output" in
+    *true*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+print_guidance() {
+  cat <<EOF
+
+Guided repair:
+  1. Open Seahorse: seahorse
+  2. If no usable password keyring exists, choose File -> New -> Password Keyring.
+  3. Name it Login, or Default if Seahorse does not offer Login.
+  4. Use your Linux login password if you want SDDM/PAM to auto-unlock it.
+  5. Right-click the keyring and choose Make Default if that option is shown.
+  6. Unlock it, then run: kitana-keyring
+  7. Authorize 1Password MFA once more so it can save the token.
+
+Expected healthy state:
+  Secret Service exposes a persistent collection such as:
+    /org/freedesktop/secrets/collection/login
+  or:
+    /org/freedesktop/secrets/collection/Default_keyring
+
+Notes:
+  - Kitana does not silently create or reset keyrings because that can affect stored secrets.
+  - If SDDM logs say the keyring password is incorrect, change the keyring password in Seahorse to match your Linux login password.
+EOF
+}
+
+open_seahorse_if_requested() {
+  [ "$open_seahorse" -eq 1 ] || return 0
+
+  if have_command seahorse; then
+    seahorse >/dev/null 2>&1 &
+  else
+    fail "Cannot open Seahorse because it is not installed."
+    return 1
+  fi
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --open-seahorse)
+      open_seahorse=1
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      usage >&2
+      exit 2
+      ;;
+  esac
+  shift
+done
+
+echo "Kitana Keyring Diagnostics"
+echo ""
+
+missing_required=0
+for cmd in busctl systemctl; do
+  if have_command "$cmd"; then
+    pass "Required command available: $cmd"
+  else
+    fail "Required command missing: $cmd"
+    missing_required=1
+  fi
+done
+
+if [ "$missing_required" -eq 1 ]; then
+  exit 1
+fi
+
+for cmd in gnome-keyring-daemon secret-tool seahorse; do
+  if have_command "$cmd"; then
+    pass "Keyring helper available: $cmd"
+  else
+    warn "Keyring helper missing: $cmd"
+  fi
+done
+
+if systemctl --user is-active --quiet gnome-keyring-daemon.service; then
+  pass "GNOME Keyring service is active"
+else
+  warn "GNOME Keyring service is not active"
+fi
+
+if busctl --user list | grep -q '^org\.freedesktop\.secrets[[:space:]]'; then
+  pass "Secret Service D-Bus name is registered"
+else
+  fail "Secret Service D-Bus name is not registered"
+  print_guidance
+  open_seahorse_if_requested
+  exit 1
+fi
+
+keyring_dir="$HOME/.local/share/keyrings"
+if [ -d "$keyring_dir" ]; then
+  pass "Keyring directory exists: $keyring_dir"
+else
+  warn "Keyring directory missing: $keyring_dir"
+fi
+
+login_path="$(read_alias_path login)"
+default_path="$(read_alias_path default)"
+available=0
+
+echo ""
+info "Secret Service aliases:"
+info "  login: ${login_path:-not set}"
+info "  default: ${default_path:-not set}"
+
+for alias_name in login default; do
+  path=""
+  case "$alias_name" in
+    login) path="$login_path" ;;
+    default) path="$default_path" ;;
+  esac
+
+  if collection_exists "$path" && ! is_session_collection "$path"; then
+    if collection_locked "$path"; then
+      warn "Persistent '$alias_name' collection exists but is locked: $path"
+    else
+      pass "Persistent '$alias_name' collection is available: $path"
+      available=1
+    fi
+  elif is_session_collection "$path"; then
+    warn "Alias '$alias_name' points to the temporary session collection, not a persistent keyring: $path"
+  elif [ -n "$path" ] && [ "$path" != "/" ]; then
+    warn "Alias '$alias_name' points to a collection that is not exposed: $path"
+  else
+    warn "Alias '$alias_name' is not set"
+  fi
+done
+
+if [ "$available" -eq 1 ]; then
+  echo ""
+  pass "Secret Service has an available persistent collection. Apps such as 1Password should be able to save MFA tokens."
+else
+  echo ""
+  fail "No available persistent login/default keyring collection was found."
+  print_guidance
+  open_seahorse_if_requested
+  exit 1
+fi
+
+open_seahorse_if_requested

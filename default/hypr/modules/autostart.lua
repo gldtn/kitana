@@ -17,7 +17,6 @@ hl.on("hyprland.start", function()
   hl.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-wallpaper-watch")
   hl.exec_cmd("systemctl --user start hyprpolkitagent")
   hl.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-quickshell start")
-    -- hl.exec_cmd("systemctl --user start hypridle.service")
   hl.exec_cmd("hypridle")
 end)
 

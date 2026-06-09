@@ -380,6 +380,7 @@ for helper in \
   kitana-hw-cpu \
   kitana-hw-gpu \
   kitana-keyboard \
+  kitana-keyring \
   kitana-osd \
   kitana-browser \
   kitana-password-manager \
