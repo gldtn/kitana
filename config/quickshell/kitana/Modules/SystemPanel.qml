@@ -821,7 +821,7 @@ PanelWindow {
 
             readonly property bool saved: modelData.paired || modelData.trusted
             readonly property string title: modelData.name || modelData.deviceName || modelData.address || "Unknown device"
-            readonly property string subtitle: modelData.connected ? "Connected" : (modelData.paired ? "Paired" : (modelData.trusted ? "Trusted" : "Available"))
+            readonly property string subtitle: modelData.pairing ? "Pairing..." : (modelData.connected ? "Connected" : (modelData.paired ? "Paired" : (modelData.trusted ? "Trusted" : "Available")))
 
             width: parent ? parent.width : 0
             height: 48
@@ -928,9 +928,9 @@ PanelWindow {
 
         DetailRow {
             required property var modelData
-            icon: "󰕾"
+            icon: modelData.icon || "󰕾"
             title: modelData.name
-            subtitle: "Output device"
+            subtitle: Services.SystemStatus.audioSink === modelData.name ? "Current output" : (modelData.subtitle || "Output device")
             active: Services.SystemStatus.audioSink === modelData.name
             onClicked: Services.SystemStatus.setAudioSink(modelData.id)
         }

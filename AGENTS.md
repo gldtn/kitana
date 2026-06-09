@@ -107,6 +107,8 @@ When adding or editing themes, update `lib/kitana-theme.lua` ordering/mappings a
 
 Kitana Quickshell config lives in `config/quickshell/kitana/` and deploys to `~/.config/quickshell/kitana/`.
 
+Before adding Quickshell functionality, consult the v0.3 docs at `https://quickshell.org/docs/v0.3.0/`. Prefer native Quickshell services and types, such as Bluetooth, PipeWire, MPRIS, notifications, networking, and tray APIs, before adding shell polling or helper commands. Use external commands only when Quickshell lacks the required behavior or a helper is clearly simpler and more reliable.
+
 Useful lifecycle commands:
 
 - `kitana-quickshell` - reload if running, otherwise start.

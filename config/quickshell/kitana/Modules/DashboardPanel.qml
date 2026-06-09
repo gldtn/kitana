@@ -737,6 +737,8 @@ PanelWindow {
         id: mediaDeviceRow
 
         property string name: ""
+        property string icon: "󰕾"
+        property string subtitle: "Output device"
         property bool active: false
         signal clicked
 
@@ -754,7 +756,7 @@ PanelWindow {
             spacing: 10
 
             Text {
-                text: active ? "󰓃" : "󰕾"
+                text: active ? "󰓃" : mediaDeviceRow.icon
                 color: Colors.accent
                 font.family: settings.fontFamily
                 font.pixelSize: settings.iconPixelSize
@@ -776,7 +778,7 @@ PanelWindow {
 
                 Text {
                     Layout.fillWidth: true
-                    text: active ? "Current output" : "Output device"
+                    text: active ? "Current output" : mediaDeviceRow.subtitle
                     color: Colors.muted
                     elide: Text.ElideRight
                     font.family: settings.fontFamily
@@ -1728,6 +1730,8 @@ PanelWindow {
                                         required property var modelData
 
                                         name: modelData.name
+                                        icon: modelData.icon || "󰕾"
+                                        subtitle: modelData.subtitle || "Output device"
                                         active: Services.SystemStatus.audioSink === modelData.name
                                         onClicked: Services.SystemStatus.setAudioSink(modelData.id)
                                     }

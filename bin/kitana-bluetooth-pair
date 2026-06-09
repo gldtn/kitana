@@ -1,0 +1,338 @@
+#!/usr/bin/env python3
+
+import argparse
+import signal
+import sys
+import warnings
+
+from gi.repository import Gio, GLib
+
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
+
+AGENT_PATH = "/org/kitana/bluetooth/agent"
+AGENT_CAPABILITY = "KeyboardDisplay"
+BLUEZ = "org.bluez"
+DEVICE_IFACE = "org.bluez.Device1"
+AGENT_MANAGER_IFACE = "org.bluez.AgentManager1"
+PROPERTIES_IFACE = "org.freedesktop.DBus.Properties"
+OBJECT_MANAGER_IFACE = "org.freedesktop.DBus.ObjectManager"
+
+
+AGENT_XML = """
+<node>
+  <interface name="org.bluez.Agent1">
+    <method name="Release"/>
+    <method name="RequestPinCode">
+      <arg name="device" type="o" direction="in"/>
+      <arg name="pincode" type="s" direction="out"/>
+    </method>
+    <method name="DisplayPinCode">
+      <arg name="device" type="o" direction="in"/>
+      <arg name="pincode" type="s" direction="in"/>
+    </method>
+    <method name="RequestPasskey">
+      <arg name="device" type="o" direction="in"/>
+      <arg name="passkey" type="u" direction="out"/>
+    </method>
+    <method name="DisplayPasskey">
+      <arg name="device" type="o" direction="in"/>
+      <arg name="passkey" type="u" direction="in"/>
+      <arg name="entered" type="q" direction="in"/>
+    </method>
+    <method name="RequestConfirmation">
+      <arg name="device" type="o" direction="in"/>
+      <arg name="passkey" type="u" direction="in"/>
+    </method>
+    <method name="RequestAuthorization">
+      <arg name="device" type="o" direction="in"/>
+    </method>
+    <method name="AuthorizeService">
+      <arg name="device" type="o" direction="in"/>
+      <arg name="uuid" type="s" direction="in"/>
+    </method>
+    <method name="Cancel"/>
+  </interface>
+</node>
+"""
+
+
+class BluezPairAgent:
+    def __init__(self, address, timeout):
+        self.address = address.upper()
+        self.timeout = timeout
+        self.exit_code = 1
+        self.loop = GLib.MainLoop()
+        self.bus = Gio.bus_get_sync(Gio.BusType.SYSTEM, None)
+        self.registration_id = 0
+        self.agent_registered = False
+        self.device_path = ""
+        self.device_proxy = None
+
+    def log(self, message):
+        print(f"kitana-bluetooth-pair: {message}", file=sys.stderr)
+
+    def run(self):
+        signal.signal(signal.SIGINT, self._signal_exit)
+        signal.signal(signal.SIGTERM, self._signal_exit)
+
+        try:
+            self.device_path = self.find_device_path()
+            if not self.device_path:
+                self.log(f"device not found: {self.address}")
+                return 1
+
+            self.device_proxy = Gio.DBusProxy.new_sync(
+                self.bus,
+                Gio.DBusProxyFlags.NONE,
+                None,
+                BLUEZ,
+                self.device_path,
+                DEVICE_IFACE,
+                None,
+            )
+
+            self.register_agent()
+
+            if self.get_device_property("Paired"):
+                return 0 if self.trust_and_connect() else 1
+
+            GLib.idle_add(self.start_pairing)
+            GLib.timeout_add_seconds(self.timeout, self.on_timeout)
+            self.loop.run()
+            return self.exit_code
+        finally:
+            self.unregister_agent()
+
+    def _signal_exit(self, _signum, _frame):
+        self.log("interrupted")
+        self.exit_code = 130
+        if self.loop.is_running():
+            self.loop.quit()
+
+    def find_device_path(self):
+        result = self.bus.call_sync(
+            BLUEZ,
+            "/",
+            OBJECT_MANAGER_IFACE,
+            "GetManagedObjects",
+            None,
+            GLib.VariantType.new("(a{oa{sa{sv}}})"),
+            Gio.DBusCallFlags.NONE,
+            10000,
+            None,
+        )
+
+        objects = result.unpack()[0]
+        for path, interfaces in objects.items():
+            props = interfaces.get(DEVICE_IFACE)
+            if not props:
+                continue
+
+            address = self.unpack_variant(props.get("Address", "")).upper()
+            if address == self.address:
+                return path
+
+        return ""
+
+    def register_agent(self):
+        node_info = Gio.DBusNodeInfo.new_for_xml(AGENT_XML)
+        interface_info = node_info.interfaces[0]
+        self.registration_id = self.bus.register_object(
+            AGENT_PATH,
+            interface_info,
+            self.handle_agent_method,
+            None,
+        )
+
+        manager = Gio.DBusProxy.new_sync(
+            self.bus,
+            Gio.DBusProxyFlags.NONE,
+            None,
+            BLUEZ,
+            "/org/bluez",
+            AGENT_MANAGER_IFACE,
+            None,
+        )
+        manager.call_sync(
+            "RegisterAgent",
+            GLib.Variant("(os)", (AGENT_PATH, AGENT_CAPABILITY)),
+            Gio.DBusCallFlags.NONE,
+            10000,
+            None,
+        )
+        self.agent_registered = True
+
+        try:
+            manager.call_sync(
+                "RequestDefaultAgent",
+                GLib.Variant("(o)", (AGENT_PATH,)),
+                Gio.DBusCallFlags.NONE,
+                10000,
+                None,
+            )
+        except GLib.Error as error:
+            self.log(f"could not become default agent: {error.message}")
+
+    def unregister_agent(self):
+        if self.agent_registered:
+            try:
+                manager = Gio.DBusProxy.new_sync(
+                    self.bus,
+                    Gio.DBusProxyFlags.NONE,
+                    None,
+                    BLUEZ,
+                    "/org/bluez",
+                    AGENT_MANAGER_IFACE,
+                    None,
+                )
+                manager.call_sync(
+                    "UnregisterAgent",
+                    GLib.Variant("(o)", (AGENT_PATH,)),
+                    Gio.DBusCallFlags.NONE,
+                    10000,
+                    None,
+                )
+            except GLib.Error:
+                pass
+            self.agent_registered = False
+
+        if self.registration_id:
+            self.bus.unregister_object(self.registration_id)
+            self.registration_id = 0
+
+    def handle_agent_method(self, _connection, _sender, _path, _interface, method, parameters, invocation, _data):
+        if method == "Release":
+            invocation.return_value(None)
+            return
+
+        if method == "RequestPinCode":
+            self.log(f"pin code requested for {parameters.unpack()[0]}")
+            invocation.return_value(GLib.Variant("(s)", ("0000",)))
+            return
+
+        if method == "RequestPasskey":
+            self.log(f"passkey requested for {parameters.unpack()[0]}")
+            invocation.return_value(GLib.Variant("(u)", (0,)))
+            return
+
+        if method in ("DisplayPinCode", "DisplayPasskey"):
+            self.log(f"{method}: {parameters.unpack()}")
+            invocation.return_value(None)
+            return
+
+        if method in ("RequestConfirmation", "RequestAuthorization", "AuthorizeService"):
+            self.log(f"accepted {method}: {parameters.unpack()}")
+            invocation.return_value(None)
+            return
+
+        if method == "Cancel":
+            self.log("pairing cancelled by BlueZ")
+            invocation.return_value(None)
+            return
+
+        invocation.return_error_literal(
+            Gio.IOErrorEnum,
+            Gio.IOErrorEnum.NOT_SUPPORTED,
+            f"Unsupported Agent1 method: {method}",
+        )
+
+    def start_pairing(self):
+        self.log(f"pairing {self.address}")
+        self.device_proxy.call(
+            "Pair",
+            None,
+            Gio.DBusCallFlags.NONE,
+            self.timeout * 1000,
+            None,
+            self.on_pair_finished,
+        )
+        return GLib.SOURCE_REMOVE
+
+    def on_pair_finished(self, proxy, result):
+        try:
+            proxy.call_finish(result)
+            self.log(f"paired {self.address}")
+            self.exit_code = 0 if self.trust_and_connect() else 1
+        except GLib.Error as error:
+            self.log(f"pair failed for {self.address}: {error.message}")
+            self.exit_code = 1
+
+        if self.loop.is_running():
+            self.loop.quit()
+
+    def trust_and_connect(self):
+        try:
+            self.set_device_property("Trusted", GLib.Variant("b", True))
+            if self.get_device_property("Connected"):
+                self.log(f"already connected: {self.address}")
+                return True
+
+            self.log(f"connecting {self.address}")
+            self.device_proxy.call_sync(
+                "Connect",
+                None,
+                Gio.DBusCallFlags.NONE,
+                self.timeout * 1000,
+                None,
+            )
+            self.log(f"connected {self.address}")
+            return True
+        except GLib.Error as error:
+            self.log(f"connect failed for {self.address}: {error.message}")
+            return False
+
+    def on_timeout(self):
+        self.log(f"timed out pairing {self.address}")
+        self.exit_code = 124
+        if self.loop.is_running():
+            self.loop.quit()
+        return GLib.SOURCE_REMOVE
+
+    def get_device_property(self, name):
+        result = self.bus.call_sync(
+            BLUEZ,
+            self.device_path,
+            PROPERTIES_IFACE,
+            "Get",
+            GLib.Variant("(ss)", (DEVICE_IFACE, name)),
+            GLib.VariantType.new("(v)"),
+            Gio.DBusCallFlags.NONE,
+            10000,
+            None,
+        )
+        return self.unpack_variant(result.unpack()[0])
+
+    def set_device_property(self, name, value):
+        self.bus.call_sync(
+            BLUEZ,
+            self.device_path,
+            PROPERTIES_IFACE,
+            "Set",
+            GLib.Variant("(ssv)", (DEVICE_IFACE, name, value)),
+            None,
+            Gio.DBusCallFlags.NONE,
+            10000,
+            None,
+        )
+
+    def unpack_variant(self, value):
+        if isinstance(value, GLib.Variant):
+            return value.unpack()
+        return value
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Pair and connect one Bluetooth device using a temporary BlueZ agent.")
+    parser.add_argument("address", help="Bluetooth device address, for example 2C:18:09:DD:03:B9")
+    parser.add_argument("--timeout", type=int, default=60, help="Pairing timeout in seconds")
+    return parser.parse_args()
+
+
+def main():
+    args = parse_args()
+    return BluezPairAgent(args.address, args.timeout).run()
+
+
+if __name__ == "__main__":
+    sys.exit(main())

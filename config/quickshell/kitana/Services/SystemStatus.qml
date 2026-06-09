@@ -6,9 +6,13 @@ import QtQuick
 import Quickshell
 import Quickshell.Bluetooth
 import Quickshell.Io
+import Quickshell.Networking
+import Quickshell.Services.Pipewire
 
 Singleton {
     id: root
+
+    readonly property string kitanaDir: Quickshell.env("KITANA_DIR") || Quickshell.env("HOME") + "/.local/share/kitana"
 
     readonly property BluetoothAdapter bluetoothAdapter: Bluetooth.defaultAdapter
     readonly property bool bluetoothAvailable: bluetoothAdapter !== null
@@ -25,13 +29,19 @@ Singleton {
     }
     readonly property string bluetoothIcon: !bluetoothEnabled ? "󰂲" : (bluetoothConnectedCount > 0 ? "󰂱" : "󰂯")
     readonly property string bluetoothLabel: !bluetoothAvailable ? "none" : (!bluetoothEnabled ? "off" : (bluetoothConnectedCount > 0 ? bluetoothConnectedCount + "" : "on"))
+    property string bluetoothPendingPairAddress: ""
 
-    property string networkKind: "off"
-    property string networkName: "off"
-    property int networkSignal: 0
-    property bool wifiEnabled: false
-    property bool wifiScanning: false
-    property var wifiNetworks: []
+    readonly property var networkDevices: Networking.devices ? Networking.devices.values : []
+    readonly property var wifiDevice: networkDeviceByType(DeviceType.Wifi, false)
+    readonly property var wiredDevice: networkDeviceByType(DeviceType.Wired, true)
+    readonly property var activeWifiNetwork: connectedNetwork(wifiDevice)
+    readonly property var activeWiredNetwork: connectedNetwork(wiredDevice)
+    readonly property string networkKind: activeWifiNetwork ? "wifi" : (wiredDevice && wiredDevice.connected ? "wired" : "off")
+    readonly property string networkName: activeWifiNetwork ? activeWifiNetwork.name : (networkKind === "wired" ? (activeWiredNetwork ? activeWiredNetwork.name : wiredDevice.name) : "off")
+    readonly property int networkSignal: activeWifiNetwork ? Math.round(activeWifiNetwork.signalStrength * 100) : 0
+    readonly property bool wifiEnabled: Networking.wifiHardwareEnabled && Networking.wifiEnabled
+    readonly property bool wifiScanning: wifiScan.running
+    readonly property var wifiNetworks: wifiNetworkItems()
     readonly property string networkIcon: {
         if (networkKind === "wired")
             return "󰀂";
@@ -46,18 +56,39 @@ Singleton {
     }
     readonly property string networkLabel: networkKind === "off" ? "off" : networkName
 
-    property bool audioMuted: false
-    property int audioVolume: 0
-    property string audioSink: ""
-    property var audioSinks: []
+    readonly property var pipewireNodes: Pipewire.nodes ? Pipewire.nodes.values : []
+    readonly property var audioSinkNode: Pipewire.defaultAudioSink
+    readonly property var micSourceNode: Pipewire.defaultAudioSource
+    readonly property var pipewireAudioSinks: pipewireNodes.filter(node => root.isPipewireOutput(node))
+    readonly property var pipewireTrackedObjects: {
+        const objects = [];
+        if (audioSinkNode)
+            objects.push(audioSinkNode);
+        if (micSourceNode)
+            objects.push(micSourceNode);
+        for (const node of pipewireAudioSinks) {
+            if (node)
+                objects.push(node);
+        }
+        return objects;
+    }
+    readonly property bool audioAvailable: audioSinkNode && audioSinkNode.audio
+    readonly property bool audioMuted: audioAvailable ? audioSinkNode.audio.muted : false
+    readonly property int audioVolume: audioAvailable ? Math.round(audioSinkNode.audio.volume * 100) : 0
+    readonly property string audioSink: audioSinkNode ? audioNodeLabel(audioSinkNode) : "Default sink"
+    readonly property var audioSinks: pipewireAudioSinks.map(node => ({
+        id: node.id,
+        name: root.audioNodeLabel(node),
+        icon: root.audioNodeIcon(node),
+        subtitle: root.audioNodeSubtitle(node)
+    }))
     readonly property string audioIcon: audioMuted || audioVolume === 0 ? "" : (audioVolume >= 60 ? "" : "")
     readonly property string audioLabel: audioMuted ? "muted" : audioVolume + "%"
 
-    property bool micAvailable: false
-    property bool micMuted: false
-    property int micVolume: 0
-    property string micSourceId: ""
-    property string micSource: ""
+    readonly property bool micAvailable: micSourceNode && micSourceNode.audio && !isPipewireMonitor(micSourceNode)
+    readonly property bool micMuted: micAvailable ? micSourceNode.audio.muted : false
+    readonly property int micVolume: micAvailable ? Math.round(micSourceNode.audio.volume * 100) : 0
+    readonly property string micSource: micAvailable ? audioNodeLabel(micSourceNode) : ""
     readonly property string micIcon: !micAvailable ? "󰍭" : (micMuted || micVolume === 0 ? "󰍭" : "󰍬")
     readonly property string micLabel: !micAvailable ? "no mic" : (micMuted ? "muted" : micVolume + "%")
 
@@ -83,13 +114,6 @@ Singleton {
     }
 
     function refresh() {
-        audioPoll.exec(["sh", "-c", "wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null | awk '{ printf \"%s %d\", ($0 ~ /MUTED/ ? \"muted\" : \"volume\"), $2 * 100 }'"]);
-        audioSinkPoll.exec(["sh", "-c", "wpctl status 2>/dev/null | awk '/Sinks:/ { s=1; next } s && /\\*/ { sub(/^.*\\* +[0-9]+\\. +/, \"\"); sub(/ \\[vol:.*$/, \"\"); print; exit }'"]);
-        audioSinksPoll.exec(["sh", "-c", "wpctl status 2>/dev/null | awk '/Sinks:/ { s=1; next } s && /^[[:space:]]*[│├└ ]*[ *]*[0-9]+\\./ { line=$0; gsub(/^[^0-9]*/, \"\", line); sub(/ \\[vol:.*$/, \"\", line); print line } s && /Sources:/ { exit }'"]);
-        micPoll.exec(["sh", "-c", "$HOME/.local/share/kitana/bin/kitana-audio-mic-status"]);
-        networkPoll.exec(["sh", "-c", "nmcli -t -f TYPE,STATE,CONNECTION dev status 2>/dev/null | awk -F: '$2==\"connected\" { print $1 \"|\" $3; found=1; exit } END { exit found ? 0 : 1 }' || { iface=$(ip route get 1.1.1.1 2>/dev/null | sed -n 's/.* dev \\([^ ]*\\).*/\\1/p'); [ -n \"$iface\" ] && printf 'ethernet|%s' \"$iface\"; }"]);
-        wifiStatePoll.exec(["nmcli", "radio", "wifi"]);
-        wifiPoll.exec(["sh", "-c", "nmcli -t -f ACTIVE,SSID,SIGNAL,SECURITY dev wifi list 2>/dev/null | awk -F: '!seen[$2]++ && $2 != \"\" { print $1 \"|\" $2 \"|\" $3 \"|\" $4 }'"]);
         brightnessPoll.exec(["sh", "-c", "brightnessctl -c backlight -m 2>/dev/null | awk -F, '{ gsub(/%/, \"\", $4); print $4 }'"]);
         keyboardPoll.exec(["hyprctl", "devices", "-j"]);
     }
@@ -112,12 +136,21 @@ Singleton {
         if (!address)
             return;
 
-        if (device.connected) {
-            bluetoothAction.exec(["bluetoothctl", "disconnect", address]);
+        if (device.pairing) {
+            device.cancelPair();
+            bluetoothPendingPairAddress = "";
+        } else if (device.connected) {
+            device.disconnect();
         } else if (device.paired) {
-            bluetoothAction.exec(["sh", "-c", "bluetoothctl trust \"$1\" && bluetoothctl connect \"$1\"", "kitana-bluetooth", address]);
+            device.trusted = true;
+            device.connect();
         } else {
-            bluetoothAction.exec(["sh", "-c", "bluetoothctl trust \"$1\" && bluetoothctl pair \"$1\" && bluetoothctl connect \"$1\"", "kitana-bluetooth", address]);
+            if (bluetoothPendingPairAddress === address)
+                return;
+
+            bluetoothPendingPairAddress = address;
+            bluetoothPairAction.exec([kitanaDir + "/bin/kitana-bluetooth-pair", address]);
+            bluetoothPairFinalize.start();
         }
     }
 
@@ -129,49 +162,248 @@ Singleton {
         if (!address)
             return;
 
-        bluetoothAction.exec(["bluetoothctl", "remove", address]);
+        if (device.pairing)
+            device.cancelPair();
+        device.forget();
+        if (bluetoothPendingPairAddress === address)
+            bluetoothPendingPairAddress = "";
+    }
+
+    function bluetoothDeviceByAddress(address) {
+        for (const device of bluetoothDevices) {
+            if (device && device.address === address)
+                return device;
+        }
+
+        return null;
+    }
+
+    Timer {
+        id: bluetoothPairFinalize
+        interval: 500
+        repeat: true
+        onTriggered: {
+            const device = root.bluetoothDeviceByAddress(root.bluetoothPendingPairAddress);
+            if (!device) {
+                stop();
+                root.bluetoothPendingPairAddress = "";
+            } else if (device.paired) {
+                device.trusted = true;
+                if (!device.connected)
+                    device.connect();
+                stop();
+                root.bluetoothPendingPairAddress = "";
+            } else if (!device.pairing && !bluetoothPairAction.running) {
+                stop();
+                root.bluetoothPendingPairAddress = "";
+            }
+        }
     }
 
     function toggleWifi() {
-        wifiToggle.exec(["sh", "-c", "state=$(nmcli radio wifi 2>/dev/null); [ \"$state\" = enabled ] && nmcli radio wifi off || nmcli radio wifi on"]);
+        Networking.wifiEnabled = !Networking.wifiEnabled;
     }
 
     function scanWifi() {
-        wifiScanning = true;
-        wifiScan.exec(["sh", "-c", "dev=$(nmcli -t -f DEVICE,TYPE dev status 2>/dev/null | awk -F: '$2==\"wifi\" { print $1; exit }'); if [ -n \"$dev\" ]; then nmcli dev wifi rescan ifname \"$dev\" >/dev/null 2>&1 || true; else nmcli dev wifi rescan >/dev/null 2>&1 || true; fi; sleep 1"]);
+        if (!Networking.wifiHardwareEnabled)
+            return;
+
+        if (!Networking.wifiEnabled)
+            Networking.wifiEnabled = true;
+        if (wifiDevice)
+            wifiDevice.scannerEnabled = true;
+        wifiScan.exec(["sh", "-c", "nmcli radio wifi on >/dev/null 2>&1 || true; sleep 1; nmcli dev wifi rescan >/dev/null 2>&1 || true; sleep 1"]);
     }
 
     function connectWifi(ssid) {
         if (!ssid)
             return;
-        wifiConnect.exec(["nmcli", "dev", "wifi", "connect", ssid]);
+
+        const network = wifiNetworkByName(ssid);
+        if (!network || network.connected)
+            return;
+
+        if (network.known || network.security === WifiSecurityType.Open)
+            network.connect();
+        else
+            wifiConnect.exec(["nmcli", "dev", "wifi", "connect", ssid]);
+    }
+
+    function networkDeviceByType(type, connectedOnly) {
+        for (const device of networkDevices) {
+            if (device && device.type === type && (!connectedOnly || device.connected))
+                return device;
+        }
+
+        return null;
+    }
+
+    function connectedNetwork(device) {
+        if (!device || !device.networks)
+            return null;
+
+        for (const network of device.networks.values) {
+            if (network && network.connected)
+                return network;
+        }
+
+        return null;
+    }
+
+    function wifiNetworkItems() {
+        if (!wifiDevice || !wifiDevice.networks)
+            return [];
+
+        const items = [];
+        const names = new Set();
+        for (const network of wifiDevice.networks.values) {
+            const ssid = network ? network.name : "";
+            if (!ssid || names.has(ssid))
+                continue;
+
+            names.add(ssid);
+            items.push({
+                active: network.connected,
+                ssid: ssid,
+                signal: Math.round(network.signalStrength * 100),
+                security: network.security === WifiSecurityType.Open ? "" : WifiSecurityType.toString(network.security)
+            });
+        }
+
+        return items.sort((left, right) => (right.active - left.active) || (right.signal - left.signal) || left.ssid.localeCompare(right.ssid));
+    }
+
+    function wifiNetworkByName(ssid) {
+        if (!wifiDevice || !wifiDevice.networks)
+            return null;
+
+        for (const network of wifiDevice.networks.values) {
+            if (network && network.name === ssid)
+                return network;
+        }
+
+        return null;
     }
 
     function toggleAudioMute() {
-        audioAction.exec(["wpctl", "set-mute", "@DEFAULT_AUDIO_SINK@", "toggle"]);
+        if (audioAvailable)
+            audioSinkNode.audio.muted = !audioSinkNode.audio.muted;
     }
 
     function setAudioVolume(percent) {
         const clamped = Math.max(0, Math.min(100, Math.round(percent)));
-        audioAction.exec(["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", clamped + "%"]);
+        if (audioAvailable)
+            audioSinkNode.audio.volume = clamped / 100;
     }
 
     function setAudioSink(id) {
-        if (!id)
-            return;
-        audioAction.exec(["wpctl", "set-default", id]);
+        const node = pipewireNodeById(id);
+        if (node)
+            Pipewire.preferredDefaultAudioSink = node;
     }
 
     function toggleMicMute() {
         if (micAvailable)
-            micAction.exec(["pactl", "set-source-mute", micSourceId, "toggle"]);
+            micSourceNode.audio.muted = !micSourceNode.audio.muted;
     }
 
     function setMicVolume(percent) {
         if (!micAvailable)
             return;
         const clamped = Math.max(0, Math.min(100, Math.round(percent)));
-        micAction.exec(["pactl", "set-source-volume", micSourceId, clamped + "%"]);
+        micSourceNode.audio.volume = clamped / 100;
+    }
+
+    function audioNodeLabel(node) {
+        if (!node)
+            return "Audio device";
+
+        const props = node.properties || {};
+        const description = props["node.description"] || node.description || "";
+        if (description && description !== node.name)
+            return description;
+
+        const deviceDescription = props["device.description"] || "";
+        if (deviceDescription)
+            return deviceDescription;
+
+        const nickname = node.nickname || "";
+        if (nickname && nickname !== node.name)
+            return nickname;
+
+        const name = node.name || "";
+        if (name.indexOf("bluez") !== -1)
+            return "Bluetooth Audio";
+        if (name.indexOf("usb") !== -1)
+            return "USB Audio";
+        if (name.indexOf("hdmi") !== -1)
+            return "HDMI Audio";
+        if (name.indexOf("analog-stereo") !== -1)
+            return "Built-in Audio";
+
+        return name || "Audio device";
+    }
+
+    function audioNodeIcon(node) {
+        if (!node)
+            return "󰕾";
+
+        const props = node.properties || {};
+        const formFactor = (props["device.form-factor"] || "").toLowerCase();
+        const bus = (props["device.bus"] || "").toLowerCase();
+        const name = (node.name || "").toLowerCase();
+
+        if (bus === "bluetooth" || name.indexOf("bluez") !== -1)
+            return "󰋋";
+        if (formFactor === "headphone" || formFactor === "headset" || formFactor === "hands-free" || formFactor === "handset")
+            return "󰋋";
+        if (formFactor === "tv" || formFactor === "monitor" || name.indexOf("hdmi") !== -1)
+            return "󰽟";
+        if (bus === "usb" || name.indexOf("usb") !== -1)
+            return "󰕾";
+
+        return "󰓃";
+    }
+
+    function audioNodeSubtitle(node) {
+        if (!node)
+            return "Output device";
+
+        const props = node.properties || {};
+        const formFactor = (props["device.form-factor"] || "").toLowerCase();
+        const bus = (props["device.bus"] || "").toLowerCase();
+        const name = (node.name || "").toLowerCase();
+
+        if (bus === "bluetooth" || name.indexOf("bluez") !== -1)
+            return "Bluetooth audio";
+        if (formFactor === "headphone" || formFactor === "headset" || formFactor === "hands-free" || formFactor === "handset")
+            return "Headset audio";
+        if (formFactor === "tv" || formFactor === "monitor" || name.indexOf("hdmi") !== -1)
+            return "HDMI audio";
+        if (bus === "usb" || name.indexOf("usb") !== -1)
+            return "USB audio";
+        if (name.indexOf("analog") !== -1)
+            return "Built-in audio";
+
+        return "Output device";
+    }
+
+    function isPipewireOutput(node) {
+        return node && node.audio && node.isSink && !node.isStream;
+    }
+
+    function isPipewireMonitor(node) {
+        return node && (node.name || "").endsWith(".monitor");
+    }
+
+    function pipewireNodeById(id) {
+        const numericId = parseInt(id);
+        for (const node of pipewireNodes) {
+            if (node && node.id === numericId)
+                return node;
+        }
+
+        return null;
     }
 
     function setBrightness(percent) {
@@ -191,94 +423,7 @@ Singleton {
         onTriggered: root.refresh()
     }
 
-    Process {
-        id: audioPoll
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const parts = text.trim().split(/\s+/);
-                root.audioMuted = parts[0] === "muted";
-                root.audioVolume = parts.length > 1 ? parseInt(parts[1]) : 0;
-            }
-        }
-    }
-
-    Process {
-        id: audioSinkPoll
-        stdout: StdioCollector {
-            onStreamFinished: root.audioSink = text.trim() || "Default sink"
-        }
-    }
-
-    Process {
-        id: audioSinksPoll
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const sinks = [];
-                for (const line of text.trim().split("\n")) {
-                    if (!line)
-                        continue;
-                    const match = line.match(/^(\d+)\.\s*(.*)$/);
-                    if (match)
-                        sinks.push({ id: match[1], name: match[2] });
-                }
-                root.audioSinks = sinks;
-            }
-        }
-    }
-
-    Process {
-        id: micPoll
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const parts = text.trim().split("|");
-                root.micAvailable = parts.length >= 4 && parts[0].length > 0;
-                root.micSourceId = root.micAvailable ? parts[0] : "";
-                root.micSource = root.micAvailable ? (parts[1] || "Default microphone") : "";
-                root.micMuted = root.micAvailable && parts[2] === "yes";
-                root.micVolume = root.micAvailable ? parseInt(parts[3] || "0") : 0;
-            }
-        }
-    }
-
-    Process {
-        id: networkPoll
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const parts = text.trim().split("|");
-                const type = parts[0] || "off";
-                root.networkKind = type === "wifi" ? "wifi" : (type === "ethernet" ? "wired" : "off");
-                root.networkName = parts[1] || "off";
-            }
-        }
-    }
-
-    Process {
-        id: wifiStatePoll
-        stdout: StdioCollector {
-            onStreamFinished: root.wifiEnabled = text.trim() === "enabled"
-        }
-    }
-
-    Process {
-        id: wifiPoll
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const networks = [];
-                let activeSignal = 0;
-                for (const line of text.trim().split("\n")) {
-                    if (!line)
-                        continue;
-                    const parts = line.split("|");
-                    const item = { active: parts[0] === "yes", ssid: parts[1] || "", signal: parseInt(parts[2] || "0"), security: parts[3] || "" };
-                    networks.push(item);
-                    if (item.active)
-                        activeSignal = item.signal;
-                }
-                root.wifiNetworks = networks;
-                root.networkSignal = activeSignal;
-            }
-        }
-    }
+    PwObjectTracker { objects: root.pipewireTrackedObjects }
 
     Process {
         id: brightnessPoll
@@ -329,12 +474,9 @@ Singleton {
         }
     }
 
-    Process { id: wifiToggle; onRunningChanged: if (!running) root.refresh() }
-    Process { id: wifiScan; onRunningChanged: if (!running) { root.wifiScanning = false; root.refresh(); } }
     Process { id: wifiConnect; onRunningChanged: if (!running) root.refresh() }
-    Process { id: audioAction; onRunningChanged: if (!running) root.refresh() }
-    Process { id: micAction; onRunningChanged: if (!running) root.refresh() }
+    Process { id: wifiScan; onRunningChanged: if (!running) root.refresh() }
+    Process { id: bluetoothPairAction; onRunningChanged: if (!running) root.refresh() }
     Process { id: brightnessAction; onRunningChanged: if (!running) root.refresh() }
     Process { id: keyboardAction; onRunningChanged: if (!running) root.refresh() }
-    Process { id: bluetoothAction; onRunningChanged: if (!running) root.refresh() }
 }
