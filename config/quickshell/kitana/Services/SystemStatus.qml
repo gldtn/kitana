@@ -222,7 +222,7 @@ Singleton {
             if (bluetoothDeviceAudioActive(device))
                 return "Connected";
             if (device.connected || device.paired || device.trusted)
-                return "Connecting audio...";
+                return "Connecting...";
             return "Pairing...";
         }
 
