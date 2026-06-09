@@ -54,11 +54,34 @@ PanelWindow {
         listView.positionViewAtIndex(selectedIndex, ListView.Contain);
     }
 
-    function launchApp(app): void {
-        if (!app)
+    function launchItem(item): void {
+        if (!item)
             return;
 
         close();
+        Services.AppSearchService.recordLaunch(item);
+
+        if (item.type === "calculator") {
+            Quickshell.execDetached(["wl-copy", item.value || ""]);
+            return;
+        }
+
+        if (item.type === "session") {
+            Quickshell.execDetached(item.command || []);
+            return;
+        }
+
+        if (item.type === "action" && item.action) {
+            if (typeof item.action.execute === "function") {
+                item.action.execute();
+                return;
+            }
+            if (item.action.command)
+                Quickshell.execDetached({ command: item.action.command, workingDirectory: item.app ? item.app.workingDirectory : "" });
+            return;
+        }
+
+        const app = item.app || item;
 
         if (typeof app.execute === "function") {
             app.execute();
@@ -76,11 +99,11 @@ PanelWindow {
 
     function launchCurrent(): void {
         if (selectedIndex >= 0 && selectedIndex < results.length)
-            launchApp(results[selectedIndex]);
+            launchItem(results[selectedIndex]);
     }
 
-    function iconSource(app): string {
-        const icon = app && app.icon ? app.icon : "application-x-executable";
+    function iconSource(item): string {
+        const icon = item && item.icon ? item.icon : "application-x-executable";
         if (icon.startsWith("/") || icon.startsWith("file://"))
             return icon.startsWith("file://") ? icon : "file://" + icon;
         return Quickshell.iconPath(icon, true) || "";
@@ -277,7 +300,7 @@ PanelWindow {
                                 anchors.fill: parent
                                 hoverEnabled: true
                                 onEntered: root.selectedIndex = index
-                                onClicked: root.launchApp(modelData)
+                                onClicked: root.launchItem(modelData)
                             }
 
                             RowLayout {
@@ -310,7 +333,7 @@ PanelWindow {
 
                                         Text {
                                             anchors.centerIn: parent
-                                            text: (modelData.name || "A").charAt(0).toUpperCase()
+                                            text: modelData.fallbackIcon || (modelData.name || "A").charAt(0).toUpperCase()
                                             color: Colors.accent
                                             font.family: settings.fontFamily
                                             font.pixelSize: 15
@@ -335,7 +358,7 @@ PanelWindow {
 
                                     Text {
                                         Layout.fillWidth: true
-                                        text: modelData.comment || modelData.genericName || modelData.id || ""
+                                        text: modelData.subtitle || ""
                                         color: Colors.muted
                                         elide: Text.ElideRight
                                         font.family: settings.fontFamily
@@ -345,7 +368,7 @@ PanelWindow {
 
                                 Text {
                                     visible: index === root.selectedIndex
-                                    text: "Enter"
+                                    text: modelData.hint || "Enter"
                                     color: Colors.accent
                                     font.family: settings.fontFamily
                                     font.pixelSize: 11
@@ -369,7 +392,7 @@ PanelWindow {
 
                         Text {
                             Layout.alignment: Qt.AlignHCenter
-                            text: "No applications found"
+                            text: "No results found"
                             color: Colors.muted
                             horizontalAlignment: Text.AlignHCenter
                             font.family: settings.fontFamily
@@ -387,7 +410,7 @@ PanelWindow {
 
                 Text {
                     Layout.fillWidth: true
-                    text: "↑/↓ to move · Home/End jump · Enter launch · Esc close"
+                    text: "↑/↓ move · Enter run/copy · =2+2 calculator · lock/reboot actions · Esc close"
                     color: Colors.muted
                     horizontalAlignment: Text.AlignHCenter
                     font.family: settings.fontFamily
