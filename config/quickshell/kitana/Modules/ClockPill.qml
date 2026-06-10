@@ -15,7 +15,7 @@ Rectangle {
     property var dashboardPanel: null
 
     implicitHeight: settings.pillHeight
-    implicitWidth: clockText.implicitWidth + settings.clockHorizontalPadding
+    implicitWidth: clockRow.implicitWidth + settings.clockHorizontalPadding
     width: implicitWidth
     height: implicitHeight
 
@@ -24,28 +24,63 @@ Rectangle {
     border.color: Colors.panelBorder
     border.width: settings.borderWidth
 
-    Text {
-        id: clockText
-
+    Row {
+        id: clockRow
         anchors.centerIn: parent
-        text: Qt.formatDateTime(new Date(), "ddd MMM d    h:mm AP")
-        color: Colors.foreground
-        font.family: settings.fontFamily
-        font.pixelSize: settings.clockPixelSize
-        font.weight: Font.DemiBold
+        spacing: 10
+
+        property date now: new Date()
+
+        Text {
+            anchors.verticalCenter: parent.verticalCenter
+            text: Qt.formatDate(clockRow.now, "ddd MMM d")
+            color: Colors.foreground
+            font.family: settings.fontFamily
+            font.pixelSize: settings.clockPixelSize
+            font.weight: Font.DemiBold
+        }
+
+        Rectangle {
+            id: dashboardButton
+
+            anchors.verticalCenter: parent.verticalCenter
+            width: settings.iconPixelSize + 10
+            height: settings.iconPixelSize + 8
+            radius: 8
+            color: dashboardMouse.containsMouse ? Colors.surfaceHover : "transparent"
+
+            Text {
+                anchors.centerIn: parent
+                text: "󰕮"
+                color: dashboardMouse.containsMouse ? Colors.foreground : Colors.accent
+                font.family: settings.fontFamily
+                font.pixelSize: settings.iconPixelSize
+            }
+
+            MouseArea {
+                id: dashboardMouse
+
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: if (root.dashboardPanel) root.dashboardPanel.toggle("datetime")
+            }
+        }
+
+        Text {
+            anchors.verticalCenter: parent.verticalCenter
+            text: Qt.formatTime(clockRow.now, "h:mm AP")
+            color: Colors.foreground
+            font.family: settings.fontFamily
+            font.pixelSize: settings.clockPixelSize
+            font.weight: Font.DemiBold
+        }
 
         Timer {
             interval: 1000
             running: true
             repeat: true
-            onTriggered: clockText.text = Qt.formatDateTime(new Date(), "ddd MMM d    h:mm AP")
+            onTriggered: clockRow.now = new Date()
         }
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
-        onClicked: if (root.dashboardPanel) root.dashboardPanel.toggle("datetime")
     }
 }

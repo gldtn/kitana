@@ -13,6 +13,7 @@ ShellRoot {
     id: root
 
     property bool barVisible: true
+    readonly property var sharedDashboardPanel: dashboardPanel
 
     Custom.Settings {
         id: settings
@@ -103,7 +104,7 @@ ShellRoot {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
 
-                    dashboardPanel: dashboardPanel
+                    dashboardPanel: root.sharedDashboardPanel
                 }
 
                 StatusGroup {
