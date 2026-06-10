@@ -162,6 +162,7 @@ for pkg in \
   rust \
   shared-mime-info \
   sof-firmware \
+  ttf-material-symbols-variable-git \
   qt6ct \
   xdg-desktop-portal-hyprland; do
   check_package "$pkg"
@@ -603,7 +604,7 @@ else
   fail "Kitana hidden desktop defaults missing: applications/hidden"
 fi
 
-if [ -f "$KITANA_DIR/config/quickshell/kitana/Modules/WallpaperGrid.qml" ]; then
+if [ -f "$KITANA_DIR/config/quickshell/kitana/Wallpaper/WallpaperGrid.qml" ]; then
   pass "Quickshell module: WallpaperGrid"
 else
   fail "Quickshell module missing: WallpaperGrid"
@@ -668,7 +669,7 @@ for zed_snippet in blade filament inertia livewire pest php volt; do
   fi
 done
 
-for quickshell_config in shell.qml Colors.qml qmldir; do
+for quickshell_config in shell.qml qmldir; do
   if [ -f "$HOME/.config/quickshell/kitana/$quickshell_config" ]; then
     pass "Quickshell config: $quickshell_config"
   else
@@ -676,11 +677,45 @@ for quickshell_config in shell.qml Colors.qml qmldir; do
   fi
 done
 
-for quickshell_module in AppLauncher ClockPill DashboardPanel NotificationPopups OsdPopup StatusGroup SystemPanel WallpaperGrid WorkspaceGroup; do
-  if [ -f "$HOME/.config/quickshell/kitana/Modules/$quickshell_module.qml" ]; then
-    pass "Quickshell module: $quickshell_module"
+if [ -f "$HOME/.config/quickshell/kitana/Config/Colors.qml" ] && [ -f "$HOME/.config/quickshell/kitana/Config/Icons.qml" ] && [ -f "$HOME/.config/quickshell/kitana/Config/Typography.qml" ]; then
+  pass "Quickshell config tokens"
+else
+  fail "Quickshell config tokens missing"
+fi
+
+if grep -q '^singleton Colors 1.0 Config/Colors.qml$' "$HOME/.config/quickshell/kitana/qmldir" && grep -q '^singleton Icons 1.0 Config/Icons.qml$' "$HOME/.config/quickshell/kitana/qmldir" && grep -q '^singleton Typography 1.0 Config/Typography.qml$' "$HOME/.config/quickshell/kitana/qmldir"; then
+  pass "Quickshell root singletons"
+else
+  fail "Quickshell root singletons missing"
+fi
+
+quickshell_files=(
+  Bar/BarWindow.qml
+  Bar/StartMenu.qml
+  Bar/Items/DateTime.qml
+  Bar/Items/Start.qml
+  Bar/Items/Status.qml
+  Bar/Items/Workspaces.qml
+  Bar/Sections/Center.qml
+  Bar/Sections/Left.qml
+  Bar/Sections/Right.qml
+  Components/Controls/KeyHintBar.qml
+  Components/Controls/MaterialIcon.qml
+  Components/Controls/PanelRow.qml
+  Dashboard/DashboardPanel.qml
+  Launcher/AppLauncher.qml
+  Notifications/NotificationPopups.qml
+  OSD/OsdPopup.qml
+  Shortcuts/ShortcutsPanel.qml
+  System/SystemPanel.qml
+  Wallpaper/WallpaperGrid.qml
+)
+
+for quickshell_file in "${quickshell_files[@]}"; do
+  if [ -f "$HOME/.config/quickshell/kitana/$quickshell_file" ]; then
+    pass "Quickshell file: $quickshell_file"
   else
-    fail "Quickshell module missing: $quickshell_module"
+    fail "Quickshell file missing: $quickshell_file"
   fi
 done
 
@@ -707,7 +742,7 @@ quickshell_dashboard_modules=(
 )
 
 for quickshell_module in "${quickshell_dashboard_modules[@]}"; do
-  if [ -f "$HOME/.config/quickshell/kitana/Modules/Dashboard/$quickshell_module.qml" ]; then
+  if [ -f "$HOME/.config/quickshell/kitana/Dashboard/Tabs/$quickshell_module.qml" ] || [ -f "$HOME/.config/quickshell/kitana/Dashboard/Components/$quickshell_module.qml" ]; then
     pass "Quickshell dashboard module: $quickshell_module"
   else
     fail "Quickshell dashboard module missing: $quickshell_module"
@@ -737,7 +772,7 @@ quickshell_system_modules=(
 )
 
 for quickshell_module in "${quickshell_system_modules[@]}"; do
-  if [ -f "$HOME/.config/quickshell/kitana/Modules/System/$quickshell_module.qml" ]; then
+  if [ -f "$HOME/.config/quickshell/kitana/System/Panes/$quickshell_module.qml" ] || [ -f "$HOME/.config/quickshell/kitana/System/Components/$quickshell_module.qml" ]; then
     pass "Quickshell system module: $quickshell_module"
   else
     fail "Quickshell system module missing: $quickshell_module"
@@ -786,10 +821,10 @@ else
   fail "Quickshell IPC missing: kitana-osd"
 fi
 
-if [ -f "$HOME/.config/quickshell/kitana/Widgets/PanelRow.qml" ]; then
-  pass "Quickshell widget: PanelRow"
+if [ -f "$HOME/.config/quickshell/kitana/Shortcuts/ShortcutsPanel.qml" ] && grep -q 'target: "kitana-shortcuts"' "$HOME/.config/quickshell/kitana/Shortcuts/ShortcutsPanel.qml"; then
+  pass "Quickshell IPC: kitana-shortcuts"
 else
-  fail "Quickshell widget missing: PanelRow"
+  fail "Quickshell IPC missing: kitana-shortcuts"
 fi
 
 if [ -f "$HOME/.config/quickshell/kitana/custom/Settings.qml" ]; then

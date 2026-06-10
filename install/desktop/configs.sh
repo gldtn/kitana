@@ -300,10 +300,18 @@ for snippet in "$KITANA_DIR"/config/zed/snippets/*.json; do
 done
 
 mkdir -p "$QUICKSHELL_CONFIG_DIR"
-mkdir -p "$QUICKSHELL_CONFIG_DIR/Common"
-mkdir -p "$QUICKSHELL_CONFIG_DIR/Modules"
+mkdir -p "$QUICKSHELL_CONFIG_DIR/Assets"
+mkdir -p "$QUICKSHELL_CONFIG_DIR/Bar"
+mkdir -p "$QUICKSHELL_CONFIG_DIR/Components"
+mkdir -p "$QUICKSHELL_CONFIG_DIR/Config"
+mkdir -p "$QUICKSHELL_CONFIG_DIR/Dashboard"
+mkdir -p "$QUICKSHELL_CONFIG_DIR/Launcher"
+mkdir -p "$QUICKSHELL_CONFIG_DIR/Notifications"
+mkdir -p "$QUICKSHELL_CONFIG_DIR/OSD"
 mkdir -p "$QUICKSHELL_CONFIG_DIR/Services"
-mkdir -p "$QUICKSHELL_CONFIG_DIR/Widgets"
+mkdir -p "$QUICKSHELL_CONFIG_DIR/Shortcuts"
+mkdir -p "$QUICKSHELL_CONFIG_DIR/System"
+mkdir -p "$QUICKSHELL_CONFIG_DIR/Wallpaper"
 mkdir -p "$QUICKSHELL_CONFIG_DIR/custom"
 
 if [ ! -e "$QUICKSHELL_CONFIG_DIR/shell.qml" ] || grep -q "Kitana managed Quickshell bar" "$QUICKSHELL_CONFIG_DIR/shell.qml"; then
@@ -312,15 +320,9 @@ else
   echo "Keeping existing Quickshell config: $QUICKSHELL_CONFIG_DIR/shell.qml"
 fi
 
-for quickshell_config in Colors.qml qmldir; do
-  if [ ! -e "$QUICKSHELL_CONFIG_DIR/$quickshell_config" ]; then
-    cp "$KITANA_DIR/config/quickshell/kitana/$quickshell_config" "$QUICKSHELL_CONFIG_DIR/$quickshell_config"
-  else
-    echo "Keeping existing Quickshell config: $QUICKSHELL_CONFIG_DIR/$quickshell_config"
-  fi
-done
+cp "$KITANA_DIR/config/quickshell/kitana/qmldir" "$QUICKSHELL_CONFIG_DIR/qmldir"
 
-for quickshell_dir in Common Modules Services Widgets; do
+for quickshell_dir in Assets Bar Components Config Dashboard Launcher Notifications OSD Services Shortcuts System Wallpaper; do
   source_dir="$KITANA_DIR/config/quickshell/kitana/$quickshell_dir"
   [ -d "$source_dir" ] || continue
 

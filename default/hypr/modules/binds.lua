@@ -39,14 +39,14 @@ hl.bind(mod .. " + A", hl.dsp.exec_cmd(activityManager), { description = "Activi
 hl.bind(mod .. " + SLASH", hl.dsp.exec_cmd(passwordManager), { description = "Password manager" })
 
 -- Web apps & others
-hl.bind(mod .. " + SHIFT + E", hl.dsp.exec_cmd(emailClient))
-hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd(chatClient))
-hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd(iptvClient))
-hl.bind(mod .. " + SHIFT + M", hl.dsp.exec_cmd(musicClient))
+hl.bind(mod .. " + SHIFT + E", hl.dsp.exec_cmd(emailClient), { description = "Email client" })
+hl.bind(mod .. " + SHIFT + C", hl.dsp.exec_cmd(chatClient), { description = "Chat client" })
+hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd(iptvClient), { description = "IPTV client" })
+hl.bind(mod .. " + SHIFT + M", hl.dsp.exec_cmd(musicClient), { description = "Music client" })
 
 -- Hyprland control
 hl.bind(mod .. " + CTRL + L", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-lock"), { description = "Lock session" })
-hl.bind(mod .. " + CTRL + Z", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
+hl.bind(mod .. " + CTRL + Z", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"), { description = "Exit Hyprland" })
 
 -- Quickshell control
 -- stylua: ignore start
@@ -54,6 +54,7 @@ hl.bind(mod .. " + CTRL + T", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/
 hl.bind(mod .. " + CTRL + W", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-wallpaper-grid"), { description = "Wallpaper chooser" })
 hl.bind(mod .. " + CTRL + B", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-bar toggle"), { description = "Toggle Quickshell bar" })
 hl.bind(mod .. " + CTRL + R", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-quickshell --restart"), { description = "Restart Quickshell" })
+hl.bind(mod .. " + K", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-shortcuts open"), { description = "Shortcuts" })
 hl.bind(mod .. " + COMMA", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-notifications dismissLast"), { description = "Dismiss last notification" })
 hl.bind(mod .. " + SHIFT + COMMA", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-notifications clear"), { description = "Dismiss all notifications" })
 --stylua: ignore end
@@ -81,13 +82,12 @@ hl.bind(mod .. " + M", function()
   hl.dispatch(hl.dsp.workspace.toggle_special("minimize"))
   hl.dispatch(hl.dsp.window.move({ workspace = "special:minimize" }))
   hl.dispatch(hl.dsp.workspace.toggle_special("minimize"))
-end)
+end, { description = "Minimize window" })
 
 -- Focus and Swap windows
 local directions = {
   H = "left",
   J = "down",
-  K = "up",
   L = "right",
 }
 
@@ -108,22 +108,18 @@ end
 hl.bind(mod .. " + S", hl.dsp.workspace.toggle_special("magic"))
 hl.bind(mod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
 
-hl.bind(mod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
-hl.bind(mod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
+hl.bind(mod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true, description = "Drag window" })
+hl.bind(mod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true, description = "Resize window" })
 
--- stylua: ignore
-hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-osd volume-up"), { locked = true, repeating = true })
-hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-osd volume-down"), { locked = true, repeating = true })
-hl.bind("XF86AudioMute", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-osd volume-mute"), { locked = true, repeating = true })
-hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-osd mic-mute"), { locked = true, repeating = true })
-hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true })
-hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
-hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
-hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
--- Brightness
-hl.bind(
-  "XF86MonBrightnessDown",
-  hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-osd brightness-down"),
-  { locked = true, repeating = true }
-)
-hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-osd brightness-up"), { locked = true, repeating = true })
+-- stylua: ignore start
+hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true, description = "Next audio track" })
+hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true, description = "Pause audio" })
+hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true, description = "Play/Pause audio" })
+hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true, description = "Previous audio track" })
+hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-osd volume-up"), { locked = true, repeating = true, description = "Raise volume" })
+hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-osd volume-down"), { locked = true, repeating = true, description = "Lower volume" })
+hl.bind("XF86AudioMute", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-osd volume-mute"), { locked = true, repeating = true, description = "Mute volume" })
+hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-osd mic-mute"), { locked = true, repeating = true, description = "Mute microphone" })
+hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-osd brightness-up"), { locked = true, repeating = true, description = "Raise brightness" })
+hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-osd brightness-down"), { locked = true, repeating = true, description = "Lower brightness" })
+-- stylua: ignore end

@@ -8,6 +8,7 @@ import Quickshell.Bluetooth
 import Quickshell.Io
 import Quickshell.Networking
 import Quickshell.Services.Pipewire
+import ".."
 
 Singleton {
     id: root
@@ -29,7 +30,7 @@ Singleton {
         }
         return count;
     }
-    readonly property string bluetoothIcon: !bluetoothEnabled ? "󰂲" : (bluetoothConnectedCount > 0 ? "󰂱" : "󰂯")
+    readonly property string bluetoothIcon: Icons.bluetoothStatus(bluetoothEnabled, bluetoothConnectedCount)
     readonly property string bluetoothLabel: !bluetoothAvailable ? "none" : (!bluetoothEnabled ? "off" : (bluetoothConnectedCount > 0 ? bluetoothConnectedCount + "" : "on"))
     property string bluetoothPendingPairAddress: ""
     property int bluetoothPairFinalizeAttempts: 0
@@ -46,18 +47,7 @@ Singleton {
     readonly property bool wifiEnabled: Networking.wifiHardwareEnabled && Networking.wifiEnabled
     readonly property bool wifiScanning: wifiScan.running
     readonly property var wifiNetworks: wifiNetworkItems()
-    readonly property string networkIcon: {
-        if (networkKind === "wired")
-            return "󰀂";
-        if (networkKind === "wifi") {
-            if (networkSignal >= 70)
-                return "󰤨";
-            if (networkSignal >= 40)
-                return "󰤢";
-            return "󰤟";
-        }
-        return "󰯡";
-    }
+    readonly property string networkIcon: Icons.network(networkKind, networkSignal)
     readonly property string networkLabel: networkKind === "off" ? "off" : networkName
 
     readonly property var pipewireNodes: Pipewire.nodes ? Pipewire.nodes.values : []
@@ -86,14 +76,14 @@ Singleton {
         icon: root.audioNodeIcon(node),
         subtitle: root.audioNodeSubtitle(node)
     }))
-    readonly property string audioIcon: audioMuted || audioVolume === 0 ? "" : (audioVolume >= 60 ? "" : "")
+    readonly property string audioIcon: Icons.audio(audioMuted, audioVolume)
     readonly property string audioLabel: audioMuted ? "muted" : audioVolume + "%"
 
     readonly property bool micAvailable: micSourceNode && micSourceNode.audio && !isPipewireMonitor(micSourceNode)
     readonly property bool micMuted: micAvailable ? micSourceNode.audio.muted : false
     readonly property int micVolume: micAvailable ? Math.round(micSourceNode.audio.volume * 100) : 0
     readonly property string micSource: micAvailable ? audioNodeLabel(micSourceNode) : ""
-    readonly property string micIcon: !micAvailable ? "󰍭" : (micMuted || micVolume === 0 ? "󰍭" : "󰍬")
+    readonly property string micIcon: Icons.microphone(micAvailable, micMuted, micVolume)
     readonly property string micLabel: !micAvailable ? "no mic" : (micMuted ? "muted" : micVolume + "%")
 
     property int brightness: 0
@@ -457,7 +447,7 @@ Singleton {
 
     function audioNodeIcon(node) {
         if (!node)
-            return "󰕾";
+            return Icons.audioOutput;
 
         const props = node.properties || {};
         const formFactor = (props["device.form-factor"] || "").toLowerCase();
@@ -465,15 +455,15 @@ Singleton {
         const name = (node.name || "").toLowerCase();
 
         if (bus === "bluetooth" || name.indexOf("bluez") !== -1)
-            return "󰋋";
+            return Icons.audioDevice("bluetooth");
         if (formFactor === "headphone" || formFactor === "headset" || formFactor === "hands-free" || formFactor === "handset")
-            return "󰋋";
+            return Icons.audioDevice("headset");
         if (formFactor === "tv" || formFactor === "monitor" || name.indexOf("hdmi") !== -1)
-            return "󰽟";
+            return Icons.audioDevice("hdmi");
         if (bus === "usb" || name.indexOf("usb") !== -1)
-            return "󰕾";
+            return Icons.audioOutput;
 
-        return "󰓃";
+        return Icons.check;
     }
 
     function audioNodeSubtitle(node) {

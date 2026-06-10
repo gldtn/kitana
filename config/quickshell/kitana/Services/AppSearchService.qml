@@ -4,6 +4,7 @@ pragma Singleton
 
 import QtQuick
 import Quickshell
+import ".."
 import Quickshell.Io
 
 Singleton {
@@ -223,10 +224,10 @@ Singleton {
             return [];
 
         const actions = [
-            { name: "Lock", subtitle: "Lock this session", icon: "system-lock-screen", fallbackIcon: "󰌾", terms: "lock screen session secure", command: [kitanaDir + "/bin/kitana-lock"] },
-            { name: "Log out", subtitle: "End this Hyprland session", icon: "system-log-out", fallbackIcon: "󰗽", terms: "logout log out exit session hyprland", command: ["hyprctl", "dispatch", "exit"] },
-            { name: "Restart", subtitle: "Reboot this computer", icon: "system-reboot", fallbackIcon: "󰜉", terms: "restart reboot system", command: ["systemctl", "reboot"] },
-            { name: "Shut down", subtitle: "Power off this computer", icon: "system-shutdown", fallbackIcon: "󰐥", terms: "shutdown shut down power off poweroff", command: ["systemctl", "poweroff"] }
+            { name: "Lock", subtitle: "Lock this session", icon: "system-lock-screen", fallbackIcon: Icons.lock, terms: "lock screen session secure", command: [kitanaDir + "/bin/kitana-lock"] },
+            { name: "Log out", subtitle: "End this Hyprland session", icon: "system-log-out", fallbackIcon: Icons.logout, terms: "logout log out exit session hyprland", command: ["hyprctl", "dispatch", "exit"] },
+            { name: "Restart", subtitle: "Reboot this computer", icon: "system-reboot", fallbackIcon: Icons.restart, terms: "restart reboot system", command: ["systemctl", "reboot"] },
+            { name: "Shut down", subtitle: "Power off this computer", icon: "system-shutdown", fallbackIcon: Icons.shutdown, terms: "shutdown shut down power off poweroff", command: ["systemctl", "poweroff"] }
         ];
 
         const items = [];
@@ -352,7 +353,7 @@ Singleton {
                 name: expression + " = " + result,
                 subtitle: "Copy calculator result",
                 icon: "accessories-calculator",
-                fallbackIcon: "󰃬",
+                fallbackIcon: "calculate",
                 value: result.toString(),
                 score: 12000,
                 hint: "Copy"

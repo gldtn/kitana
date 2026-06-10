@@ -4,6 +4,7 @@ pragma Singleton
 
 import QtQuick
 import Quickshell
+import ".."
 
 Singleton {
     id: root
@@ -16,10 +17,10 @@ Singleton {
 
     readonly property string icon: {
         if (kind === "brightness")
-            return "󰃠";
+            return Icons.brightness;
         if (kind === "mic")
-            return muted || value === 0 ? "󰍭" : "󰍬";
-        return muted || value === 0 ? "" : (value >= 60 ? "" : "");
+            return Icons.microphone(true, muted, value);
+        return Icons.audio(muted, value);
     }
 
     function show(nextKind, nextTitle, nextValue, nextMuted) {

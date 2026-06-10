@@ -2,11 +2,13 @@
 //@ pragma UseQApplication
 
 import QtQuick
-import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
-import "./custom" as Custom
-import "./Modules"
+import "./Bar" as Bar
+import "./Dashboard" as Dashboard
+import "./Launcher" as Launcher
+import "./Shortcuts" as Shortcuts
+import "./Wallpaper" as Wallpaper
 import "./Services" as Services
 
 ShellRoot {
@@ -14,16 +16,17 @@ ShellRoot {
 
     property bool barVisible: true
     readonly property var sharedDashboardPanel: dashboardPanel
+    readonly property var sharedShortcutsPanel: shortcutsPanel
 
-    Custom.Settings {
-        id: settings
+    Wallpaper.WallpaperGrid {}
+    Launcher.AppLauncher {}
+
+    Dashboard.DashboardPanel {
+        id: dashboardPanel
     }
 
-    WallpaperGrid {}
-    AppLauncher {}
-
-    DashboardPanel {
-        id: dashboardPanel
+    Shortcuts.ShortcutsPanel {
+        id: shortcutsPanel
     }
 
     IpcHandler {
@@ -52,69 +55,12 @@ ShellRoot {
     Variants {
         model: Quickshell.screens
 
-        PanelWindow {
-            id: panelWindow
-
+        Bar.BarWindow {
             required property var modelData
-
-            screen: modelData
-            implicitHeight: root.barVisible ? settings.panelHeight : 1
-            exclusiveZone: root.barVisible ? settings.exclusiveZone : 0
-
-            anchors {
-                top: true
-                left: true
-                right: true
-            }
-
-            margins {
-                top: settings.topMargin
-                left: settings.sideMargin
-                right: settings.sideMargin
-            }
-
-            color: "transparent"
-
-            SystemPanel {
-                id: systemPanel
-
-                panelScreen: modelData
-            }
-
-            NotificationPopups {
-                panelScreen: modelData
-            }
-
-            OsdPopup {
-                panelScreen: modelData
-            }
-
-            Item {
-                anchors.fill: parent
-                visible: root.barVisible
-
-                WorkspaceGroup {
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    panelScreen: modelData
-                }
-
-                ClockPill {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    dashboardPanel: root.sharedDashboardPanel
-                }
-
-                StatusGroup {
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    panelWindow: panelWindow
-                    systemPanel: systemPanel
-                }
-            }
+            panelScreen: modelData
+            barVisible: root.barVisible
+            dashboardPanel: root.sharedDashboardPanel
+            shortcutsPanel: root.sharedShortcutsPanel
         }
     }
 }
