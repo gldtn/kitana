@@ -21,6 +21,10 @@ ShellRoot {
     WallpaperGrid {}
     AppLauncher {}
 
+    DashboardPanel {
+        id: dashboardPanel
+    }
+
     IpcHandler {
         target: "kitana-osd"
 
@@ -81,12 +85,6 @@ ShellRoot {
             }
 
             OsdPopup {
-                panelScreen: modelData
-            }
-
-            DashboardPanel {
-                id: dashboardPanel
-
                 panelScreen: modelData
             }
 

@@ -17,7 +17,6 @@ PanelWindow {
     Custom.Settings { id: settings }
 
     readonly property var panelSelf: root
-    property var panelScreen: null
     property string activeTab: "datetime"
     property var wallpapers: []
     property var themes: []
@@ -437,7 +436,6 @@ PanelWindow {
         secondClockProcess.exec(["env", "TZ=" + worldClockPreferences.secondTimeZone, "date", "+%l:%M %p|%a, %b %-d"]);
     }
 
-    screen: panelScreen
     visible: false
     focusable: true
     color: "transparent"
