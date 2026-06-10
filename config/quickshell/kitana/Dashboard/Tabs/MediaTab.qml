@@ -88,7 +88,7 @@ Item {
                         maskSource: albumArtMask
                     }
 
-                    Controls.MaterialIcon {
+                    Controls.Icon {
                         anchors.centerIn: parent
                         visible: Services.MediaService.artSource().length === 0
                         icon: Icons.media
@@ -298,7 +298,7 @@ Item {
 
                     MiniButton {
                         text: Icons.close
-                        materialIcon: true
+                        iconText: true
                         widthOverride: 32
                         heightOverride: 30
                         onClicked: root.mediaAudioOverlayOpen = false

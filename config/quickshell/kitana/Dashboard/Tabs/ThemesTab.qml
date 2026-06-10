@@ -132,7 +132,7 @@ ColumnLayout {
             anchors.verticalCenter: parent.verticalCenter
             spacing: 10
 
-            MiniButton { text: Icons.chevronLeft; materialIcon: true; onClicked: root.shiftThemePage(-1) }
+            MiniButton { text: Icons.chevronLeft; iconText: true; onClicked: root.shiftThemePage(-1) }
 
             Text {
                 height: 28
@@ -144,7 +144,7 @@ ColumnLayout {
                 font.weight: Font.DemiBold
             }
 
-            MiniButton { text: Icons.chevronRight; materialIcon: true; onClicked: root.shiftThemePage(1) }
+            MiniButton { text: Icons.chevronRight; iconText: true; onClicked: root.shiftThemePage(1) }
         }
 
         Text {

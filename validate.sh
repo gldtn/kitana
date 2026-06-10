@@ -162,7 +162,6 @@ for pkg in \
   rust \
   shared-mime-info \
   sof-firmware \
-  ttf-material-symbols-variable-git \
   qt6ct \
   xdg-desktop-portal-hyprland; do
   check_package "$pkg"
@@ -700,7 +699,7 @@ quickshell_files=(
   Bar/Sections/Left.qml
   Bar/Sections/Right.qml
   Components/Controls/KeyHintBar.qml
-  Components/Controls/MaterialIcon.qml
+  Components/Controls/Icon.qml
   Components/Controls/PanelRow.qml
   Dashboard/DashboardPanel.qml
   Launcher/AppLauncher.qml

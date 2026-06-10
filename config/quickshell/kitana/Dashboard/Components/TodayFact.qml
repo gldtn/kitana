@@ -18,7 +18,7 @@ RowLayout {
     Layout.fillWidth: true
     spacing: 7
 
-    Controls.MaterialIcon {
+    Controls.Icon {
         Layout.preferredWidth: 18
         Layout.alignment: Qt.AlignVCenter
         icon: root.icon

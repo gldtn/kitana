@@ -51,7 +51,7 @@ ColumnLayout {
 
         MiniButton {
             text: weatherPrefs.hideLocation ? Icons.visibilityOff : Icons.visibility
-            materialIcon: true
+            iconText: true
             widthOverride: 46
             heightOverride: 34
             onClicked: weatherPrefs.hideLocation = !weatherPrefs.hideLocation
@@ -64,7 +64,7 @@ ColumnLayout {
             onClicked: root.weatherUnits = root.weatherUnits === "C" ? "F" : "C"
         }
 
-        MiniButton { text: Icons.refresh; materialIcon: true; heightOverride: 34; onClicked: root.refreshWeather() }
+        MiniButton { text: Icons.refresh; iconText: true; heightOverride: 34; onClicked: root.refreshWeather() }
     }
 
     Rectangle {
@@ -81,7 +81,7 @@ ColumnLayout {
             width: Math.min(parent.width - 32, implicitWidth)
             spacing: 14
 
-            Controls.MaterialIcon {
+            Controls.Icon {
                 Layout.alignment: Qt.AlignVCenter
                 icon: Icons.weather
                 color: Colors.accent
@@ -209,7 +209,7 @@ ColumnLayout {
                         spacing: 3
                         anchors.horizontalCenter: parent.horizontalCenter
 
-                        Controls.MaterialIcon {
+                        Controls.Icon {
                             id: forecastIcon
 
                             icon: modelData.hourly && modelData.hourly.length > 0 && modelData.hourly[4].chanceofrain > 0 ? Icons.waterDrop : Icons.weather

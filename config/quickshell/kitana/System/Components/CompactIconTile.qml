@@ -26,7 +26,7 @@ Rectangle {
         radius: 12
         color: root.active ? Colors.accent : Colors.surfaceAlt
 
-        Controls.MaterialIcon {
+        Controls.Icon {
             anchors.centerIn: parent
             icon: root.icon
             color: root.active ? Colors.accentText : Colors.foreground

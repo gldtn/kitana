@@ -30,7 +30,7 @@ Rectangle {
         anchors.margins: 9
         spacing: 10
 
-            Controls.MaterialIcon {
+            Controls.Icon {
                 anchors.verticalCenter: parent.verticalCenter
                 width: 24
                 icon: root.icon

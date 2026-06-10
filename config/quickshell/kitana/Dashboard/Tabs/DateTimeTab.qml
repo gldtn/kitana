@@ -149,9 +149,9 @@ RowLayout {
                     font.weight: Font.Bold
                 }
 
-                MiniButton { text: Icons.chevronLeft; materialIcon: true; onClicked: root.shiftMonth(-1) }
+                MiniButton { text: Icons.chevronLeft; iconText: true; onClicked: root.shiftMonth(-1) }
                 MiniButton { text: "Today"; widthOverride: 58; onClicked: root.calendarMonth = new Date(root.currentTime.getFullYear(), root.currentTime.getMonth(), 1) }
-                MiniButton { text: Icons.chevronRight; materialIcon: true; onClicked: root.shiftMonth(1) }
+                MiniButton { text: Icons.chevronRight; iconText: true; onClicked: root.shiftMonth(1) }
             }
 
             GridLayout {

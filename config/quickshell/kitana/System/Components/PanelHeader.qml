@@ -24,12 +24,6 @@ Row {
         color: Colors.foreground
         font.family: Typography.iconFontFamily
         font.pixelSize: 16
-        font.variableAxes: {
-            "FILL": Typography.iconFill,
-            "wght": Typography.iconWeight,
-            "GRAD": Typography.iconGrade,
-            "opsz": Typography.iconOpticalSize
-        }
     }
 
     Text {
@@ -48,7 +42,7 @@ Row {
         anchors.verticalCenter: parent.verticalCenter
         spacing: 16
 
-        HeaderIcon { text: Services.NotificationService.count > 0 ? Icons.notificationsActive : Icons.notifications; onClicked: if (root.panel) root.panel.section = "notifications" }
+        HeaderIcon { text: Icons.notification(Services.NotificationService.count, Services.NotificationService.doNotDisturb); onClicked: if (root.panel) root.panel.section = "notifications" }
         HeaderIcon { text: Icons.settings; onClicked: if (root.panel) root.panel.section = "settings" }
         HeaderIcon { text: Icons.power; onClicked: if (root.panel) root.panel.section = "sessions" }
     }

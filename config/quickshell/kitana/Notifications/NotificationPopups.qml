@@ -96,7 +96,7 @@ PanelWindow {
                     }
                 }
 
-                Controls.MaterialIcon {
+                Controls.Icon {
                     id: closeButton
                     anchors.right: parent.right
                     anchors.rightMargin: 12

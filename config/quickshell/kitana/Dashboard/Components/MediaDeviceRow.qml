@@ -31,7 +31,7 @@ Rectangle {
         anchors.rightMargin: 12
         spacing: 10
 
-        Controls.MaterialIcon {
+        Controls.Icon {
             icon: root.active ? Icons.check : root.icon
             color: Colors.accent
             size: settings.iconPixelSize

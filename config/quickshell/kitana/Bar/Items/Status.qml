@@ -217,7 +217,7 @@ Rectangle {
         }
 
         StatusButton {
-            icon: Services.NotificationService.count > 0 ? Icons.notificationsActive : Icons.notifications
+            icon: Icons.notification(Services.NotificationService.count, Services.NotificationService.doNotDisturb)
             label: ""
             onClicked: if (root.systemPanel) root.systemPanel.toggle("notifications")
         }
@@ -270,7 +270,7 @@ Rectangle {
             anchors.centerIn: parent
             spacing: settings.statusItemSpacing
 
-            Controls.MaterialIcon {
+            Controls.Icon {
                 width: settings.iconPixelSize + 4
                 height: button.height
                 icon: button.icon

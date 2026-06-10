@@ -25,7 +25,7 @@ Rectangle {
     border.color: modelData.connected ? Colors.panelBorderStrong : "transparent"
     border.width: modelData.connected ? 1 : 0
 
-    Controls.MaterialIcon {
+    Controls.Icon {
         id: bluetoothIcon
         anchors.left: parent.left
         anchors.leftMargin: 9
@@ -74,7 +74,7 @@ Rectangle {
         radius: 9
         color: disconnectMouse.containsMouse ? Colors.surfaceHighlight : Colors.surfaceAlt
 
-        Controls.MaterialIcon {
+        Controls.Icon {
             anchors.centerIn: parent
             icon: Icons.disconnect
             color: disconnectMouse.containsMouse ? Colors.danger : Colors.muted
@@ -101,7 +101,7 @@ Rectangle {
         radius: 9
         color: forgetMouse.containsMouse ? Colors.surfaceHighlight : Colors.surfaceAlt
 
-        Controls.MaterialIcon {
+        Controls.Icon {
             anchors.centerIn: parent
             icon: Icons.trash
             color: forgetMouse.containsMouse ? Colors.danger : Colors.muted

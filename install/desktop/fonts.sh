@@ -12,7 +12,6 @@ PACKAGES=(
   otf-font-awesome
   ttf-cascadia-mono-nerd
   ttf-jetbrains-mono-nerd
-  ttf-material-symbols-variable-git
   unzip
 )
 

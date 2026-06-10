@@ -58,7 +58,7 @@ Rectangle {
         }
     }
 
-    Controls.MaterialIcon {
+    Controls.Icon {
         id: dismissButton
         anchors.right: parent.right
         anchors.rightMargin: 10

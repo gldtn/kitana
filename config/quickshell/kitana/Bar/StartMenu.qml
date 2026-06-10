@@ -69,7 +69,7 @@ PanelWindow {
             anchors.rightMargin: 10
             spacing: 10
 
-            Controls.MaterialIcon {
+            Controls.Icon {
                 icon: actionRoot.icon
                 color: Colors.accent
                 size: settings.iconPixelSize + 1
@@ -165,9 +165,9 @@ PanelWindow {
                 spacing: 10
 
                 Text {
-                    text: ""
+                    text: Icons.arch
                     color: Colors.accent
-                    font.family: "JetBrainsMono Nerd Font Propo"
+                    font.family: Typography.iconFontFamily
                     font.pixelSize: 18
                 }
 

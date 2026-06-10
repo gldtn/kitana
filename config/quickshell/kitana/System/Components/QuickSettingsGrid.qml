@@ -81,7 +81,7 @@ Row {
 
         QuickTile {
             width: parent.width
-            icon: Services.NotificationService.doNotDisturb ? Icons.notificationsOff : Icons.notifications
+            icon: Icons.notification(Services.NotificationService.count, Services.NotificationService.doNotDisturb)
             title: "Do Not Disturb"
             subtitle: Services.NotificationService.doNotDisturb ? "On" : "Off"
             active: Services.NotificationService.doNotDisturb

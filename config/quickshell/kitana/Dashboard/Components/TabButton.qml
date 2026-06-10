@@ -30,7 +30,7 @@ Rectangle {
         anchors.centerIn: parent
         spacing: 7
 
-        Controls.MaterialIcon {
+        Controls.Icon {
             height: root.height
             icon: root.icon
             color: root.selected ? Colors.accent : Colors.foreground

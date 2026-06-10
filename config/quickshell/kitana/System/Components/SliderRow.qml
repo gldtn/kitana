@@ -23,7 +23,7 @@ Row {
     height: 28
     spacing: 10
 
-    Controls.MaterialIcon {
+    Controls.Icon {
         id: sliderIcon
 
         anchors.verticalCenter: parent.verticalCenter

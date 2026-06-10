@@ -23,7 +23,7 @@ Rectangle {
     border.color: prominent ? Colors.panelBorderStrong : Colors.panelBorder
     border.width: 1
 
-    Controls.MaterialIcon {
+    Controls.Icon {
         anchors.centerIn: parent
         icon: root.text
         color: root.prominent ? Colors.accent : Colors.foreground

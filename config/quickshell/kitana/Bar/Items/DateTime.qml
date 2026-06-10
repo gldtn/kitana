@@ -50,7 +50,7 @@ Rectangle {
             radius: 8
             color: dashboardMouse.containsMouse ? Colors.surfaceHover : "transparent"
 
-            Controls.MaterialIcon {
+            Controls.Icon {
                 anchors.centerIn: parent
                 icon: Icons.dashboard
                 color: dashboardMouse.containsMouse ? Colors.foreground : Colors.accent

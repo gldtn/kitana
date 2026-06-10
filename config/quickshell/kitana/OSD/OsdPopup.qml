@@ -60,7 +60,7 @@ PanelWindow {
             anchors.margins: 16
             spacing: 14
 
-            Controls.MaterialIcon {
+            Controls.Icon {
                 width: 34
                 anchors.verticalCenter: parent.verticalCenter
                 icon: Services.OsdService.icon

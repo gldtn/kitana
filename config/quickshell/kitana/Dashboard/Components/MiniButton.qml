@@ -11,7 +11,7 @@ Rectangle {
     Custom.Settings { id: settings }
 
     property string text: ""
-    property bool materialIcon: false
+    property bool iconText: false
     property int widthOverride: 32
     property int heightOverride: 28
 
@@ -30,14 +30,8 @@ Rectangle {
         anchors.centerIn: parent
         text: root.text
         color: Colors.foreground
-        font.family: root.materialIcon ? Typography.iconFontFamily : Typography.fontFamily
+        font.family: root.iconText ? Typography.iconFontFamily : Typography.fontFamily
         font.pixelSize: settings.textPixelSize
-        font.variableAxes: root.materialIcon ? {
-            "FILL": Typography.iconFill,
-            "wght": Typography.iconWeight,
-            "GRAD": Typography.iconGrade,
-            "opsz": Typography.iconOpticalSize
-        } : ({})
     }
 
     MouseArea {

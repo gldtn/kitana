@@ -34,7 +34,7 @@ Item {
         x: Math.round((parent.width - width) / 2)
         y: root.centerContent ? Math.round((parent.height - height) / 2) : 0
 
-        Controls.MaterialIcon {
+        Controls.Icon {
             id: iconSlot
             width: root.iconWidth
             anchors.left: parent.left

@@ -14,12 +14,6 @@ Text {
     color: Colors.foreground
     font.family: Typography.iconFontFamily
     font.pixelSize: 15
-    font.variableAxes: {
-        "FILL": Typography.iconFill,
-        "wght": Typography.iconWeight,
-        "GRAD": Typography.iconGrade,
-        "opsz": Typography.iconOpticalSize
-    }
 
     MouseArea {
         anchors.fill: parent

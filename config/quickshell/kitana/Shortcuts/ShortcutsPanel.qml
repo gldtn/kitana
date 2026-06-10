@@ -239,7 +239,7 @@ PanelWindow {
                 Layout.fillWidth: true
                 spacing: 10
 
-                Controls.MaterialIcon {
+                Controls.Icon {
                     icon: Icons.keyboard
                     color: Colors.accent
                     size: settings.iconPixelSize + 4
@@ -282,7 +282,7 @@ PanelWindow {
                     anchors.rightMargin: 10
                     spacing: 8
 
-                    Controls.MaterialIcon {
+                    Controls.Icon {
                         icon: Icons.appSearch
                         color: Colors.muted
                         size: settings.iconPixelSize

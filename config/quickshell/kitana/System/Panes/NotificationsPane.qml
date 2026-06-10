@@ -17,7 +17,7 @@ Item {
         visible: Services.NotificationService.count === 0
         spacing: 10
 
-        Controls.MaterialIcon {
+        Controls.Icon {
             anchors.horizontalCenter: parent.horizontalCenter
             icon: Icons.notifications
             color: Colors.muted
@@ -53,7 +53,7 @@ Item {
                 font.weight: Font.Bold
             }
 
-            Controls.MaterialIcon {
+            Controls.Icon {
                 id: clearNotifications
                 anchors.verticalCenter: parent.verticalCenter
                 icon: Icons.close

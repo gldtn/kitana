@@ -23,9 +23,9 @@ Rectangle {
 
     Text {
         anchors.centerIn: parent
-        text: ""
+        text: Icons.arch
         color: Colors.accent
-        font.family: "JetBrainsMono Nerd Font Propo"
+        font.family: Typography.iconFontFamily
         font.pixelSize: settings.iconPixelSize + 1
     }
 

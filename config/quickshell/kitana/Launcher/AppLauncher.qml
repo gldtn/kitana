@@ -269,7 +269,7 @@ PanelWindow {
                         anchors.rightMargin: 16
                         spacing: 10
 
-                        Controls.MaterialIcon {
+                        Controls.Icon {
                             icon: Icons.appSearch
                             color: Colors.muted
                             size: 18
@@ -379,12 +379,6 @@ PanelWindow {
                                             font.family: modelData.fallbackIcon ? Typography.iconFontFamily : Typography.fontFamily
                                             font.pixelSize: 15
                                             font.weight: Font.Bold
-                                            font.variableAxes: modelData.fallbackIcon ? {
-                                                "FILL": Typography.iconFill,
-                                                "wght": Typography.iconWeight,
-                                                "GRAD": Typography.iconGrade,
-                                                "opsz": Typography.iconOpticalSize
-                                            } : ({})
                                         }
                                     }
                                 }
@@ -429,7 +423,7 @@ PanelWindow {
                         visible: root.results.length === 0
                         spacing: 10
 
-                        Controls.MaterialIcon {
+                        Controls.Icon {
                             Layout.alignment: Qt.AlignHCenter
                             icon: Icons.appSearch
                             color: Colors.muted
