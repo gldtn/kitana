@@ -6,6 +6,7 @@ KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
 HYPR_CONFIG_DIR="$HOME/.config/hypr"
 HYPR_ENTRYPOINT="$HYPR_CONFIG_DIR/hyprland.lua"
 HYPR_ENTRYPOINT_MARKER="Kitana managed Hyprland Lua entrypoint"
+HYPR_LUARC_FILE="$HYPR_CONFIG_DIR/.luarc.json"
 HYPR_THEME_FILE="$HYPR_CONFIG_DIR/kitana-theme.lua"
 HYPR_THEME_MARKER="Kitana managed Hyprland theme"
 HYPRIDLE_MARKER="Kitana managed Hypridle config"
@@ -99,6 +100,12 @@ elif [ -e "$HYPR_CONFIG_DIR" ] && [ ! -d "$HYPR_CONFIG_DIR" ]; then
 fi
 
 mkdir -p "$HYPR_CONFIG_DIR/custom" "$HYPR_CONFIG_DIR/scripts"
+
+if [ ! -e "$HYPR_LUARC_FILE" ] || cmp -s "$KITANA_DIR/default/hypr/.luarc.json" "$HYPR_LUARC_FILE"; then
+  cp "$KITANA_DIR/default/hypr/.luarc.json" "$HYPR_LUARC_FILE"
+else
+  echo "Keeping existing Hypr Lua language config: $HYPR_LUARC_FILE"
+fi
 
 if [ ! -e "$HYPR_ENTRYPOINT" ] || grep -q "$HYPR_ENTRYPOINT_MARKER" "$HYPR_ENTRYPOINT"; then
   cp "$KITANA_DIR/config/hypr/hyprland.lua" "$HYPR_ENTRYPOINT"

@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Widgets as QW
@@ -54,10 +55,52 @@ PanelWindow {
         listView.positionViewAtIndex(selectedIndex, ListView.Contain);
     }
 
+    function shellQuote(value): string {
+        return "'" + (value || "").toString().replace(/'/g, "'\\''") + "'";
+    }
+
+    function luaQuote(value): string {
+        return "'" + (value || "").toString().replace(/\\/g, "\\\\").replace(/'/g, "\\'") + "'";
+    }
+
+    function currentWorkspaceId(): int {
+        const workspace = Hyprland.focusedWorkspace || Hyprland.workspaces.values.find(item => item.active);
+        return workspace && workspace.id > 0 ? workspace.id : 1;
+    }
+
+    function commandString(command, workingDirectory): string {
+        if (!command || command.length === 0)
+            return "";
+
+        const parts = [];
+        for (const arg of command)
+            parts.push(shellQuote(arg));
+
+        const commandLine = parts.join(" ");
+        if (workingDirectory && workingDirectory.length > 0)
+            return "cd " + shellQuote(workingDirectory) + " && exec " + commandLine;
+        return commandLine;
+    }
+
+    function launchCommandOnWorkspace(command, workingDirectory, workspaceId: int): bool {
+        const launch = commandString(command, workingDirectory || "");
+        if (launch.length === 0)
+            return false;
+
+        if (Hyprland.usingLua) {
+            Hyprland.dispatch("hl.dsp.focus({ workspace = " + workspaceId + " })");
+            Hyprland.dispatch("hl.dsp.exec_cmd(" + luaQuote(launch) + ")");
+        } else {
+            Hyprland.dispatch("exec [workspace " + workspaceId + "] " + launch);
+        }
+        return true;
+    }
+
     function launchItem(item): void {
         if (!item)
             return;
 
+        const workspaceId = currentWorkspaceId();
         close();
         Services.AppSearchService.recordLaunch(item);
 
@@ -72,21 +115,19 @@ PanelWindow {
         }
 
         if (item.type === "action" && item.action) {
-            if (typeof item.action.execute === "function") {
-                item.action.execute();
+            if (item.action.command && launchCommandOnWorkspace(item.action.command, item.app ? item.app.workingDirectory : "", workspaceId))
                 return;
-            }
             if (item.action.command)
                 Quickshell.execDetached({ command: item.action.command, workingDirectory: item.app ? item.app.workingDirectory : "" });
+            else if (typeof item.action.execute === "function")
+                item.action.execute();
             return;
         }
 
         const app = item.app || item;
 
-        if (typeof app.execute === "function") {
-            app.execute();
+        if (app.command && launchCommandOnWorkspace(app.command, app.workingDirectory || "", workspaceId))
             return;
-        }
         if (typeof app.launch === "function") {
             app.launch();
             return;

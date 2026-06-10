@@ -308,6 +308,12 @@ else
   fail "Hypr Lua entrypoint missing: ~/.config/hypr/hyprland.lua"
 fi
 
+if [ -f "$HOME/.config/hypr/.luarc.json" ] && grep -q '/usr/share/hypr/stubs' "$HOME/.config/hypr/.luarc.json"; then
+  pass "Hypr Lua language config: ~/.config/hypr/.luarc.json"
+else
+  fail "Hypr Lua language config missing Hypr stubs: ~/.config/hypr/.luarc.json"
+fi
+
 if [ -d "$HOME/.config/hypr/custom" ]; then
   pass "Hypr custom directory: ~/.config/hypr/custom"
 else
