@@ -684,6 +684,66 @@ for quickshell_module in AppLauncher ClockPill DashboardPanel NotificationPopups
   fi
 done
 
+quickshell_dashboard_modules=(
+  CavaBars
+  DashboardField
+  DateTimeTab
+  MediaButton
+  MediaDeviceRow
+  MediaTab
+  MiniButton
+  PickerFooter
+  PickerHelp
+  PickerTopInset
+  SettingsTab
+  TabButton
+  ThemesTab
+  TodayFact
+  VolumeSlider
+  WallpapersTab
+  WeatherMetric
+  WeatherTab
+  WorldClockRow
+)
+
+for quickshell_module in "${quickshell_dashboard_modules[@]}"; do
+  if [ -f "$HOME/.config/quickshell/kitana/Modules/Dashboard/$quickshell_module.qml" ]; then
+    pass "Quickshell dashboard module: $quickshell_module"
+  else
+    fail "Quickshell dashboard module missing: $quickshell_module"
+  fi
+done
+
+quickshell_system_modules=(
+  AudioPane
+  BluetoothDeviceRow
+  BluetoothPane
+  CompactIconTile
+  ConfirmButton
+  ConfirmOverlay
+  ControlSliders
+  DetailList
+  DetailRow
+  HeaderIcon
+  NetworkPane
+  NotificationRow
+  NotificationsPane
+  PanelHeader
+  QuickSettingsGrid
+  QuickTile
+  SessionPane
+  SettingsPane
+  SliderRow
+)
+
+for quickshell_module in "${quickshell_system_modules[@]}"; do
+  if [ -f "$HOME/.config/quickshell/kitana/Modules/System/$quickshell_module.qml" ]; then
+    pass "Quickshell system module: $quickshell_module"
+  else
+    fail "Quickshell system module missing: $quickshell_module"
+  fi
+done
+
 if [ -f "$HOME/.config/quickshell/kitana/Services/SystemStatus.qml" ] && [ -f "$HOME/.config/quickshell/kitana/Services/qmldir" ]; then
   pass "Quickshell service: SystemStatus"
 else

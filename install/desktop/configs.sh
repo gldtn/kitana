@@ -321,18 +321,20 @@ for quickshell_config in Colors.qml qmldir; do
 done
 
 for quickshell_dir in Common Modules Services Widgets; do
-  [ -d "$KITANA_DIR/config/quickshell/kitana/$quickshell_dir" ] || continue
+  source_dir="$KITANA_DIR/config/quickshell/kitana/$quickshell_dir"
+  [ -d "$source_dir" ] || continue
 
-  for quickshell_file in "$KITANA_DIR"/config/quickshell/kitana/"$quickshell_dir"/*; do
-    [ -f "$quickshell_file" ] || continue
-    target="$QUICKSHELL_CONFIG_DIR/$quickshell_dir/$(basename "$quickshell_file")"
+  while IFS= read -r -d '' quickshell_file; do
+    relative_path="${quickshell_file#"$source_dir"/}"
+    target="$QUICKSHELL_CONFIG_DIR/$quickshell_dir/$relative_path"
+    mkdir -p "${target%/*}"
 
     if [ ! -e "$target" ] || grep -q "Kitana managed Quickshell" "$target" || [ "$(basename "$quickshell_file")" = "qmldir" ]; then
       cp "$quickshell_file" "$target"
     else
       echo "Keeping existing Quickshell file: $target"
     fi
-  done
+  done < <(find "$source_dir" -type f -print0)
 done
 
 for quickshell_custom in "$KITANA_DIR"/config/quickshell/kitana/custom/*.qml; do
