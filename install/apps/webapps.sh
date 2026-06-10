@@ -8,4 +8,3 @@ kitana-webapp-install "Grok" https://grok.com/ https://registry.npmmirror.com/@l
 kitana-webapp-install "WhatsApp" https://web.whatsapp.com/ https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/whatsapp.png
 kitana-webapp-install "Zoom" https://app.zoom.us/wc/home https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/zoom.png "${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-webapp-handler-zoom %u" "x-scheme-handler/zoommtg;x-scheme-handler/zoomus"
 kitana-webapp-install "MarketMonkey" https://marketmonkeyterminal.com/app/terminal https://marketmonkeyterminal.com/images/mm-logo.png
-kitana-webapp-install "Discord" https://discord.com/channels/@me https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/discord.png
