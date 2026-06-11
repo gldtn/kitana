@@ -13,6 +13,8 @@ QtObject {
     readonly property string bluetoothDisabled: "󰂲"
     readonly property string brightness: "󰃠"
     readonly property string calendar: "󰃭"
+    readonly property string caffeine: "󰾪"
+    readonly property string caffeineOff: "󰅶"
     readonly property string check: "󰄬"
     readonly property string chevronLeft: "󰅁"
     readonly property string chevronRight: "󰅂"
@@ -68,6 +70,10 @@ QtObject {
 
     function bluetoothStatus(enabled: bool, connectedCount: int): string {
         return !enabled ? bluetoothDisabled : (connectedCount > 0 ? bluetoothConnected : bluetooth);
+    }
+
+    function caffeineStatus(enabled: bool): string {
+        return enabled ? caffeine : caffeineOff;
     }
 
     function network(kind: string, signal: int): string {

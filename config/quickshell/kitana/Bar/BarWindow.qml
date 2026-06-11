@@ -2,10 +2,12 @@
 
 import QtQuick
 import Quickshell
+import Quickshell.Wayland
 import ".."
 import "../custom" as Custom
 import "../Notifications" as Notifications
 import "../OSD" as OSD
+import "../Services" as Services
 import "../System" as System
 import "./Sections" as Sections
 
@@ -36,6 +38,11 @@ PanelWindow {
     }
 
     color: "transparent"
+
+    IdleInhibitor {
+        window: root
+        enabled: Services.CaffeineService.enabled
+    }
 
     System.SystemPanel {
         id: systemPanel

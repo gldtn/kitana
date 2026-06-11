@@ -1,4 +1,5 @@
 singleton AppSearchService 1.0 AppSearchService.qml
+singleton CaffeineService 1.0 CaffeineService.qml
 singleton MediaService 1.0 MediaService.qml
 singleton NotificationService 1.0 NotificationService.qml
 singleton OsdService 1.0 OsdService.qml

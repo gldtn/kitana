@@ -796,6 +796,12 @@ else
   fail "Quickshell service missing: AppSearchService"
 fi
 
+if [ -f "$HOME/.config/quickshell/kitana/Services/CaffeineService.qml" ] && grep -q '^singleton CaffeineService 1.0 CaffeineService.qml$' "$HOME/.config/quickshell/kitana/Services/qmldir"; then
+  pass "Quickshell service: CaffeineService"
+else
+  fail "Quickshell service missing: CaffeineService"
+fi
+
 if [ -f "$HOME/.config/quickshell/kitana/shell.qml" ] && grep -q 'target: "kitana-bar"' "$HOME/.config/quickshell/kitana/shell.qml"; then
   pass "Quickshell IPC: kitana-bar"
 else

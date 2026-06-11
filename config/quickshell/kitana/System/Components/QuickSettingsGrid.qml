@@ -4,7 +4,7 @@ import QtQuick
 import "../.."
 import "../../Services" as Services
 
-Row {
+Column {
     id: root
 
     property var panel: null
@@ -13,74 +13,97 @@ Row {
     height: implicitHeight
     spacing: 10
 
-    function toggleSection(name: string): void {
+    function selectSection(name: string): void {
         if (panel)
-            panel.section = panel.section === name ? "notifications" : name;
+            panel.section = name;
     }
 
-    Column {
-        width: (root.width - root.spacing) / 2
+    Row {
+        id: primaryRow
+
+        width: parent.width
         height: implicitHeight
-        spacing: 10
+        spacing: root.spacing
 
-        QuickTile {
-            width: parent.width
-            icon: Services.SystemStatus.networkIcon
-            title: Services.SystemStatus.networkKind === "wired" ? "Ethernet" : (Services.SystemStatus.networkKind === "wifi" ? "Wi-Fi" : "Network")
-            subtitle: Services.SystemStatus.networkKind === "off" ? "Off" : "Connected"
-            active: Services.SystemStatus.networkKind !== "off"
-            onClicked: root.toggleSection("network")
-        }
-
-        Row {
-            visible: Services.SystemStatus.micAvailable
-            width: parent.width
-            height: visible ? implicitHeight : 0
+        Column {
+            width: (primaryRow.width - primaryRow.spacing) / 2
+            height: implicitHeight
             spacing: 10
 
-            CompactIconTile {
-                width: (parent.width - parent.spacing) / 2
-                icon: Services.SystemStatus.audioIcon
-                active: !Services.SystemStatus.audioMuted
-                onClicked: root.toggleSection("audio")
+            QuickTile {
+                width: parent.width
+                icon: Services.SystemStatus.networkIcon
+                title: Services.SystemStatus.networkKind === "wired" ? "Ethernet" : (Services.SystemStatus.networkKind === "wifi" ? "Wi-Fi" : "Network")
+                subtitle: Services.SystemStatus.networkKind === "off" ? "Off" : "Connected"
+                active: Services.SystemStatus.networkKind !== "off"
+                onClicked: root.selectSection("network")
             }
 
-            CompactIconTile {
-                width: (parent.width - parent.spacing) / 2
-                icon: Services.SystemStatus.micIcon
-                active: Services.SystemStatus.micAvailable && !Services.SystemStatus.micMuted
-                onClicked: root.toggleSection("audio")
+            Row {
+                visible: Services.SystemStatus.micAvailable
+                width: parent.width
+                height: visible ? implicitHeight : 0
+                spacing: 10
+
+                CompactIconTile {
+                    width: (parent.width - parent.spacing) / 2
+                    icon: Services.SystemStatus.audioIcon
+                    active: !Services.SystemStatus.audioMuted
+                    onClicked: root.selectSection("audio")
+                }
+
+                CompactIconTile {
+                    width: (parent.width - parent.spacing) / 2
+                    icon: Services.SystemStatus.micIcon
+                    active: Services.SystemStatus.micAvailable && !Services.SystemStatus.micMuted
+                    onClicked: root.selectSection("audio")
+                }
+            }
+
+            QuickTile {
+                visible: !Services.SystemStatus.micAvailable
+                width: parent.width
+                height: visible ? 64 : 0
+                icon: Services.SystemStatus.audioIcon
+                title: "Audio"
+                subtitle: Services.SystemStatus.audioLabel
+                active: !Services.SystemStatus.audioMuted
+                onClicked: root.selectSection("audio")
             }
         }
 
-        QuickTile {
-            visible: !Services.SystemStatus.micAvailable
-            width: parent.width
-            height: visible ? 64 : 0
-            icon: Services.SystemStatus.audioIcon
-            title: "Audio"
-            subtitle: Services.SystemStatus.audioLabel
-            active: !Services.SystemStatus.audioMuted
-            onClicked: root.toggleSection("audio")
+        Column {
+            width: (primaryRow.width - primaryRow.spacing) / 2
+            height: implicitHeight
+            spacing: 10
+
+            QuickTile {
+                width: parent.width
+                icon: Services.SystemStatus.bluetoothIcon
+                title: "Bluetooth"
+                subtitle: Services.SystemStatus.bluetoothEnabled ? "On" : "Off"
+                active: Services.SystemStatus.bluetoothEnabled
+                onClicked: root.selectSection("bluetooth")
+            }
+
+            QuickTile {
+                width: parent.width
+                icon: Icons.keyboard
+                title: "Keyboard " + Services.SystemStatus.keyboardLayoutLabel
+                subtitle: Services.SystemStatus.keyboardLayoutLongLabel
+                active: true
+                onClicked: Services.SystemStatus.nextKeyboardLayout()
+            }
         }
     }
 
-    Column {
-        width: (root.width - root.spacing) / 2
+    Row {
+        width: parent.width
         height: implicitHeight
-        spacing: 10
+        spacing: root.spacing
 
         QuickTile {
-            width: parent.width
-            icon: Services.SystemStatus.bluetoothIcon
-            title: "Bluetooth"
-            subtitle: Services.SystemStatus.bluetoothEnabled ? "On" : "Off"
-            active: Services.SystemStatus.bluetoothEnabled
-            onClicked: root.toggleSection("bluetooth")
-        }
-
-        QuickTile {
-            width: parent.width
+            width: (parent.width - parent.spacing) / 2
             icon: Icons.notification(Services.NotificationService.count, Services.NotificationService.doNotDisturb)
             title: "Do Not Disturb"
             subtitle: Services.NotificationService.doNotDisturb ? "On" : "Off"
@@ -89,12 +112,12 @@ Row {
         }
 
         QuickTile {
-            width: parent.width
-            icon: Icons.keyboard
-            title: "Keyboard " + Services.SystemStatus.keyboardLayoutLabel
-            subtitle: Services.SystemStatus.keyboardLayoutLongLabel
-            active: true
-            onClicked: Services.SystemStatus.nextKeyboardLayout()
+            width: (parent.width - parent.spacing) / 2
+            icon: Services.CaffeineService.icon
+            title: "Caffeine"
+            subtitle: Services.CaffeineService.subtitle
+            active: Services.CaffeineService.enabled
+            onClicked: Services.CaffeineService.toggle()
         }
     }
 }
