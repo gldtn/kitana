@@ -16,20 +16,29 @@ PanelWindow {
     Custom.Settings { id: settings }
 
     readonly property var panelSelf: root
+    // Mirrors Hyprland general.gaps_out.
+    readonly property int outerGap: 6
+    property real revealProgress: 0
     property var panelScreen: null
     property string section: "notifications"
     property string confirmAction: ""
     property string confirmTitle: ""
 
     function open(targetSection): void {
+        const wasVisible = visible;
         section = targetSection || "notifications";
         Services.SystemStatus.refresh();
         visible = true;
+        if (!wasVisible) {
+            revealProgress = 0;
+            revealAnimation.restart();
+        }
         closeArea.forceActiveFocus();
     }
 
     function close(): void {
         visible = false;
+        revealProgress = 0;
     }
 
     function toggle(targetSection): void {
@@ -88,15 +97,21 @@ PanelWindow {
         id: card
 
         width: 390
-        height: Math.min(parent.height - settings.panelHeight - 28, 920)
         anchors.top: parent.top
         anchors.right: parent.right
-        anchors.topMargin: settings.panelHeight + settings.topMargin + 10
-        anchors.rightMargin: settings.sideMargin
+        anchors.bottom: parent.bottom
+        anchors.topMargin: settings.panelHeight + settings.topMargin + root.outerGap
+        anchors.rightMargin: root.outerGap
+        anchors.bottomMargin: root.outerGap
+        opacity: root.revealProgress
         radius: 18
         color: Colors.panelBackground
         border.color: Colors.panelBorder
         border.width: 1
+
+        transform: Translate {
+            x: (1 - root.revealProgress) * 14
+        }
 
         MouseArea {
             anchors.fill: parent
@@ -115,7 +130,7 @@ PanelWindow {
 
             Rectangle {
                 width: parent.width
-                height: Math.max(220, card.height - panelHeader.height - quickGrid.height - sliders.height - 86)
+                height: Math.max(0, content.height - panelHeader.height - quickGrid.height - sliders.height - content.spacing * 3)
                 radius: 14
                 color: Colors.panelContainerBackground
                 border.color: Colors.panelContainerBorder
@@ -129,13 +144,22 @@ PanelWindow {
                 }
             }
 
-            System.ControlSliders { id: sliders }
+            System.ControlSliders { id: sliders; height: implicitHeight }
         }
 
         System.ConfirmOverlay { panel: panelSelf }
     }
 
     Process { id: sessionAction }
+
+    NumberAnimation {
+        id: revealAnimation
+        target: root
+        property: "revealProgress"
+        to: 1
+        duration: 140
+        easing.type: Easing.OutCubic
+    }
 
     Component { id: notificationsView; Panes.NotificationsPane {} }
     Component { id: bluetoothDetails; Panes.BluetoothPane {} }

@@ -18,6 +18,7 @@ PanelWindow {
     Custom.Settings { id: settings }
 
     readonly property var panelSelf: root
+    property real revealProgress: 0
     property string activeTab: "datetime"
     property var wallpapers: []
     property var themes: []
@@ -67,15 +68,21 @@ PanelWindow {
     }
 
     function open(tab: string): void {
+        const wasVisible = visible;
         activeTab = tab || "datetime";
         resetPickerState();
         visible = true;
+        if (!wasVisible) {
+            revealProgress = 0;
+            revealAnimation.restart();
+        }
         focusPanel();
         refreshTab();
     }
 
     function close(): void {
         visible = false;
+        revealProgress = 0;
         mediaAudioOverlayOpen = false;
     }
 
@@ -593,11 +600,16 @@ PanelWindow {
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.topMargin: settings.panelHeight + settings.topMargin + 10
+        opacity: root.revealProgress
         radius: 18
         color: Colors.panelBackground
         border.color: Colors.panelBorder
         border.width: 1
         clip: true
+
+        transform: Translate {
+            y: (1 - root.revealProgress) * -14
+        }
 
         MouseArea {
             anchors.fill: parent
@@ -636,6 +648,15 @@ PanelWindow {
                 sourceComponent: root.activeTab === "wallpapers" ? wallpapersTab : (root.activeTab === "themes" ? themesTab : (root.activeTab === "media" ? mediaTab : (root.activeTab === "weather" ? weatherTab : (root.activeTab === "settings" ? settingsTab : datetimeTab))))
             }
         }
+    }
+
+    NumberAnimation {
+        id: revealAnimation
+        target: root
+        property: "revealProgress"
+        to: 1
+        duration: 140
+        easing.type: Easing.OutCubic
     }
 
     Component { id: datetimeTab; Tabs.DateTimeTab { dashboard: panelSelf; worldClockPrefs: worldClockPreferences } }

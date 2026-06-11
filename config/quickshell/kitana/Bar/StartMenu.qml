@@ -16,14 +16,21 @@ PanelWindow {
     property var panelScreen: null
     property var systemPanel: null
     property var shortcutsPanel: null
+    property real revealProgress: 0
 
     function open(): void {
+        const wasVisible = visible;
         visible = true;
+        if (!wasVisible) {
+            revealProgress = 0;
+            revealAnimation.restart();
+        }
         closeArea.forceActiveFocus();
     }
 
     function close(): void {
         visible = false;
+        revealProgress = 0;
     }
 
     function toggle(): void {
@@ -141,10 +148,15 @@ PanelWindow {
         anchors.left: parent.left
         anchors.topMargin: settings.panelHeight + settings.topMargin + 10
         anchors.leftMargin: settings.sideMargin
+        opacity: root.revealProgress
         radius: 18
         color: Colors.panelBackground
         border.color: Colors.panelBorder
         border.width: 1
+
+        transform: Translate {
+            x: (1 - root.revealProgress) * -14
+        }
 
         MouseArea {
             anchors.fill: parent
@@ -221,5 +233,14 @@ PanelWindow {
                 onClicked: root.openShortcuts()
             }
         }
+    }
+
+    NumberAnimation {
+        id: revealAnimation
+        target: root
+        property: "revealProgress"
+        to: 1
+        duration: 140
+        easing.type: Easing.OutCubic
     }
 }
