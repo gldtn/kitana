@@ -16,13 +16,17 @@ QtObject {
     readonly property string caffeine: "󰾪"
     readonly property string caffeineOff: "󰅶"
     readonly property string check: "󰄬"
+    readonly property string chevronDown: "󰅀"
     readonly property string chevronLeft: "󰅁"
     readonly property string chevronRight: "󰅂"
+    readonly property string chevronUp: "󰅃"
     readonly property string close: "󰅖"
     readonly property string dashboard: "󰕮"
     readonly property string deleteForever: "󰆴"
+    readonly property string dismissAll: "󰎟"
     readonly property string disconnect: "󰌸"
     readonly property string ethernet: "󰀂"
+    readonly property string headphones: "󰋋"
     readonly property string keyboard: "󰌌"
     readonly property string lock: "󰌾"
     readonly property string logout: "󰍃"
@@ -59,9 +63,9 @@ QtObject {
     readonly property string trash: "󰆴"
     readonly property string visibility: "󰈈"
     readonly property string visibilityOff: "󰈉"
-    readonly property string volumeDown: "󰖀"
-    readonly property string volumeMuted: "󰖁"
-    readonly property string volumeUp: "󰕾"
+    readonly property string volumeDown: ""
+    readonly property string volumeMuted: ""
+    readonly property string volumeUp: ""
     readonly property string wallpaper: "󰸉"
     readonly property string waterDrop: "󰖌"
     readonly property string weather: "󰖕"
@@ -109,7 +113,7 @@ QtObject {
 
     function audioDevice(kind: string): string {
         if (kind === "bluetooth" || kind === "headset")
-            return "headphones";
+            return headphones;
         if (kind === "hdmi")
             return monitor;
         return wiredAudio;

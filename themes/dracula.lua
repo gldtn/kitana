@@ -40,6 +40,8 @@ return {
     text1 = "comment",
     accent0 = "purple",
     accent1 = "pink",
+    info0 = "cyan",
+    success0 = "green",
     warning0 = "yellow",
     danger0 = "red",
 

@@ -88,7 +88,7 @@ PanelWindow {
         id: card
 
         width: 390
-        height: Math.min(parent.height - settings.panelHeight - 28, 720)
+        height: Math.min(parent.height - settings.panelHeight - 28, 920)
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.topMargin: settings.panelHeight + settings.topMargin + 10

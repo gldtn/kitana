@@ -48,6 +48,8 @@ return {
     text1 = "rosewater",
     accent0 = "mauve",
     accent1 = "lavender",
+    info0 = "blue",
+    success0 = "green",
     warning0 = "yellow",
     danger0 = "red",
 

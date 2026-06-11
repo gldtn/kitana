@@ -52,6 +52,8 @@ return {
     text1 = "#ffffff",
     accent0 = "blue",
     accent1 = "cyan",
+    info0 = "blue",
+    success0 = "green",
     warning0 = "yellow",
     danger0 = "red",
 

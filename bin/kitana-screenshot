@@ -1,0 +1,85 @@
+#!/bin/bash
+
+set -euo pipefail
+
+usage() {
+  cat <<EOF
+Usage: kitana-screenshot <output|window|region> [--clipboard-only]
+
+Capture a screenshot with hyprshot and send a Kitana notification only on success.
+EOF
+}
+
+mode="${1:-}"
+clipboard_only=false
+tmpdir=""
+
+cleanup() {
+  if [ -n "$tmpdir" ] && [ -d "$tmpdir" ]; then
+    rm -rf "$tmpdir"
+  fi
+}
+
+trap cleanup EXIT
+
+case "$mode" in
+  output|window|region) ;;
+  -h|--help)
+    usage
+    exit 0
+    ;;
+  *)
+    usage >&2
+    exit 2
+    ;;
+esac
+
+shift
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --clipboard-only)
+      clipboard_only=true
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      usage >&2
+      exit 2
+      ;;
+  esac
+  shift
+done
+
+filename="$(date +'%Y-%m-%d-%H%M%S_kitana-screenshot.png')"
+if [ "$clipboard_only" = true ]; then
+  tmpdir="$(mktemp -d)"
+  output_dir="$tmpdir"
+else
+  output_dir="${HYPRSHOT_DIR:-${XDG_PICTURES_DIR:-}}"
+  if [ -z "$output_dir" ] && command -v xdg-user-dir >/dev/null 2>&1; then
+    output_dir="$(xdg-user-dir PICTURES)"
+  fi
+  output_dir="${output_dir:-$HOME/Pictures}"
+fi
+
+output_path="$output_dir/$filename"
+hyprshot_args=(-m "$mode" --silent --output-folder "$output_dir" --filename "$filename")
+if [ "$clipboard_only" = true ]; then
+  mkdir -p "$output_dir"
+else
+  mkdir -p "$output_dir"
+fi
+
+hyprshot "${hyprshot_args[@]}" || true
+
+if [ ! -s "$output_path" ]; then
+  exit 0
+fi
+
+if [ "$clipboard_only" = true ]; then
+  notify-send -i "$output_path" "Screenshot saved" "Image copied to the clipboard"
+else
+  notify-send -i "$output_path" "Screenshot saved" "Image saved and copied to the clipboard"
+fi

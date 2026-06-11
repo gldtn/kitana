@@ -14,6 +14,8 @@ PanelWindow {
 
     Custom.Settings { id: settings }
 
+    property string kitanaDir: Quickshell.env("KITANA_DIR") || Quickshell.env("HOME") + "/.local/share/kitana"
+
     visible: false
     focusable: true
     color: "transparent"
@@ -45,7 +47,7 @@ PanelWindow {
     }
 
     function capture(mode: string, clipboardOnly: bool): void {
-        const command = ["hyprshot", "-m", mode];
+        const command = [kitanaDir + "/bin/kitana-screenshot", mode];
         if (clipboardOnly)
             command.push("--clipboard-only");
 

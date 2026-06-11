@@ -37,6 +37,8 @@ return {
     text1 = "subtle",
     accent0 = "pine",
     accent1 = "foam",
+    info0 = "foam",
+    success0 = "pine",
     warning0 = "gold",
     danger0 = "love",
 

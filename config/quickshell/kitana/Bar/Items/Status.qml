@@ -224,6 +224,8 @@ Rectangle {
 
         StatusButton {
             icon: Services.SystemStatus.audioIcon
+            alignIconLeft: true
+            iconVisualOffset: 2
             label: ""
             onClicked: if (root.systemPanel) root.systemPanel.toggle("audio")
         }
@@ -259,6 +261,8 @@ Rectangle {
 
         property string icon: ""
         property string label: ""
+        property bool alignIconLeft: false
+        property real iconVisualOffset: 0
         signal clicked
 
         width: visible ? buttonRow.implicitWidth : 0
@@ -276,6 +280,8 @@ Rectangle {
                 icon: button.icon
                 color: mouse.containsMouse ? Colors.foreground : Colors.accent
                 size: settings.iconPixelSize
+                horizontalAlignment: button.alignIconLeft ? Text.AlignLeft : Text.AlignHCenter
+                leftPadding: button.alignIconLeft ? button.iconVisualOffset : 0
             }
 
             Text {

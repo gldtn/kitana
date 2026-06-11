@@ -80,6 +80,8 @@ return {
 		text1 = "dragonGray",
 		accent0 = "dragonGreen",
 		accent1 = "dragonViolet",
+		info0 = "crystalBlue",
+		success0 = "dragonGreen",
 		warning0 = "dragonYellow",
 		danger0 = "dragonRed",
 

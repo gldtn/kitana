@@ -1,6 +1,7 @@
 // Kitana managed Quickshell module
 
 import QtQuick
+import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
 import ".."
@@ -36,8 +37,8 @@ PanelWindow {
         right: settings.sideMargin
     }
 
-    implicitWidth: 280
-    implicitHeight: 92
+    implicitWidth: 330
+    implicitHeight: 70
 
     Rectangle {
         id: card
@@ -45,8 +46,8 @@ PanelWindow {
         width: root.implicitWidth
         height: root.implicitHeight
         anchors.horizontalCenter: parent.horizontalCenter
-        radius: 18
-        color: Colors.panelBackground
+        radius: 20
+        color: Colors.withAlpha(Colors.base0, "cc")
         border.color: Colors.panelBorder
         border.width: 1
         opacity: Services.OsdService.visible ? 1 : 0
@@ -55,66 +56,66 @@ PanelWindow {
             NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
         }
 
-        Row {
+        RowLayout {
             anchors.fill: parent
-            anchors.margins: 16
-            spacing: 14
+            anchors.leftMargin: 22
+            anchors.rightMargin: 22
+            anchors.topMargin: 16
+            anchors.bottomMargin: 16
+            spacing: 16
 
-            Controls.Icon {
-                width: 34
-                anchors.verticalCenter: parent.verticalCenter
-                icon: Services.OsdService.icon
-                color: Services.OsdService.muted ? Colors.muted : Colors.foreground
-                size: 24
+            Item {
+                readonly property real iconVisualOffset: {
+                    if (Services.OsdService.kind !== "volume")
+                        return 0;
+                    return 2;
+                }
+
+                Layout.preferredWidth: 34
+                Layout.preferredHeight: 34
+                Layout.alignment: Qt.AlignVCenter
+
+                Controls.Icon {
+                    anchors.left: parent.left
+                    anchors.leftMargin: parent.iconVisualOffset
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: parent.width
+                    height: parent.height
+                    icon: Services.OsdService.icon
+                    color: Services.OsdService.muted ? Colors.muted : Colors.foreground
+                    size: 25
+                    horizontalAlignment: Text.AlignLeft
+                }
             }
 
-            Column {
-                anchors.verticalCenter: parent.verticalCenter
-                width: parent.width - 48
-                spacing: 9
-
-                Row {
-                    width: parent.width
-                    spacing: 8
-
-                    Text {
-                        width: parent.width - valueText.width - parent.spacing
-                        text: Services.OsdService.title
-                        color: Colors.foreground
-                        elide: Text.ElideRight
-                        font.family: Typography.fontFamily
-                        font.pixelSize: settings.textPixelSize + 1
-                        font.weight: Font.Bold
-                    }
-
-                    Text {
-                        id: valueText
-
-                        text: Services.OsdService.muted ? "muted" : Services.OsdService.value + "%"
-                        color: Services.OsdService.muted ? Colors.muted : Colors.accent
-                        font.family: Typography.fontFamily
-                        font.pixelSize: settings.textPixelSize + 1
-                        font.weight: Font.Bold
-                    }
-                }
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 7
+                Layout.alignment: Qt.AlignVCenter
+                radius: 4
+                color: Colors.panelButtonBackground
 
                 Rectangle {
-                    width: parent.width
-                    height: 8
-                    radius: 4
-                    color: Colors.panelButtonBackground
+                    width: parent.width * Services.OsdService.value / 100
+                    height: parent.height
+                    radius: parent.radius
+                    color: Services.OsdService.muted ? Colors.muted : Colors.accent
 
-                    Rectangle {
-                        width: parent.width * Services.OsdService.value / 100
-                        height: parent.height
-                        radius: parent.radius
-                        color: Services.OsdService.muted ? Colors.muted : Colors.accent
-
-                        Behavior on width {
-                            NumberAnimation { duration: 90; easing.type: Easing.OutCubic }
-                        }
+                    Behavior on width {
+                        NumberAnimation { duration: 90; easing.type: Easing.OutCubic }
                     }
                 }
+            }
+
+            Text {
+                Layout.preferredWidth: 42
+                Layout.alignment: Qt.AlignVCenter
+                text: Services.OsdService.muted ? "--" : Services.OsdService.value
+                color: Services.OsdService.muted ? Colors.muted : Colors.foreground
+                horizontalAlignment: Text.AlignRight
+                font.family: Typography.fontFamily
+                font.pixelSize: 24
+                font.weight: Font.DemiBold
             }
         }
     }

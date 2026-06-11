@@ -25,6 +25,8 @@ local fields = {
   "text1",
   "accent0",
   "accent1",
+  "info0",
+  "success0",
   "warning0",
   "danger0",
 }
@@ -99,6 +101,8 @@ function M.preview(theme)
     muted = raw.subtext0,
     accent = raw.accent0,
     accent_text = raw.crust0,
+    info = raw.info0,
+    success = raw.success0,
     warning = raw.warning0,
     danger = raw.danger0,
   }

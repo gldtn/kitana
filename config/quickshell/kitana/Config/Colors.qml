@@ -38,6 +38,8 @@ QtObject {
   readonly property string text1: "ffffff"
   readonly property string accent0: "89b4fa"
   readonly property string accent1: "b4befe"
+  readonly property string info0: "89b4fa"
+  readonly property string success0: "a6e3a1"
   readonly property string warning0: "f9e2af"
   readonly property string danger0: "f38ba8"
 
@@ -91,8 +93,12 @@ QtObject {
   readonly property color panelInputBorderActive: panelButtonBorderActive
 
   // Status colors.
+  readonly property color infoForeground: "#" + info0
+  readonly property color successForeground: "#" + success0
   readonly property color warningForeground: "#" + warning0
   readonly property color dangerForeground: "#" + danger0
+  readonly property color infoBackground: "#33" + info0
+  readonly property color successBackground: "#33" + success0
   readonly property color warningBackground: "#33" + warning0
   readonly property color dangerBackground: "#33" + danger0
 
@@ -114,6 +120,8 @@ QtObject {
   readonly property color muted: mutedForeground
   readonly property color accent: accentForeground
   readonly property color accentText: "#" + crust0
+  readonly property color info: infoForeground
+  readonly property color success: successForeground
   readonly property color warning: warningForeground
   readonly property color danger: dangerForeground
 }

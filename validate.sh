@@ -389,6 +389,7 @@ for helper in \
   kitana-keyboard \
   kitana-keyring \
   kitana-osd \
+  kitana-screenshot \
   kitana-browser \
   kitana-password-manager \
   kitana-audio-mic-status \

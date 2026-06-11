@@ -65,10 +65,10 @@ hl.bind(mod .. " + SHIFT + COMMA", hl.dsp.exec_cmd("quickshell ipc -c kitana cal
 --stylua: ignore end
 
 -- Screenshot
-hl.bind(mod .. " + CTRL + SHIFT + P", hl.dsp.exec_cmd("hyprshot -m output"), { description = "Screenshot monitor" })
-hl.bind(mod .. " + CTRL + SHIFT + W", hl.dsp.exec_cmd("hyprshot -m window"), { description = "Screenshot window" })
-hl.bind(mod .. " + CTRL + SHIFT + R", hl.dsp.exec_cmd("hyprshot -m region"), { description = "Screenshot region" })
-hl.bind(mod .. " + CTRL + SHIFT + C", hl.dsp.exec_cmd("hyprshot -m region --clipboard-only"), { description = "Screenshot region (clipboard)" })
+hl.bind(mod .. " + CTRL + SHIFT + P", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-screenshot output"), { description = "Screenshot monitor" })
+hl.bind(mod .. " + CTRL + SHIFT + W", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-screenshot window"), { description = "Screenshot window" })
+hl.bind(mod .. " + CTRL + SHIFT + R", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-screenshot region"), { description = "Screenshot region" })
+hl.bind(mod .. " + CTRL + SHIFT + C", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-screenshot region --clipboard-only"), { description = "Screenshot region (clipboard)" })
 
 -- Window split/pseudo/float
 hl.bind(mod .. " + P", hl.dsp.window.pseudo(), { description = "Toggle pseudo" })

@@ -12,70 +12,147 @@ Item {
 
     Custom.Settings { id: settings }
 
-    Column {
-        anchors.centerIn: parent
-        visible: Services.NotificationService.count === 0
-        spacing: 10
+    Item {
+        anchors.fill: parent
 
-        Controls.Icon {
-            anchors.horizontalCenter: parent.horizontalCenter
-            icon: Icons.notifications
-            color: Colors.muted
-            size: 30
+        Column {
+            anchors.centerIn: parent
+            visible: Services.NotificationService.count === 0
+            spacing: 10
+
+            Controls.Icon {
+                anchors.horizontalCenter: parent.horizontalCenter
+                icon: Services.NotificationService.doNotDisturb ? Icons.notificationsOff : Icons.notifications
+                color: Colors.muted
+                size: 30
+            }
+
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: Services.NotificationService.doNotDisturb ? "Notifications silenced" : "No notifications"
+                color: Colors.muted
+                horizontalAlignment: Text.AlignHCenter
+                font.family: Typography.fontFamily
+                font.pixelSize: 18
+                font.weight: Font.DemiBold
+            }
         }
 
-        Text {
-            anchors.horizontalCenter: parent.horizontalCenter
-            text: "0 Notifications"
-            color: Colors.muted
-            horizontalAlignment: Text.AlignHCenter
-            font.family: Typography.fontFamily
-            font.pixelSize: 20
+        ListView {
+            id: notificationList
+
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.bottom: footerDivider.top
+            anchors.bottomMargin: 12
+            visible: Services.NotificationService.count > 0
+            clip: true
+            spacing: 8
+            model: Services.NotificationService.visibleNotifications().slice(0, 20)
+
+            delegate: NotificationRow {
+                required property var modelData
+                item: modelData.item
+                groupCount: modelData.count
+                groupExpandable: modelData.expandable
+                groupCollapsed: modelData.collapsed
+                groupHeader: modelData.header
+                onToggleGroup: Services.NotificationService.toggleGroup(modelData.item.appName)
+            }
+        }
+
+        Rectangle {
+            id: footerDivider
+
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: footer.top
+            anchors.bottomMargin: 10
+            height: 1
+            color: Colors.panelBackground
+        }
+
+        Row {
+            id: footer
+
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            height: 30
+            spacing: 12
+
+            Text {
+                width: parent.width - silentAction.width - clearAction.width - parent.spacing * 2
+                anchors.verticalCenter: parent.verticalCenter
+                text: Services.NotificationService.count + " notification" + (Services.NotificationService.count === 1 ? "" : "s")
+                color: Colors.foreground
+                elide: Text.ElideRight
+                font.family: Typography.fontFamily
+                font.pixelSize: settings.textPixelSize + 2
+                font.weight: Font.DemiBold
+            }
+
+            FooterAction {
+                id: silentAction
+                icon: Services.NotificationService.doNotDisturb ? Icons.notificationsOff : Icons.notifications
+                text: "Silent"
+                active: Services.NotificationService.doNotDisturb
+                onClicked: Services.NotificationService.toggleDoNotDisturb()
+            }
+
+            FooterAction {
+                id: clearAction
+                icon: Icons.dismissAll
+                text: "Clear"
+                enabled: Services.NotificationService.count > 0
+                opacity: enabled ? 1 : 0.45
+                onClicked: Services.NotificationService.clear()
+            }
         }
     }
 
-    Column {
-        anchors.fill: parent
-        spacing: 10
-        visible: Services.NotificationService.count > 0
+    component FooterAction: Item {
+        id: action
+
+        property string icon: ""
+        property string text: ""
+        property bool active: false
+        signal clicked
+
+        width: actionRow.implicitWidth
+        height: 30
 
         Row {
-            width: parent.width
-            height: 24
+            id: actionRow
+
+            anchors.centerIn: parent
+            spacing: 6
+
+            Controls.Icon {
+                anchors.verticalCenter: parent.verticalCenter
+                icon: action.icon
+                color: action.active || actionMouse.containsMouse ? Colors.foreground : Colors.muted
+                size: 14
+            }
 
             Text {
                 anchors.verticalCenter: parent.verticalCenter
-                width: parent.width - clearNotifications.width
-                text: Services.NotificationService.count + " Notifications"
-                color: Colors.foreground
+                text: action.text
+                color: action.active || actionMouse.containsMouse ? Colors.foreground : Colors.muted
                 font.family: Typography.fontFamily
-                font.pixelSize: 14
-                font.weight: Font.Bold
-            }
-
-            Controls.Icon {
-                id: clearNotifications
-                anchors.verticalCenter: parent.verticalCenter
-                icon: Icons.close
-                color: Colors.foreground
-                size: 15
-
-                MouseArea {
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: Services.NotificationService.clear()
-                }
+                font.pixelSize: settings.textPixelSize + 1
+                font.weight: Font.DemiBold
             }
         }
 
-        Repeater {
-            model: Services.NotificationService.notifications.slice(0, 5)
+        MouseArea {
+            id: actionMouse
 
-            NotificationRow {
-                required property var modelData
-                item: modelData
-            }
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: action.clicked()
         }
     }
 }

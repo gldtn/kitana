@@ -48,20 +48,42 @@ PanelWindow {
 
             Rectangle {
                 required property var modelData
+                readonly property int verticalPadding: 16
 
                 width: popupColumn.width
-                height: Math.max(72, bodyText.visible ? 90 : 72)
-                radius: 14
-                color: Colors.panelBackground
+                height: Math.max(84, contentColumn.implicitHeight + verticalPadding * 2)
+                radius: 20
+                color: Colors.withAlpha(Colors.base0, "cc")
                 border.color: Colors.panelBorder
                 border.width: 1
 
-                Column {
+                Rectangle {
+                    id: notificationIcon
+
                     anchors.left: parent.left
+                    anchors.leftMargin: 12
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 42
+                    height: 42
+                    radius: 21
+                    color: Services.NotificationService.toneBackground(modelData)
+
+                    Controls.Icon {
+                        anchors.centerIn: parent
+                        icon: Icons.notifications
+                        color: Services.NotificationService.toneForeground(modelData)
+                        size: 20
+                    }
+                }
+
+                Column {
+                    id: contentColumn
+
+                    anchors.left: notificationIcon.right
                     anchors.right: closeButton.left
                     anchors.verticalCenter: parent.verticalCenter
-                    anchors.leftMargin: 12
-                    anchors.rightMargin: 8
+                    anchors.leftMargin: 10
+                    anchors.rightMargin: 4
                     spacing: 3
 
                     Text {
@@ -69,6 +91,7 @@ PanelWindow {
                         text: modelData.summary
                         color: Colors.foreground
                         elide: Text.ElideRight
+                        clip: true
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize
                         font.weight: Font.Bold
@@ -79,6 +102,7 @@ PanelWindow {
                         text: modelData.appName
                         color: Colors.muted
                         elide: Text.ElideRight
+                        clip: true
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize - 1
                     }
@@ -87,38 +111,48 @@ PanelWindow {
                         id: bodyText
                         width: parent.width
                         visible: text.length > 0
-                        text: modelData.body
+                        text: modelData.bodyMarkup
                         color: Colors.muted
                         elide: Text.ElideRight
+                        wrapMode: Text.WrapAnywhere
+                        maximumLineCount: 2
+                        clip: true
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize - 1
-                        textFormat: Text.PlainText
+                        textFormat: Text.RichText
+                        onLinkActivated: link => Quickshell.execDetached(["xdg-open", link])
+
+                        HoverHandler {
+                            cursorShape: bodyText.hoveredLink.length > 0 ? Qt.PointingHandCursor : Qt.ArrowCursor
+                        }
                     }
                 }
 
-                Controls.Icon {
+                Item {
                     id: closeButton
+
                     anchors.right: parent.right
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 8
                     anchors.top: parent.top
-                    anchors.topMargin: 12
-                    icon: Icons.close
-                    color: Colors.foreground
-                    size: 14
+                    anchors.topMargin: 10
+                    width: 32
+                    height: 32
+
+                    Controls.Icon {
+                        anchors.centerIn: parent
+                        icon: Icons.close
+                        color: closeMouse.containsMouse ? Colors.foreground : Colors.muted
+                        size: 14
+                    }
 
                     MouseArea {
+                        id: closeMouse
+
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
                         onClicked: Services.NotificationService.dismiss(modelData)
                     }
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: Services.NotificationService.dismiss(modelData)
                 }
             }
         }
