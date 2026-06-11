@@ -4,7 +4,7 @@ set -euo pipefail
 
 config_name="kitana"
 config_file="$HOME/.config/quickshell/$config_name/shell.qml"
-colors_file="$HOME/.config/quickshell/$config_name/Colors.qml"
+colors_file="$HOME/.config/quickshell/$config_name/Config/Colors.qml"
 log_file="/tmp/kitana-quickshell.log"
 action="${1:-reload}"
 
@@ -60,6 +60,10 @@ stop_quickshell() {
 reload_quickshell() {
   if ! is_running; then
     start_quickshell
+    return
+  fi
+
+  if quickshell ipc -c "$config_name" call kitana-shell reload >/dev/null 2>&1; then
     return
   fi
 

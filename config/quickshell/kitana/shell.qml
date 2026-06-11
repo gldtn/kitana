@@ -59,6 +59,13 @@ ShellRoot {
     }
 
     IpcHandler {
+        target: "kitana-shell"
+
+        function reload(): void { Quickshell.reload(false); }
+        function hardReload(): void { Quickshell.reload(true); }
+    }
+
+    IpcHandler {
         target: "kitana-screenshot"
 
         function open(): void { screenshotPanel.open(); }

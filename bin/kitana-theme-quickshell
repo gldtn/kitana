@@ -3,7 +3,8 @@
 set -euo pipefail
 
 kitana_dir="${KITANA_DIR:-$HOME/.local/share/kitana}"
-target="$HOME/.config/quickshell/kitana/Colors.qml"
+target="$HOME/.config/quickshell/kitana/Config/Colors.qml"
+legacy_target="$HOME/.config/quickshell/kitana/Colors.qml"
 theme="${1:-}"
 theme_env=""
 
@@ -145,3 +146,7 @@ QtObject {
   readonly property color danger: dangerForeground
 }
 EOF
+
+if [ -f "$legacy_target" ] && grep -q "Kitana managed Quickshell colors" "$legacy_target"; then
+  rm "$legacy_target"
+fi

@@ -689,6 +689,20 @@ else
   fail "Quickshell root singletons missing"
 fi
 
+if grep -q 'Config/Colors.qml' "$KITANA_DIR/bin/kitana-theme-quickshell" && grep -q 'Config/Colors.qml' "$KITANA_DIR/bin/kitana-quickshell"; then
+  pass "Quickshell theme color target"
+else
+  fail "Quickshell theme color target mismatch"
+fi
+
+if [ ! -f "$HOME/.config/quickshell/kitana/Colors.qml" ]; then
+  pass "Quickshell legacy color target removed"
+elif grep -q "Kitana managed Quickshell colors" "$HOME/.config/quickshell/kitana/Colors.qml"; then
+  fail "Quickshell legacy color target still present"
+else
+  pass "Quickshell legacy color target user-owned"
+fi
+
 quickshell_files=(
   Bar/BarWindow.qml
   Bar/StartMenu.qml
@@ -810,6 +824,12 @@ if [ -f "$HOME/.config/quickshell/kitana/shell.qml" ] && grep -q 'target: "kitan
   pass "Quickshell IPC: kitana-bar"
 else
   fail "Quickshell IPC missing: kitana-bar"
+fi
+
+if [ -f "$HOME/.config/quickshell/kitana/shell.qml" ] && grep -q 'target: "kitana-shell"' "$HOME/.config/quickshell/kitana/shell.qml"; then
+  pass "Quickshell IPC: kitana-shell"
+else
+  fail "Quickshell IPC missing: kitana-shell"
 fi
 
 if [ -f "$HOME/.config/quickshell/kitana/Services/MediaService.qml" ] && grep -q '^singleton MediaService 1.0 MediaService.qml$' "$HOME/.config/quickshell/kitana/Services/qmldir"; then

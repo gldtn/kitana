@@ -315,6 +315,10 @@ mkdir -p "$QUICKSHELL_CONFIG_DIR/System"
 mkdir -p "$QUICKSHELL_CONFIG_DIR/Wallpaper"
 mkdir -p "$QUICKSHELL_CONFIG_DIR/custom"
 
+if [ -f "$QUICKSHELL_CONFIG_DIR/Colors.qml" ] && grep -q "Kitana managed Quickshell colors" "$QUICKSHELL_CONFIG_DIR/Colors.qml"; then
+  rm "$QUICKSHELL_CONFIG_DIR/Colors.qml"
+fi
+
 if [ ! -e "$QUICKSHELL_CONFIG_DIR/shell.qml" ] || grep -q "Kitana managed Quickshell bar" "$QUICKSHELL_CONFIG_DIR/shell.qml"; then
   cp "$KITANA_DIR/config/quickshell/kitana/shell.qml" "$QUICKSHELL_CONFIG_DIR/shell.qml"
 else
@@ -351,6 +355,8 @@ for quickshell_custom in "$KITANA_DIR"/config/quickshell/kitana/custom/*.qml; do
   fi
 done
 
-if [ ! -f "$KITANA_CONFIG_DIR/theme" ]; then
+if [ -f "$KITANA_CONFIG_DIR/theme" ]; then
+  "$KITANA_DIR/bin/kitana-theme" --restore >/dev/null 2>&1 || true
+else
   "$KITANA_DIR/bin/kitana-theme" "$KITANA_THEME" >/dev/null 2>&1 || true
 fi

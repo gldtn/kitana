@@ -3,8 +3,26 @@
 set -euo pipefail
 
 source_value="${1:-$HOME/.config/kitana/current-wallpaper}"
-target="$HOME/.config/quickshell/kitana/Colors.qml"
+target="$HOME/.config/quickshell/kitana/Config/Colors.qml"
+legacy_target="$HOME/.config/quickshell/kitana/Colors.qml"
 mkdir -p "$(dirname "$target")"
+
+remove_legacy_target() {
+  if [ -f "$legacy_target" ] && grep -q "Kitana managed Quickshell colors" "$legacy_target"; then
+    rm "$legacy_target"
+  fi
+}
+
+reload_quickshell() {
+  "${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-quickshell" >/dev/null 2>&1 || true
+}
+
+finish() {
+  remove_legacy_target
+  echo "$1"
+  reload_quickshell
+  exit 0
+}
 
 generate_from_hex() {
   local color="#${1#\#}"
@@ -75,6 +93,8 @@ QtObject {{
   readonly property string text1: "ffffff"
   readonly property string accent0: "{source_rgb}"
   readonly property string accent1: "{source_rgb}"
+  readonly property string info0: "{source_rgb}"
+  readonly property string success0: "a6e3a1"
   readonly property string warning0: "f9e2af"
   readonly property string danger0: "f38ba8"
 
@@ -128,8 +148,12 @@ QtObject {{
   readonly property color panelInputBorderActive: panelButtonBorderActive
 
   // Status colors.
+  readonly property color infoForeground: "#" + info0
+  readonly property color successForeground: "#" + success0
   readonly property color warningForeground: "#" + warning0
   readonly property color dangerForeground: "#" + danger0
+  readonly property color infoBackground: "#33" + info0
+  readonly property color successBackground: "#33" + success0
   readonly property color warningBackground: "#33" + warning0
   readonly property color dangerBackground: "#33" + danger0
 
@@ -151,6 +175,8 @@ QtObject {{
   readonly property color muted: mutedForeground
   readonly property color accent: accentForeground
   readonly property color accentText: "#" + crust0
+  readonly property color info: infoForeground
+  readonly property color success: successForeground
   readonly property color warning: warningForeground
   readonly property color danger: dangerForeground
 }}
@@ -222,6 +248,8 @@ accent_rgb = get("primary", "#89b4fa").lstrip("#")
 accent_text_rgb = get("on_primary", "#11111b").lstrip("#")
 warning_rgb = get("tertiary", "#f9e2af").lstrip("#")
 danger_rgb = get("error", "#f38ba8").lstrip("#")
+info_rgb = get("primary", "#89b4fa").lstrip("#")
+success_rgb = get("secondary", "#a6e3a1").lstrip("#")
 
 pathlib.Path(sys.argv[2]).write_text(f'''// Kitana managed Quickshell colors
 
@@ -263,6 +291,8 @@ QtObject {{
   readonly property string text1: "ffffff"
   readonly property string accent0: "{accent_rgb}"
   readonly property string accent1: "{surface_highlight_rgb}"
+  readonly property string info0: "{info_rgb}"
+  readonly property string success0: "{success_rgb}"
   readonly property string warning0: "{warning_rgb}"
   readonly property string danger0: "{danger_rgb}"
 
@@ -316,8 +346,12 @@ QtObject {{
   readonly property color panelInputBorderActive: panelButtonBorderActive
 
   // Status colors.
+  readonly property color infoForeground: "#" + info0
+  readonly property color successForeground: "#" + success0
   readonly property color warningForeground: "#" + warning0
   readonly property color dangerForeground: "#" + danger0
+  readonly property color infoBackground: "#33" + info0
+  readonly property color successBackground: "#33" + success0
   readonly property color warningBackground: "#33" + warning0
   readonly property color dangerBackground: "#33" + danger0
 
@@ -339,6 +373,8 @@ QtObject {{
   readonly property color muted: mutedForeground
   readonly property color accent: accentForeground
   readonly property color accentText: "#" + crust0
+  readonly property color info: infoForeground
+  readonly property color success: successForeground
   readonly property color warning: warningForeground
   readonly property color danger: dangerForeground
 }}
@@ -358,8 +394,7 @@ average_color() {
 
 if [[ "$source_value" =~ ^#?[0-9a-fA-F]{6}$ ]]; then
   generate_from_hex "$source_value"
-  echo "Generated $target from #${source_value#\#}"
-  exit 0
+  finish "Generated $target from #${source_value#\#}"
 fi
 
 if [ ! -f "$source_value" ]; then
@@ -372,14 +407,12 @@ trap 'rm -rf "$tmpdir"' EXIT
 
 if command -v matugen >/dev/null 2>&1 && matugen image "$source_value" --dry-run --source-color-index 0 --json hex >"$tmpdir/colors.json" 2>"$tmpdir/matugen.err"; then
   generate_from_json "$tmpdir/colors.json"
-  echo "Generated $target from $source_value"
-  exit 0
+  finish "Generated $target from $source_value"
 fi
 
 if color="$(average_color)"; then
   generate_from_hex "$color"
-  echo "Generated $target from average wallpaper color $color"
-  exit 0
+  finish "Generated $target from average wallpaper color $color"
 fi
 
 echo "Could not extract colors from wallpaper: $source_value"
