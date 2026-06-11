@@ -19,6 +19,7 @@ PanelWindow {
     property var panelScreen: null
     property bool barVisible: true
     property var dashboardPanel: null
+    property var screenshotPanel: null
     property var shortcutsPanel: null
 
     screen: panelScreen
@@ -85,6 +86,7 @@ PanelWindow {
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             panelWindow: root
+            screenshotPanel: root.screenshotPanel
             systemPanel: systemPanel
         }
     }

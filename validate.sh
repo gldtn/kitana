@@ -692,12 +692,14 @@ quickshell_files=(
   Bar/BarWindow.qml
   Bar/StartMenu.qml
   Bar/Items/DateTime.qml
+  Bar/Items/Screenshot.qml
   Bar/Items/Start.qml
   Bar/Items/Status.qml
   Bar/Items/Workspaces.qml
   Bar/Sections/Center.qml
   Bar/Sections/Left.qml
   Bar/Sections/Right.qml
+  Components/Controls/BlurredBackdrop.qml
   Components/Controls/KeyHintBar.qml
   Components/Controls/Icon.qml
   Components/Controls/PanelRow.qml
@@ -705,6 +707,7 @@ quickshell_files=(
   Launcher/AppLauncher.qml
   Notifications/NotificationPopups.qml
   OSD/OsdPopup.qml
+  Screenshot/ScreenshotPanel.qml
   Shortcuts/ShortcutsPanel.qml
   System/SystemPanel.qml
   Wallpaper/WallpaperGrid.qml
@@ -830,6 +833,12 @@ if [ -f "$HOME/.config/quickshell/kitana/Shortcuts/ShortcutsPanel.qml" ] && grep
   pass "Quickshell IPC: kitana-shortcuts"
 else
   fail "Quickshell IPC missing: kitana-shortcuts"
+fi
+
+if [ -f "$HOME/.config/quickshell/kitana/shell.qml" ] && grep -q 'target: "kitana-screenshot"' "$HOME/.config/quickshell/kitana/shell.qml"; then
+  pass "Quickshell IPC: kitana-screenshot"
+else
+  fail "Quickshell IPC missing: kitana-screenshot"
 fi
 
 if [ -f "$HOME/.config/quickshell/kitana/custom/Settings.qml" ]; then

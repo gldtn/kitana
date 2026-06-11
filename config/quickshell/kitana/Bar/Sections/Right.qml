@@ -7,16 +7,28 @@ Item {
     id: root
 
     property var panelWindow: null
+    property var screenshotPanel: null
     property var systemPanel: null
 
-    implicitWidth: status.implicitWidth
-    implicitHeight: status.implicitHeight
+    implicitWidth: rightRow.implicitWidth
+    implicitHeight: rightRow.implicitHeight
     width: implicitWidth
     height: implicitHeight
 
-    Items.Status {
-        id: status
-        panelWindow: root.panelWindow
-        systemPanel: root.systemPanel
+    Row {
+        id: rightRow
+
+        anchors.centerIn: parent
+        spacing: 6
+
+        Items.Screenshot {
+            screenshotPanel: root.screenshotPanel
+        }
+
+        Items.Status {
+            id: status
+            panelWindow: root.panelWindow
+            systemPanel: root.systemPanel
+        }
     }
 }

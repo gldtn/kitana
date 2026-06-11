@@ -10,7 +10,7 @@ Rectangle {
 
     Custom.Settings { id: settings }
 
-    property var startMenu: null
+    property var screenshotPanel: null
 
     implicitHeight: settings.pillHeight
     implicitWidth: settings.pillHeight
@@ -18,23 +18,23 @@ Rectangle {
     height: implicitHeight
 
     radius: height / settings.radiusDivisor
-    color: startMouse.containsMouse ? Colors.surfaceHover : Colors.panelBackground
+    color: screenshotMouse.containsMouse ? Colors.surfaceHover : Colors.panelBackground
     border.color: Colors.panelBorder
     border.width: settings.borderWidth
 
     Controls.Icon {
         anchors.fill: parent
-        icon: Icons.arch
+        icon: Icons.screenshot
         color: Colors.accent
         size: settings.iconPixelSize + 1
     }
 
     MouseArea {
-        id: startMouse
+        id: screenshotMouse
 
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onClicked: if (root.startMenu) root.startMenu.toggle()
+        onClicked: if (root.screenshotPanel) root.screenshotPanel.toggle()
     }
 }

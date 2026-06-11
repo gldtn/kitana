@@ -46,15 +46,20 @@ hl.bind(mod .. " + SHIFT + M", hl.dsp.exec_cmd(musicClient), { description = "Mu
 
 -- Hyprland control
 hl.bind(mod .. " + CTRL + L", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-lock"), { description = "Lock session" })
-hl.bind(mod .. " + CTRL + Z", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"), { description = "Exit Hyprland" })
+hl.bind(
+  mod .. " + CTRL + Z",
+  hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"),
+  { description = "Exit Hyprland" }
+)
 
 -- Quickshell control
 -- stylua: ignore start
+hl.bind(mod .. " + K", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-shortcuts open"), { description = "Shortcuts" })
+hl.bind(mod .. " + CTRL + B", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-bar toggle"), { description = "Toggle Quickshell bar" })
+hl.bind(mod .. " + CTRL + P", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-screenshot toggle"), { description = "Screenshot menu" })
 hl.bind(mod .. " + CTRL + T", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-theme-grid"), { description = "Theme chooser" })
 hl.bind(mod .. " + CTRL + W", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-wallpaper-grid"), { description = "Wallpaper chooser" })
-hl.bind(mod .. " + CTRL + B", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-bar toggle"), { description = "Toggle Quickshell bar" })
 hl.bind(mod .. " + CTRL + R", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-quickshell --restart"), { description = "Restart Quickshell" })
-hl.bind(mod .. " + K", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-shortcuts open"), { description = "Shortcuts" })
 hl.bind(mod .. " + COMMA", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-notifications dismissLast"), { description = "Dismiss last notification" })
 hl.bind(mod .. " + SHIFT + COMMA", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-notifications clear"), { description = "Dismiss all notifications" })
 --stylua: ignore end
@@ -105,8 +110,8 @@ for i = 1, 10 do
   hl.bind(mod .. " + CTRL + " .. key, hl.dsp.window.move({ workspace = i, follow = false }), { description = "Move window to workspace " .. i .. " (silent)" })
 end
 
-hl.bind(mod .. " + S", hl.dsp.workspace.toggle_special("magic"))
-hl.bind(mod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
+hl.bind(mod .. " + S", hl.dsp.workspace.toggle_special("magic"), { description = "Toggle magic workspace" })
+hl.bind(mod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }), { description = "Move window to magic workspace" })
 
 hl.bind(mod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true, description = "Drag window" })
 hl.bind(mod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true, description = "Resize window" })

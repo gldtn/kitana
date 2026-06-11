@@ -308,6 +308,7 @@ mkdir -p "$QUICKSHELL_CONFIG_DIR/Dashboard"
 mkdir -p "$QUICKSHELL_CONFIG_DIR/Launcher"
 mkdir -p "$QUICKSHELL_CONFIG_DIR/Notifications"
 mkdir -p "$QUICKSHELL_CONFIG_DIR/OSD"
+mkdir -p "$QUICKSHELL_CONFIG_DIR/Screenshot"
 mkdir -p "$QUICKSHELL_CONFIG_DIR/Services"
 mkdir -p "$QUICKSHELL_CONFIG_DIR/Shortcuts"
 mkdir -p "$QUICKSHELL_CONFIG_DIR/System"
@@ -322,7 +323,7 @@ fi
 
 cp "$KITANA_DIR/config/quickshell/kitana/qmldir" "$QUICKSHELL_CONFIG_DIR/qmldir"
 
-for quickshell_dir in Assets Bar Components Config Dashboard Launcher Notifications OSD Services Shortcuts System Wallpaper; do
+for quickshell_dir in Assets Bar Components Config Dashboard Launcher Notifications OSD Screenshot Services Shortcuts System Wallpaper; do
   source_dir="$KITANA_DIR/config/quickshell/kitana/$quickshell_dir"
   [ -d "$source_dir" ] || continue
 

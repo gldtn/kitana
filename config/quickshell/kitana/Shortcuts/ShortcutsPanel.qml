@@ -260,7 +260,7 @@ PanelWindow {
 
                     Text {
                         Layout.fillWidth: true
-                        text: "Live Hyprland keybinds, including user custom modules"
+                        text: "Hyprland keybinds"
                         color: Colors.muted
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize - 1
@@ -408,7 +408,7 @@ PanelWindow {
             }
 
             Controls.KeyHintBar {
-                hints: "↑/↓ move · Home/End jump · Esc close"
+                hints: "↑/↓ move · Esc close"
             }
         }
     }

@@ -7,6 +7,7 @@ import Quickshell.Io
 import "./Bar" as Bar
 import "./Dashboard" as Dashboard
 import "./Launcher" as Launcher
+import "./Screenshot" as Screenshot
 import "./Shortcuts" as Shortcuts
 import "./Wallpaper" as Wallpaper
 import "./Services" as Services
@@ -16,6 +17,7 @@ ShellRoot {
 
     property bool barVisible: true
     readonly property var sharedDashboardPanel: dashboardPanel
+    readonly property var sharedScreenshotPanel: screenshotPanel
     readonly property var sharedShortcutsPanel: shortcutsPanel
 
     Wallpaper.WallpaperGrid {}
@@ -23,6 +25,10 @@ ShellRoot {
 
     Dashboard.DashboardPanel {
         id: dashboardPanel
+    }
+
+    Screenshot.ScreenshotPanel {
+        id: screenshotPanel
     }
 
     Shortcuts.ShortcutsPanel {
@@ -52,6 +58,14 @@ ShellRoot {
         function toggle(): void { root.barVisible = !root.barVisible; }
     }
 
+    IpcHandler {
+        target: "kitana-screenshot"
+
+        function open(): void { screenshotPanel.open(); }
+        function close(): void { screenshotPanel.close(); }
+        function toggle(): void { screenshotPanel.toggle(); }
+    }
+
     Variants {
         model: Quickshell.screens
 
@@ -60,6 +74,7 @@ ShellRoot {
             panelScreen: modelData
             barVisible: root.barVisible
             dashboardPanel: root.sharedDashboardPanel
+            screenshotPanel: root.sharedScreenshotPanel
             shortcutsPanel: root.sharedShortcutsPanel
         }
     }
