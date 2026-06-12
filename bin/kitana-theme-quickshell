@@ -3,6 +3,7 @@
 set -euo pipefail
 
 kitana_dir="${KITANA_DIR:-$HOME/.local/share/kitana}"
+template="$kitana_dir/config/quickshell/kitana/Config/Colors.qml"
 target="$HOME/.config/quickshell/kitana/Config/Colors.qml"
 legacy_target="$HOME/.config/quickshell/kitana/Colors.qml"
 theme="${1:-}"
@@ -17,135 +18,60 @@ theme_env="$(lua "$kitana_dir/lib/kitana-theme.lua" env "$theme")" || exit 1
 eval "$theme_env"
 mkdir -p "$(dirname "$target")"
 
-cat >"$target" <<EOF
-// Kitana managed Quickshell colors
+export crust0 crust1 mantle0 mantle1 base0 base1 surface0 surface1 overlay0 overlay1 subtext0 subtext1 text0 text1 accent0 accent1 info0 success0 warning0 danger0
 
-pragma Singleton
-
-import QtQuick
-
-QtObject {
-  // Alpha reference:
-  // 98% = fa
-  // 96% = f5
-  // 90% = e6
-  // 86% = db
-  // 80% = cc
-  // 76% = c2
-  // 70% = b3
-  // 66% = a8
-  // 60% = 99
-  // 45% = 73
-
-  function withAlpha(rgb: string, alpha: string): string {
-    return "#" + alpha + rgb;
-  }
-
-  // Raw palette. Suffix 0 is darker, suffix 1 is lighter.
-  readonly property string crust0: "${crust0#\#}"
-  readonly property string crust1: "${crust1#\#}"
-  readonly property string mantle0: "${mantle0#\#}"
-  readonly property string mantle1: "${mantle1#\#}"
-  readonly property string base0: "${base0#\#}"
-  readonly property string base1: "${base1#\#}"
-  readonly property string surface0: "${surface0#\#}"
-  readonly property string surface1: "${surface1#\#}"
-  readonly property string overlay0: "${overlay0#\#}"
-  readonly property string overlay1: "${overlay1#\#}"
-  readonly property string subtext0: "${subtext0#\#}"
-  readonly property string subtext1: "${subtext1#\#}"
-  readonly property string text0: "${text0#\#}"
-  readonly property string text1: "${text1#\#}"
-  readonly property string accent0: "${accent0#\#}"
-  readonly property string accent1: "${accent1#\#}"
-  readonly property string info0: "${info0#\#}"
-  readonly property string success0: "${success0#\#}"
-  readonly property string warning0: "${warning0#\#}"
-  readonly property string danger0: "${danger0#\#}"
-
-  // Alpha presets for blur-friendly panel layers.
-  readonly property string panelAlpha: "fa"
-  readonly property string panelContainerAlpha: "73"
-  readonly property string panelCardAlpha: "99"
-  readonly property string panelButtonAlpha: "cc"
-  readonly property string panelInputAlpha: "cc"
-  readonly property string scrimAlpha: "85"
-  readonly property string scrimSoftAlpha: "52"
-  readonly property string imageOverlayAlpha: "99"
-
-  // Semantic foreground and background roles.
-  readonly property color accentForeground: "#" + accent0
-  readonly property color primaryForeground: "#" + text0
-  readonly property color secondaryForeground: "#" + text1
-  readonly property color mutedForeground: "#" + subtext0
-  readonly property color accentBackground: "#33" + accent0
-  readonly property color primaryBackground: "#" + base0
-  readonly property color secondaryBackground: "#" + mantle0
-  readonly property color mutedBackground: "#" + crust0
-
-  // Outer dashboard/system/wallpaper picker shell.
-  readonly property color panelBackground: withAlpha(base0, panelAlpha)
-  readonly property color panelForeground: primaryForeground
-  readonly property color panelBorder: "#9e" + surface0
-
-  // Sidebar/calendar/content sections inside larger panels.
-  readonly property color panelContainerBackground: withAlpha(crust0, panelContainerAlpha)
-  readonly property color panelContainerForeground: primaryForeground
-  readonly property color panelContainerBorder: "#40" + mantle1
-
-  // Repeated cards such as media cards, theme cards, and wallpaper cards.
-  readonly property color panelCardBackground: withAlpha(base1, panelCardAlpha)
-  readonly property color panelCardForeground: primaryForeground
-  readonly property color panelCardBorder: "#9e" + surface1
-
-  // Buttons, tabs, pills, and calendar day cells.
-  readonly property color panelButtonBackground: withAlpha(surface0, panelButtonAlpha)
-  readonly property color panelButtonBackgroundHover: "#ee" + surface1
-  readonly property color panelButtonBackgroundActive: accentBackground
-  readonly property color panelButtonForeground: primaryForeground
-  readonly property color panelButtonBorder: panelBorder
-  readonly property color panelButtonBorderActive: "#b8" + accent0
-
-  // Text inputs and search fields.
-  readonly property color panelInputBackground: withAlpha(surface0, panelInputAlpha)
-  readonly property color panelInputForeground: primaryForeground
-  readonly property color panelInputBorder: panelBorder
-  readonly property color panelInputBorderActive: panelButtonBorderActive
-
-  // Status colors.
-  readonly property color infoForeground: "#" + info0
-  readonly property color successForeground: "#" + success0
-  readonly property color warningForeground: "#" + warning0
-  readonly property color dangerForeground: "#" + danger0
-  readonly property color infoBackground: "#33" + info0
-  readonly property color successBackground: "#33" + success0
-  readonly property color warningBackground: "#33" + warning0
-  readonly property color dangerBackground: "#33" + danger0
-
-  // Overlays.
-  readonly property color scrim: withAlpha(crust1, scrimAlpha)
-  readonly property color scrimSoft: withAlpha(crust1, scrimSoftAlpha)
-  readonly property color imageOverlay: withAlpha(crust1, imageOverlayAlpha)
-
-  // Temporary legacy aliases. Remove after all Kitana/custom QML uses component tokens.
-  readonly property color background: "#" + base0
-  readonly property color surface: panelCardBackground
-  readonly property color surfaceAlt: "#" + surface1
-  readonly property color surfaceHover: panelButtonBackgroundHover
-  readonly property color surfaceHighlight: panelButtonBackgroundActive
-  readonly property color panelBorderStrong: panelButtonBorderActive
-  readonly property color workspaceInactive: "#c2" + surface0
-  readonly property color workspaceOccupied: "#e6" + surface1
-  readonly property color foreground: primaryForeground
-  readonly property color muted: mutedForeground
-  readonly property color accent: accentForeground
-  readonly property color accentText: "#" + crust0
-  readonly property color info: infoForeground
-  readonly property color success: successForeground
-  readonly property color warning: warningForeground
-  readonly property color danger: dangerForeground
+lua - "$template" "$target" <<'LUA'
+local template_path = arg[1]
+local target_path = arg[2]
+local fields = {
+  "crust0",
+  "crust1",
+  "mantle0",
+  "mantle1",
+  "base0",
+  "base1",
+  "surface0",
+  "surface1",
+  "overlay0",
+  "overlay1",
+  "subtext0",
+  "subtext1",
+  "text0",
+  "text1",
+  "accent0",
+  "accent1",
+  "info0",
+  "success0",
+  "warning0",
+  "danger0",
 }
-EOF
+
+local function read_file(path)
+  local file = assert(io.open(path, "r"))
+  local content = file:read("*a")
+  file:close()
+  return content
+end
+
+local function write_file(path, content)
+  local file = assert(io.open(path, "w"))
+  file:write(content)
+  file:close()
+end
+
+local content = read_file(template_path)
+
+for _, field in ipairs(fields) do
+  local value = assert(os.getenv(field), "missing theme field: " .. field):gsub("^#", "")
+  local pattern = "(readonly%s+property%s+string%s+" .. field .. "%s*:%s*\")[^\"]*(\")"
+  local replacement = "%1" .. value .. "%2"
+  local count
+  content, count = content:gsub(pattern, replacement, 1)
+  assert(count == 1, "missing Colors.qml raw palette field: " .. field)
+end
+
+write_file(target_path, content)
+LUA
 
 if [ -f "$legacy_target" ] && grep -q "Kitana managed Quickshell colors" "$legacy_target"; then
   rm "$legacy_target"

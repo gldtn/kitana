@@ -22,14 +22,14 @@ Rectangle {
     width: widthOverride
     height: heightOverride
     radius: 9
-    color: miniMouse.containsMouse ? Colors.surfaceHover : Colors.surface
+    color: miniMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelCardBackground
     border.color: Colors.panelBorder
     border.width: 1
 
     Text {
         anchors.centerIn: parent
         text: root.text
-        color: Colors.foreground
+        color: Colors.primaryForeground
         font.family: root.iconText ? Typography.iconFontFamily : Typography.fontFamily
         font.pixelSize: settings.textPixelSize
     }

@@ -21,8 +21,8 @@ Rectangle {
     Layout.preferredWidth: compact ? 34 : tabContent.implicitWidth + 22
     Layout.preferredHeight: 34
     radius: 10
-    color: selected ? Colors.surfaceHighlight : (tabMouse.containsMouse ? Colors.surfaceHover : "transparent")
-    border.color: selected ? Colors.panelBorderStrong : "transparent"
+    color: selected ? Colors.panelButtonBackgroundActive : (tabMouse.containsMouse ? Colors.panelButtonBackgroundHover : "transparent")
+    border.color: selected ? Colors.panelButtonBorderActive : "transparent"
     border.width: 1
 
     Row {
@@ -33,7 +33,7 @@ Rectangle {
         Controls.Icon {
             height: root.height
             icon: root.icon
-            color: root.selected ? Colors.accent : Colors.foreground
+            color: root.selected ? Colors.accentForeground : Colors.primaryForeground
             size: settings.iconPixelSize
         }
 
@@ -41,7 +41,7 @@ Rectangle {
             height: root.height
             text: root.label
             visible: !root.compact
-            color: Colors.foreground
+            color: Colors.primaryForeground
             verticalAlignment: Text.AlignVCenter
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize

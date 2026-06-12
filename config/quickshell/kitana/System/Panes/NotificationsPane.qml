@@ -23,14 +23,14 @@ Item {
             Controls.Icon {
                 anchors.horizontalCenter: parent.horizontalCenter
                 icon: Services.NotificationService.doNotDisturb ? Icons.notificationsOff : Icons.notifications
-                color: Colors.muted
+                color: Colors.mutedForeground
                 size: 30
             }
 
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: Services.NotificationService.doNotDisturb ? "Notifications silenced" : "No notifications"
-                color: Colors.muted
+                color: Colors.mutedForeground
                 horizontalAlignment: Text.AlignHCenter
                 font.family: Typography.fontFamily
                 font.pixelSize: 18
@@ -86,7 +86,7 @@ Item {
                 width: parent.width - silentAction.width - clearAction.width - parent.spacing * 2
                 anchors.verticalCenter: parent.verticalCenter
                 text: Services.NotificationService.count + " notification" + (Services.NotificationService.count === 1 ? "" : "s")
-                color: Colors.foreground
+                color: Colors.primaryForeground
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize + 2
@@ -132,14 +132,14 @@ Item {
             Controls.Icon {
                 anchors.verticalCenter: parent.verticalCenter
                 icon: action.icon
-                color: action.active || actionMouse.containsMouse ? Colors.foreground : Colors.muted
+                color: action.active || actionMouse.containsMouse ? Colors.primaryForeground : Colors.mutedForeground
                 size: 14
             }
 
             Text {
                 anchors.verticalCenter: parent.verticalCenter
                 text: action.text
-                color: action.active || actionMouse.containsMouse ? Colors.foreground : Colors.muted
+                color: action.active || actionMouse.containsMouse ? Colors.primaryForeground : Colors.mutedForeground
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize + 1
                 font.weight: Font.DemiBold

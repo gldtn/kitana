@@ -702,6 +702,14 @@ else
   fail "Quickshell theme color target mismatch"
 fi
 
+legacy_color_alias_re='Colors\.(background|surface|surfaceAlt|surfaceHover|surfaceHighlight|panelBorderStrong|workspaceInactive|workspaceOccupied|foreground|muted|accent|accentText|info|success|warning|danger)([^[:alnum:]_]|$)'
+legacy_color_definition_re='Temporary legacy aliases|readonly property color (background|surface|surfaceAlt|surfaceHover|surfaceHighlight|panelBorderStrong|workspaceInactive|workspaceOccupied|foreground|muted|accent|accentText|info|success|warning|danger)[[:space:]]*:'
+if grep -R -E --include='*.qml' "$legacy_color_alias_re" "$KITANA_DIR/config/quickshell/kitana" "$HOME/.config/quickshell/kitana" >/dev/null 2>&1 || grep -E "$legacy_color_definition_re" "$KITANA_DIR/config/quickshell/kitana/Config/Colors.qml" "$KITANA_DIR/bin/kitana-matugen" >/dev/null 2>&1; then
+  fail "Quickshell legacy color aliases removed"
+else
+  pass "Quickshell legacy color aliases removed"
+fi
+
 if [ ! -f "$HOME/.config/quickshell/kitana/Colors.qml" ]; then
   pass "Quickshell legacy color target removed"
 elif grep -q "Kitana managed Quickshell colors" "$HOME/.config/quickshell/kitana/Colors.qml"; then

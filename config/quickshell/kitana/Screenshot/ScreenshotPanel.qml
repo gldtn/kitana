@@ -97,7 +97,7 @@ PanelWindow {
 
                 Controls.Icon {
                     icon: Icons.screenshot
-                    color: Colors.accent
+                    color: Colors.accentForeground
                     size: settings.iconPixelSize + 5
                 }
 
@@ -108,7 +108,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: "Screenshot"
-                        color: Colors.foreground
+                        color: Colors.primaryForeground
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize + 4
                         font.weight: Font.Bold
@@ -117,7 +117,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: "Choose what to capture"
-                        color: Colors.muted
+                        color: Colors.mutedForeground
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize - 1
                     }
@@ -173,8 +173,8 @@ PanelWindow {
         Layout.fillWidth: true
         Layout.fillHeight: true
         radius: 14
-        color: actionMouse.containsMouse ? Colors.surfaceHover : Colors.surface
-        border.color: actionMouse.containsMouse ? Colors.panelBorderStrong : Colors.panelBorder
+        color: actionMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelCardBackground
+        border.color: actionMouse.containsMouse ? Colors.panelButtonBorderActive : Colors.panelBorder
         border.width: 1
 
         ColumnLayout {
@@ -185,14 +185,14 @@ PanelWindow {
             Controls.Icon {
                 Layout.alignment: Qt.AlignHCenter
                 icon: action.icon
-                color: Colors.accent
+                color: Colors.accentForeground
                 size: settings.iconPixelSize + 6
             }
 
             Text {
                 Layout.fillWidth: true
                 text: action.title
-                color: Colors.foreground
+                color: Colors.primaryForeground
                 horizontalAlignment: Text.AlignHCenter
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
@@ -203,7 +203,7 @@ PanelWindow {
             Text {
                 Layout.fillWidth: true
                 text: action.subtitle
-                color: Colors.muted
+                color: Colors.mutedForeground
                 horizontalAlignment: Text.AlignHCenter
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily

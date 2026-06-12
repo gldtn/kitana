@@ -21,8 +21,8 @@ Rectangle {
     width: parent ? parent.width : 0
     height: 48
     radius: 11
-    color: mouse.containsMouse ? Colors.surfaceHover : Colors.surface
-    border.color: active ? Colors.panelBorderStrong : "transparent"
+    color: mouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelCardBackground
+    border.color: active ? Colors.panelButtonBorderActive : "transparent"
     border.width: active ? 1 : 0
 
     Row {
@@ -34,7 +34,7 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 width: 24
                 icon: root.icon
-                color: root.active ? Colors.accent : Colors.foreground
+                color: root.active ? Colors.accentForeground : Colors.primaryForeground
                 size: 16
             }
 
@@ -45,7 +45,7 @@ Rectangle {
             Text {
                 width: parent.width
                 text: root.title
-                color: Colors.foreground
+                color: Colors.primaryForeground
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
@@ -55,7 +55,7 @@ Rectangle {
             Text {
                 width: parent.width
                 text: root.subtitle
-                color: Colors.muted
+                color: Colors.mutedForeground
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize - 1

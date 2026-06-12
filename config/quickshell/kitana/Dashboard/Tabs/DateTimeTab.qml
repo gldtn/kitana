@@ -32,7 +32,7 @@ RowLayout {
             Text {
                 Layout.fillWidth: true
                 text: Qt.formatDate(root.currentTime, "dddd")
-                color: Colors.muted
+                color: Colors.mutedForeground
                 horizontalAlignment: Text.AlignHCenter
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize + 1
@@ -42,7 +42,7 @@ RowLayout {
             Text {
                 Layout.fillWidth: true
                 text: Qt.formatDate(root.currentTime, "d")
-                color: Colors.foreground
+                color: Colors.primaryForeground
                 horizontalAlignment: Text.AlignHCenter
                 font.family: Typography.fontFamily
                 font.pixelSize: 58
@@ -52,7 +52,7 @@ RowLayout {
             Text {
                 Layout.fillWidth: true
                 text: Qt.formatDate(root.currentTime, "MMMM yyyy")
-                color: Colors.muted
+                color: Colors.mutedForeground
                 horizontalAlignment: Text.AlignHCenter
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize + 1
@@ -98,7 +98,7 @@ RowLayout {
             Text {
                 Layout.fillWidth: true
                 text: "World Clock"
-                color: Colors.foreground
+                color: Colors.primaryForeground
                 horizontalAlignment: Text.AlignHCenter
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
@@ -143,7 +143,7 @@ RowLayout {
                 Text {
                     Layout.fillWidth: true
                     text: Qt.formatDate(root.calendarMonth, "MMMM yyyy")
-                    color: Colors.foreground
+                    color: Colors.primaryForeground
                     font.family: Typography.fontFamily
                     font.pixelSize: 15
                     font.weight: Font.Bold
@@ -165,7 +165,7 @@ RowLayout {
                     Text {
                         Layout.fillWidth: true
                         text: modelData
-                        color: Colors.muted
+                        color: Colors.mutedForeground
                         horizontalAlignment: Text.AlignHCenter
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize
@@ -182,14 +182,14 @@ RowLayout {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 34
                         radius: 10
-                        color: root.isToday(day) ? Colors.surfaceHighlight : (day > 0 ? Colors.surface : "transparent")
-                        border.color: root.isToday(day) ? Colors.panelBorderStrong : "transparent"
+                        color: root.isToday(day) ? Colors.panelButtonBackgroundActive : (day > 0 ? Colors.panelCardBackground : "transparent")
+                        border.color: root.isToday(day) ? Colors.panelButtonBorderActive : "transparent"
                         border.width: 1
 
                         Text {
                             anchors.centerIn: parent
                             text: day > 0 ? day : ""
-                            color: root.isToday(day) ? Colors.accent : Colors.foreground
+                            color: root.isToday(day) ? Colors.accentForeground : Colors.primaryForeground
                             font.family: Typography.fontFamily
                             font.pixelSize: settings.textPixelSize
                             font.weight: root.isToday(day) ? Font.Bold : Font.Normal

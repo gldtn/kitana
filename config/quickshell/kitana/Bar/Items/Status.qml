@@ -168,7 +168,7 @@ Rectangle {
                             Rectangle {
                                 anchors.fill: parent
                                 radius: 6
-                                color: trayMouse.containsMouse ? Colors.surfaceHover : "transparent"
+                                color: trayMouse.containsMouse ? Colors.panelButtonBackgroundHover : "transparent"
                             }
 
                             QW.IconImage {
@@ -210,7 +210,7 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             visible: traySection.visible && root.trayExpanded && trayContainer.width > 0
             text: "|"
-            color: Colors.muted
+            color: Colors.mutedForeground
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize
             verticalAlignment: Text.AlignVCenter
@@ -278,7 +278,7 @@ Rectangle {
                 width: settings.iconPixelSize + 4
                 height: button.height
                 icon: button.icon
-                color: mouse.containsMouse ? Colors.foreground : Colors.accent
+                color: mouse.containsMouse ? Colors.primaryForeground : Colors.accentForeground
                 size: settings.iconPixelSize
                 horizontalAlignment: button.alignIconLeft ? Text.AlignLeft : Text.AlignHCenter
                 leftPadding: button.alignIconLeft ? button.iconVisualOffset : 0
@@ -288,7 +288,7 @@ Rectangle {
                 height: button.height
                 text: button.label
                 visible: text.length > 0
-                color: Colors.foreground
+                color: Colors.primaryForeground
                 verticalAlignment: Text.AlignVCenter
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize

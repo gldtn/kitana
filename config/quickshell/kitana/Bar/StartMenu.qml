@@ -66,7 +66,7 @@ PanelWindow {
         Layout.fillWidth: true
         Layout.preferredHeight: 48
         radius: 12
-        color: actionMouse.containsMouse ? Colors.surfaceHover : Colors.surface
+        color: actionMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelCardBackground
         border.color: Colors.panelBorder
         border.width: 1
 
@@ -78,7 +78,7 @@ PanelWindow {
 
             Controls.Icon {
                 icon: actionRoot.icon
-                color: Colors.accent
+                color: Colors.accentForeground
                 size: settings.iconPixelSize + 1
             }
 
@@ -89,7 +89,7 @@ PanelWindow {
                 Text {
                     Layout.fillWidth: true
                     text: actionRoot.title
-                    color: Colors.foreground
+                    color: Colors.primaryForeground
                     elide: Text.ElideRight
                     font.family: Typography.fontFamily
                     font.pixelSize: settings.textPixelSize
@@ -99,7 +99,7 @@ PanelWindow {
                 Text {
                     Layout.fillWidth: true
                     text: actionRoot.subtitle
-                    color: Colors.muted
+                    color: Colors.mutedForeground
                     elide: Text.ElideRight
                     font.family: Typography.fontFamily
                     font.pixelSize: settings.textPixelSize - 1
@@ -178,7 +178,7 @@ PanelWindow {
 
                 Text {
                     text: Icons.arch
-                    color: Colors.accent
+                    color: Colors.accentForeground
                     font.family: Typography.iconFontFamily
                     font.pixelSize: 18
                 }
@@ -190,7 +190,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: "Kitana"
-                        color: Colors.foreground
+                        color: Colors.primaryForeground
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize + 2
                         font.weight: Font.Bold
@@ -199,7 +199,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: "System menu"
-                        color: Colors.muted
+                        color: Colors.mutedForeground
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize - 1
                     }

@@ -319,6 +319,17 @@ if [ -f "$QUICKSHELL_CONFIG_DIR/Colors.qml" ] && grep -q "Kitana managed Quicksh
   rm "$QUICKSHELL_CONFIG_DIR/Colors.qml"
 fi
 
+for quickshell_legacy_dir in Common Modules Widgets; do
+  target="$QUICKSHELL_CONFIG_DIR/$quickshell_legacy_dir"
+  if [ -d "$target" ]; then
+    rmdir "$target" 2>/dev/null || {
+      if grep -R -q "Kitana managed Quickshell" "$target"; then
+        rm -rf "$target"
+      fi
+    }
+  fi
+done
+
 if [ ! -e "$QUICKSHELL_CONFIG_DIR/shell.qml" ] || grep -q "Kitana managed Quickshell bar" "$QUICKSHELL_CONFIG_DIR/shell.qml"; then
   cp "$KITANA_DIR/config/quickshell/kitana/shell.qml" "$QUICKSHELL_CONFIG_DIR/shell.qml"
 else

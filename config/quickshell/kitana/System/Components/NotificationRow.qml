@@ -24,7 +24,7 @@ Rectangle {
     width: parent ? parent.width : 0
     height: Math.max(84, contentColumn.implicitHeight + verticalPadding * 2)
     radius: 14
-    color: hoverHandler.hovered ? Colors.surfaceHover : Colors.surface
+    color: hoverHandler.hovered ? Colors.panelButtonBackgroundHover : Colors.panelCardBackground
     border.color: Colors.panelBorder
     border.width: 1
 
@@ -66,7 +66,7 @@ Rectangle {
             Text {
                 Layout.fillWidth: true
                 text: root.item ? root.item.appName : "app"
-                color: Colors.muted
+                color: Colors.mutedForeground
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize - 1
@@ -75,7 +75,7 @@ Rectangle {
 
             Text {
                 text: root.item ? Services.NotificationService.timeAgo(root.item.time) : "now"
-                color: Colors.muted
+                color: Colors.mutedForeground
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize - 1
                 font.weight: Font.DemiBold
@@ -86,7 +86,7 @@ Rectangle {
                 Layout.preferredWidth: countRow.implicitWidth + 14
                 Layout.preferredHeight: 22
                 radius: 11
-                color: countMouse.containsMouse ? Colors.surfaceHover : Colors.panelButtonBackground
+                color: countMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelButtonBackground
 
                 Row {
                     id: countRow
@@ -97,7 +97,7 @@ Rectangle {
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
                         text: root.groupCount
-                        color: Colors.foreground
+                        color: Colors.primaryForeground
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize - 1
                         font.weight: Font.Bold
@@ -106,7 +106,7 @@ Rectangle {
                     Controls.Icon {
                         anchors.verticalCenter: parent.verticalCenter
                         icon: root.groupCollapsed ? Icons.chevronDown : Icons.chevronUp
-                        color: Colors.foreground
+                        color: Colors.primaryForeground
                         size: 12
                     }
                 }
@@ -125,12 +125,12 @@ Rectangle {
                 Layout.preferredWidth: 28
                 Layout.preferredHeight: 22
                 radius: 11
-                color: dismissMouse.containsMouse ? Colors.surfaceHover : Colors.panelButtonBackground
+                color: dismissMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelButtonBackground
 
                 Controls.Icon {
                     anchors.centerIn: parent
                     icon: Icons.close
-                    color: dismissMouse.containsMouse ? Colors.foreground : Colors.muted
+                    color: dismissMouse.containsMouse ? Colors.primaryForeground : Colors.mutedForeground
                     size: 13
                 }
 
@@ -154,7 +154,7 @@ Rectangle {
         Text {
             Layout.fillWidth: true
             text: root.item ? Services.NotificationService.escapeMarkup(root.item.summary) : "Notification"
-            color: Colors.foreground
+            color: Colors.primaryForeground
             elide: Text.ElideRight
             clip: true
             font.family: Typography.fontFamily
@@ -168,7 +168,7 @@ Rectangle {
             Layout.fillWidth: true
             visible: text.length > 0
             text: root.item ? root.item.bodyMarkup : ""
-            color: Colors.muted
+            color: Colors.mutedForeground
             elide: Text.ElideRight
             wrapMode: Text.WrapAnywhere
             maximumLineCount: 2

@@ -241,7 +241,7 @@ PanelWindow {
 
                 Controls.Icon {
                     icon: Icons.keyboard
-                    color: Colors.accent
+                    color: Colors.accentForeground
                     size: settings.iconPixelSize + 4
                 }
 
@@ -252,7 +252,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: "Shortcuts"
-                        color: Colors.foreground
+                        color: Colors.primaryForeground
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize + 4
                         font.weight: Font.Bold
@@ -261,7 +261,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: "Hyprland keybinds"
-                        color: Colors.muted
+                        color: Colors.mutedForeground
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize - 1
                     }
@@ -272,8 +272,8 @@ PanelWindow {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 36
                 radius: 11
-                color: Colors.surface
-                border.color: searchInput.activeFocus ? Colors.panelBorderStrong : Colors.panelBorder
+                color: Colors.panelCardBackground
+                border.color: searchInput.activeFocus ? Colors.panelButtonBorderActive : Colors.panelBorder
                 border.width: 1
 
                 RowLayout {
@@ -284,7 +284,7 @@ PanelWindow {
 
                     Controls.Icon {
                         icon: Icons.appSearch
-                        color: Colors.muted
+                        color: Colors.mutedForeground
                         size: settings.iconPixelSize
                     }
 
@@ -293,9 +293,9 @@ PanelWindow {
 
                         Layout.fillWidth: true
                         text: root.query
-                        color: Colors.foreground
-                        selectionColor: Colors.surfaceHighlight
-                        selectedTextColor: Colors.foreground
+                        color: Colors.primaryForeground
+                        selectionColor: Colors.panelButtonBackgroundActive
+                        selectedTextColor: Colors.primaryForeground
                         verticalAlignment: TextInput.AlignVCenter
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize
@@ -314,7 +314,7 @@ PanelWindow {
                 Layout.fillWidth: true
                 visible: root.statusText.length > 0
                 text: root.statusText
-                color: Colors.muted
+                color: Colors.mutedForeground
                 horizontalAlignment: Text.AlignHCenter
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
@@ -337,8 +337,8 @@ PanelWindow {
                     width: shortcutList.width
                     height: 54
                     radius: 12
-                    color: index === root.selectedIndex ? Colors.surfaceHighlight : (shortcutMouse.containsMouse ? Colors.surfaceHover : Colors.surface)
-                    border.color: index === root.selectedIndex ? Colors.panelBorderStrong : Colors.panelBorder
+                    color: index === root.selectedIndex ? Colors.panelButtonBackgroundActive : (shortcutMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelCardBackground)
+                    border.color: index === root.selectedIndex ? Colors.panelButtonBorderActive : Colors.panelBorder
                     border.width: 1
 
                     RowLayout {
@@ -351,15 +351,15 @@ PanelWindow {
                             Layout.preferredWidth: Math.max(150, keyText.implicitWidth + 18)
                             Layout.preferredHeight: 30
                             radius: 9
-                            color: Colors.surfaceHighlight
-                            border.color: Colors.panelBorderStrong
+                            color: Colors.panelButtonBackgroundActive
+                            border.color: Colors.panelButtonBorderActive
                             border.width: 1
 
                             Text {
                                 id: keyText
                                 anchors.centerIn: parent
                                 text: modelData.keys
-                                color: Colors.foreground
+                                color: Colors.primaryForeground
                                 font.family: Typography.fontFamily
                                 font.pixelSize: settings.textPixelSize
                                 font.weight: Font.Bold
@@ -373,7 +373,7 @@ PanelWindow {
                             Text {
                                 Layout.fillWidth: true
                                 text: modelData.description
-                                color: Colors.foreground
+                                color: Colors.primaryForeground
                                 elide: Text.ElideRight
                                 font.family: Typography.fontFamily
                                 font.pixelSize: settings.textPixelSize
@@ -383,7 +383,7 @@ PanelWindow {
                             Text {
                                 Layout.fillWidth: true
                                 text: modelData.category
-                                color: Colors.muted
+                                color: Colors.mutedForeground
                                 elide: Text.ElideRight
                                 font.family: Typography.fontFamily
                                 font.pixelSize: settings.textPixelSize - 1

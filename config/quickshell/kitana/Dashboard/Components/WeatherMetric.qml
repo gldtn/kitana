@@ -40,7 +40,7 @@ Item {
             anchors.left: parent.left
             anchors.verticalCenter: textColumn.verticalCenter
             icon: root.icon
-            color: Colors.accent
+            color: Colors.accentForeground
             size: settings.iconPixelSize
         }
 
@@ -55,7 +55,7 @@ Item {
             Text {
                 width: parent.width
                 text: root.label
-                color: Colors.muted
+                color: Colors.mutedForeground
                 horizontalAlignment: Text.AlignLeft
                 font.family: Typography.fontFamily
                 font.pixelSize: root.labelPixelSize
@@ -64,7 +64,7 @@ Item {
             Text {
                 width: parent.width
                 text: root.value
-                color: Colors.foreground
+                color: Colors.primaryForeground
                 horizontalAlignment: Text.AlignLeft
                 font.family: Typography.fontFamily
                 font.pixelSize: root.valuePixelSize

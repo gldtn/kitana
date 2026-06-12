@@ -21,8 +21,8 @@ Rectangle {
     width: parent ? parent.width : 0
     height: 48
     radius: 11
-    color: rowMouse.containsMouse ? Colors.surfaceHover : Colors.surface
-    border.color: modelData.connected ? Colors.panelBorderStrong : "transparent"
+    color: rowMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelCardBackground
+    border.color: modelData.connected ? Colors.panelButtonBorderActive : "transparent"
     border.width: modelData.connected ? 1 : 0
 
     Controls.Icon {
@@ -32,7 +32,7 @@ Rectangle {
         anchors.verticalCenter: parent.verticalCenter
         width: 24
         icon: modelData.connected ? Icons.bluetoothConnected : Icons.bluetooth
-        color: modelData.connected ? Colors.accent : Colors.foreground
+        color: modelData.connected ? Colors.accentForeground : Colors.primaryForeground
         size: 16
     }
 
@@ -46,7 +46,7 @@ Rectangle {
         Text {
             width: parent.width
             text: root.title
-            color: Colors.foreground
+            color: Colors.primaryForeground
             elide: Text.ElideRight
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize
@@ -56,7 +56,7 @@ Rectangle {
         Text {
             width: parent.width
             text: root.subtitle
-            color: Colors.muted
+            color: Colors.mutedForeground
             elide: Text.ElideRight
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize - 1
@@ -72,12 +72,12 @@ Rectangle {
         width: visible ? 30 : 0
         height: 30
         radius: 9
-        color: disconnectMouse.containsMouse ? Colors.surfaceHighlight : Colors.surfaceAlt
+        color: disconnectMouse.containsMouse ? Colors.panelButtonBackgroundActive : Colors.panelButtonBackgroundSubtle
 
         Controls.Icon {
             anchors.centerIn: parent
             icon: Icons.disconnect
-            color: disconnectMouse.containsMouse ? Colors.danger : Colors.muted
+            color: disconnectMouse.containsMouse ? Colors.dangerForeground : Colors.mutedForeground
             size: 14
         }
 
@@ -99,12 +99,12 @@ Rectangle {
         width: visible ? 30 : 0
         height: 30
         radius: 9
-        color: forgetMouse.containsMouse ? Colors.surfaceHighlight : Colors.surfaceAlt
+        color: forgetMouse.containsMouse ? Colors.panelButtonBackgroundActive : Colors.panelButtonBackgroundSubtle
 
         Controls.Icon {
             anchors.centerIn: parent
             icon: Icons.trash
-            color: forgetMouse.containsMouse ? Colors.danger : Colors.muted
+            color: forgetMouse.containsMouse ? Colors.dangerForeground : Colors.mutedForeground
             size: 14
         }
 
@@ -134,7 +134,7 @@ Rectangle {
             id: actionTooltipLabel
             anchors.centerIn: parent
             text: disconnectMouse.containsMouse ? "Disconnect" : "Forget"
-            color: Colors.foreground
+            color: Colors.primaryForeground
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize - 2
             font.weight: Font.DemiBold

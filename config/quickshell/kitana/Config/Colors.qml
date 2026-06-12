@@ -5,20 +5,18 @@ pragma Singleton
 import QtQuick
 
 QtObject {
-  // Alpha reference:
-  // 98% = fa
-  // 96% = f5
-  // 90% = e6
-  // 86% = db
-  // 80% = cc
-  // 76% = c2
-  // 70% = b3
-  // 66% = a8
-  // 60% = 99
-  // 45% = 73
 
   function withAlpha(rgb: string, alpha: string): string {
     return "#" + alpha + rgb;
+  }
+
+  function alpha(percent: real): string {
+    const value = Math.max(0, Math.min(255, Math.round(255 * percent / 100)));
+    return value.toString(16).padStart(2, "0");
+  }
+
+  function alphaColor(rgb: string, percent: real): string {
+    return withAlpha(rgb, alpha(percent));
   }
 
   // Raw palette. Suffix 0 is darker, suffix 1 is lighter.
@@ -44,17 +42,18 @@ QtObject {
   readonly property string danger0: "f38ba8"
 
   // Alpha presets for blur-friendly panel layers.
-  readonly property string panelAlpha: "fa"
-  readonly property string panelContainerAlpha: "73"
-  readonly property string panelCardAlpha: "99"
-  readonly property string panelButtonAlpha: "cc"
-  readonly property string panelInputAlpha: "cc"
-  readonly property string scrimAlpha: "85"
-  readonly property string scrimSoftAlpha: "52"
-  readonly property string imageOverlayAlpha: "99"
+  readonly property string panelAlpha: alpha(92)
+  readonly property string panelContainerAlpha: alpha(85)
+  readonly property string panelCardAlpha: alpha(60)
+  readonly property string panelButtonAlpha: alpha(80)
+  readonly property string panelInputAlpha: alpha(80)
+  readonly property string scrimAlpha: alpha(52)
+  readonly property string scrimSoftAlpha: alpha(32)
+  readonly property string imageOverlayAlpha: alpha(60)
 
   // Semantic foreground and background roles.
   readonly property color accentForeground: "#" + accent0
+  readonly property color onAccentForeground: "#" + crust0
   readonly property color primaryForeground: "#" + text0
   readonly property color secondaryForeground: "#" + text1
   readonly property color mutedForeground: "#" + subtext0
@@ -64,9 +63,9 @@ QtObject {
   readonly property color mutedBackground: "#" + crust0
 
   // Outer dashboard/system/wallpaper picker shell.
-  readonly property color panelBackground: withAlpha(base0, panelAlpha)
+  readonly property color panelBackground: withAlpha(mantle0, panelAlpha)
   readonly property color panelForeground: primaryForeground
-  readonly property color panelBorder: "#9e" + surface0
+  readonly property color panelBorder: "#" + surface0
 
   // Sidebar/calendar/content sections inside larger panels.
   readonly property color panelContainerBackground: withAlpha(crust0, panelContainerAlpha)
@@ -80,11 +79,16 @@ QtObject {
 
   // Buttons, tabs, pills, and calendar day cells.
   readonly property color panelButtonBackground: withAlpha(surface0, panelButtonAlpha)
+  readonly property color panelButtonBackgroundSubtle: "#" + surface1
   readonly property color panelButtonBackgroundHover: "#ee" + surface1
   readonly property color panelButtonBackgroundActive: accentBackground
   readonly property color panelButtonForeground: primaryForeground
   readonly property color panelButtonBorder: panelBorder
   readonly property color panelButtonBorderActive: "#b8" + accent0
+
+  // Workspace pills.
+  readonly property color workspaceInactiveBackground: "#c2" + surface0
+  readonly property color workspaceOccupiedBackground: "#e6" + surface1
 
   // Text inputs and search fields.
   readonly property color panelInputBackground: withAlpha(surface0, panelInputAlpha)
@@ -106,22 +110,4 @@ QtObject {
   readonly property color scrim: withAlpha(crust1, scrimAlpha)
   readonly property color scrimSoft: withAlpha(crust1, scrimSoftAlpha)
   readonly property color imageOverlay: withAlpha(crust1, imageOverlayAlpha)
-
-  // Temporary legacy aliases. Remove after all Kitana/custom QML uses component tokens.
-  readonly property color background: "#" + base0
-  readonly property color surface: panelCardBackground
-  readonly property color surfaceAlt: "#" + surface1
-  readonly property color surfaceHover: panelButtonBackgroundHover
-  readonly property color surfaceHighlight: panelButtonBackgroundActive
-  readonly property color panelBorderStrong: panelButtonBorderActive
-  readonly property color workspaceInactive: "#c2" + surface0
-  readonly property color workspaceOccupied: "#e6" + surface1
-  readonly property color foreground: primaryForeground
-  readonly property color muted: mutedForeground
-  readonly property color accent: accentForeground
-  readonly property color accentText: "#" + crust0
-  readonly property color info: infoForeground
-  readonly property color success: successForeground
-  readonly property color warning: warningForeground
-  readonly property color danger: dangerForeground
 }

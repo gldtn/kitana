@@ -47,7 +47,7 @@ PanelWindow {
         height: root.implicitHeight
         anchors.horizontalCenter: parent.horizontalCenter
         radius: 20
-        color: Colors.withAlpha(Colors.base0, "cc")
+        color: Colors.withAlpha(Colors.base1, "cc")
         border.color: Colors.panelBorder
         border.width: 1
         opacity: Services.OsdService.visible ? 1 : 0
@@ -82,7 +82,7 @@ PanelWindow {
                     width: parent.width
                     height: parent.height
                     icon: Services.OsdService.icon
-                    color: Services.OsdService.muted ? Colors.muted : Colors.foreground
+                    color: Services.OsdService.muted ? Colors.mutedForeground : Colors.primaryForeground
                     size: 25
                     horizontalAlignment: Text.AlignLeft
                 }
@@ -99,7 +99,7 @@ PanelWindow {
                     width: parent.width * Services.OsdService.value / 100
                     height: parent.height
                     radius: parent.radius
-                    color: Services.OsdService.muted ? Colors.muted : Colors.accent
+                    color: Services.OsdService.muted ? Colors.mutedForeground : Colors.accentForeground
 
                     Behavior on width {
                         NumberAnimation { duration: 90; easing.type: Easing.OutCubic }
@@ -111,7 +111,7 @@ PanelWindow {
                 Layout.preferredWidth: 42
                 Layout.alignment: Qt.AlignVCenter
                 text: Services.OsdService.muted ? "--" : Services.OsdService.value
-                color: Services.OsdService.muted ? Colors.muted : Colors.foreground
+                color: Services.OsdService.muted ? Colors.mutedForeground : Colors.primaryForeground
                 horizontalAlignment: Text.AlignRight
                 font.family: Typography.fontFamily
                 font.pixelSize: 24

@@ -35,7 +35,7 @@ Rectangle {
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: Qt.formatDate(clockRow.now, "ddd MMM d")
-            color: Colors.foreground
+            color: Colors.primaryForeground
             font.family: Typography.fontFamily
             font.pixelSize: settings.clockPixelSize
             font.weight: Font.DemiBold
@@ -48,12 +48,12 @@ Rectangle {
             width: settings.iconPixelSize + 10
             height: settings.iconPixelSize + 8
             radius: 8
-            color: dashboardMouse.containsMouse ? Colors.surfaceHover : "transparent"
+            color: dashboardMouse.containsMouse ? Colors.panelButtonBackgroundHover : "transparent"
 
             Controls.Icon {
                 anchors.centerIn: parent
                 icon: Icons.dashboard
-                color: dashboardMouse.containsMouse ? Colors.foreground : Colors.accent
+                color: dashboardMouse.containsMouse ? Colors.primaryForeground : Colors.accentForeground
                 size: settings.iconPixelSize
             }
 
@@ -70,7 +70,7 @@ Rectangle {
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: Qt.formatTime(clockRow.now, "h:mm AP")
-            color: Colors.foreground
+            color: Colors.primaryForeground
             font.family: Typography.fontFamily
             font.pixelSize: settings.clockPixelSize
             font.weight: Font.DemiBold

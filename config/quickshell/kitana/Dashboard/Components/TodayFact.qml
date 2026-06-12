@@ -22,7 +22,7 @@ RowLayout {
         Layout.preferredWidth: 18
         Layout.alignment: Qt.AlignVCenter
         icon: root.icon
-        color: Colors.accent
+        color: Colors.accentForeground
         size: settings.iconPixelSize - 1
     }
 
@@ -30,7 +30,7 @@ RowLayout {
         Layout.fillWidth: true
         Layout.alignment: Qt.AlignVCenter
         text: root.label
-        color: Colors.muted
+        color: Colors.mutedForeground
         elide: Text.ElideRight
         verticalAlignment: Text.AlignVCenter
         font.family: Typography.fontFamily
@@ -40,7 +40,7 @@ RowLayout {
     Text {
         Layout.alignment: Qt.AlignVCenter
         text: root.value
-        color: Colors.foreground
+        color: Colors.primaryForeground
         verticalAlignment: Text.AlignVCenter
         font.family: Typography.fontFamily
         font.pixelSize: settings.textPixelSize

@@ -48,8 +48,8 @@ ColumnLayout {
                 width: themeGrid.cardWidth
                 height: themeGrid.cardHeight
                 radius: 14
-                color: modelData.background
-                border.color: selected || themeMouse.containsMouse ? modelData.accent : modelData.surfaceAlt
+                color: modelData.previewBackground
+                border.color: selected || themeMouse.containsMouse ? modelData.previewAccent : modelData.previewBorder
                 border.width: selected || themeMouse.containsMouse ? 2 : 1
                 clip: true
                 scale: selected || themeMouse.containsMouse ? 1.015 : 1
@@ -60,8 +60,8 @@ ColumnLayout {
                     anchors.fill: parent
                     anchors.margins: 14
                     radius: 12
-                    color: modelData.surface
-                    border.color: modelData.surfaceAlt
+                    color: modelData.previewSurface
+                    border.color: modelData.previewBorder
                     border.width: 1
 
                     Row {
@@ -72,7 +72,7 @@ ColumnLayout {
                         spacing: 8
 
                         Repeater {
-                            model: [themeCard.modelData.accent, themeCard.modelData.warning, themeCard.modelData.danger, themeCard.modelData.muted]
+                            model: [themeCard.modelData.previewAccent, themeCard.modelData.previewWarning, themeCard.modelData.previewDanger, themeCard.modelData.previewMuted]
 
                             Rectangle {
                                 width: 18
@@ -93,7 +93,7 @@ ColumnLayout {
                         Text {
                             Layout.fillWidth: true
                             text: themeCard.modelData.name
-                            color: themeCard.modelData.foreground
+                            color: themeCard.modelData.previewForeground
                             elide: Text.ElideRight
                             font.family: Typography.fontFamily
                             font.pixelSize: settings.textPixelSize + 1
@@ -103,7 +103,7 @@ ColumnLayout {
                         Text {
                             Layout.fillWidth: true
                             text: themeCard.modelData.slug
-                            color: themeCard.modelData.muted
+                            color: themeCard.modelData.previewMuted
                             elide: Text.ElideRight
                             font.family: Typography.fontFamily
                             font.pixelSize: settings.textPixelSize
@@ -138,7 +138,7 @@ ColumnLayout {
                 height: 28
                 text: (root.themePage + 1) + " / " + root.themePageCount()
                 verticalAlignment: Text.AlignVCenter
-                color: Colors.muted
+                color: Colors.mutedForeground
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
                 font.weight: Font.DemiBold
@@ -153,7 +153,7 @@ ColumnLayout {
             anchors.verticalCenter: parent.verticalCenter
             width: 90
             text: root.filteredThemes().length + " themes"
-            color: Colors.muted
+            color: Colors.mutedForeground
             horizontalAlignment: Text.AlignRight
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize

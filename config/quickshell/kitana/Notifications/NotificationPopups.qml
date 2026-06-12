@@ -89,7 +89,7 @@ PanelWindow {
                     Text {
                         width: parent.width
                         text: modelData.summary
-                        color: Colors.foreground
+                        color: Colors.primaryForeground
                         elide: Text.ElideRight
                         clip: true
                         font.family: Typography.fontFamily
@@ -100,7 +100,7 @@ PanelWindow {
                     Text {
                         width: parent.width
                         text: modelData.appName
-                        color: Colors.muted
+                        color: Colors.mutedForeground
                         elide: Text.ElideRight
                         clip: true
                         font.family: Typography.fontFamily
@@ -112,7 +112,7 @@ PanelWindow {
                         width: parent.width
                         visible: text.length > 0
                         text: modelData.bodyMarkup
-                        color: Colors.muted
+                        color: Colors.mutedForeground
                         elide: Text.ElideRight
                         wrapMode: Text.WrapAnywhere
                         maximumLineCount: 2
@@ -141,7 +141,7 @@ PanelWindow {
                     Controls.Icon {
                         anchors.centerIn: parent
                         icon: Icons.close
-                        color: closeMouse.containsMouse ? Colors.foreground : Colors.muted
+                        color: closeMouse.containsMouse ? Colors.primaryForeground : Colors.mutedForeground
                         size: 14
                     }
 

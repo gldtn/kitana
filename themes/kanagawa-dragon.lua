@@ -64,15 +64,15 @@ return {
 	},
 
 	kitana = {
-		crust0 = "sumiInk1",
-		crust1 = "dragonBlack1",
-		mantle0 = "dragonBlack1",
+		crust0 = "dragonBlack3", -- panelContainerBackground
+		crust1 = "dragonBlack4",
+		mantle0 = "dragonBlack3", -- panelBackground
 		mantle1 = "dragonBlack5",
 		base0 = "sumiInk1",
 		base1 = "sumiInk3",
 		surface0 = "sumiInk3",
 		surface1 = "dragonBlack5",
-		overlay0 = "dragonBlack5",
+		overlay0 = "sumiInk4",
 		overlay1 = "dragonGray",
 		subtext0 = "dragonGray",
 		subtext1 = "dragonWhite",

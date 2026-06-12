@@ -110,6 +110,7 @@ QtObject {{
 
   // Semantic foreground and background roles.
   readonly property color accentForeground: "#" + accent0
+  readonly property color onAccentForeground: "#" + crust0
   readonly property color primaryForeground: "#" + text0
   readonly property color secondaryForeground: "#" + text1
   readonly property color mutedForeground: "#" + subtext0
@@ -135,11 +136,16 @@ QtObject {{
 
   // Buttons, tabs, pills, and calendar day cells.
   readonly property color panelButtonBackground: withAlpha(surface0, panelButtonAlpha)
+  readonly property color panelButtonBackgroundSubtle: "#" + surface1
   readonly property color panelButtonBackgroundHover: "#ee" + surface1
   readonly property color panelButtonBackgroundActive: accentBackground
   readonly property color panelButtonForeground: primaryForeground
   readonly property color panelButtonBorder: panelBorder
   readonly property color panelButtonBorderActive: "#b8" + accent0
+
+  // Workspace pills.
+  readonly property color workspaceInactiveBackground: "#c2" + surface0
+  readonly property color workspaceOccupiedBackground: "#e6" + surface1
 
   // Text inputs and search fields.
   readonly property color panelInputBackground: withAlpha(surface0, panelInputAlpha)
@@ -161,24 +167,6 @@ QtObject {{
   readonly property color scrim: withAlpha(crust1, scrimAlpha)
   readonly property color scrimSoft: withAlpha(crust1, scrimSoftAlpha)
   readonly property color imageOverlay: withAlpha(crust1, imageOverlayAlpha)
-
-  // Temporary legacy aliases. Remove after all Kitana/custom QML uses component tokens.
-  readonly property color background: "#" + base0
-  readonly property color surface: panelCardBackground
-  readonly property color surfaceAlt: "#" + surface1
-  readonly property color surfaceHover: panelButtonBackgroundHover
-  readonly property color surfaceHighlight: panelButtonBackgroundActive
-  readonly property color panelBorderStrong: panelButtonBorderActive
-  readonly property color workspaceInactive: "#c2" + surface0
-  readonly property color workspaceOccupied: "#e6" + surface1
-  readonly property color foreground: primaryForeground
-  readonly property color muted: mutedForeground
-  readonly property color accent: accentForeground
-  readonly property color accentText: "#" + crust0
-  readonly property color info: infoForeground
-  readonly property color success: successForeground
-  readonly property color warning: warningForeground
-  readonly property color danger: dangerForeground
 }}
 ''')
 PY
@@ -308,6 +296,7 @@ QtObject {{
 
   // Semantic foreground and background roles.
   readonly property color accentForeground: "#" + accent0
+  readonly property color onAccentForeground: "#" + crust0
   readonly property color primaryForeground: "#" + text0
   readonly property color secondaryForeground: "#" + text1
   readonly property color mutedForeground: "#" + subtext0
@@ -333,11 +322,16 @@ QtObject {{
 
   // Buttons, tabs, pills, and calendar day cells.
   readonly property color panelButtonBackground: withAlpha(surface0, panelButtonAlpha)
+  readonly property color panelButtonBackgroundSubtle: "#" + surface1
   readonly property color panelButtonBackgroundHover: "#ee" + surface1
   readonly property color panelButtonBackgroundActive: accentBackground
   readonly property color panelButtonForeground: primaryForeground
   readonly property color panelButtonBorder: panelBorder
   readonly property color panelButtonBorderActive: "#b8" + accent0
+
+  // Workspace pills.
+  readonly property color workspaceInactiveBackground: "#c2{workspace_inactive_rgb}"
+  readonly property color workspaceOccupiedBackground: "#e6{workspace_occupied_rgb}"
 
   // Text inputs and search fields.
   readonly property color panelInputBackground: withAlpha(surface0, panelInputAlpha)
@@ -359,24 +353,6 @@ QtObject {{
   readonly property color scrim: withAlpha(crust1, scrimAlpha)
   readonly property color scrimSoft: withAlpha(crust1, scrimSoftAlpha)
   readonly property color imageOverlay: withAlpha(crust1, imageOverlayAlpha)
-
-  // Temporary legacy aliases. Remove after all Kitana/custom QML uses component tokens.
-  readonly property color background: "#" + base0
-  readonly property color surface: panelCardBackground
-  readonly property color surfaceAlt: "#" + surface1
-  readonly property color surfaceHover: panelButtonBackgroundHover
-  readonly property color surfaceHighlight: panelButtonBackgroundActive
-  readonly property color panelBorderStrong: panelButtonBorderActive
-  readonly property color workspaceInactive: "#c2{workspace_inactive_rgb}"
-  readonly property color workspaceOccupied: "#e6{workspace_occupied_rgb}"
-  readonly property color foreground: primaryForeground
-  readonly property color muted: mutedForeground
-  readonly property color accent: accentForeground
-  readonly property color accentText: "#" + crust0
-  readonly property color info: infoForeground
-  readonly property color success: successForeground
-  readonly property color warning: warningForeground
-  readonly property color danger: dangerForeground
 }}
 ''')
 PY

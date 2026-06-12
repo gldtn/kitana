@@ -29,7 +29,7 @@ Row {
         anchors.verticalCenter: parent.verticalCenter
         width: 20
         icon: root.icon
-        color: Colors.foreground
+        color: Colors.primaryForeground
         size: 15
 
         MouseArea {
@@ -58,13 +58,13 @@ Row {
             width: control.availableWidth
             height: 6
             radius: 3
-            color: Colors.surfaceAlt
+            color: Colors.panelButtonBackgroundSubtle
 
             Rectangle {
                 width: control.visualPosition * parent.width
                 height: parent.height
                 radius: parent.radius
-                color: Colors.accent
+                color: Colors.accentForeground
             }
         }
 
@@ -74,8 +74,8 @@ Row {
             width: 16
             height: 16
             radius: 8
-            color: Colors.accent
-            border.color: Colors.panelBorderStrong
+            color: Colors.accentForeground
+            border.color: Colors.panelButtonBorderActive
             border.width: 1
         }
     }
@@ -86,7 +86,7 @@ Row {
         anchors.verticalCenter: parent.verticalCenter
         width: 34
         text: root.label
-        color: Colors.foreground
+        color: Colors.primaryForeground
         horizontalAlignment: Text.AlignRight
         font.family: Typography.fontFamily
         font.pixelSize: settings.textPixelSize

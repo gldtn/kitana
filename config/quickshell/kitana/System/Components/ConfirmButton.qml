@@ -17,14 +17,14 @@ Rectangle {
     width: 110
     height: 36
     radius: 10
-    color: mouse.containsMouse ? (danger ? Colors.surfaceHighlight : Colors.surfaceHover) : Colors.surface
-    border.color: danger ? Colors.danger : Colors.panelBorder
+    color: mouse.containsMouse ? (danger ? Colors.panelButtonBackgroundActive : Colors.panelButtonBackgroundHover) : Colors.panelCardBackground
+    border.color: danger ? Colors.dangerForeground : Colors.panelBorder
     border.width: 1
 
     Text {
         anchors.centerIn: parent
         text: root.label
-        color: danger ? Colors.danger : Colors.foreground
+        color: danger ? Colors.dangerForeground : Colors.primaryForeground
         font.family: Typography.fontFamily
         font.pixelSize: settings.textPixelSize
         font.weight: Font.Bold

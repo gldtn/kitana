@@ -19,14 +19,14 @@ Rectangle {
     Layout.preferredWidth: prominent ? 48 : 40
     Layout.preferredHeight: prominent ? 40 : 36
     radius: 12
-    color: prominent ? Colors.surfaceHighlight : (mediaButtonMouse.containsMouse ? Colors.surfaceHover : Colors.surface)
-    border.color: prominent ? Colors.panelBorderStrong : Colors.panelBorder
+    color: prominent ? Colors.panelButtonBackgroundActive : (mediaButtonMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelCardBackground)
+    border.color: prominent ? Colors.panelButtonBorderActive : Colors.panelBorder
     border.width: 1
 
     Controls.Icon {
         anchors.centerIn: parent
         icon: root.text
-        color: root.prominent ? Colors.accent : Colors.foreground
+        color: root.prominent ? Colors.accentForeground : Colors.primaryForeground
         size: root.prominent ? settings.iconPixelSize + 2 : settings.iconPixelSize - 1
     }
 

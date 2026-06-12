@@ -19,7 +19,7 @@ ColumnLayout {
     Text {
         Layout.fillWidth: true
         text: "Dashboard Settings"
-        color: Colors.foreground
+        color: Colors.primaryForeground
         font.family: Typography.fontFamily
         font.pixelSize: 16
         font.weight: Font.Bold
@@ -41,7 +41,7 @@ ColumnLayout {
             Text {
                 Layout.fillWidth: true
                 text: "Weather"
-                color: Colors.foreground
+                color: Colors.primaryForeground
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
                 font.weight: Font.DemiBold
@@ -98,7 +98,7 @@ ColumnLayout {
             Text {
                 Layout.fillWidth: true
                 text: "World Clocks"
-                color: Colors.foreground
+                color: Colors.primaryForeground
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
                 font.weight: Font.DemiBold

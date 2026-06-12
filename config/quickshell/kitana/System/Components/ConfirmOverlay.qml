@@ -24,7 +24,7 @@ Rectangle {
         height: 150
         anchors.centerIn: parent
         radius: 16
-        color: Colors.surface
+        color: Colors.panelCardBackground
         border.color: Colors.panelBorder
         border.width: 1
 
@@ -36,7 +36,7 @@ Rectangle {
             Text {
                 width: parent.width
                 text: root.panel ? root.panel.confirmTitle : ""
-                color: Colors.foreground
+                color: Colors.primaryForeground
                 horizontalAlignment: Text.AlignHCenter
                 font.family: Typography.fontFamily
                 font.pixelSize: 16
@@ -46,7 +46,7 @@ Rectangle {
             Text {
                 width: parent.width
                 text: "Confirm this session action."
-                color: Colors.muted
+                color: Colors.mutedForeground
                 horizontalAlignment: Text.AlignHCenter
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize

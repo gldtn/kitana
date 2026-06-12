@@ -21,8 +21,8 @@ Rectangle {
     Layout.fillWidth: true
     Layout.preferredHeight: 46
     radius: 12
-    color: active ? Colors.surfaceHighlight : (mediaDeviceMouse.containsMouse ? Colors.surfaceHover : Colors.surface)
-    border.color: active ? Colors.panelBorderStrong : Colors.panelBorder
+    color: active ? Colors.panelButtonBackgroundActive : (mediaDeviceMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelCardBackground)
+    border.color: active ? Colors.panelButtonBorderActive : Colors.panelBorder
     border.width: 1
 
     RowLayout {
@@ -33,7 +33,7 @@ Rectangle {
 
         Controls.Icon {
             icon: root.active ? Icons.check : root.icon
-            color: Colors.accent
+            color: Colors.accentForeground
             size: settings.iconPixelSize
         }
 
@@ -44,7 +44,7 @@ Rectangle {
             Text {
                 Layout.fillWidth: true
                 text: root.name
-                color: Colors.foreground
+                color: Colors.primaryForeground
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
@@ -54,7 +54,7 @@ Rectangle {
             Text {
                 Layout.fillWidth: true
                 text: root.active ? "Current output" : root.subtitle
-                color: Colors.muted
+                color: Colors.mutedForeground
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize - 1

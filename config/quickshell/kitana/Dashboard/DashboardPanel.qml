@@ -175,15 +175,15 @@ PanelWindow {
         return {
             slug: parts[0] || "",
             name: parts[1] || parts[0] || "Theme",
-            background: parts[2] || "#1e1e2e",
-            surface: parts[3] || "#313244",
-            surfaceAlt: parts[4] || "#45475a",
-            foreground: parts[5] || "#cdd6f4",
-            muted: parts[6] || "#9399b2",
-            accent: parts[7] || "#89b4fa",
-            accentText: parts[8] || "#11111b",
-            warning: parts[9] || "#f9e2af",
-            danger: parts[10] || "#f38ba8"
+            previewBackground: parts[2] || "#1e1e2e",
+            previewSurface: parts[3] || "#313244",
+            previewBorder: parts[4] || "#45475a",
+            previewForeground: parts[5] || "#cdd6f4",
+            previewMuted: parts[6] || "#9399b2",
+            previewAccent: parts[7] || "#89b4fa",
+            previewOnAccentForeground: parts[8] || "#11111b",
+            previewWarning: parts[9] || "#f9e2af",
+            previewDanger: parts[10] || "#f38ba8"
         };
     }
 

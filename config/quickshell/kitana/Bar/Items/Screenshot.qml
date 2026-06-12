@@ -18,14 +18,14 @@ Rectangle {
     height: implicitHeight
 
     radius: height / settings.radiusDivisor
-    color: screenshotMouse.containsMouse ? Colors.surfaceHover : Colors.panelBackground
+    color: screenshotMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelBackground
     border.color: Colors.panelBorder
     border.width: settings.borderWidth
 
     Controls.Icon {
         anchors.fill: parent
         icon: Icons.screenshot
-        color: Colors.accent
+        color: Colors.accentForeground
         size: settings.iconPixelSize + 1
     }
 

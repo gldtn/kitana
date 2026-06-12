@@ -249,7 +249,7 @@ PanelWindow {
                 Text {
                     Layout.fillWidth: true
                     text: "Launch"
-                    color: Colors.foreground
+                    color: Colors.primaryForeground
                     font.family: Typography.fontFamily
                     font.pixelSize: 22
                     font.weight: Font.DemiBold
@@ -271,7 +271,7 @@ PanelWindow {
 
                         Controls.Icon {
                             icon: Icons.appSearch
-                            color: Colors.muted
+                            color: Colors.mutedForeground
                             size: 18
                         }
 
@@ -281,7 +281,7 @@ PanelWindow {
                             focus: true
                             color: Colors.panelInputForeground
                             selectionColor: Colors.accentBackground
-                            selectedTextColor: Colors.foreground
+                            selectedTextColor: Colors.primaryForeground
                             font.family: Typography.fontFamily
                             font.pixelSize: 18
                             clip: true
@@ -332,8 +332,8 @@ PanelWindow {
                             width: listView.width
                             height: 58
                             radius: 12
-                            color: index === root.selectedIndex ? Colors.surfaceHighlight : (mouse.containsMouse ? Colors.surfaceHover : "transparent")
-                            border.color: index === root.selectedIndex ? Colors.panelBorderStrong : "transparent"
+                            color: index === root.selectedIndex ? Colors.panelButtonBackgroundActive : (mouse.containsMouse ? Colors.panelButtonBackgroundHover : "transparent")
+                            border.color: index === root.selectedIndex ? Colors.panelButtonBorderActive : "transparent"
                             border.width: 1
 
                             MouseArea {
@@ -370,12 +370,12 @@ PanelWindow {
                                         anchors.fill: parent
                                         visible: parent.resolvedIcon.length === 0 || !appIcon.visible
                                         radius: 9
-                                        color: Colors.surfaceHover
+                                        color: Colors.panelButtonBackgroundHover
 
                                         Text {
                                             anchors.centerIn: parent
                                             text: modelData.fallbackIcon || (modelData.name || "A").charAt(0).toUpperCase()
-                                            color: Colors.accent
+                                            color: Colors.accentForeground
                                             font.family: modelData.fallbackIcon ? Typography.iconFontFamily : Typography.fontFamily
                                             font.pixelSize: 15
                                             font.weight: Font.Bold
@@ -390,7 +390,7 @@ PanelWindow {
                                     Text {
                                         Layout.fillWidth: true
                                         text: modelData.name || "Application"
-                                        color: Colors.foreground
+                                        color: Colors.primaryForeground
                                         elide: Text.ElideRight
                                         font.family: Typography.fontFamily
                                         font.pixelSize: 14
@@ -400,7 +400,7 @@ PanelWindow {
                                     Text {
                                         Layout.fillWidth: true
                                         text: modelData.subtitle || ""
-                                        color: Colors.muted
+                                        color: Colors.mutedForeground
                                         elide: Text.ElideRight
                                         font.family: Typography.fontFamily
                                         font.pixelSize: 12
@@ -410,7 +410,7 @@ PanelWindow {
                                 Text {
                                     visible: index === root.selectedIndex
                                     text: modelData.hint || "Enter"
-                                    color: Colors.accent
+                                    color: Colors.accentForeground
                                     font.family: Typography.fontFamily
                                     font.pixelSize: 11
                                 }
@@ -426,14 +426,14 @@ PanelWindow {
                         Controls.Icon {
                             Layout.alignment: Qt.AlignHCenter
                             icon: Icons.appSearch
-                            color: Colors.muted
+                            color: Colors.mutedForeground
                             size: 30
                         }
 
                         Text {
                             Layout.alignment: Qt.AlignHCenter
                             text: "No results found"
-                            color: Colors.muted
+                            color: Colors.mutedForeground
                             horizontalAlignment: Text.AlignHCenter
                             font.family: Typography.fontFamily
                             font.pixelSize: 14

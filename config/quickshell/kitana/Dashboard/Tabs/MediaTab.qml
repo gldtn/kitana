@@ -56,8 +56,8 @@ Item {
                     Layout.preferredHeight: 132
                     Layout.alignment: Qt.AlignTop
                     radius: 14
-                    color: Colors.background
-                    border.color: Colors.background
+                    color: Colors.primaryBackground
+                    border.color: Colors.primaryBackground
                     border.width: 1
                     clip: true
 
@@ -92,7 +92,7 @@ Item {
                         anchors.centerIn: parent
                         visible: Services.MediaService.artSource().length === 0
                         icon: Icons.media
-                        color: Colors.accent
+                        color: Colors.accentForeground
                         size: 64
                     }
 
@@ -144,7 +144,7 @@ Item {
                         Text {
                             Layout.fillWidth: true
                             text: Services.MediaService.playerName
-                            color: Colors.accent
+                            color: Colors.accentForeground
                             elide: Text.ElideRight
                             font.family: Typography.fontFamily
                             font.pixelSize: settings.textPixelSize
@@ -155,14 +155,14 @@ Item {
                             Layout.preferredWidth: 84
                             Layout.preferredHeight: 30
                             radius: 10
-                            color: root.mediaPlaying ? Colors.surfaceHighlight : Colors.surface
+                            color: root.mediaPlaying ? Colors.panelButtonBackgroundActive : Colors.panelCardBackground
                             border.color: Colors.panelBorder
                             border.width: 1
 
                             Text {
                                 anchors.centerIn: parent
                                 text: Services.MediaService.status
-                                color: root.mediaPlaying ? Colors.foreground : Colors.muted
+                                color: root.mediaPlaying ? Colors.primaryForeground : Colors.mutedForeground
                                 font.family: Typography.fontFamily
                                 font.pixelSize: settings.textPixelSize
                                 font.weight: Font.DemiBold
@@ -190,7 +190,7 @@ Item {
 
                             x: 0
                             text: Services.MediaService.title
-                            color: Colors.foreground
+                            color: Colors.primaryForeground
                             font.family: Typography.fontFamily
                             font.pixelSize: 28
                             font.weight: Font.Bold
@@ -228,7 +228,7 @@ Item {
                     Text {
                         Layout.fillWidth: true
                         text: Services.MediaService.artist + (Services.MediaService.album ? "  -  " + Services.MediaService.album : "")
-                        color: Colors.muted
+                        color: Colors.mutedForeground
                         elide: Text.ElideRight
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize + 1
@@ -273,8 +273,8 @@ Item {
             anchors.margins: 18
             visible: root.mediaAudioOverlayOpen
             radius: 16
-            color: Colors.background
-            border.color: Colors.panelBorderStrong
+            color: Colors.primaryBackground
+            border.color: Colors.panelButtonBorderActive
             border.width: 2
             opacity: visible ? 1 : 0
 
@@ -290,7 +290,7 @@ Item {
                     Text {
                         Layout.fillWidth: true
                         text: "Audio Output"
-                        color: Colors.foreground
+                        color: Colors.primaryForeground
                         font.family: Typography.fontFamily
                         font.pixelSize: 15
                         font.weight: Font.Bold
@@ -308,7 +308,7 @@ Item {
                 Text {
                     Layout.fillWidth: true
                     text: Services.SystemStatus.audioSink
-                    color: Colors.muted
+                    color: Colors.mutedForeground
                     elide: Text.ElideRight
                     font.family: Typography.fontFamily
                     font.pixelSize: settings.textPixelSize
@@ -357,7 +357,7 @@ Item {
                             Layout.fillWidth: true
                             visible: Services.SystemStatus.audioSinks.length === 0
                             text: "No output devices found"
-                            color: Colors.muted
+                            color: Colors.mutedForeground
                             horizontalAlignment: Text.AlignHCenter
                             font.family: Typography.fontFamily
                             font.pixelSize: settings.textPixelSize

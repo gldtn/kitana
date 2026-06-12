@@ -11,7 +11,7 @@ Text {
 
     signal clicked
 
-    color: Colors.foreground
+    color: Colors.primaryForeground
     font.family: Typography.iconFontFamily
     font.pixelSize: 15
 

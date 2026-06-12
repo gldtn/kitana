@@ -90,12 +90,12 @@ Rectangle {
                 width: active ? settings.workspaceActiveWidth : settings.workspaceInactiveWidth
                 height: settings.workspacePillHeight
                 radius: height / settings.radiusDivisor
-                color: active ? Colors.accent : (occupied ? Colors.workspaceOccupied : Colors.workspaceInactive)
+                color: active ? Colors.accentForeground : (occupied ? Colors.workspaceOccupiedBackground : Colors.workspaceInactiveBackground)
 
                 Text {
                     anchors.centerIn: parent
                     text: workspacePill.workspaceId
-                    color: workspacePill.active ? Colors.accentText : (workspacePill.occupied ? Colors.foreground : Colors.muted)
+                    color: workspacePill.active ? Colors.onAccentForeground : (workspacePill.occupied ? Colors.primaryForeground : Colors.mutedForeground)
                     font.family: Typography.fontFamily
                     font.pixelSize: settings.textPixelSize
                     font.weight: Font.DemiBold
