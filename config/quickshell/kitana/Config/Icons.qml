@@ -21,13 +21,16 @@ QtObject {
     readonly property string chevronRight: "󰅂"
     readonly property string chevronUp: "󰅃"
     readonly property string close: "󰅖"
-    readonly property string dashboard: "󰕮"
+    readonly property string dashboard: "󰡃"
     readonly property string deleteForever: "󰆴"
     readonly property string dismissAll: "󰎟"
     readonly property string disconnect: "󰌸"
     readonly property string ethernet: "󰀂"
     readonly property string headphones: "󰋋"
     readonly property string keyboard: "󰌌"
+    readonly property string layout: "󰕰"
+    readonly property string layoutDwindle: "󰕮"
+    readonly property string layoutScrolling: ""
     readonly property string lock: "󰌾"
     readonly property string logout: "󰍃"
     readonly property string media: "󰝚"
@@ -117,5 +120,9 @@ QtObject {
         if (kind === "hdmi")
             return monitor;
         return wiredAudio;
+    }
+
+    function workspaceLayout(layoutName: string): string {
+        return layoutName === "scrolling" ? layoutScrolling : layoutDwindle;
     }
 }

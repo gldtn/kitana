@@ -3,11 +3,13 @@
 
 import QtQuick
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Io
 import "./Bar" as Bar
 import "./Dashboard" as Dashboard
 import "./Launcher" as Launcher
 import "./Screenshot" as Screenshot
+import "./Settings" as Settings
 import "./Shortcuts" as Shortcuts
 import "./Wallpaper" as Wallpaper
 import "./Services" as Services
@@ -18,6 +20,7 @@ ShellRoot {
     property bool barVisible: true
     readonly property var sharedDashboardPanel: dashboardPanel
     readonly property var sharedScreenshotPanel: screenshotPanel
+    readonly property var sharedSettingsPanel: settingsPanel
     readonly property var sharedShortcutsPanel: shortcutsPanel
 
     Wallpaper.WallpaperGrid {}
@@ -29,6 +32,10 @@ ShellRoot {
 
     Screenshot.ScreenshotPanel {
         id: screenshotPanel
+    }
+
+    Settings.SettingsPanel {
+        id: settingsPanel
     }
 
     Shortcuts.ShortcutsPanel {
@@ -61,6 +68,7 @@ ShellRoot {
     IpcHandler {
         target: "kitana-shell"
 
+        function refreshWorkspaces(): void { Hyprland.refreshWorkspaces(); }
         function reload(): void { Quickshell.reload(false); }
         function hardReload(): void { Quickshell.reload(true); }
     }
@@ -82,6 +90,7 @@ ShellRoot {
             barVisible: root.barVisible
             dashboardPanel: root.sharedDashboardPanel
             screenshotPanel: root.sharedScreenshotPanel
+            settingsPanel: root.sharedSettingsPanel
             shortcutsPanel: root.sharedShortcutsPanel
         }
     }

@@ -20,6 +20,7 @@ PanelWindow {
     property bool barVisible: true
     property var dashboardPanel: null
     property var screenshotPanel: null
+    property var settingsPanel: null
     property var shortcutsPanel: null
 
     screen: panelScreen
@@ -54,6 +55,7 @@ PanelWindow {
         id: startMenu
         panelScreen: root.panelScreen
         systemPanel: systemPanel
+        settingsPanel: root.settingsPanel
         shortcutsPanel: root.shortcutsPanel
     }
 

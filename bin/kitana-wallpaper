@@ -138,9 +138,7 @@ if ! apply_awww; then
   apply_hyprpaper
 fi
 
-if [ -f "$state_dir/theme" ]; then
-  "${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-theme" --restore >/dev/null 2>&1 || "${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-matugen" "$selected"
-else
+if [ ! -f "$state_dir/theme" ]; then
   "${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-matugen" "$selected"
 fi
 

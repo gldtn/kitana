@@ -28,12 +28,19 @@ find_theme() {
 
 apply_theme() {
   local requested="$1"
-  local slug theme_env name
+  local notify="${2:-0}"
+  local current_slug slug theme_env name
 
   slug="$(find_theme "$requested")" || {
     printf 'Unknown theme: %s\n' "$requested" >&2
     exit 1
   }
+
+  if [ -f "$state_file" ]; then
+    current_slug="$(<"$state_file")"
+  else
+    current_slug=""
+  fi
 
   theme_env="$(lua "$kitana_dir/lib/kitana-theme.lua" env "$slug")" || exit 1
   eval "$theme_env"
@@ -47,7 +54,9 @@ apply_theme() {
 
   printf '%s\n' "$slug" >"$state_file"
   "$kitana_dir/bin/kitana-quickshell" >/dev/null 2>&1 || true
-  notify_theme "$name"
+  if [ "$notify" -eq 1 ] && [ "$current_slug" != "$slug" ]; then
+    notify_theme "$name"
+  fi
   printf 'Theme applied: %s\n' "$name"
 }
 
@@ -57,13 +66,13 @@ case "${1:-}" in
     ;;
   --restore)
     if [ -f "$state_file" ]; then
-      apply_theme "$(<"$state_file")"
+      apply_theme "$(<"$state_file")" 0
     fi
     ;;
   ""|-h|--help)
     usage
     ;;
   *)
-    apply_theme "$1"
+    apply_theme "$1" 1
     ;;
 esac

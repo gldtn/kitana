@@ -15,6 +15,7 @@ PanelWindow {
 
     property var panelScreen: null
     property var systemPanel: null
+    property var settingsPanel: null
     property var shortcutsPanel: null
     property real revealProgress: 0
 
@@ -44,8 +45,8 @@ PanelWindow {
 
     function openSettings(): void {
         close();
-        if (systemPanel)
-            systemPanel.open("settings");
+        if (settingsPanel)
+            settingsPanel.open("bar");
     }
 
     function openShortcuts(): void {

@@ -1,0 +1,86 @@
+#!/bin/bash
+
+set -euo pipefail
+
+notify=true
+action="toggle"
+
+usage() {
+  printf 'Usage: kitana-hyprland-workspace-layout-toggle [--current] [--quiet]\n'
+}
+
+layout_label() {
+  case "$1" in
+    dwindle) printf 'Dwindle' ;;
+    scrolling) printf 'Scrolling' ;;
+    *) printf '%s' "$1" ;;
+  esac
+}
+
+lua_escape() {
+  local value="$1"
+  value="${value//\\/\\\\}"
+  printf '%s' "${value//\"/\\\"}"
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --current)
+      action="current"
+      ;;
+    --quiet|--no-notify)
+      notify=false
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      usage >&2
+      exit 2
+      ;;
+  esac
+  shift
+done
+
+if ! command -v hyprctl >/dev/null 2>&1 || ! command -v jq >/dev/null 2>&1; then
+  exit 1
+fi
+
+workspace_json="$(hyprctl -j activeworkspace)"
+workspace_id="$(jq -r '.id // empty' <<<"$workspace_json")"
+workspace_name="$(jq -r '.name // empty' <<<"$workspace_json")"
+current_layout="$(jq -r '.tiledLayout // "dwindle"' <<<"$workspace_json")"
+
+if [ -z "$workspace_name" ]; then
+  workspace_name="$workspace_id"
+fi
+
+if [ -z "$workspace_name" ]; then
+  exit 1
+fi
+
+if [ "$action" = "current" ]; then
+  printf '%s\n' "$current_layout"
+  exit 0
+fi
+
+case "$current_layout" in
+  dwindle) next_layout="scrolling" ;;
+  *) next_layout="dwindle" ;;
+esac
+
+workspace_lua="$(lua_escape "$workspace_name")"
+if ! hyprctl eval "hl.workspace_rule({ workspace = \"$workspace_lua\", layout = \"$next_layout\" })" >/dev/null 2>&1; then
+  hyprctl keyword workspace "$workspace_name, layout:$next_layout" >/dev/null
+fi
+
+if command -v quickshell >/dev/null 2>&1; then
+  quickshell ipc -c kitana call kitana-shell refreshWorkspaces >/dev/null 2>&1 || true
+fi
+
+if $notify && command -v notify-send >/dev/null 2>&1; then
+  notify-send -a Kitana -u low "Workspace layout" "Workspace $workspace_name changed to $(layout_label "$next_layout")" >/dev/null 2>&1 || true
+fi
+
+printf '%s\n' "$next_layout"

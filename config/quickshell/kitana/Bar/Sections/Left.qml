@@ -27,5 +27,7 @@ Item {
         Items.Workspaces {
             panelScreen: root.panelScreen
         }
+
+        Items.Layout {}
     }
 }

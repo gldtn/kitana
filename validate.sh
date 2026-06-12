@@ -386,6 +386,7 @@ for helper in \
   kitana-firmware \
   kitana-hw-cpu \
   kitana-hw-gpu \
+  kitana-hyprland-workspace-layout-toggle \
   kitana-keyboard \
   kitana-keyring \
   kitana-osd \
@@ -722,6 +723,7 @@ quickshell_files=(
   Bar/BarWindow.qml
   Bar/StartMenu.qml
   Bar/Items/DateTime.qml
+  Bar/Items/Layout.qml
   Bar/Items/Screenshot.qml
   Bar/Items/Start.qml
   Bar/Items/Status.qml
@@ -739,6 +741,7 @@ quickshell_files=(
   OSD/OsdPopup.qml
   Screenshot/ScreenshotPanel.qml
   Shortcuts/ShortcutsPanel.qml
+  Settings/SettingsPanel.qml
   System/SystemPanel.qml
   Wallpaper/WallpaperGrid.qml
 )
@@ -835,6 +838,12 @@ else
   fail "Quickshell service missing: CaffeineService"
 fi
 
+if [ -f "$HOME/.config/quickshell/kitana/Services/UiPreferences.qml" ] && grep -q '^singleton UiPreferences 1.0 UiPreferences.qml$' "$HOME/.config/quickshell/kitana/Services/qmldir"; then
+  pass "Quickshell service: UiPreferences"
+else
+  fail "Quickshell service missing: UiPreferences"
+fi
+
 if [ -f "$HOME/.config/quickshell/kitana/shell.qml" ] && grep -q 'target: "kitana-bar"' "$HOME/.config/quickshell/kitana/shell.qml"; then
   pass "Quickshell IPC: kitana-bar"
 else
@@ -845,6 +854,18 @@ if [ -f "$HOME/.config/quickshell/kitana/shell.qml" ] && grep -q 'target: "kitan
   pass "Quickshell IPC: kitana-shell"
 else
   fail "Quickshell IPC missing: kitana-shell"
+fi
+
+if [ -f "$HOME/.config/quickshell/kitana/shell.qml" ] && grep -q 'function refreshWorkspaces' "$HOME/.config/quickshell/kitana/shell.qml" && grep -q 'Hyprland.refreshWorkspaces' "$HOME/.config/quickshell/kitana/shell.qml"; then
+  pass "Quickshell IPC: kitana-shell refreshWorkspaces"
+else
+  fail "Quickshell IPC missing: kitana-shell refreshWorkspaces"
+fi
+
+if [ -f "$HOME/.config/quickshell/kitana/Settings/SettingsPanel.qml" ] && grep -q 'target: "kitana-settings"' "$HOME/.config/quickshell/kitana/Settings/SettingsPanel.qml"; then
+  pass "Quickshell IPC: kitana-settings"
+else
+  fail "Quickshell IPC missing: kitana-settings"
 fi
 
 if [ -f "$HOME/.config/quickshell/kitana/Services/MediaService.qml" ] && grep -q '^singleton MediaService 1.0 MediaService.qml$' "$HOME/.config/quickshell/kitana/Services/qmldir"; then

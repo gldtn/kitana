@@ -4,3 +4,4 @@ singleton MediaService 1.0 MediaService.qml
 singleton NotificationService 1.0 NotificationService.qml
 singleton OsdService 1.0 OsdService.qml
 singleton SystemStatus 1.0 SystemStatus.qml
+singleton UiPreferences 1.0 UiPreferences.qml
