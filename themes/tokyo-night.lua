@@ -72,4 +72,8 @@ return {
     source_file = "vendor/zed/tokyo-night.json",
     theme_name = "Tokyo Night",
   },
+
+  neovim = {
+    colorscheme = "tokyonight",
+  },
 }

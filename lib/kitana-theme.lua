@@ -6,6 +6,7 @@ M.order = {
   "tokyo-night",
   "dracula",
   "kanagawa-dragon",
+  "cyberdream",
 }
 
 local fields = {
@@ -181,6 +182,11 @@ function M.print_env(theme)
   else
     print("ghostty_theme=''")
   end
+  if theme.ghostty and theme.ghostty.source_file then
+    print("ghostty_source_file=" .. shell_quote(theme.ghostty.source_file))
+  else
+    print("ghostty_source_file=''")
+  end
   if theme.zed then
     print("zed_source_url=" .. shell_quote(theme.zed.source_url or ""))
     print("zed_source_file=" .. shell_quote(theme.zed.source_file or ""))
@@ -189,6 +195,11 @@ function M.print_env(theme)
     print("zed_source_url=''")
     print("zed_source_file=''")
     print("zed_theme_name=''")
+  end
+  if theme.neovim then
+    print("neovim_colorscheme=" .. shell_quote(theme.neovim.colorscheme or ""))
+  else
+    print("neovim_colorscheme=''")
   end
   print("hypr_border_active=" .. shell_quote(hypr.border_active))
   print("hypr_border_inactive=" .. shell_quote(hypr.border_inactive))

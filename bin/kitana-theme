@@ -31,6 +31,7 @@ apply_theme() {
   "$kitana_dir/bin/kitana-theme-ghostty" "$slug"
   "$kitana_dir/bin/kitana-theme-zed" "$slug"
   "$kitana_dir/bin/kitana-theme-hypr" "$slug"
+  "$kitana_dir/bin/kitana-theme-neovim" "$slug" || true
 
   printf '%s\n' "$slug" >"$state_file"
   "$kitana_dir/bin/kitana-quickshell" >/dev/null 2>&1 || true

@@ -100,4 +100,8 @@ return {
 		source_file = "vendor/zed/kanagawa-dragon.json",
 		theme_name = "Kanagawa Dragon",
 	},
+
+	neovim = {
+		colorscheme = "kanagawa",
+	},
 }

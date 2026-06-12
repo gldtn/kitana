@@ -68,4 +68,8 @@ return {
     source_file = "vendor/zed/catppuccin-mocha.json",
     theme_name = "Catppuccin Mocha",
   },
+
+  neovim = {
+    colorscheme = "catppuccin",
+  },
 }

@@ -52,7 +52,7 @@ QtObject {
     readonly property string screenshot: "󰄀"
     readonly property string screenshotClipboard: "󰅇"
     readonly property string screenshotRegion: "󰩭"
-    readonly property string screenshotWindow: "󰖲"
+    readonly property string screenshotWindow: ""
     readonly property string settings: "󰒓"
     readonly property string shutdown: "󰐥"
     readonly property string stop: "󰓛"

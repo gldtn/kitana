@@ -416,6 +416,7 @@ for helper in \
   kitana-theme-ghostty \
   kitana-theme-grid \
   kitana-theme-hypr \
+  kitana-theme-neovim \
   kitana-theme-quickshell \
   kitana-theme-zed \
   kitana-theme-zed-update \
@@ -504,7 +505,7 @@ else
   fail "Kitana theme helper library missing: themes/helpers/color.lua"
 fi
 
-for theme in catppuccin-mocha rose-pine tokyo-night dracula kanagawa-dragon; do
+for theme in catppuccin-mocha rose-pine tokyo-night dracula kanagawa-dragon cyberdream; do
   if [ -f "$KITANA_DIR/themes/$theme.lua" ]; then
     pass "Kitana theme palette: themes/$theme.lua"
   else
@@ -512,13 +513,19 @@ for theme in catppuccin-mocha rose-pine tokyo-night dracula kanagawa-dragon; do
   fi
 done
 
-for theme in catppuccin-mocha rose-pine tokyo-night dracula kanagawa-dragon; do
+for theme in catppuccin-mocha rose-pine tokyo-night dracula kanagawa-dragon cyberdream; do
   if [ -f "$KITANA_DIR/vendor/zed/$theme.json" ]; then
     pass "Kitana Zed upstream theme: vendor/zed/$theme.json"
   else
     fail "Kitana Zed upstream theme missing: vendor/zed/$theme.json"
   fi
 done
+
+if [ -f "$KITANA_DIR/vendor/ghostty/cyberdream" ]; then
+  pass "Kitana Ghostty vendored theme: vendor/ghostty/cyberdream"
+else
+  fail "Kitana Ghostty vendored theme missing: vendor/ghostty/cyberdream"
+fi
 
 if [ -x "$KITANA_DIR/bin/kitana-wallpaper-grid" ]; then
   pass "Kitana wallpaper grid helper: bin/kitana-wallpaper-grid"
