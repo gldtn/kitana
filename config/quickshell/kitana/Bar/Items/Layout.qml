@@ -81,7 +81,7 @@ Rectangle {
         Controls.Icon {
             anchors.verticalCenter: parent.verticalCenter
             icon: Icons.workspaceLayout(root.currentLayout)
-            color: Colors.primaryForeground
+            color: Colors.accentForeground
             size: settings.iconPixelSize
         }
 

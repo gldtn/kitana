@@ -362,7 +362,7 @@ PanelWindow {
 
                     Text {
                         Layout.fillWidth: true
-                        text: "Workspace layout pill"
+                        text: "Workspace layout control"
                         color: Colors.primaryForeground
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize
@@ -382,7 +382,7 @@ PanelWindow {
 
             Text {
                 Layout.fillWidth: true
-                text: "The pill toggles the focused workspace between dwindle and scrolling without changing your Hyprland default layout."
+                text: "The control toggles the focused workspace between dwindle and scrolling without changing your Hyprland default layout."
                 color: Colors.mutedForeground
                 wrapMode: Text.WordWrap
                 font.family: Typography.fontFamily
