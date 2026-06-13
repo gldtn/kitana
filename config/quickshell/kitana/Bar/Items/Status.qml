@@ -249,11 +249,6 @@ Rectangle {
             onClicked: if (root.systemPanel) root.systemPanel.toggle("network")
         }
 
-        StatusButton {
-            icon: Icons.power
-            label: ""
-            onClicked: if (root.systemPanel) root.systemPanel.toggle("sessions")
-        }
     }
 
     component StatusButton: Item {

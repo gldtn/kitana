@@ -47,6 +47,7 @@ bind(mod .. " + SHIFT + M", hl.dsp.exec_cmd(musicClient), { description = "Music
 
 -- Hyprland control
 bind(mod .. " + CTRL + L", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-lock"), { description = "Lock session" })
+bind("CTRL + ALT + DELETE", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-session toggle"), { description = "Session menu" })
 bind(mod .. " + CTRL + Z", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"), { description = "Exit Hyprland" })
 
 -- Quickshell control

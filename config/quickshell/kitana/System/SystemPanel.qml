@@ -21,8 +21,6 @@ PanelWindow {
     property real revealProgress: 0
     property var panelScreen: null
     property string section: "notifications"
-    property string confirmAction: ""
-    property string confirmTitle: ""
 
     function open(targetSection): void {
         const wasVisible = visible;
@@ -46,26 +44,6 @@ PanelWindow {
             close();
         else
             open(targetSection);
-    }
-
-    function ask(action, title): void {
-        confirmAction = action;
-        confirmTitle = title;
-    }
-
-    function lockSession(): void {
-        sessionAction.exec(["sh", "-c", "${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-lock"]);
-    }
-
-    function runConfirmedAction(): void {
-        if (confirmAction === "logout")
-            sessionAction.exec(["hyprctl", "dispatch", "exit"]);
-        else if (confirmAction === "restart")
-            sessionAction.exec(["systemctl", "reboot"]);
-        else if (confirmAction === "shutdown")
-            sessionAction.exec(["systemctl", "poweroff"]);
-
-        confirmAction = "";
     }
 
     screen: panelScreen
@@ -140,17 +118,14 @@ PanelWindow {
                 Loader {
                     anchors.fill: parent
                     anchors.margins: 14
-                    sourceComponent: root.section === "bluetooth" ? bluetoothDetails : (root.section === "network" ? networkDetails : (root.section === "audio" ? audioDetails : (root.section === "sessions" ? sessionsDetails : notificationsView)))
+                    sourceComponent: root.section === "bluetooth" ? bluetoothDetails : (root.section === "network" ? networkDetails : (root.section === "audio" ? audioDetails : notificationsView))
                 }
             }
 
             System.ControlSliders { id: sliders; height: implicitHeight }
         }
 
-        System.ConfirmOverlay { panel: panelSelf }
     }
-
-    Process { id: sessionAction }
 
     NumberAnimation {
         id: revealAnimation
@@ -165,5 +140,4 @@ PanelWindow {
     Component { id: bluetoothDetails; Panes.BluetoothPane {} }
     Component { id: networkDetails; Panes.NetworkPane {} }
     Component { id: audioDetails; Panes.AudioPane {} }
-    Component { id: sessionsDetails; Panes.SessionPane { panel: panelSelf } }
 }

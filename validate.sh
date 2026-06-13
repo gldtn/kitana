@@ -725,6 +725,7 @@ quickshell_files=(
   Bar/Items/DateTime.qml
   Bar/Items/Layout.qml
   Bar/Items/Screenshot.qml
+  Bar/Items/Session.qml
   Bar/Items/Start.qml
   Bar/Items/Status.qml
   Bar/Items/Workspaces.qml
@@ -740,6 +741,7 @@ quickshell_files=(
   Notifications/NotificationPopups.qml
   OSD/OsdPopup.qml
   Screenshot/ScreenshotPanel.qml
+  Session/SessionPanel.qml
   Shortcuts/ShortcutsPanel.qml
   Settings/SettingsPanel.qml
   System/SystemPanel.qml
@@ -866,6 +868,12 @@ if [ -f "$HOME/.config/quickshell/kitana/Settings/SettingsPanel.qml" ] && grep -
   pass "Quickshell IPC: kitana-settings"
 else
   fail "Quickshell IPC missing: kitana-settings"
+fi
+
+if [ -f "$HOME/.config/quickshell/kitana/Session/SessionPanel.qml" ] && grep -q 'target: "kitana-session"' "$HOME/.config/quickshell/kitana/Session/SessionPanel.qml"; then
+  pass "Quickshell IPC: kitana-session"
+else
+  fail "Quickshell IPC missing: kitana-session"
 fi
 
 if [ -f "$HOME/.config/quickshell/kitana/Services/MediaService.qml" ] && grep -q '^singleton MediaService 1.0 MediaService.qml$' "$HOME/.config/quickshell/kitana/Services/qmldir"; then

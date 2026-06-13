@@ -30,5 +30,7 @@ Item {
             panelWindow: root.panelWindow
             systemPanel: root.systemPanel
         }
+
+        Items.Session {}
     }
 }

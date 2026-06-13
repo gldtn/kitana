@@ -9,6 +9,7 @@ import "./Bar" as Bar
 import "./Dashboard" as Dashboard
 import "./Launcher" as Launcher
 import "./Screenshot" as Screenshot
+import "./Session" as Session
 import "./Settings" as Settings
 import "./Shortcuts" as Shortcuts
 import "./Wallpaper" as Wallpaper
@@ -33,6 +34,8 @@ ShellRoot {
     Screenshot.ScreenshotPanel {
         id: screenshotPanel
     }
+
+    Session.SessionPanel {}
 
     Settings.SettingsPanel {
         id: settingsPanel
