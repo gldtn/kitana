@@ -74,6 +74,7 @@ PanelWindow {
     WlrLayershell.layer: WlrLayershell.Overlay
     WlrLayershell.exclusiveZone: -1
     WlrLayershell.keyboardFocus: visible ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+    BackgroundEffect.blurRegion: Region { item: backdrop }
 
     anchors {
         top: true
@@ -90,14 +91,18 @@ PanelWindow {
         onClicked: root.close()
     }
 
+    Controls.BlurredBackdrop {
+        id: backdrop
+
+        anchors.fill: parent
+    }
+
     Rectangle {
         id: card
 
-        width: Math.min(620, parent.width - 32)
-        height: Math.min(380, parent.height - settings.panelHeight - 34)
-        anchors.top: parent.top
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: settings.panelHeight + settings.topMargin + 10
+        width: Math.min(820, parent.width - 72)
+        height: Math.min(520, parent.height - 120)
+        anchors.centerIn: parent
         opacity: root.revealProgress
         radius: 18
         color: Colors.panelBackground
@@ -106,7 +111,7 @@ PanelWindow {
         clip: true
 
         transform: Translate {
-            y: (1 - root.revealProgress) * -14
+            y: (1 - root.revealProgress) * 14
         }
 
         MouseArea {
@@ -276,29 +281,30 @@ PanelWindow {
         readonly property bool selected: Services.UiPreferences.layoutPillDisplayMode === mode
 
         Layout.fillWidth: true
-        Layout.preferredHeight: 68
+        Layout.preferredHeight: 88
         radius: 13
         color: selected ? Colors.panelButtonBackgroundActive : (optionMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelCardBackground)
         border.color: selected ? Colors.panelButtonBorderActive : Colors.panelBorder
         border.width: 1
 
-        ColumnLayout {
-            anchors.fill: parent
-            anchors.margins: 10
-            spacing: 4
+        Column {
+            anchors.centerIn: parent
+            width: parent.width - 24
+            spacing: 5
 
             Controls.Icon {
-                Layout.alignment: Qt.AlignHCenter
+                anchors.horizontalCenter: parent.horizontalCenter
                 icon: Icons.workspaceLayout(optionRoot.mode === "icons" ? "dwindle" : optionRoot.mode)
                 color: optionRoot.selected ? Colors.accentForeground : Colors.primaryForeground
                 size: settings.iconPixelSize + 2
             }
 
             Text {
-                Layout.fillWidth: true
+                width: parent.width
                 text: root.modeTitle(optionRoot.mode)
                 color: Colors.primaryForeground
                 horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
@@ -306,10 +312,11 @@ PanelWindow {
             }
 
             Text {
-                Layout.fillWidth: true
+                width: parent.width
                 text: root.modeSubtitle(optionRoot.mode)
                 color: Colors.mutedForeground
                 horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize - 1
@@ -342,7 +349,7 @@ PanelWindow {
 
             Rectangle {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 140
+                Layout.preferredHeight: 176
                 radius: 14
                 color: Colors.panelContainerBackground
                 border.color: Colors.panelContainerBorder
@@ -351,7 +358,7 @@ PanelWindow {
                 ColumnLayout {
                     anchors.fill: parent
                     anchors.margins: 12
-                    spacing: 10
+                    spacing: 12
 
                     Text {
                         Layout.fillWidth: true

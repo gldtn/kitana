@@ -43,7 +43,6 @@ Row {
         spacing: 16
 
         HeaderIcon { text: Icons.notification(Services.NotificationService.count, Services.NotificationService.doNotDisturb); onClicked: if (root.panel) root.panel.section = "notifications" }
-        HeaderIcon { text: Icons.settings; onClicked: if (root.panel) root.panel.section = "settings" }
         HeaderIcon { text: Icons.power; onClicked: if (root.panel) root.panel.section = "sessions" }
     }
 }

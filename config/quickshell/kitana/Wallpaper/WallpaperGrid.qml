@@ -8,6 +8,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 import ".."
+import "../Components/Controls" as Controls
 import "../custom" as Custom
 
 PanelWindow {
@@ -26,6 +27,7 @@ PanelWindow {
     WlrLayershell.layer: WlrLayershell.Overlay
     WlrLayershell.exclusiveZone: -1
     WlrLayershell.keyboardFocus: visible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+    BackgroundEffect.blurRegion: Region { item: backdrop }
 
     onVisibleChanged: if (visible) Qt.callLater(() => {
         overlay.forceActiveFocus();
@@ -189,9 +191,10 @@ PanelWindow {
         Keys.priority: Keys.BeforeItem
         Keys.onPressed: event => root.handleKey(event)
 
-        Rectangle {
+        Controls.BlurredBackdrop {
+            id: backdrop
+
             anchors.fill: parent
-            color: Colors.scrimSoft
         }
 
         MouseArea {

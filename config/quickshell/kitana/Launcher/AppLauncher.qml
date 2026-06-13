@@ -27,6 +27,7 @@ PanelWindow {
     WlrLayershell.layer: WlrLayershell.Overlay
     WlrLayershell.exclusiveZone: -1
     WlrLayershell.keyboardFocus: visible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+    BackgroundEffect.blurRegion: Region { item: backdrop }
 
     anchors {
         top: true
@@ -222,9 +223,10 @@ PanelWindow {
             }
         }
 
-        Rectangle {
+        Controls.BlurredBackdrop {
+            id: backdrop
+
             anchors.fill: parent
-            color: Colors.scrimSoft
         }
 
         MouseArea {

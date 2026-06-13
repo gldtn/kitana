@@ -140,7 +140,7 @@ PanelWindow {
                 Loader {
                     anchors.fill: parent
                     anchors.margins: 14
-                    sourceComponent: root.section === "bluetooth" ? bluetoothDetails : (root.section === "network" ? networkDetails : (root.section === "audio" ? audioDetails : (root.section === "settings" ? settingsDetails : (root.section === "sessions" ? sessionsDetails : notificationsView))))
+                    sourceComponent: root.section === "bluetooth" ? bluetoothDetails : (root.section === "network" ? networkDetails : (root.section === "audio" ? audioDetails : (root.section === "sessions" ? sessionsDetails : notificationsView)))
                 }
             }
 
@@ -165,6 +165,5 @@ PanelWindow {
     Component { id: bluetoothDetails; Panes.BluetoothPane {} }
     Component { id: networkDetails; Panes.NetworkPane {} }
     Component { id: audioDetails; Panes.AudioPane {} }
-    Component { id: settingsDetails; Panes.SettingsPane { panel: panelSelf } }
     Component { id: sessionsDetails; Panes.SessionPane { panel: panelSelf } }
 }

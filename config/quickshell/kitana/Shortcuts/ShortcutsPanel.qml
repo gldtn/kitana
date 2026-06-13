@@ -175,6 +175,7 @@ PanelWindow {
     WlrLayershell.layer: WlrLayershell.Overlay
     WlrLayershell.exclusiveZone: -1
     WlrLayershell.keyboardFocus: visible ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+    BackgroundEffect.blurRegion: Region { item: backdrop }
 
     anchors {
         top: true
@@ -210,9 +211,10 @@ PanelWindow {
         onClicked: root.close()
     }
 
-    Rectangle {
+    Controls.BlurredBackdrop {
+        id: backdrop
+
         anchors.fill: parent
-        color: Colors.scrimSoft
     }
 
     Rectangle {
