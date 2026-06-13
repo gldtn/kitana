@@ -36,7 +36,3 @@ return {
   border_inactive = "rgba(${inactive_hex}aa)",
 }
 EOF
-
-if command -v hyprctl >/dev/null 2>&1; then
-  hyprctl reload >/dev/null 2>&1 || true
-fi

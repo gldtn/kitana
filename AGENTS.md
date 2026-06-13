@@ -99,7 +99,7 @@ Theme application flow:
 - `kitana-theme-quickshell` generates Quickshell colors.
 - `kitana-theme-ghostty` updates Ghostty theme state.
 - `kitana-theme-zed` writes `~/.config/zed/themes/kitana-dynamic.json`, often from `vendor/zed/*.json`.
-- `kitana-theme-hypr` writes `~/.config/hypr/kitana-theme.lua` and reloads Hyprland when available.
+- `kitana-theme-hypr` writes `~/.config/hypr/kitana-theme.lua`; Hyprland picks up the change through live config reload.
 
 When adding or editing themes, update `lib/kitana-theme.lua` ordering/mappings as needed and validate generated consumers with the smallest relevant command.
 
