@@ -30,7 +30,7 @@ QtObject {
     readonly property string keyboard: "󰌌"
     readonly property string layout: "󰕰"
     readonly property string layoutDwindle: "󰕮"
-    readonly property string layoutScrolling: ""
+    readonly property string layoutScrolling: "󰜎"
     readonly property string lock: "󰌾"
     readonly property string logout: "󰍃"
     readonly property string media: "󰝚"
