@@ -11,7 +11,7 @@ RowLayout {
 
     Custom.Settings { id: settings }
 
-    property string icon: ""
+    property string iconName: Icons.defaultIcon
     property string label: ""
     property string value: ""
 
@@ -21,9 +21,9 @@ RowLayout {
     Controls.Icon {
         Layout.preferredWidth: 18
         Layout.alignment: Qt.AlignVCenter
-        icon: root.icon
-        color: Colors.accentForeground
-        size: settings.iconPixelSize - 1
+        name: root.iconName
+        tone: "accent"
+        sizeRole: "bar"
     }
 
     Text {

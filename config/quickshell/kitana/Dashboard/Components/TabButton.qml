@@ -12,7 +12,7 @@ Rectangle {
     Custom.Settings { id: settings }
 
     property var dashboard: null
-    property string icon: ""
+    property string iconName: Icons.defaultIcon
     property string label: ""
     property string tab: ""
     property bool compact: false
@@ -32,9 +32,9 @@ Rectangle {
 
         Controls.Icon {
             height: root.height
-            icon: root.icon
-            color: root.selected ? Colors.accentForeground : Colors.primaryForeground
-            size: settings.iconPixelSize
+            name: root.iconName
+            tone: root.selected ? "accent" : "primary"
+            sizeRole: "bar"
         }
 
         Text {

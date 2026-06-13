@@ -11,7 +11,7 @@ Row {
 
     Custom.Settings { id: settings }
 
-    property string icon: ""
+    property string iconName: Icons.defaultIcon
     property int value: 0
     property string label: ""
     property bool iconClickable: false
@@ -28,9 +28,9 @@ Row {
 
         anchors.verticalCenter: parent.verticalCenter
         width: 20
-        icon: root.icon
-        color: Colors.primaryForeground
-        size: 15
+        name: root.iconName
+        tone: "primary"
+        sizeRole: "bar"
 
         MouseArea {
             anchors.fill: parent

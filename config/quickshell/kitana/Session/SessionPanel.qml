@@ -154,8 +154,8 @@ PanelWindow {
                 spacing: 10
 
                 Controls.Icon {
-                    icon: Icons.power
-                    color: Colors.accentForeground
+                    name: "power.power"
+                    tone: "accent"
                     size: settings.iconPixelSize + 5
                 }
 
@@ -188,7 +188,7 @@ PanelWindow {
                 spacing: 10
 
                 SessionAction {
-                    icon: Icons.lock
+                    iconName: "power.lock"
                     shortcut: "L"
                     title: "Lock"
                     subtitle: "Lock session"
@@ -196,7 +196,7 @@ PanelWindow {
                 }
 
                 SessionAction {
-                    icon: Icons.logout
+                    iconName: "power.logout"
                     shortcut: "O"
                     title: "Log out"
                     subtitle: "End session"
@@ -204,7 +204,7 @@ PanelWindow {
                 }
 
                 SessionAction {
-                    icon: Icons.restart
+                    iconName: "power.reboot"
                     shortcut: "R"
                     title: "Restart"
                     subtitle: "Reboot system"
@@ -212,7 +212,7 @@ PanelWindow {
                 }
 
                 SessionAction {
-                    icon: Icons.shutdown
+                    iconName: "power.shutdown"
                     shortcut: "S"
                     title: "Shut down"
                     subtitle: "Power off"
@@ -298,7 +298,7 @@ PanelWindow {
     component SessionAction: Rectangle {
         id: action
 
-        property string icon: ""
+        property string iconName: Icons.defaultIcon
         property string shortcut: ""
         property string title: ""
         property string subtitle: ""
@@ -341,8 +341,8 @@ PanelWindow {
 
             Controls.Icon {
                 Layout.alignment: Qt.AlignHCenter
-                icon: action.icon
-                color: Colors.accentForeground
+                name: action.iconName
+                tone: "accent"
                 size: settings.iconPixelSize + 6
             }
 

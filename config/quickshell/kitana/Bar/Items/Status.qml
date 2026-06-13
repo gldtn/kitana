@@ -110,7 +110,8 @@ Rectangle {
                 id: trayToggle
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
-                icon: root.trayExpanded ? Icons.chevronRight : Icons.chevronLeft
+                iconName: root.trayExpanded ? "ui.chevron.right" : "ui.chevron.left"
+                iconSize: Icons.size("bar") + 4
                 label: ""
                 onClicked: root.trayExpanded = !root.trayExpanded
             }
@@ -217,13 +218,13 @@ Rectangle {
         }
 
         StatusButton {
-            icon: Icons.notification(Services.NotificationService.count, Services.NotificationService.doNotDisturb)
+            iconName: Icons.notificationName(Services.NotificationService.count, Services.NotificationService.doNotDisturb)
             label: ""
             onClicked: if (root.systemPanel) root.systemPanel.toggle("notifications")
         }
 
         StatusButton {
-            icon: Services.SystemStatus.audioIcon
+            iconName: Services.SystemStatus.audioIconName
             alignIconLeft: true
             iconVisualOffset: 2
             label: ""
@@ -232,19 +233,19 @@ Rectangle {
 
         StatusButton {
             visible: Services.SystemStatus.micAvailable
-            icon: Services.SystemStatus.micIcon
+            iconName: Services.SystemStatus.micIconName
             label: ""
             onClicked: if (root.systemPanel) root.systemPanel.toggle("audio")
         }
 
         StatusButton {
-            icon: Services.SystemStatus.bluetoothIcon
+            iconName: Services.SystemStatus.bluetoothIconName
             label: ""
             onClicked: if (root.systemPanel) root.systemPanel.toggle("bluetooth")
         }
 
         StatusButton {
-            icon: Services.SystemStatus.networkIcon
+            iconName: Services.SystemStatus.networkIconName
             label: ""
             onClicked: if (root.systemPanel) root.systemPanel.toggle("network")
         }
@@ -254,8 +255,9 @@ Rectangle {
     component StatusButton: Item {
         id: button
 
-        property string icon: ""
+        property string iconName: Icons.defaultIcon
         property string label: ""
+        property int iconSize: 0
         property bool alignIconLeft: false
         property real iconVisualOffset: 0
         signal clicked
@@ -272,9 +274,10 @@ Rectangle {
             Controls.Icon {
                 width: settings.iconPixelSize + 4
                 height: button.height
-                icon: button.icon
-                color: mouse.containsMouse ? Colors.primaryForeground : Colors.accentForeground
-                size: settings.iconPixelSize
+                name: button.iconName
+                tone: mouse.containsMouse ? "primary" : "accent"
+                sizeRole: "bar"
+                size: button.iconSize
                 horizontalAlignment: button.alignIconLeft ? Text.AlignLeft : Text.AlignHCenter
                 leftPadding: button.alignIconLeft ? button.iconVisualOffset : 0
             }

@@ -3,6 +3,7 @@
 import QtQuick
 import QtQuick.Layouts
 import "../.."
+import "../../Components/Controls" as Controls
 import "../../custom" as Custom
 
 Rectangle {
@@ -11,7 +12,7 @@ Rectangle {
     Custom.Settings { id: settings }
 
     property string text: ""
-    property bool iconText: false
+    property string iconName: ""
     property int widthOverride: 32
     property int heightOverride: 28
 
@@ -27,11 +28,20 @@ Rectangle {
     border.width: 1
 
     Text {
+        visible: root.iconName.length === 0
         anchors.centerIn: parent
         text: root.text
         color: Colors.primaryForeground
-        font.family: root.iconText ? Typography.iconFontFamily : Typography.fontFamily
+        font.family: Typography.fontFamily
         font.pixelSize: settings.textPixelSize
+    }
+
+    Controls.Icon {
+        visible: root.iconName.length > 0
+        anchors.centerIn: parent
+        name: root.iconName.length > 0 ? root.iconName : Icons.defaultIcon
+        tone: "primary"
+        sizeRole: "button"
     }
 
     MouseArea {

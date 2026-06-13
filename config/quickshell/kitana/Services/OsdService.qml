@@ -15,12 +15,12 @@ Singleton {
     property int value: 0
     property bool muted: false
 
-    readonly property string icon: {
+    readonly property string iconName: {
         if (kind === "brightness")
-            return Icons.brightness;
+            return "brightness";
         if (kind === "mic")
-            return Icons.microphone(true, muted, value);
-        return Icons.audio(muted, value);
+            return Icons.microphoneName(true, muted, value);
+        return Icons.audioVolumeName(muted, value);
     }
 
     function show(nextKind, nextTitle, nextValue, nextMuted) {

@@ -625,15 +625,15 @@ PanelWindow {
                 Layout.fillWidth: true
                 spacing: 8
 
-                Dashboard.TabButton { dashboard: panelSelf; icon: Icons.calendar; label: "Date"; tab: "datetime" }
-                Dashboard.TabButton { dashboard: panelSelf; icon: Icons.weather; label: "Weather"; tab: "weather" }
-                Dashboard.TabButton { dashboard: panelSelf; icon: Icons.media; label: "Media"; tab: "media" }
-                Dashboard.TabButton { dashboard: panelSelf; icon: Icons.wallpaper; label: "Wallpapers"; tab: "wallpapers" }
-                Dashboard.TabButton { dashboard: panelSelf; icon: Icons.palette; label: "Themes"; tab: "themes" }
+                Dashboard.TabButton { dashboard: panelSelf; iconName: "calendar"; label: "Date"; tab: "datetime" }
+                Dashboard.TabButton { dashboard: panelSelf; iconName: "weather.default"; label: "Weather"; tab: "weather" }
+                Dashboard.TabButton { dashboard: panelSelf; iconName: "media.default"; label: "Media"; tab: "media" }
+                Dashboard.TabButton { dashboard: panelSelf; iconName: "wallpaper"; label: "Wallpapers"; tab: "wallpapers" }
+                Dashboard.TabButton { dashboard: panelSelf; iconName: "theme"; label: "Themes"; tab: "themes" }
 
                 Item { Layout.fillWidth: true }
 
-                Dashboard.TabButton { dashboard: panelSelf; icon: Icons.settings; label: ""; tab: "settings"; compact: true }
+                Dashboard.TabButton { dashboard: panelSelf; iconName: "settings"; label: ""; tab: "settings"; compact: true }
             }
 
             Rectangle {

@@ -69,19 +69,19 @@ RowLayout {
                 spacing: 8
 
                 TodayFact {
-                    icon: Icons.weather
+                    iconName: "weather.default"
                     label: weather.current_condition ? weather.current_condition[0].weatherDesc[0].value : "Weather"
                     value: weather.current_condition ? root.tempValue(weather.current_condition[0], "temp_C", "temp_F") : "--"
                 }
 
                 TodayFact {
-                    icon: Icons.sunset
+                    iconName: "weather.sunset"
                     label: "Sunset"
                     value: weather.weather ? weather.weather[0].astronomy[0].sunset : "--"
                 }
 
                 TodayFact {
-                    icon: Icons.calendar
+                    iconName: "calendar"
                     label: "Week " + root.isoWeek(root.currentTime)
                     value: "Day " + root.dayOfYear(root.currentTime) + "/" + root.daysInYear(root.currentTime)
                 }
@@ -149,9 +149,9 @@ RowLayout {
                     font.weight: Font.Bold
                 }
 
-                MiniButton { text: Icons.chevronLeft; iconText: true; onClicked: root.shiftMonth(-1) }
+                MiniButton { iconName: "ui.chevron.left"; onClicked: root.shiftMonth(-1) }
                 MiniButton { text: "Today"; widthOverride: 58; onClicked: root.calendarMonth = new Date(root.currentTime.getFullYear(), root.currentTime.getMonth(), 1) }
-                MiniButton { text: Icons.chevronRight; iconText: true; onClicked: root.shiftMonth(1) }
+                MiniButton { iconName: "ui.chevron.right"; onClicked: root.shiftMonth(1) }
             }
 
             GridLayout {

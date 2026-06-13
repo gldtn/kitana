@@ -27,7 +27,7 @@ Column {
     }
 
     DetailRow {
-        icon: Icons.notifications
+        iconName: "notifications.on"
         title: "Do Not Disturb"
         subtitle: Services.NotificationService.doNotDisturb ? "On" : "Off"
         active: Services.NotificationService.doNotDisturb
@@ -35,7 +35,7 @@ Column {
     }
 
     DetailRow {
-        icon: Services.SystemStatus.networkIcon
+        iconName: Services.SystemStatus.networkIconName
         title: "Network"
         subtitle: Services.SystemStatus.networkKind === "off" ? "Off" : "Connected"
         active: Services.SystemStatus.networkKind !== "off"
@@ -43,7 +43,7 @@ Column {
     }
 
     DetailRow {
-        icon: Services.SystemStatus.audioIcon
+        iconName: Services.SystemStatus.audioIconName
         title: "Audio"
         subtitle: Services.SystemStatus.audioLabel
         active: !Services.SystemStatus.audioMuted

@@ -2,4 +2,4 @@
 
 Place bundled Quickshell icons, images, shaders, and other visual assets here.
 
-Quickshell UI icons are currently sourced from Nerd Font glyph tokens in `Config/Icons.qml`.
+Quickshell UI icons use semantic names resolved to Nerd Font glyphs by `Config/Icons.qml` and rendered through `Components/Controls/Icon.qml`.

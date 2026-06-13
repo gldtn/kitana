@@ -11,7 +11,7 @@ Rectangle {
 
     Custom.Settings { id: settings }
 
-    property string text: ""
+    property string iconName: Icons.defaultIcon
     property bool prominent: false
 
     signal clicked
@@ -25,8 +25,8 @@ Rectangle {
 
     Controls.Icon {
         anchors.centerIn: parent
-        icon: root.text
-        color: root.prominent ? Colors.accentForeground : Colors.primaryForeground
+        name: root.iconName
+        tone: root.prominent ? "accent" : "primary"
         size: root.prominent ? settings.iconPixelSize + 2 : settings.iconPixelSize - 1
     }
 

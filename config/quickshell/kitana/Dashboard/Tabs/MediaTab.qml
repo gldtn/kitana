@@ -91,8 +91,8 @@ Item {
                     Controls.Icon {
                         anchors.centerIn: parent
                         visible: Services.MediaService.artSource().length === 0
-                        icon: Icons.media
-                        color: Colors.accentForeground
+                        name: "media.default"
+                        tone: "accent"
                         size: 64
                     }
 
@@ -170,7 +170,7 @@ Item {
                         }
 
                         MediaButton {
-                            text: Services.SystemStatus.audioIcon
+                            iconName: Services.SystemStatus.audioIconName
                             onClicked: {
                                 Services.SystemStatus.refresh();
                                 root.mediaAudioOverlayOpen = !root.mediaAudioOverlayOpen;
@@ -240,12 +240,12 @@ Item {
                         Layout.fillWidth: true
                         spacing: 10
 
-                        MediaButton { text: Icons.previous; onClicked: Services.MediaService.previous() }
-                        MediaButton { text: root.mediaPlaying ? Icons.pause : Icons.play; prominent: true; onClicked: Services.MediaService.playPause() }
-                        MediaButton { text: Icons.stop; onClicked: Services.MediaService.stop() }
-                        MediaButton { text: Icons.next; onClicked: Services.MediaService.next() }
+                        MediaButton { iconName: "media.previous"; onClicked: Services.MediaService.previous() }
+                        MediaButton { iconName: root.mediaPlaying ? "media.pause" : "media.play"; prominent: true; onClicked: Services.MediaService.playPause() }
+                        MediaButton { iconName: "media.stop"; onClicked: Services.MediaService.stop() }
+                        MediaButton { iconName: "media.next"; onClicked: Services.MediaService.next() }
                         Item { Layout.fillWidth: true }
-                        MediaButton { text: Icons.refresh; onClicked: root.refreshMedia() }
+                        MediaButton { iconName: "media.refresh"; onClicked: root.refreshMedia() }
                     }
                 }
             }
@@ -297,8 +297,7 @@ Item {
                     }
 
                     MiniButton {
-                        text: Icons.close
-                        iconText: true
+                        iconName: "ui.close"
                         widthOverride: 32
                         heightOverride: 30
                         onClicked: root.mediaAudioOverlayOpen = false
@@ -346,7 +345,7 @@ Item {
                                 required property var modelData
 
                                 name: modelData.name
-                                icon: modelData.icon || Icons.audioOutput
+                                iconName: modelData.iconName || "audio.output"
                                 subtitle: modelData.subtitle || "Output device"
                                 active: Services.SystemStatus.audioSink === modelData.name
                                 onClicked: Services.SystemStatus.setAudioSink(modelData.id)

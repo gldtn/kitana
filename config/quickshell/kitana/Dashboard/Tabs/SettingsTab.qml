@@ -64,8 +64,7 @@ ColumnLayout {
 
                 MiniButton {
                     Layout.alignment: Qt.AlignBottom
-                    text: weatherPrefs.hideLocation ? Icons.visibilityOff : Icons.visibility
-                    iconText: true
+                    iconName: weatherPrefs.hideLocation ? "weather.visibility.off" : "weather.visibility"
                     widthOverride: 46
                     heightOverride: 34
                     onClicked: weatherPrefs.hideLocation = !weatherPrefs.hideLocation

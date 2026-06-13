@@ -116,8 +116,8 @@ PanelWindow {
                 spacing: 10
 
                 Controls.Icon {
-                    icon: Icons.screenshot
-                    color: Colors.accentForeground
+                    name: "screenshot.default"
+                    tone: "accent"
                     size: settings.iconPixelSize + 5
                 }
 
@@ -150,7 +150,7 @@ PanelWindow {
                 spacing: 10
 
                 ScreenshotAction {
-                    icon: Icons.monitor
+                    iconName: "display.monitor"
                     shortcut: "S"
                     title: "Screen"
                     subtitle: "Full monitor"
@@ -158,7 +158,7 @@ PanelWindow {
                 }
 
                 ScreenshotAction {
-                    icon: Icons.screenshotWindow
+                    iconName: "screenshot.window"
                     shortcut: "W"
                     title: "Window"
                     subtitle: "Focused pick"
@@ -166,7 +166,7 @@ PanelWindow {
                 }
 
                 ScreenshotAction {
-                    icon: Icons.screenshotRegion
+                    iconName: "screenshot.region"
                     shortcut: "R"
                     title: "Region"
                     subtitle: "Select area"
@@ -174,7 +174,7 @@ PanelWindow {
                 }
 
                 ScreenshotAction {
-                    icon: Icons.screenshotClipboard
+                    iconName: "screenshot.clipboard"
                     shortcut: "C"
                     title: "Clipboard"
                     subtitle: "Region only"
@@ -189,7 +189,7 @@ PanelWindow {
     component ScreenshotAction: Rectangle {
         id: action
 
-        property string icon: ""
+        property string iconName: Icons.defaultIcon
         property string shortcut: ""
         property string title: ""
         property string subtitle: ""
@@ -232,8 +232,8 @@ PanelWindow {
 
             Controls.Icon {
                 Layout.alignment: Qt.AlignHCenter
-                icon: action.icon
-                color: Colors.accentForeground
+                name: action.iconName
+                tone: "accent"
                 size: settings.iconPixelSize + 6
             }
 

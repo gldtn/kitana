@@ -3,6 +3,7 @@
 import QtQuick
 import Quickshell
 import "../.."
+import "../../Components/Controls" as Controls
 import "../../custom" as Custom
 import "../../Services" as Services
 
@@ -17,13 +18,12 @@ Row {
     height: 34
     spacing: 12
 
-    Text {
+    Controls.Icon {
         id: brandIcon
         anchors.verticalCenter: parent.verticalCenter
-        text: Icons.arch
-        color: Colors.primaryForeground
-        font.family: Typography.iconFontFamily
-        font.pixelSize: 16
+        name: "brand.arch"
+        tone: "brand"
+        sizeRole: "button"
     }
 
     Text {
@@ -42,6 +42,6 @@ Row {
         anchors.verticalCenter: parent.verticalCenter
         spacing: 16
 
-        HeaderIcon { text: Icons.notification(Services.NotificationService.count, Services.NotificationService.doNotDisturb); onClicked: if (root.panel) root.panel.section = "notifications" }
+        HeaderIcon { name: Icons.notificationName(Services.NotificationService.count, Services.NotificationService.doNotDisturb); onClicked: if (root.panel) root.panel.section = "notifications" }
     }
 }

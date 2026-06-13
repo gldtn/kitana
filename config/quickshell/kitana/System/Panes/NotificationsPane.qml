@@ -22,8 +22,8 @@ Item {
 
             Controls.Icon {
                 anchors.horizontalCenter: parent.horizontalCenter
-                icon: Services.NotificationService.doNotDisturb ? Icons.notificationsOff : Icons.notifications
-                color: Colors.mutedForeground
+                name: Services.NotificationService.doNotDisturb ? "notifications.off" : "notifications.on"
+                tone: "muted"
                 size: 30
             }
 
@@ -95,7 +95,7 @@ Item {
 
             FooterAction {
                 id: silentAction
-                icon: Services.NotificationService.doNotDisturb ? Icons.notificationsOff : Icons.notifications
+                iconName: Services.NotificationService.doNotDisturb ? "notifications.off" : "notifications.on"
                 text: "Silent"
                 active: Services.NotificationService.doNotDisturb
                 onClicked: Services.NotificationService.toggleDoNotDisturb()
@@ -103,7 +103,7 @@ Item {
 
             FooterAction {
                 id: clearAction
-                icon: Icons.dismissAll
+                iconName: "notifications.dismiss.all"
                 text: "Clear"
                 enabled: Services.NotificationService.count > 0
                 opacity: enabled ? 1 : 0.45
@@ -115,7 +115,7 @@ Item {
     component FooterAction: Item {
         id: action
 
-        property string icon: ""
+        property string iconName: Icons.defaultIcon
         property string text: ""
         property bool active: false
         signal clicked
@@ -131,8 +131,8 @@ Item {
 
             Controls.Icon {
                 anchors.verticalCenter: parent.verticalCenter
-                icon: action.icon
-                color: action.active || actionMouse.containsMouse ? Colors.primaryForeground : Colors.mutedForeground
+                name: action.iconName
+                tone: action.active || actionMouse.containsMouse ? "primary" : "muted"
                 size: 14
             }
 

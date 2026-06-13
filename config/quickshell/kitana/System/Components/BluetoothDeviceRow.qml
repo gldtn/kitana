@@ -31,9 +31,9 @@ Rectangle {
         anchors.leftMargin: 9
         anchors.verticalCenter: parent.verticalCenter
         width: 24
-        icon: modelData.connected ? Icons.bluetoothConnected : Icons.bluetooth
-        color: modelData.connected ? Colors.accentForeground : Colors.primaryForeground
-        size: 16
+        name: modelData.connected ? "bluetooth.connected" : "bluetooth.on"
+        tone: modelData.connected ? "accent" : "primary"
+        sizeRole: "button"
     }
 
     Column {
@@ -76,8 +76,8 @@ Rectangle {
 
         Controls.Icon {
             anchors.centerIn: parent
-            icon: Icons.disconnect
-            color: disconnectMouse.containsMouse ? Colors.dangerForeground : Colors.mutedForeground
+            name: "bluetooth.disconnect"
+            tone: disconnectMouse.containsMouse ? "danger" : "muted"
             size: 14
         }
 
@@ -103,8 +103,8 @@ Rectangle {
 
         Controls.Icon {
             anchors.centerIn: parent
-            icon: Icons.trash
-            color: forgetMouse.containsMouse ? Colors.dangerForeground : Colors.mutedForeground
+            name: "ui.delete"
+            tone: forgetMouse.containsMouse ? "danger" : "muted"
             size: 14
         }
 

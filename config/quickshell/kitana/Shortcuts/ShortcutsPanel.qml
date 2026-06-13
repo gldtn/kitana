@@ -242,8 +242,8 @@ PanelWindow {
                 spacing: 10
 
                 Controls.Icon {
-                    icon: Icons.keyboard
-                    color: Colors.accentForeground
+                    name: "input.keyboard"
+                    tone: "accent"
                     size: settings.iconPixelSize + 4
                 }
 
@@ -285,9 +285,9 @@ PanelWindow {
                     spacing: 8
 
                     Controls.Icon {
-                        icon: Icons.appSearch
-                        color: Colors.mutedForeground
-                        size: settings.iconPixelSize
+                        name: "search"
+                        tone: "muted"
+                        sizeRole: "bar"
                     }
 
                     TextInput {

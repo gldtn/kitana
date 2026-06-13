@@ -24,9 +24,9 @@ Rectangle {
 
     Controls.Icon {
         anchors.fill: parent
-        icon: Icons.arch
-        color: Colors.accentForeground
-        size: settings.iconPixelSize + 1
+        name: "brand.arch"
+        tone: "brand"
+        sizeRole: "bar"
     }
 
     MouseArea {

@@ -24,9 +24,9 @@ Rectangle {
 
     Controls.Icon {
         anchors.fill: parent
-        icon: Icons.screenshot
-        color: Colors.accentForeground
-        size: settings.iconPixelSize + 1
+        name: "screenshot.default"
+        tone: "accent"
+        sizeRole: "bar"
     }
 
     MouseArea {

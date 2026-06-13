@@ -2,18 +2,16 @@
 
 import QtQuick
 import "../.."
-import "../../custom" as Custom
+import "../../Components/Controls" as Controls
 
-Text {
+Controls.Icon {
     id: root
-
-    Custom.Settings { id: settings }
 
     signal clicked
 
-    color: Colors.primaryForeground
-    font.family: Typography.iconFontFamily
-    font.pixelSize: 15
+    tone: "primary"
+    sizeRole: "bar"
+    size: 15
 
     MouseArea {
         anchors.fill: parent

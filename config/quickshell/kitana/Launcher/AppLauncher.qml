@@ -272,8 +272,8 @@ PanelWindow {
                         spacing: 10
 
                         Controls.Icon {
-                            icon: Icons.appSearch
-                            color: Colors.mutedForeground
+                            name: "search"
+                            tone: "muted"
                             size: 18
                         }
 
@@ -374,11 +374,20 @@ PanelWindow {
                                         radius: 9
                                         color: Colors.panelButtonBackgroundHover
 
-                                        Text {
+                                        Controls.Icon {
+                                            visible: modelData.fallbackIconName && modelData.fallbackIconName.length > 0
                                             anchors.centerIn: parent
-                                            text: modelData.fallbackIcon || (modelData.name || "A").charAt(0).toUpperCase()
+                                            name: modelData.fallbackIconName || Icons.defaultIcon
+                                            tone: "accent"
+                                            size: 15
+                                        }
+
+                                        Text {
+                                            visible: !modelData.fallbackIconName || modelData.fallbackIconName.length === 0
+                                            anchors.centerIn: parent
+                                            text: (modelData.name || "A").charAt(0).toUpperCase()
                                             color: Colors.accentForeground
-                                            font.family: modelData.fallbackIcon ? Typography.iconFontFamily : Typography.fontFamily
+                                            font.family: Typography.fontFamily
                                             font.pixelSize: 15
                                             font.weight: Font.Bold
                                         }
@@ -427,8 +436,8 @@ PanelWindow {
 
                         Controls.Icon {
                             Layout.alignment: Qt.AlignHCenter
-                            icon: Icons.appSearch
-                            color: Colors.mutedForeground
+                            name: "search"
+                            tone: "muted"
                             size: 30
                         }
 

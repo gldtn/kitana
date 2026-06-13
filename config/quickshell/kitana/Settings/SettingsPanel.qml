@@ -128,14 +128,14 @@ PanelWindow {
                 Layout.fillWidth: true
                 spacing: 8
 
-                TabButton { icon: Icons.layout; label: "Bar"; tab: "bar" }
-                TabButton { icon: Icons.settings; label: "System"; tab: "system" }
+                TabButton { iconName: "workspace.layout"; label: "Bar"; tab: "bar" }
+                TabButton { iconName: "settings"; label: "System"; tab: "system" }
 
                 Item { Layout.fillWidth: true }
 
                 Controls.Icon {
-                    icon: Icons.settings
-                    color: Colors.accentForeground
+                    name: "settings"
+                    tone: "accent"
                     size: settings.iconPixelSize + 1
                 }
             }
@@ -166,7 +166,7 @@ PanelWindow {
     component TabButton: Rectangle {
         id: tabRoot
 
-        property string icon: ""
+        property string iconName: Icons.defaultIcon
         property string label: ""
         property string tab: ""
         readonly property bool selected: root.activeTab === tab
@@ -185,9 +185,9 @@ PanelWindow {
 
             Controls.Icon {
                 height: tabRoot.height
-                icon: tabRoot.icon
-                color: tabRoot.selected ? Colors.accentForeground : Colors.primaryForeground
-                size: settings.iconPixelSize
+                name: tabRoot.iconName
+                tone: tabRoot.selected ? "accent" : "primary"
+                sizeRole: "bar"
             }
 
             Text {
@@ -213,7 +213,7 @@ PanelWindow {
     component SettingRow: Rectangle {
         id: rowRoot
 
-        property string icon: ""
+        property string iconName: Icons.defaultIcon
         property string title: ""
         property string subtitle: ""
         property bool active: false
@@ -235,8 +235,8 @@ PanelWindow {
 
             Controls.Icon {
                 Layout.preferredWidth: 24
-                icon: rowRoot.icon
-                color: rowRoot.active ? Colors.accentForeground : Colors.primaryForeground
+                name: rowRoot.iconName
+                tone: rowRoot.active ? "accent" : "primary"
                 size: settings.iconPixelSize + 1
             }
 
@@ -294,8 +294,8 @@ PanelWindow {
 
             Controls.Icon {
                 anchors.horizontalCenter: parent.horizontalCenter
-                icon: Icons.workspaceLayout(optionRoot.mode === "icons" ? "dwindle" : optionRoot.mode)
-                color: optionRoot.selected ? Colors.accentForeground : Colors.primaryForeground
+                name: Icons.workspaceLayoutName(optionRoot.mode === "icons" ? "dwindle" : optionRoot.mode)
+                tone: optionRoot.selected ? "accent" : "primary"
                 size: settings.iconPixelSize + 2
             }
 
@@ -409,7 +409,7 @@ PanelWindow {
             }
 
             SettingRow {
-                icon: Icons.notifications
+                iconName: "notifications.on"
                 title: "Do Not Disturb"
                 subtitle: Services.NotificationService.doNotDisturb ? "Notifications paused" : "Notifications visible"
                 active: Services.NotificationService.doNotDisturb
@@ -417,7 +417,7 @@ PanelWindow {
             }
 
             SettingRow {
-                icon: Services.CaffeineService.icon
+                iconName: Services.CaffeineService.iconName
                 title: "Caffeine"
                 subtitle: Services.CaffeineService.enabled ? "Idle inhibit on" : "Idle inhibit off"
                 active: Services.CaffeineService.enabled

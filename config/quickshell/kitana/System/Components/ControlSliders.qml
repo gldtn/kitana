@@ -11,7 +11,7 @@ Column {
     spacing: 10
 
     SliderRow {
-        icon: Services.SystemStatus.audioIcon
+        iconName: Services.SystemStatus.audioIconName
         value: Services.SystemStatus.audioVolume
         label: Services.SystemStatus.audioLabel
         iconClickable: true
@@ -22,7 +22,7 @@ Column {
     SliderRow {
         visible: Services.SystemStatus.micAvailable
         height: visible ? 28 : 0
-        icon: Services.SystemStatus.micIcon
+        iconName: Services.SystemStatus.micIconName
         value: Services.SystemStatus.micVolume
         label: Services.SystemStatus.micLabel
         iconClickable: true
@@ -33,7 +33,7 @@ Column {
     SliderRow {
         visible: Services.SystemStatus.brightnessAvailable
         height: visible ? 28 : 0
-        icon: Icons.brightness
+        iconName: "brightness"
         value: Services.SystemStatus.brightness
         label: Services.SystemStatus.brightness + "%"
         onMoved: value => Services.SystemStatus.setBrightness(value)

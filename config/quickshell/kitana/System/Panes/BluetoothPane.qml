@@ -36,7 +36,7 @@ Flickable {
 
         DetailRow {
             visible: Services.SystemStatus.bluetoothAvailable
-            icon: Services.SystemStatus.bluetoothDiscovering ? Icons.scan : Icons.bluetooth
+            iconName: Services.SystemStatus.bluetoothDiscovering ? "bluetooth.scan" : "bluetooth.on"
             title: Services.SystemStatus.bluetoothDiscovering ? "Scanning for devices" : (Services.SystemStatus.bluetoothEnabled ? "Scan for devices" : "Turn Bluetooth on")
             subtitle: Services.SystemStatus.bluetoothEnabled ? "Click to refresh nearby devices" : "Click to enable adapter"
             active: Services.SystemStatus.bluetoothDiscovering

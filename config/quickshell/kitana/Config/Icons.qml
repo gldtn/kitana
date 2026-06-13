@@ -3,126 +3,222 @@
 pragma Singleton
 
 import QtQuick
+import ".." as Kitana
 
 QtObject {
-    readonly property string appSearch: "󰍉"
-    readonly property string arch: ""
-    readonly property string audioOutput: "󰓃"
-    readonly property string bluetooth: "󰂯"
-    readonly property string bluetoothConnected: "󰂱"
-    readonly property string bluetoothDisabled: "󰂲"
-    readonly property string brightness: "󰃠"
-    readonly property string calendar: "󰃭"
-    readonly property string caffeine: "󰾪"
-    readonly property string caffeineOff: "󰅶"
-    readonly property string check: "󰄬"
-    readonly property string chevronDown: "󰅀"
-    readonly property string chevronLeft: "󰅁"
-    readonly property string chevronRight: "󰅂"
-    readonly property string chevronUp: "󰅃"
-    readonly property string close: "󰅖"
-    readonly property string dashboard: "󰡃"
-    readonly property string deleteForever: "󰆴"
-    readonly property string dismissAll: "󰎟"
-    readonly property string disconnect: "󰌸"
-    readonly property string ethernet: "󰀂"
-    readonly property string headphones: "󰋋"
-    readonly property string keyboard: "󰌌"
-    readonly property string layout: "󰕰"
-    readonly property string layoutDwindle: "󰕮"
-    readonly property string layoutScrolling: "󰜎"
-    readonly property string lock: "󰌾"
-    readonly property string logout: "󰍃"
-    readonly property string media: "󰝚"
-    readonly property string mic: "󰍬"
-    readonly property string micMuted: "󰍭"
-    readonly property string monitor: "󰍹"
-    readonly property string moon: ""
-    readonly property string networkOff: "󰖪"
-    readonly property string notifications: "󰂚"
-    readonly property string notificationsActive: "󱅫"
-    readonly property string notificationsOff: "󰂛"
-    readonly property string palette: "󰏘"
-    readonly property string pause: "󰏤"
-    readonly property string play: "󰐊"
-    readonly property string power: "󰐥"
-    readonly property string pressure: "󰓅"
-    readonly property string previous: "󰒮"
-    readonly property string next: "󰒭"
-    readonly property string refresh: "󰑐"
-    readonly property string restart: "󰜉"
-    readonly property string scan: "󰓦"
-    readonly property string screenshot: "󰄀"
-    readonly property string screenshotClipboard: "󰅇"
-    readonly property string screenshotRegion: "󰩭"
-    readonly property string screenshotWindow: ""
-    readonly property string settings: "󰒓"
-    readonly property string shutdown: "󰐥"
-    readonly property string stop: "󰓛"
-    readonly property string sunrise: "󰖜"
-    readonly property string sunset: "󰖛"
-    readonly property string thermometer: "󰔏"
-    readonly property string theme: "󰏘"
-    readonly property string trash: "󰆴"
-    readonly property string visibility: "󰈈"
-    readonly property string visibilityOff: "󰈉"
-    readonly property string volumeDown: ""
-    readonly property string volumeMuted: ""
-    readonly property string volumeUp: ""
-    readonly property string wallpaper: "󰸉"
-    readonly property string waterDrop: "󰖌"
-    readonly property string weather: "󰖕"
-    readonly property string wind: "󰖝"
-    readonly property string wifi: "󰖩"
-    readonly property string wifiLow: "󰤟"
-    readonly property string wifiMedium: "󰤢"
-    readonly property string wifiHigh: "󰤨"
-    readonly property string wiredAudio: "󰓃"
+    readonly property string defaultIcon: "ui.unknown"
 
-    function bluetoothStatus(enabled: bool, connectedCount: int): string {
-        return !enabled ? bluetoothDisabled : (connectedCount > 0 ? bluetoothConnected : bluetooth);
+    readonly property var glyphs: ({
+        "brand.arch": "",
+
+        "launcher.apps": "󰍉",
+        "panel.open": "󰅂",
+        "panel.close": "󰅁",
+
+        "dashboard": "",
+        "clock": "󰥔",
+        "calendar": "󰃭",
+        "calculator": "󰃬",
+        "search": "󰍉",
+        "settings": "󰒓",
+        "theme": "󰏘",
+        "wallpaper": "󰸉",
+        "brightness": "󰃠",
+
+        "caffeine.on": "󰾪",
+        "caffeine.off": "󰅶",
+
+        "audio.output": "󰓃",
+        "audio.output.wired": "󰓃",
+        "audio.headphones": "󰋋",
+        "audio.display": "󰍹",
+        "audio.volume.high": "",
+        "audio.volume.medium": "",
+        "audio.volume.low": "",
+        "audio.volume.muted": "",
+        "audio.mic": "󰍬",
+        "audio.mic.muted": "󰍭",
+
+        "network.off": "󰖪",
+        "network.wifi": "󰖩",
+        "network.wifi.high": "󰤨",
+        "network.wifi.medium": "󰤢",
+        "network.wifi.low": "󰤟",
+        "network.wifi.off": "󰖪",
+        "network.wired": "󰀂",
+
+        "bluetooth.on": "󰂯",
+        "bluetooth.connected": "󰂱",
+        "bluetooth.off": "󰂲",
+        "bluetooth.disconnect": "󰌸",
+        "bluetooth.scan": "󰓦",
+
+        "battery.full": "󰁹",
+        "battery.high": "󰂁",
+        "battery.medium": "󰁾",
+        "battery.low": "󰁻",
+        "battery.empty": "󰂎",
+        "battery.charging": "󰂄",
+
+        "notifications.on": "󰂚",
+        "notifications.active": "󱅫",
+        "notifications.off": "󰂛",
+        "notifications.dismiss.all": "󰎟",
+
+        "media.default": "󰝚",
+        "media.play": "󰐊",
+        "media.pause": "󰏤",
+        "media.stop": "󰓛",
+        "media.previous": "󰒮",
+        "media.next": "󰒭",
+        "media.refresh": "󰑐",
+
+        "power.power": "󰐥",
+        "power.lock": "󰌾",
+        "power.logout": "󰍃",
+        "power.reboot": "󰜉",
+        "power.shutdown": "󰐥",
+        "power.suspend": "󰤄",
+
+        "workspace.layout": "󰕰",
+        "workspace.layout.dwindle": "󰕮",
+        "workspace.layout.scrolling": "󰜎",
+
+        "display.monitor": "󰍹",
+        "input.keyboard": "󰌌",
+
+        "screenshot.default": "󰄀",
+        "screenshot.window": "",
+        "screenshot.region": "󰩭",
+        "screenshot.clipboard": "󰅇",
+
+        "weather.default": "󰖕",
+        "weather.sunrise": "󰖜",
+        "weather.sunset": "󰖛",
+        "weather.moon": "",
+        "weather.wind": "󰖝",
+        "weather.thermometer": "󰔏",
+        "weather.water": "󰖌",
+        "weather.pressure": "󰓅",
+        "weather.visibility": "󰈈",
+        "weather.visibility.off": "󰈉",
+
+        "ui.close": "󰅖",
+        "ui.check": "󰄬",
+        "ui.chevron.down": "󰅀",
+        "ui.chevron.up": "󰅃",
+        "ui.chevron.left": "󰅁",
+        "ui.chevron.right": "󰅂",
+        "ui.delete": "󰆴",
+        "ui.refresh": "󰑐",
+        "ui.scan": "󰓦",
+        "ui.visibility": "󰈈",
+        "ui.visibility.off": "󰈉",
+        "ui.unknown": "󰋗"
+    })
+
+    readonly property var sizes: ({
+        "bar": 14,
+        "button": 16,
+        "tile": 18,
+        "panel": 22,
+        "hero": 32
+    })
+
+    function glyph(name: string): string {
+        const value = glyphs[name];
+        if (value)
+            return value;
+
+        console.warn("Unknown icon:", name);
+        return glyphs[defaultIcon];
     }
 
-    function caffeineStatus(enabled: bool): string {
-        return enabled ? caffeine : caffeineOff;
+    function size(role: string): int {
+        const value = sizes[role];
+        if (value)
+            return value;
+
+        console.warn("Unknown icon size role:", role);
+        return sizes["button"];
     }
 
-    function network(kind: string, signal: int): string {
+    function toneColor(tone: string): color {
+        if (tone === "primary")
+            return Kitana.Colors.primaryForeground;
+        if (tone === "secondary")
+            return Kitana.Colors.secondaryForeground;
+        if (tone === "muted")
+            return Kitana.Colors.mutedForeground;
+        if (tone === "subtle")
+            return Kitana.Colors.panelBorder;
+        if (tone === "accent")
+            return Kitana.Colors.accentForeground;
+        if (tone === "onAccent")
+            return Kitana.Colors.onAccentForeground;
+        if (tone === "inverse")
+            return Kitana.Colors.secondaryForeground;
+        if (tone === "brand")
+            return Kitana.Colors.accentForeground;
+        if (tone === "disabled")
+            return Kitana.Colors.mutedForeground;
+        if (tone === "danger")
+            return Kitana.Colors.dangerForeground;
+
+        console.warn("Unknown icon tone:", tone);
+        return Kitana.Colors.primaryForeground;
+    }
+
+    function bluetoothName(enabled: bool, connectedCount: int): string {
+        return !enabled ? "bluetooth.off" : (connectedCount > 0 ? "bluetooth.connected" : "bluetooth.on");
+    }
+
+    function caffeineName(enabled: bool): string {
+        return enabled ? "caffeine.on" : "caffeine.off";
+    }
+
+    function networkName(kind: string, signal: int): string {
         if (kind === "wired")
-            return ethernet;
+            return "network.wired";
         if (kind === "wifi") {
             if (signal >= 70)
-                return wifiHigh;
+                return "network.wifi.high";
             if (signal >= 40)
-                return wifiMedium;
-            return wifiLow;
+                return "network.wifi.medium";
+            return "network.wifi.low";
         }
-        return networkOff;
+        return "network.off";
     }
 
-    function audio(muted: bool, volume: int): string {
-        return muted || volume === 0 ? volumeMuted : (volume >= 60 ? volumeUp : volumeDown);
+    function audioVolumeName(muted: bool, volume: int): string {
+        if (muted || volume === 0)
+            return "audio.volume.muted";
+        if (volume >= 67)
+            return "audio.volume.high";
+        if (volume >= 34)
+            return "audio.volume.medium";
+        return "audio.volume.low";
     }
 
-    function microphone(available: bool, muted: bool, volume: int): string {
-        return !available || muted || volume === 0 ? micMuted : mic;
+    function microphoneName(available: bool, muted: bool, volume: int): string {
+        return !available || muted || volume === 0 ? "audio.mic.muted" : "audio.mic";
     }
 
-    function notification(count: int, doNotDisturb: bool): string {
+    function notificationName(count: int, doNotDisturb: bool): string {
         if (doNotDisturb)
-            return notificationsOff;
-        return count > 0 ? notificationsActive : notifications;
+            return "notifications.off";
+        return count > 0 ? "notifications.active" : "notifications.on";
     }
 
-    function audioDevice(kind: string): string {
+    function audioDeviceName(kind: string): string {
         if (kind === "bluetooth" || kind === "headset")
-            return headphones;
+            return "audio.headphones";
         if (kind === "hdmi")
-            return monitor;
-        return wiredAudio;
+            return "audio.display";
+        return "audio.output.wired";
     }
 
-    function workspaceLayout(layoutName: string): string {
-        return layoutName === "scrolling" ? layoutScrolling : layoutDwindle;
+    function workspaceLayoutName(layoutName: string): string {
+        return layoutName === "scrolling" ? "workspace.layout.scrolling" : "workspace.layout.dwindle";
     }
 }

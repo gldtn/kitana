@@ -32,7 +32,7 @@ Column {
 
             QuickTile {
                 width: parent.width
-                icon: Services.SystemStatus.networkIcon
+                iconName: Services.SystemStatus.networkIconName
                 title: Services.SystemStatus.networkKind === "wired" ? "Ethernet" : (Services.SystemStatus.networkKind === "wifi" ? "Wi-Fi" : "Network")
                 subtitle: Services.SystemStatus.networkKind === "off" ? "Off" : "Connected"
                 active: Services.SystemStatus.networkKind !== "off"
@@ -47,14 +47,14 @@ Column {
 
                 CompactIconTile {
                     width: (parent.width - parent.spacing) / 2
-                    icon: Services.SystemStatus.audioIcon
+                    iconName: Services.SystemStatus.audioIconName
                     active: !Services.SystemStatus.audioMuted
                     onClicked: root.selectSection("audio")
                 }
 
                 CompactIconTile {
                     width: (parent.width - parent.spacing) / 2
-                    icon: Services.SystemStatus.micIcon
+                    iconName: Services.SystemStatus.micIconName
                     active: Services.SystemStatus.micAvailable && !Services.SystemStatus.micMuted
                     onClicked: root.selectSection("audio")
                 }
@@ -64,7 +64,7 @@ Column {
                 visible: !Services.SystemStatus.micAvailable
                 width: parent.width
                 height: visible ? 64 : 0
-                icon: Services.SystemStatus.audioIcon
+                iconName: Services.SystemStatus.audioIconName
                 title: "Audio"
                 subtitle: Services.SystemStatus.audioLabel
                 active: !Services.SystemStatus.audioMuted
@@ -79,7 +79,7 @@ Column {
 
             QuickTile {
                 width: parent.width
-                icon: Services.SystemStatus.bluetoothIcon
+                iconName: Services.SystemStatus.bluetoothIconName
                 title: "Bluetooth"
                 subtitle: Services.SystemStatus.bluetoothEnabled ? "On" : "Off"
                 active: Services.SystemStatus.bluetoothEnabled
@@ -88,7 +88,7 @@ Column {
 
             QuickTile {
                 width: parent.width
-                icon: Icons.keyboard
+                iconName: "input.keyboard"
                 title: "Keyboard " + Services.SystemStatus.keyboardLayoutLabel
                 subtitle: Services.SystemStatus.keyboardLayoutLongLabel
                 active: true
@@ -104,7 +104,7 @@ Column {
 
         QuickTile {
             width: (parent.width - parent.spacing) / 2
-            icon: Icons.notification(Services.NotificationService.count, Services.NotificationService.doNotDisturb)
+            iconName: Icons.notificationName(Services.NotificationService.count, Services.NotificationService.doNotDisturb)
             title: "Do Not Disturb"
             subtitle: Services.NotificationService.doNotDisturb ? "On" : "Off"
             active: Services.NotificationService.doNotDisturb
@@ -113,7 +113,7 @@ Column {
 
         QuickTile {
             width: (parent.width - parent.spacing) / 2
-            icon: Services.CaffeineService.icon
+            iconName: Services.CaffeineService.iconName
             title: "Caffeine"
             subtitle: Services.CaffeineService.subtitle
             active: Services.CaffeineService.enabled

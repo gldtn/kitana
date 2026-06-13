@@ -697,6 +697,27 @@ else
   fail "Quickshell root singletons missing"
 fi
 
+if grep -q 'readonly property var glyphs' "$KITANA_DIR/config/quickshell/kitana/Config/Icons.qml" && grep -q 'function toneColor' "$KITANA_DIR/config/quickshell/kitana/Config/Icons.qml" && grep -q 'function size' "$KITANA_DIR/config/quickshell/kitana/Config/Icons.qml" && grep -q 'function audioVolumeName' "$KITANA_DIR/config/quickshell/kitana/Config/Icons.qml"; then
+  pass "Quickshell semantic icon registry"
+else
+  fail "Quickshell semantic icon registry missing"
+fi
+
+if grep -q 'text: Icons.glyph(name)' "$KITANA_DIR/config/quickshell/kitana/Components/Controls/Icon.qml" && grep -q 'color: Icons.toneColor(tone)' "$KITANA_DIR/config/quickshell/kitana/Components/Controls/Icon.qml" && grep -q 'Icons.size(sizeRole)' "$KITANA_DIR/config/quickshell/kitana/Components/Controls/Icon.qml"; then
+  pass "Quickshell semantic icon renderer"
+else
+  fail "Quickshell semantic icon renderer missing"
+fi
+
+icon_font_usage=$(grep -R -l --include='*.qml' 'Typography\.iconFontFamily' "$KITANA_DIR/config/quickshell/kitana" "$HOME/.config/quickshell/kitana" 2>/dev/null | grep -v '/Components/Controls/Icon.qml$' || true)
+legacy_icon_usage_re='iconText|text:[[:space:]]*Icons\.|icon:[[:space:]]*(Icons\.|Services\.(SystemStatus|CaffeineService|OsdService)\.[[:alnum:]_]*Icon([^[:alnum:]_]|$))'
+legacy_icon_usage=$(grep -R -n -E --include='*.qml' "$legacy_icon_usage_re" "$KITANA_DIR/config/quickshell/kitana" "$HOME/.config/quickshell/kitana" 2>/dev/null | grep -v '/Components/Controls/Icon.qml:' || true)
+if [ -z "$icon_font_usage" ] && [ -z "$legacy_icon_usage" ]; then
+  pass "Quickshell semantic icon call sites"
+else
+  fail "Quickshell semantic icon call sites"
+fi
+
 if grep -q 'Config/Colors.qml' "$KITANA_DIR/bin/kitana-theme-quickshell" && grep -q 'Config/Colors.qml' "$KITANA_DIR/bin/kitana-quickshell"; then
   pass "Quickshell theme color target"
 else

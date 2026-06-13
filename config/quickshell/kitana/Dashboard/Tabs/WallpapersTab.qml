@@ -110,7 +110,7 @@ ColumnLayout {
             anchors.verticalCenter: parent.verticalCenter
             spacing: 10
 
-            MiniButton { text: Icons.chevronLeft; iconText: true; onClicked: root.shiftWallpaperPage(-1) }
+            MiniButton { iconName: "ui.chevron.left"; onClicked: root.shiftWallpaperPage(-1) }
 
             Text {
                 height: 28
@@ -122,7 +122,7 @@ ColumnLayout {
                 font.weight: Font.DemiBold
             }
 
-            MiniButton { text: Icons.chevronRight; iconText: true; onClicked: root.shiftWallpaperPage(1) }
+            MiniButton { iconName: "ui.chevron.right"; onClicked: root.shiftWallpaperPage(1) }
         }
 
         Text {

@@ -81,8 +81,8 @@ PanelWindow {
                     anchors.verticalCenter: parent.verticalCenter
                     width: parent.width
                     height: parent.height
-                    icon: Services.OsdService.icon
-                    color: Services.OsdService.muted ? Colors.mutedForeground : Colors.primaryForeground
+                    name: Services.OsdService.iconName
+                    tone: Services.OsdService.muted ? "muted" : "primary"
                     size: 25
                     horizontalAlignment: Text.AlignLeft
                 }

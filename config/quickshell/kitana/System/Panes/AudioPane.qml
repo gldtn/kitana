@@ -33,7 +33,7 @@ Flickable {
         }
 
         DetailRow {
-            icon: Services.SystemStatus.micIcon
+            iconName: Services.SystemStatus.micIconName
             title: Services.SystemStatus.micAvailable ? Services.SystemStatus.micSource : "No microphone"
             subtitle: Services.SystemStatus.micLabel
             active: Services.SystemStatus.micAvailable && !Services.SystemStatus.micMuted
@@ -55,7 +55,7 @@ Flickable {
 
         DetailRow {
             required property var modelData
-            icon: modelData.icon || Icons.audioOutput
+            iconName: modelData.iconName || "audio.output"
             title: modelData.name
             subtitle: Services.SystemStatus.audioSink === modelData.name ? "Current output" : (modelData.subtitle || "Output device")
             active: Services.SystemStatus.audioSink === modelData.name

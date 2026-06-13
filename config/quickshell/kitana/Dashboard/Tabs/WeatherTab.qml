@@ -50,8 +50,7 @@ ColumnLayout {
         }
 
         MiniButton {
-            text: weatherPrefs.hideLocation ? Icons.visibilityOff : Icons.visibility
-            iconText: true
+            iconName: weatherPrefs.hideLocation ? "weather.visibility.off" : "weather.visibility"
             widthOverride: 46
             heightOverride: 34
             onClicked: weatherPrefs.hideLocation = !weatherPrefs.hideLocation
@@ -64,7 +63,7 @@ ColumnLayout {
             onClicked: root.weatherUnits = root.weatherUnits === "C" ? "F" : "C"
         }
 
-        MiniButton { text: Icons.refresh; iconText: true; heightOverride: 34; onClicked: root.refreshWeather() }
+        MiniButton { iconName: "ui.refresh"; heightOverride: 34; onClicked: root.refreshWeather() }
     }
 
     Rectangle {
@@ -83,8 +82,8 @@ ColumnLayout {
 
             Controls.Icon {
                 Layout.alignment: Qt.AlignVCenter
-                icon: Icons.weather
-                color: Colors.accentForeground
+                name: "weather.default"
+                tone: "accent"
                 size: 42
             }
 
@@ -128,12 +127,12 @@ ColumnLayout {
                     columns: 3
                     rowSpacing: 10
                     columnSpacing: 28
-                    WeatherMetric { icon: Icons.waterDrop; label: "Humidity"; value: weather.current_condition ? weather.current_condition[0].humidity + "%" : "--" }
-                    WeatherMetric { icon: Icons.wind; label: "Wind"; value: root.windValue(weather.current_condition ? weather.current_condition[0] : null) }
-                    WeatherMetric { icon: Icons.thermometer; label: "Feels"; value: weather.current_condition ? root.tempValue(weather.current_condition[0], "FeelsLikeC", "FeelsLikeF") : "--" }
-                    WeatherMetric { icon: Icons.waterDrop; label: "Precip"; value: weather.current_condition ? weather.current_condition[0].precipMM + " mm" : "--" }
-                    WeatherMetric { icon: Icons.pressure; label: "Pressure"; value: weather.current_condition ? weather.current_condition[0].pressure + " hPa" : "--" }
-                    WeatherMetric { icon: Icons.visibility; label: "Visibility"; value: weather.current_condition ? weather.current_condition[0].visibility + " km" : "--" }
+                    WeatherMetric { iconName: "weather.water"; label: "Humidity"; value: weather.current_condition ? weather.current_condition[0].humidity + "%" : "--" }
+                    WeatherMetric { iconName: "weather.wind"; label: "Wind"; value: root.windValue(weather.current_condition ? weather.current_condition[0] : null) }
+                    WeatherMetric { iconName: "weather.thermometer"; label: "Feels"; value: weather.current_condition ? root.tempValue(weather.current_condition[0], "FeelsLikeC", "FeelsLikeF") : "--" }
+                    WeatherMetric { iconName: "weather.water"; label: "Precip"; value: weather.current_condition ? weather.current_condition[0].precipMM + " mm" : "--" }
+                    WeatherMetric { iconName: "weather.pressure"; label: "Pressure"; value: weather.current_condition ? weather.current_condition[0].pressure + " hPa" : "--" }
+                    WeatherMetric { iconName: "weather.visibility"; label: "Visibility"; value: weather.current_condition ? weather.current_condition[0].visibility + " km" : "--" }
                 }
             }
         }
@@ -152,9 +151,9 @@ ColumnLayout {
             anchors.margins: 14
             spacing: 8
 
-            WeatherMetric { icon: Icons.sunrise; label: "Sunrise"; value: weather.weather ? weather.weather[0].astronomy[0].sunrise : "--"; centerContent: true; Layout.fillWidth: true }
-            WeatherMetric { icon: Icons.sunset; label: "Sunset"; value: weather.weather ? weather.weather[0].astronomy[0].sunset : "--"; centerContent: true; Layout.fillWidth: true }
-            WeatherMetric { icon: Icons.moon; label: "Moon"; value: weather.weather ? weather.weather[0].astronomy[0].moon_phase : "--"; centerContent: true; Layout.fillWidth: true }
+            WeatherMetric { iconName: "weather.sunrise"; label: "Sunrise"; value: weather.weather ? weather.weather[0].astronomy[0].sunrise : "--"; centerContent: true; Layout.fillWidth: true }
+            WeatherMetric { iconName: "weather.sunset"; label: "Sunset"; value: weather.weather ? weather.weather[0].astronomy[0].sunset : "--"; centerContent: true; Layout.fillWidth: true }
+            WeatherMetric { iconName: "weather.moon"; label: "Moon"; value: weather.weather ? weather.weather[0].astronomy[0].moon_phase : "--"; centerContent: true; Layout.fillWidth: true }
         }
     }
 
@@ -212,8 +211,8 @@ ColumnLayout {
                         Controls.Icon {
                             id: forecastIcon
 
-                            icon: modelData.hourly && modelData.hourly.length > 0 && modelData.hourly[4].chanceofrain > 0 ? Icons.waterDrop : Icons.weather
-                            color: Colors.accentForeground
+                            name: modelData.hourly && modelData.hourly.length > 0 && modelData.hourly[4].chanceofrain > 0 ? "weather.water" : "weather.default"
+                            tone: "accent"
                             size: settings.textPixelSize
                         }
 

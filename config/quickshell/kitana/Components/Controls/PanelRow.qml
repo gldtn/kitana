@@ -9,7 +9,7 @@ Rectangle {
 
     Custom.Settings { id: settings }
 
-    property string icon: ""
+    property string iconName: Icons.defaultIcon
     property string title: ""
     property string subtitle: ""
     property bool highlighted: false
@@ -30,12 +30,11 @@ Rectangle {
         anchors.rightMargin: 12
         spacing: 10
 
-        Text {
+        Icon {
             anchors.verticalCenter: parent.verticalCenter
-            text: root.icon
-            color: root.highlighted ? Colors.accentForeground : Colors.primaryForeground
-            font.family: Typography.fontFamily
-            font.pixelSize: 18
+            name: root.iconName
+            tone: root.highlighted ? "accent" : "primary"
+            sizeRole: "tile"
         }
 
         Column {

@@ -52,9 +52,9 @@ Rectangle {
 
             Controls.Icon {
                 anchors.centerIn: parent
-                icon: Icons.dashboard
-                color: dashboardMouse.containsMouse ? Colors.primaryForeground : Colors.accentForeground
-                size: settings.iconPixelSize
+                name: "dashboard"
+                tone: dashboardMouse.containsMouse ? "primary" : "accent"
+                sizeRole: "bar"
             }
 
             MouseArea {

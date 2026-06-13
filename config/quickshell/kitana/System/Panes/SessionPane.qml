@@ -25,8 +25,8 @@ Column {
         font.weight: Font.Bold
     }
 
-    DetailRow { icon: Icons.lock; title: "Lock"; subtitle: "Lock this session"; onClicked: if (root.panel) root.panel.lockSession() }
-    DetailRow { icon: Icons.logout; title: "Log out"; subtitle: "Confirm before ending session"; onClicked: if (root.panel) root.panel.ask("logout", "Log out?") }
-    DetailRow { icon: Icons.restart; title: "Restart"; subtitle: "Confirm before reboot"; onClicked: if (root.panel) root.panel.ask("restart", "Restart?") }
-    DetailRow { icon: Icons.shutdown; title: "Shut down"; subtitle: "Confirm before poweroff"; onClicked: if (root.panel) root.panel.ask("shutdown", "Shut down?") }
+    DetailRow { iconName: "power.lock"; title: "Lock"; subtitle: "Lock this session"; onClicked: if (root.panel) root.panel.lockSession() }
+    DetailRow { iconName: "power.logout"; title: "Log out"; subtitle: "Confirm before ending session"; onClicked: if (root.panel) root.panel.ask("logout", "Log out?") }
+    DetailRow { iconName: "power.reboot"; title: "Restart"; subtitle: "Confirm before reboot"; onClicked: if (root.panel) root.panel.ask("restart", "Restart?") }
+    DetailRow { iconName: "power.shutdown"; title: "Shut down"; subtitle: "Confirm before poweroff"; onClicked: if (root.panel) root.panel.ask("shutdown", "Shut down?") }
 }

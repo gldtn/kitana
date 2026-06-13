@@ -70,7 +70,7 @@ PanelWindow {
 
                     Controls.Icon {
                         anchors.centerIn: parent
-                        icon: Icons.notifications
+                        name: "notifications.on"
                         color: Services.NotificationService.toneForeground(modelData)
                         size: 20
                     }
@@ -140,8 +140,8 @@ PanelWindow {
 
                     Controls.Icon {
                         anchors.centerIn: parent
-                        icon: Icons.close
-                        color: closeMouse.containsMouse ? Colors.primaryForeground : Colors.mutedForeground
+                        name: "ui.close"
+                        tone: closeMouse.containsMouse ? "primary" : "muted"
                         size: 14
                     }
 

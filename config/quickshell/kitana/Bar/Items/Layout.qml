@@ -80,9 +80,9 @@ Rectangle {
 
         Controls.Icon {
             anchors.verticalCenter: parent.verticalCenter
-            icon: Icons.workspaceLayout(root.currentLayout)
-            color: Colors.accentForeground
-            size: settings.iconPixelSize
+            name: Icons.workspaceLayoutName(root.currentLayout)
+            tone: "accent"
+            sizeRole: "bar"
         }
 
         Text {

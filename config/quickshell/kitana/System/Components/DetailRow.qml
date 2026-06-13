@@ -10,7 +10,7 @@ Rectangle {
 
     Custom.Settings { id: settings }
 
-    property string icon: ""
+    property string iconName: Icons.defaultIcon
     property string title: ""
     property string subtitle: ""
     property bool active: false
@@ -30,13 +30,13 @@ Rectangle {
         anchors.margins: 9
         spacing: 10
 
-            Controls.Icon {
-                anchors.verticalCenter: parent.verticalCenter
-                width: 24
-                icon: root.icon
-                color: root.active ? Colors.accentForeground : Colors.primaryForeground
-                size: 16
-            }
+        Controls.Icon {
+            anchors.verticalCenter: parent.verticalCenter
+            width: 24
+            name: root.iconName
+            tone: root.active ? "accent" : "primary"
+            sizeRole: "button"
+        }
 
         Column {
             anchors.verticalCenter: parent.verticalCenter

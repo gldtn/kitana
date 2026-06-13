@@ -17,7 +17,7 @@ Singleton {
     }
 
     property alias enabled: state.enabled
-    readonly property string icon: Icons.caffeineStatus(enabled)
+    readonly property string iconName: Icons.caffeineName(enabled)
     readonly property string subtitle: enabled ? "On" : "Off"
 
     function toggle(): void {

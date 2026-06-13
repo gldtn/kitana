@@ -43,7 +43,7 @@ Rectangle {
 
         Controls.Icon {
             anchors.centerIn: parent
-            icon: Icons.notifications
+            name: "notifications.on"
             color: Services.NotificationService.toneForeground(root.item)
             size: 20
         }
@@ -105,8 +105,8 @@ Rectangle {
 
                     Controls.Icon {
                         anchors.verticalCenter: parent.verticalCenter
-                        icon: root.groupCollapsed ? Icons.chevronDown : Icons.chevronUp
-                        color: Colors.primaryForeground
+                        name: root.groupCollapsed ? "ui.chevron.down" : "ui.chevron.up"
+                        tone: "primary"
                         size: 12
                     }
                 }
@@ -129,8 +129,8 @@ Rectangle {
 
                 Controls.Icon {
                     anchors.centerIn: parent
-                    icon: Icons.close
-                    color: dismissMouse.containsMouse ? Colors.primaryForeground : Colors.mutedForeground
+                    name: "ui.close"
+                    tone: dismissMouse.containsMouse ? "primary" : "muted"
                     size: 13
                 }
 

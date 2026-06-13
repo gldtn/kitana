@@ -9,12 +9,15 @@ Text {
 
     Custom.Settings { id: settings }
 
-    property string icon: ""
-    property int size: settings.iconPixelSize
+    property string name: Icons.defaultIcon
+    property string tone: "primary"
+    property string sizeRole: "button"
+    property int size: 0
 
-    text: icon
+    text: Icons.glyph(name)
+    color: Icons.toneColor(tone)
     font.family: Typography.iconFontFamily
-    font.pixelSize: size
+    font.pixelSize: size > 0 ? size : Icons.size(sizeRole)
     horizontalAlignment: Text.AlignHCenter
     verticalAlignment: Text.AlignVCenter
 }

@@ -12,7 +12,7 @@ Rectangle {
     Custom.Settings { id: settings }
 
     property string name: ""
-    property string icon: Icons.audioOutput
+    property string iconName: "audio.output"
     property string subtitle: "Output device"
     property bool active: false
 
@@ -32,9 +32,9 @@ Rectangle {
         spacing: 10
 
         Controls.Icon {
-            icon: root.active ? Icons.check : root.icon
-            color: Colors.accentForeground
-            size: settings.iconPixelSize
+            name: root.active ? "ui.check" : root.iconName
+            tone: "accent"
+            sizeRole: "bar"
         }
 
         ColumnLayout {

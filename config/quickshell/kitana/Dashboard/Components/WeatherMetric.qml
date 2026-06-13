@@ -11,7 +11,7 @@ Item {
 
     Custom.Settings { id: settings }
 
-    property string icon: ""
+    property string iconName: Icons.defaultIcon
     property string label: ""
     property string value: ""
     property int labelPixelSize: settings.textPixelSize - 1
@@ -39,9 +39,9 @@ Item {
             width: root.iconWidth
             anchors.left: parent.left
             anchors.verticalCenter: textColumn.verticalCenter
-            icon: root.icon
-            color: Colors.accentForeground
-            size: settings.iconPixelSize
+            name: root.iconName
+            tone: "accent"
+            sizeRole: "bar"
         }
 
         Column {

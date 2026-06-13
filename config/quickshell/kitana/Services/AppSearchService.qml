@@ -224,10 +224,10 @@ Singleton {
             return [];
 
         const actions = [
-            { name: "Lock", subtitle: "Lock this session", icon: "system-lock-screen", fallbackIcon: Icons.lock, terms: "lock screen session secure", command: [kitanaDir + "/bin/kitana-lock"] },
-            { name: "Log out", subtitle: "End this Hyprland session", icon: "system-log-out", fallbackIcon: Icons.logout, terms: "logout log out exit session hyprland", command: ["hyprctl", "dispatch", "exit"] },
-            { name: "Restart", subtitle: "Reboot this computer", icon: "system-reboot", fallbackIcon: Icons.restart, terms: "restart reboot system", command: ["systemctl", "reboot"] },
-            { name: "Shut down", subtitle: "Power off this computer", icon: "system-shutdown", fallbackIcon: Icons.shutdown, terms: "shutdown shut down power off poweroff", command: ["systemctl", "poweroff"] }
+            { name: "Lock", subtitle: "Lock this session", icon: "system-lock-screen", fallbackIconName: "power.lock", terms: "lock screen session secure", command: [kitanaDir + "/bin/kitana-lock"] },
+            { name: "Log out", subtitle: "End this Hyprland session", icon: "system-log-out", fallbackIconName: "power.logout", terms: "logout log out exit session hyprland", command: ["hyprctl", "dispatch", "exit"] },
+            { name: "Restart", subtitle: "Reboot this computer", icon: "system-reboot", fallbackIconName: "power.reboot", terms: "restart reboot system", command: ["systemctl", "reboot"] },
+            { name: "Shut down", subtitle: "Power off this computer", icon: "system-shutdown", fallbackIconName: "power.shutdown", terms: "shutdown shut down power off poweroff", command: ["systemctl", "poweroff"] }
         ];
 
         const items = [];
@@ -353,7 +353,7 @@ Singleton {
                 name: expression + " = " + result,
                 subtitle: "Copy calculator result",
                 icon: "accessories-calculator",
-                fallbackIcon: "calculate",
+                fallbackIconName: "calculator",
                 value: result.toString(),
                 score: 12000,
                 hint: "Copy"

@@ -18,16 +18,16 @@ Rectangle {
 
     radius: height / settings.radiusDivisor
     color: sessionMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelBackground
-    border.color: sessionMouse.containsMouse ? Colors.panelButtonBorderActive : Colors.panelBorder
+    border.color: Colors.panelBorder
     border.width: settings.borderWidth
 
     Process { id: sessionMenu }
 
     Controls.Icon {
         anchors.centerIn: parent
-        icon: Icons.power
-        color: sessionMouse.containsMouse ? Colors.primaryForeground : Colors.accentForeground
-        size: settings.iconPixelSize
+        name: "power.power"
+        tone: sessionMouse.containsMouse ? "primary" : "accent"
+        sizeRole: "bar"
     }
 
     MouseArea {

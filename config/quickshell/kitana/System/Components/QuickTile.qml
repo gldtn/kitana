@@ -10,7 +10,7 @@ Rectangle {
 
     Custom.Settings { id: settings }
 
-    property string icon: ""
+    property string iconName: Icons.defaultIcon
     property string title: ""
     property string subtitle: ""
     property bool active: false
@@ -36,9 +36,9 @@ Rectangle {
 
             Controls.Icon {
                 anchors.centerIn: parent
-                icon: root.icon
-                color: root.active ? Colors.onAccentForeground : Colors.primaryForeground
-                size: 18
+                name: root.iconName
+                tone: root.active ? "onAccent" : "primary"
+                sizeRole: "tile"
             }
         }
 

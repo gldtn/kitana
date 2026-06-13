@@ -58,7 +58,7 @@ PanelWindow {
     component MenuAction: Rectangle {
         id: actionRoot
 
-        property string icon: ""
+        property string iconName: Icons.defaultIcon
         property string title: ""
         property string subtitle: ""
 
@@ -78,8 +78,8 @@ PanelWindow {
             spacing: 10
 
             Controls.Icon {
-                icon: actionRoot.icon
-                color: Colors.accentForeground
+                name: actionRoot.iconName
+                tone: "accent"
                 size: settings.iconPixelSize + 1
             }
 
@@ -177,11 +177,10 @@ PanelWindow {
                 Layout.fillWidth: true
                 spacing: 10
 
-                Text {
-                    text: Icons.arch
-                    color: Colors.accentForeground
-                    font.family: Typography.iconFontFamily
-                    font.pixelSize: 18
+                Controls.Icon {
+                    name: "brand.arch"
+                    tone: "brand"
+                    sizeRole: "tile"
                 }
 
                 ColumnLayout {
@@ -214,21 +213,21 @@ PanelWindow {
             }
 
             MenuAction {
-                icon: Icons.appSearch
+                iconName: "launcher.apps"
                 title: "App launcher"
                 subtitle: "Search applications and commands"
                 onClicked: root.openLauncher()
             }
 
             MenuAction {
-                icon: Icons.settings
+                iconName: "settings"
                 title: "Settings"
                 subtitle: "Open Kitana system settings"
                 onClicked: root.openSettings()
             }
 
             MenuAction {
-                icon: Icons.keyboard
+                iconName: "input.keyboard"
                 title: "Shortcuts"
                 subtitle: "Search active Hyprland keybinds"
                 onClicked: root.openShortcuts()
