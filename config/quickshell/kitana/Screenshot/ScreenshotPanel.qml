@@ -55,12 +55,32 @@ PanelWindow {
         captureProcess.exec(command);
     }
 
+    function handleKey(event: var): void {
+        if (event.key === Qt.Key_Escape) {
+            close();
+            event.accepted = true;
+        } else if (event.key === Qt.Key_S) {
+            capture("output", false);
+            event.accepted = true;
+        } else if (event.key === Qt.Key_W) {
+            capture("window", false);
+            event.accepted = true;
+        } else if (event.key === Qt.Key_R) {
+            capture("region", false);
+            event.accepted = true;
+        } else if (event.key === Qt.Key_C) {
+            capture("region", true);
+            event.accepted = true;
+        }
+    }
+
     MouseArea {
         id: closeArea
 
         anchors.fill: parent
         focus: true
         Keys.onEscapePressed: root.close()
+        Keys.onPressed: event => root.handleKey(event)
         onClicked: root.close()
     }
 
@@ -131,6 +151,7 @@ PanelWindow {
 
                 ScreenshotAction {
                     icon: Icons.monitor
+                    shortcut: "S"
                     title: "Screen"
                     subtitle: "Full monitor"
                     onClicked: root.capture("output", false)
@@ -138,6 +159,7 @@ PanelWindow {
 
                 ScreenshotAction {
                     icon: Icons.screenshotWindow
+                    shortcut: "W"
                     title: "Window"
                     subtitle: "Focused pick"
                     onClicked: root.capture("window", false)
@@ -145,6 +167,7 @@ PanelWindow {
 
                 ScreenshotAction {
                     icon: Icons.screenshotRegion
+                    shortcut: "R"
                     title: "Region"
                     subtitle: "Select area"
                     onClicked: root.capture("region", false)
@@ -152,6 +175,7 @@ PanelWindow {
 
                 ScreenshotAction {
                     icon: Icons.screenshotClipboard
+                    shortcut: "C"
                     title: "Clipboard"
                     subtitle: "Region only"
                     onClicked: root.capture("region", true)
@@ -166,6 +190,7 @@ PanelWindow {
         id: action
 
         property string icon: ""
+        property string shortcut: ""
         property string title: ""
         property string subtitle: ""
         signal clicked
@@ -176,6 +201,29 @@ PanelWindow {
         color: actionMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelCardBackground
         border.color: actionMouse.containsMouse ? Colors.panelButtonBorderActive : Colors.panelBorder
         border.width: 1
+
+        Rectangle {
+            anchors.top: parent.top
+            anchors.right: parent.right
+            anchors.topMargin: 8
+            anchors.rightMargin: 8
+            width: shortcutLabel.implicitWidth + 10
+            height: 18
+            radius: 6
+            color: Colors.panelButtonBackground
+            border.color: Colors.panelBorder
+            border.width: 1
+
+            Text {
+                id: shortcutLabel
+                anchors.centerIn: parent
+                text: action.shortcut
+                color: Colors.mutedForeground
+                font.family: Typography.fontFamily
+                font.pixelSize: settings.textPixelSize - 2
+                font.weight: Font.Bold
+            }
+        }
 
         ColumnLayout {
             anchors.centerIn: parent
