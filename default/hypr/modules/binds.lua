@@ -47,7 +47,7 @@ bind(mod .. " + SHIFT + M", hl.dsp.exec_cmd(musicClient), { description = "Music
 
 -- Hyprland control
 bind(mod .. " + CTRL + L", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-lock"), { description = "Lock session" })
-bind("CTRL + ALT + DELETE", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-session toggle"), { description = "Session menu" })
+bind(mod .. " + ESCAPE", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-session toggle"), { description = "Session menu" })
 bind(mod .. " + CTRL + Z", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"), { description = "Exit Hyprland" })
 
 -- Quickshell control
@@ -75,6 +75,10 @@ bind(mod .. " + CTRL + SHIFT + C", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/s
 bind(mod .. " + P", hl.dsp.window.pseudo(), { description = "Toggle pseudo" })
 bind(mod .. " + X", hl.dsp.layout("togglesplit"), { description = "Toggle split" })
 bind(mod .. " + F", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/default/hypr/scripts/toggle_float.sh"), { description = "Toggle float and center" })
+bind(mod .. "+ SHIFT + F", function()
+  hl.dispatch(hl.dsp.window.float({ action = "toggle" }))
+  hl.dispatch(hl.dsp.window.pin())
+end)
 
 -- Fullscreen window
 bind(mod .. " + CTRL + M", hl.dsp.window.fullscreen({ mode = "maximized" }), { description = "Full width" })
