@@ -53,8 +53,8 @@ PanelWindow {
                 width: popupColumn.width
                 height: Math.max(84, contentColumn.implicitHeight + verticalPadding * 2)
                 radius: 20
-                color: Colors.surfaceFloating
-                border.color: Colors.cardBorder
+                color: Colors.popupBackground
+                border.color: Colors.popupBorder
                 border.width: 1
 
                 Rectangle {
@@ -112,7 +112,7 @@ PanelWindow {
                         width: parent.width
                         visible: text.length > 0
                         text: modelData.bodyMarkup
-                        color: Colors.foregroundMuted
+                        color: Colors.popupForegroundMuted
                         elide: Text.ElideRight
                         wrapMode: Text.WrapAnywhere
                         maximumLineCount: 2

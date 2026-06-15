@@ -48,7 +48,7 @@ PanelWindow {
         anchors.horizontalCenter: parent.horizontalCenter
         radius: 20
         color: Colors.popupBackground
-        border.color: Colors.cardBorder
+        border.color: Colors.popupBorder
         border.width: 1
         opacity: Services.OsdService.visible ? 1 : 0
 
@@ -93,13 +93,13 @@ PanelWindow {
                 Layout.preferredHeight: 7
                 Layout.alignment: Qt.AlignVCenter
                 radius: 4
-                color: Colors.controlBackground
+                color: Colors.popupSurface
 
                 Rectangle {
                     width: parent.width * Services.OsdService.value / 100
                     height: parent.height
                     radius: parent.radius
-                    color: Services.OsdService.muted ? Colors.foregroundMuted : Colors.accent
+                    color: Services.OsdService.muted ? Colors.popupForegroundMuted : Colors.accent
 
                     Behavior on width {
                         NumberAnimation { duration: 90; easing.type: Easing.OutCubic }
@@ -111,7 +111,7 @@ PanelWindow {
                 Layout.preferredWidth: 42
                 Layout.alignment: Qt.AlignVCenter
                 text: Services.OsdService.muted ? "--" : Services.OsdService.value
-                color: Services.OsdService.muted ? Colors.foregroundMuted : Colors.foreground
+                color: Services.OsdService.muted ? Colors.popupForegroundMuted : Colors.popupForeground
                 horizontalAlignment: Text.AlignRight
                 font.family: Typography.fontFamily
                 font.pixelSize: 24

@@ -19,7 +19,9 @@ return {
 		pink = "#ff5ea0",
 		orange = "#ffbd5e",
 		purple = "#bd5eff",
+		-- custom colors
 		bg_pop = color.lighten("#21202e", 0.06),
+		border_mantle = color.lighten("#3c4048", 0.06),
 	},
 
 	kitana = {
@@ -39,7 +41,7 @@ return {
 
 			background = "bg",
 			surface = "bg",
-			surfaceContainer = "bg",
+			surfaceContainer = "bg_alt",
 			surfaceCard = "bg_alt",
 			surfaceControl = "bg",
 			surfaceSubtle = "bg_highlight",
@@ -50,9 +52,9 @@ return {
 			surfaceFloating = "bg",
 			surfaceFloatingStrong = "bg_alt",
 
-			border = "bg_alt",
-			borderMuted = "bg_highlight",
-			borderStrong = "bg_pop",
+			border = color.darken("#3c4048", 0.03),
+			borderMuted = color.lighten("#1e2124", 0.08),
+			borderStrong = color.darken("#7b8496", 0.1),
 			borderFocus = "orange",
 
 			info = "blue",

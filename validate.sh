@@ -775,6 +775,7 @@ component_color_roles=(
   containerBackground containerForeground containerBorder
   cardBackground cardForeground cardBorder
   controlBackground controlForeground controlBorder controlSubtleBackground controlHoverBackground controlPressedBackground controlActiveBackground controlActiveForeground controlActiveBorder
+  popupBackground popupForeground popupForegroundMuted popupSurface popupBorder
   inputBackground inputForeground inputPlaceholderForeground inputBorder inputActiveBorder
   workspaceInactiveBackground workspaceInactiveForeground workspaceOccupiedBackground workspaceOccupiedForeground workspaceActiveBackground workspaceActiveForeground workspaceUrgentBackground workspaceUrgentForeground
 )
@@ -791,8 +792,8 @@ else
   fail "Quickshell component color roles missing: ${missing_component_color_roles[*]}"
 fi
 
-independent_color_role_re='readonly property color (foregroundOnAccent|surfaceActive|surfaceSelected|iconPrimary|iconSecondary|iconMuted|iconSubtle|iconAccent|iconOnAccent|iconInverse|iconBrand|iconDisabled|iconDanger|barBackground|barForeground|barHoverBackground|barBorder|panelBackground|panelForeground|panelBorder|containerBackground|containerForeground|containerBorder|cardBackground|cardForeground|cardBorder|controlBackground|controlForeground|controlBorder|controlSubtleBackground|controlHoverBackground|controlPressedBackground|controlActiveBackground|controlActiveForeground|controlActiveBorder|inputBackground|inputForeground|inputPlaceholderForeground|inputBorder|inputActiveBorder|workspaceInactiveBackground|workspaceInactiveForeground|workspaceOccupiedBackground|workspaceOccupiedForeground|workspaceActiveBackground|workspaceActiveForeground|workspaceUrgentBackground|workspaceUrgentForeground): [[:alpha:]_][[:alnum:]_]*$'
-raw_color_role_ref_re=': (foreground|foregroundMuted|accent|foregroundOnAccent|border|borderStrong|borderFocus|surfaceCard|surfaceSubtle|danger)$'
+independent_color_role_re='readonly property color (foregroundOnAccent|surfaceActive|surfaceSelected|iconPrimary|iconSecondary|iconMuted|iconSubtle|iconAccent|iconOnAccent|iconInverse|iconBrand|iconDisabled|iconDanger|barBackground|barForeground|barHoverBackground|barBorder|panelBackground|panelForeground|panelBorder|containerBackground|containerForeground|containerBorder|cardBackground|cardForeground|cardBorder|controlBackground|controlForeground|controlBorder|controlSubtleBackground|controlHoverBackground|controlPressedBackground|controlActiveBackground|controlActiveForeground|controlActiveBorder|popupBackground|popupForeground|popupForegroundMuted|popupSurface|popupBorder|inputBackground|inputForeground|inputPlaceholderForeground|inputBorder|inputActiveBorder|workspaceInactiveBackground|workspaceInactiveForeground|workspaceOccupiedBackground|workspaceOccupiedForeground|workspaceActiveBackground|workspaceActiveForeground|workspaceUrgentBackground|workspaceUrgentForeground): [[:alpha:]_][[:alnum:]_]*$'
+raw_color_role_ref_re=': (foreground|foregroundMuted|accent|foregroundOnAccent|border|borderMuted|borderStrong|borderFocus|surfaceCard|surfaceSubtle|danger)$'
 linked_color_roles=$(grep -n -E "$independent_color_role_re" "$quickshell_colors" "$KITANA_DIR/bin/kitana-matugen" 2>/dev/null | grep -v -E "$raw_color_role_ref_re" || true)
 if [ -z "$linked_color_roles" ]; then
   pass "Quickshell independently tunable color roles"

@@ -87,17 +87,17 @@ QtObject {
   readonly property color barHoverBackground: withAlpha(surfaceHover, 93)
   readonly property color barBorder: withAlpha(borderMuted, 25)
 
-  readonly property color panelBackground: withAlpha(background, 92)
+  readonly property color panelBackground: withAlpha(background, 98)
   readonly property color panelForeground: foreground
   readonly property color panelBorder: border
 
-  readonly property color containerBackground: withAlpha(surfaceContainer, 85)
+  readonly property color containerBackground: withAlpha(surfaceContainer, 96)
   readonly property color containerForeground: foreground
-  readonly property color containerBorder: border
+  readonly property color containerBorder: borderMuted
 
   readonly property color cardBackground: withAlpha(surfaceCard, 68)
   readonly property color cardForeground: foreground
-  readonly property color cardBorder: borderStrong
+  readonly property color cardBorder: border
 
   readonly property color controlBackground: withAlpha(surfaceControl, 80)
   readonly property color controlForeground: foreground
@@ -109,10 +109,17 @@ QtObject {
   readonly property color controlActiveForeground: foreground
   readonly property color controlActiveBorder: borderFocus
 
+  // Floating elements (OSD, Notifications)
+  readonly property color popupBackground: withAlpha(surfaceFloatingStrong, 65)
+  readonly property color popupForeground: foreground
+  readonly property color popupForegroundMuted: foregroundMuted
+  readonly property color popupSurface: withAlpha(surfaceControl, 80)
+  readonly property color popupBorder: borderMuted
+
   readonly property color inputBackground: withAlpha(surfaceControl, 80)
   readonly property color inputForeground: foreground
   readonly property color inputPlaceholderForeground: foregroundMuted
-  readonly property color inputBorder: border
+  readonly property color inputBorder: borderMuted
   readonly property color inputActiveBorder: borderFocus
 
   readonly property color workspaceInactiveBackground: withAlpha(surfaceSubtle, 45)
@@ -129,5 +136,4 @@ QtObject {
   readonly property color scrimSoft: withAlpha(background, 32)
   readonly property color imageOverlay: withAlpha(background, 60)
   readonly property color shadow: withAlpha("#000000", 45)
-  readonly property color popupBackground: withAlpha(surfaceFloatingStrong, 65) // use for floating elements
 }
