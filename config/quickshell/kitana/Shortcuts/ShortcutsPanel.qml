@@ -254,7 +254,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: "Shortcuts"
-                        color: Colors.primaryForeground
+                        color: Colors.foreground
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize + 4
                         font.weight: Font.Bold
@@ -263,7 +263,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: "Hyprland keybinds"
-                        color: Colors.mutedForeground
+                        color: Colors.foregroundMuted
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize - 1
                     }
@@ -274,8 +274,8 @@ PanelWindow {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 36
                 radius: 11
-                color: Colors.panelCardBackground
-                border.color: searchInput.activeFocus ? Colors.panelButtonBorderActive : Colors.panelBorder
+                color: Colors.cardBackground
+                border.color: searchInput.activeFocus ? Colors.controlActiveBorder : Colors.panelBorder
                 border.width: 1
 
                 RowLayout {
@@ -295,9 +295,9 @@ PanelWindow {
 
                         Layout.fillWidth: true
                         text: root.query
-                        color: Colors.primaryForeground
-                        selectionColor: Colors.panelButtonBackgroundActive
-                        selectedTextColor: Colors.primaryForeground
+                        color: Colors.foreground
+                        selectionColor: Colors.controlActiveBackground
+                        selectedTextColor: Colors.foreground
                         verticalAlignment: TextInput.AlignVCenter
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize
@@ -316,7 +316,7 @@ PanelWindow {
                 Layout.fillWidth: true
                 visible: root.statusText.length > 0
                 text: root.statusText
-                color: Colors.mutedForeground
+                color: Colors.foregroundMuted
                 horizontalAlignment: Text.AlignHCenter
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
@@ -339,8 +339,8 @@ PanelWindow {
                     width: shortcutList.width
                     height: 54
                     radius: 12
-                    color: index === root.selectedIndex ? Colors.panelButtonBackgroundActive : (shortcutMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelCardBackground)
-                    border.color: index === root.selectedIndex ? Colors.panelButtonBorderActive : Colors.panelBorder
+                    color: index === root.selectedIndex ? Colors.controlActiveBackground : (shortcutMouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground)
+                    border.color: index === root.selectedIndex ? Colors.controlActiveBorder : Colors.panelBorder
                     border.width: 1
 
                     RowLayout {
@@ -353,15 +353,15 @@ PanelWindow {
                             Layout.preferredWidth: Math.max(150, keyText.implicitWidth + 18)
                             Layout.preferredHeight: 30
                             radius: 9
-                            color: Colors.panelButtonBackgroundActive
-                            border.color: Colors.panelButtonBorderActive
+                            color: Colors.controlActiveBackground
+                            border.color: Colors.controlActiveBorder
                             border.width: 1
 
                             Text {
                                 id: keyText
                                 anchors.centerIn: parent
                                 text: modelData.keys
-                                color: Colors.primaryForeground
+                                color: Colors.foreground
                                 font.family: Typography.fontFamily
                                 font.pixelSize: settings.textPixelSize
                                 font.weight: Font.Bold
@@ -375,7 +375,7 @@ PanelWindow {
                             Text {
                                 Layout.fillWidth: true
                                 text: modelData.description
-                                color: Colors.primaryForeground
+                                color: Colors.foreground
                                 elide: Text.ElideRight
                                 font.family: Typography.fontFamily
                                 font.pixelSize: settings.textPixelSize
@@ -385,7 +385,7 @@ PanelWindow {
                             Text {
                                 Layout.fillWidth: true
                                 text: modelData.category
-                                color: Colors.mutedForeground
+                                color: Colors.foregroundMuted
                                 elide: Text.ElideRight
                                 font.family: Typography.fontFamily
                                 font.pixelSize: settings.textPixelSize - 1

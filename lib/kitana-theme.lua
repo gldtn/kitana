@@ -9,28 +9,59 @@ M.order = {
   "cyberdream",
 }
 
-local fields = {
-  "crust0",
-  "crust1",
-  "mantle0",
-  "mantle1",
-  "base0",
-  "base1",
-  "surface0",
-  "surface1",
-  "overlay0",
-  "overlay1",
-  "subtext0",
-  "subtext1",
-  "text0",
-  "text1",
-  "accent0",
-  "accent1",
-  "info0",
-  "success0",
-  "warning0",
-  "danger0",
+local quickshell_roles = {
+  "foreground",
+  "foregroundStrong",
+  "foregroundMuted",
+  "foregroundSubtle",
+  "foregroundDisabled",
+  "foregroundInverted",
+  "accent",
+  "accentStrong",
+  "onAccent",
+  "accentBackground",
+  "accentSelectedBackground",
+  "background",
+  "surface",
+  "surfaceContainer",
+  "surfaceCard",
+  "surfaceControl",
+  "surfaceSubtle",
+  "surfaceHover",
+  "surfacePressed",
+  "surfaceActive",
+  "surfaceSelected",
+  "surfaceFloating",
+  "surfaceFloatingStrong",
+  "border",
+  "borderMuted",
+  "borderStrong",
+  "borderFocus",
+  "info",
+  "success",
+  "warning",
+  "danger",
+  "infoBackground",
+  "successBackground",
+  "warningBackground",
+  "dangerBackground",
+  "iconPrimary",
+  "iconSecondary",
+  "iconMuted",
+  "iconSubtle",
+  "iconAccent",
+  "iconOnAccent",
+  "iconInverse",
+  "iconBrand",
+  "iconDisabled",
+  "iconDanger",
+  "scrim",
+  "scrimSoft",
+  "imageOverlay",
+  "shadow",
 }
+
+M.quickshell_roles = quickshell_roles
 
 local function kitana_dir()
   return os.getenv("KITANA_DIR") or (os.getenv("HOME") .. "/.local/share/kitana")
@@ -66,62 +97,79 @@ function M.load(slug)
   return theme
 end
 
-function M.resolve(theme, key)
-  local source = theme.kitana and theme.kitana[key]
-  if not source then
-    error("missing kitana mapping: " .. theme.slug .. "." .. key)
-  end
+local function is_hex(value)
+  return type(value) == "string" and value:match("^#%x+$") and (#value == 7 or #value == 9)
+end
 
-  if type(source) == "string" and source:match("^#%x+$") and (#source == 7 or #source == 9) then
+function M.resolve_palette(theme, source)
+  if is_hex(source) then
     return source
-  end
-
-  local value = theme.colors and theme.colors[source]
-  if not value then
-    error("missing theme color: " .. theme.slug .. ".colors." .. source)
-  end
-
-  return value
-end
-
-function M.raw(theme)
-  local values = {}
-  for _, field in ipairs(fields) do
-    values[field] = M.resolve(theme, field)
-  end
-  return values
-end
-
-function M.preview(theme)
-  local raw = M.raw(theme)
-  return {
-    background = raw.base0,
-    surface = raw.base1,
-    surface_alt = raw.surface1,
-    foreground = raw.text0,
-    muted = raw.subtext0,
-    accent = raw.accent0,
-    accent_text = raw.crust0,
-    info = raw.info0,
-    success = raw.success0,
-    warning = raw.warning0,
-    danger = raw.danger0,
-  }
-end
-
-function M.resolve_any(theme, source)
-  if type(source) == "string" and source:match("^#%x+$") and (#source == 7 or #source == 9) then
-    return source
-  end
-
-  local raw = M.raw(theme)
-  if raw[source] then
-    return raw[source]
   end
 
   local value = theme.colors and theme.colors[source]
   if value then
     return value
+  end
+
+  error("missing theme color: " .. theme.slug .. ".colors." .. tostring(source))
+end
+
+function M.resolve_quickshell(theme, key, seen)
+  local quickshell = theme.kitana and theme.kitana.quickshell or {}
+  local source = quickshell[key]
+  if not source then
+    error("missing kitana quickshell mapping: " .. theme.slug .. "." .. key)
+  end
+
+  if is_hex(source) or theme.colors and theme.colors[source] then
+    return M.resolve_palette(theme, source)
+  end
+
+  if quickshell[source] then
+    seen = seen or {}
+    if seen[source] then
+      error("cyclic kitana quickshell mapping: " .. theme.slug .. "." .. key)
+    end
+    seen[key] = true
+    return M.resolve_quickshell(theme, source, seen)
+  end
+
+  error("missing theme color reference: " .. theme.slug .. "." .. tostring(source))
+end
+
+function M.quickshell(theme)
+  local values = {}
+  for _, role in ipairs(quickshell_roles) do
+    values[role] = M.resolve_quickshell(theme, role)
+  end
+  return values
+end
+
+function M.preview(theme)
+  local quickshell = M.quickshell(theme)
+  return {
+    background = quickshell.background,
+    surface = quickshell.surfaceCard,
+    surface_alt = quickshell.surfaceSubtle,
+    foreground = quickshell.foreground,
+    muted = quickshell.foregroundMuted,
+    accent = quickshell.accent,
+    accent_text = quickshell.onAccent,
+    info = quickshell.info,
+    success = quickshell.success,
+    warning = quickshell.warning,
+    danger = quickshell.danger,
+  }
+end
+
+function M.resolve_any(theme, source)
+  if is_hex(source) or theme.colors and theme.colors[source] then
+    return M.resolve_palette(theme, source)
+  end
+
+  local quickshell = theme.kitana and theme.kitana.quickshell or {}
+  if quickshell[source] then
+    return M.resolve_quickshell(theme, source)
   end
 
   error("missing theme color reference: " .. theme.slug .. "." .. tostring(source))
@@ -131,8 +179,8 @@ function M.hypr(theme)
   local hypr = theme.kitana and theme.kitana.hypr or {}
 
   return {
-    border_active = M.resolve_any(theme, hypr.border_active or hypr.window_border or "accent0"),
-    border_inactive = M.resolve_any(theme, hypr.border_inactive or "surface1"),
+    border_active = M.resolve_any(theme, hypr.border_active or hypr.window_border or "accent"),
+    border_inactive = M.resolve_any(theme, hypr.border_inactive or "borderStrong"),
   }
 end
 
@@ -171,8 +219,9 @@ function M.print_env(theme)
 
   print("slug=" .. shell_quote(theme.slug))
   print("name=" .. shell_quote(theme.name))
-  for _, field in ipairs(fields) do
-    print(field .. "=" .. shell_quote(M.resolve(theme, field)))
+  local quickshell = M.quickshell(theme)
+  for _, role in ipairs(quickshell_roles) do
+    print(role .. "=" .. shell_quote(quickshell[role]))
   end
   for key, value in pairs(preview) do
     print(key .. "=" .. shell_quote(value))

@@ -77,8 +77,8 @@ Rectangle {
     height: implicitHeight
 
     radius: height / settings.radiusDivisor
-    color: Colors.panelBackground
-    border.color: Colors.panelBorder
+    color: Colors.barBackground
+    border.color: Colors.barBorder
     border.width: settings.borderWidth
 
     Row {
@@ -169,7 +169,7 @@ Rectangle {
                             Rectangle {
                                 anchors.fill: parent
                                 radius: 6
-                                color: trayMouse.containsMouse ? Colors.panelButtonBackgroundHover : "transparent"
+                                color: trayMouse.containsMouse ? Colors.barHoverBackground : "transparent"
                             }
 
                             QW.IconImage {
@@ -211,7 +211,7 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             visible: traySection.visible && root.trayExpanded && trayContainer.width > 0
             text: "|"
-            color: Colors.mutedForeground
+            color: Colors.foregroundMuted
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize
             verticalAlignment: Text.AlignVCenter
@@ -286,7 +286,7 @@ Rectangle {
                 height: button.height
                 text: button.label
                 visible: text.length > 0
-                color: Colors.primaryForeground
+                color: Colors.barForeground
                 verticalAlignment: Text.AlignVCenter
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize

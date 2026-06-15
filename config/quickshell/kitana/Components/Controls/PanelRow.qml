@@ -20,8 +20,8 @@ Rectangle {
     width: parent ? parent.width : 320
     height: 48
     radius: 10
-    color: highlighted ? Colors.panelButtonBackgroundActive : (mouse.containsMouse && clickable ? Colors.panelButtonBackgroundHover : Colors.panelCardBackground)
-    border.color: highlighted ? Colors.panelButtonBorderActive : Colors.panelBorder
+    color: highlighted ? Colors.controlActiveBackground : (mouse.containsMouse && clickable ? Colors.controlHoverBackground : Colors.cardBackground)
+    border.color: highlighted ? Colors.controlActiveBorder : Colors.panelBorder
     border.width: 1
 
     Row {
@@ -45,7 +45,7 @@ Rectangle {
             Text {
                 width: parent.width
                 text: root.title
-                color: Colors.primaryForeground
+                color: Colors.foreground
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
@@ -55,7 +55,7 @@ Rectangle {
             Text {
                 width: parent.width
                 text: root.subtitle
-                color: Colors.mutedForeground
+                color: Colors.foregroundMuted
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize - 1

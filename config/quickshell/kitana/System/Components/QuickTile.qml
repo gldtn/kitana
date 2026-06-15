@@ -20,7 +20,7 @@ Rectangle {
     width: parent ? parent.width : 0
     height: 64
     radius: 13
-    color: mouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelCardBackground
+    color: mouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground
 
     Row {
         anchors.fill: parent
@@ -32,7 +32,7 @@ Rectangle {
             width: 38
             height: 38
             radius: 12
-            color: root.active ? Colors.accentForeground : Colors.panelButtonBackgroundSubtle
+            color: root.active ? Colors.accent : Colors.controlSubtleBackground
 
             Controls.Icon {
                 anchors.centerIn: parent
@@ -50,7 +50,7 @@ Rectangle {
             Text {
                 width: parent.width
                 text: root.title
-                color: Colors.primaryForeground
+                color: Colors.foreground
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
@@ -60,7 +60,7 @@ Rectangle {
             Text {
                 width: parent.width
                 text: root.subtitle
-                color: Colors.mutedForeground
+                color: Colors.foregroundMuted
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize - 1

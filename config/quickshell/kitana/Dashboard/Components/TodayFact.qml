@@ -30,7 +30,7 @@ RowLayout {
         Layout.fillWidth: true
         Layout.alignment: Qt.AlignVCenter
         text: root.label
-        color: Colors.mutedForeground
+        color: Colors.foregroundMuted
         elide: Text.ElideRight
         verticalAlignment: Text.AlignVCenter
         font.family: Typography.fontFamily
@@ -40,7 +40,7 @@ RowLayout {
     Text {
         Layout.alignment: Qt.AlignVCenter
         text: root.value
-        color: Colors.primaryForeground
+        color: Colors.foreground
         verticalAlignment: Text.AlignVCenter
         font.family: Typography.fontFamily
         font.pixelSize: settings.textPixelSize

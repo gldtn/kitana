@@ -20,7 +20,7 @@ ColumnLayout {
     Text {
         Layout.fillWidth: true
         text: root.label
-        color: Colors.mutedForeground
+        color: Colors.foregroundMuted
         elide: Text.ElideRight
         font.family: Typography.fontFamily
         font.pixelSize: settings.textPixelSize - 1
@@ -30,8 +30,8 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.preferredHeight: 34
         radius: 10
-        color: Colors.panelCardBackground
-        border.color: fieldInput.activeFocus ? Colors.panelButtonBorderActive : Colors.panelBorder
+        color: Colors.cardBackground
+        border.color: fieldInput.activeFocus ? Colors.controlActiveBorder : Colors.panelBorder
         border.width: 1
 
         TextInput {
@@ -42,9 +42,9 @@ ColumnLayout {
             verticalAlignment: TextInput.AlignVCenter
             text: root.value
             echoMode: root.secret ? TextInput.Password : TextInput.Normal
-            color: Colors.primaryForeground
-            selectionColor: Colors.panelButtonBackgroundActive
-            selectedTextColor: Colors.primaryForeground
+            color: Colors.foreground
+            selectionColor: Colors.controlActiveBackground
+            selectedTextColor: Colors.foreground
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize
             onEditingFinished: root.committed(text)

@@ -24,7 +24,7 @@ RowLayout {
         Text {
             Layout.fillWidth: true
             text: root.name
-            color: Colors.primaryForeground
+            color: Colors.foreground
             elide: Text.ElideRight
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize
@@ -34,7 +34,7 @@ RowLayout {
         Text {
             Layout.fillWidth: true
             text: root.clockDateText
-            color: Colors.mutedForeground
+            color: Colors.foregroundMuted
             elide: Text.ElideRight
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize - 1
@@ -43,7 +43,7 @@ RowLayout {
 
     Text {
         text: root.clockTimeText
-        color: Colors.accentForeground
+        color: Colors.accent
         font.family: Typography.fontFamily
         font.pixelSize: settings.textPixelSize + 1
         font.weight: Font.Bold

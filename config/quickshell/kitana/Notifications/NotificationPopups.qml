@@ -53,8 +53,8 @@ PanelWindow {
                 width: popupColumn.width
                 height: Math.max(84, contentColumn.implicitHeight + verticalPadding * 2)
                 radius: 20
-                color: Colors.withAlpha(Colors.base0, "cc")
-                border.color: Colors.panelBorder
+                color: Colors.surfaceFloating
+                border.color: Colors.cardBorder
                 border.width: 1
 
                 Rectangle {
@@ -89,7 +89,7 @@ PanelWindow {
                     Text {
                         width: parent.width
                         text: modelData.summary
-                        color: Colors.primaryForeground
+                        color: Colors.foreground
                         elide: Text.ElideRight
                         clip: true
                         font.family: Typography.fontFamily
@@ -100,7 +100,7 @@ PanelWindow {
                     Text {
                         width: parent.width
                         text: modelData.appName
-                        color: Colors.mutedForeground
+                        color: Colors.foregroundMuted
                         elide: Text.ElideRight
                         clip: true
                         font.family: Typography.fontFamily
@@ -112,7 +112,7 @@ PanelWindow {
                         width: parent.width
                         visible: text.length > 0
                         text: modelData.bodyMarkup
-                        color: Colors.mutedForeground
+                        color: Colors.foregroundMuted
                         elide: Text.ElideRight
                         wrapMode: Text.WrapAnywhere
                         maximumLineCount: 2

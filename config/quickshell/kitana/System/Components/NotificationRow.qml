@@ -24,8 +24,8 @@ Rectangle {
     width: parent ? parent.width : 0
     height: Math.max(84, contentColumn.implicitHeight + verticalPadding * 2)
     radius: 14
-    color: hoverHandler.hovered ? Colors.panelButtonBackgroundHover : Colors.panelCardBackground
-    border.color: Colors.panelBorder
+    color: hoverHandler.hovered ? Colors.controlHoverBackground : Colors.cardBackground
+    border.color: Colors.cardBorder
     border.width: 1
 
     HoverHandler { id: hoverHandler }
@@ -66,7 +66,7 @@ Rectangle {
             Text {
                 Layout.fillWidth: true
                 text: root.item ? root.item.appName : "app"
-                color: Colors.mutedForeground
+                color: Colors.foregroundMuted
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize - 1
@@ -75,7 +75,7 @@ Rectangle {
 
             Text {
                 text: root.item ? Services.NotificationService.timeAgo(root.item.time) : "now"
-                color: Colors.mutedForeground
+                color: Colors.foregroundMuted
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize - 1
                 font.weight: Font.DemiBold
@@ -86,7 +86,7 @@ Rectangle {
                 Layout.preferredWidth: countRow.implicitWidth + 14
                 Layout.preferredHeight: 22
                 radius: 11
-                color: countMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelButtonBackground
+                color: countMouse.containsMouse ? Colors.controlHoverBackground : Colors.controlBackground
 
                 Row {
                     id: countRow
@@ -97,7 +97,7 @@ Rectangle {
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
                         text: root.groupCount
-                        color: Colors.primaryForeground
+                        color: Colors.foreground
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize - 1
                         font.weight: Font.Bold
@@ -125,7 +125,7 @@ Rectangle {
                 Layout.preferredWidth: 28
                 Layout.preferredHeight: 22
                 radius: 11
-                color: dismissMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelButtonBackground
+                color: dismissMouse.containsMouse ? Colors.controlHoverBackground : Colors.controlBackground
 
                 Controls.Icon {
                     anchors.centerIn: parent
@@ -148,13 +148,13 @@ Rectangle {
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 1
-            color: Colors.panelContainerBackground
+            color: Colors.cardBorder
         }
 
         Text {
             Layout.fillWidth: true
             text: root.item ? Services.NotificationService.escapeMarkup(root.item.summary) : "Notification"
-            color: Colors.primaryForeground
+            color: Colors.foreground
             elide: Text.ElideRight
             clip: true
             font.family: Typography.fontFamily
@@ -168,7 +168,7 @@ Rectangle {
             Layout.fillWidth: true
             visible: text.length > 0
             text: root.item ? root.item.bodyMarkup : ""
-            color: Colors.mutedForeground
+            color: Colors.foregroundMuted
             elide: Text.ElideRight
             wrapMode: Text.WrapAnywhere
             maximumLineCount: 2

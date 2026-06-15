@@ -27,8 +27,8 @@ Rectangle {
     height: implicitHeight
 
     radius: height / settings.radiusDivisor
-    color: Colors.panelBackground
-    border.color: Colors.panelBorder
+    color: Colors.barBackground
+    border.color: Colors.barBorder
     border.width: settings.borderWidth
 
     function normalizeLayout(layout: string): string {
@@ -89,7 +89,7 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             visible: root.visibleLabel(root.currentLayout).length > 0
             text: root.visibleLabel(root.currentLayout)
-            color: Colors.primaryForeground
+            color: Colors.barForeground
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize
             font.weight: Font.DemiBold

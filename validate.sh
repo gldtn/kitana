@@ -724,12 +724,455 @@ else
   fail "Quickshell theme color target mismatch"
 fi
 
-legacy_color_alias_re='Colors\.(background|surface|surfaceAlt|surfaceHover|surfaceHighlight|panelBorderStrong|workspaceInactive|workspaceOccupied|foreground|muted|accent|accentText|info|success|warning|danger)([^[:alnum:]_]|$)'
-legacy_color_definition_re='Temporary legacy aliases|readonly property color (background|surface|surfaceAlt|surfaceHover|surfaceHighlight|panelBorderStrong|workspaceInactive|workspaceOccupied|foreground|muted|accent|accentText|info|success|warning|danger)[[:space:]]*:'
-if grep -R -E --include='*.qml' "$legacy_color_alias_re" "$KITANA_DIR/config/quickshell/kitana" "$HOME/.config/quickshell/kitana" >/dev/null 2>&1 || grep -E "$legacy_color_definition_re" "$KITANA_DIR/config/quickshell/kitana/Config/Colors.qml" "$KITANA_DIR/bin/kitana-matugen" >/dev/null 2>&1; then
-  fail "Quickshell legacy color aliases removed"
+quickshell_colors="$KITANA_DIR/config/quickshell/kitana/Config/Colors.qml"
+canonical_color_roles=(
+  foreground foregroundStrong foregroundMuted foregroundSubtle foregroundDisabled foregroundInverted
+  accent accentStrong foregroundOnAccent accentBackground accentSelectedBackground
+  background surface surfaceContainer surfaceCard surfaceControl surfaceSubtle surfaceHover surfacePressed surfaceActive surfaceSelected surfaceFloating surfaceFloatingStrong
+  border borderMuted borderStrong
+  info success warning danger infoBackground successBackground warningBackground dangerBackground
+  scrim scrimSoft imageOverlay shadow
+)
+missing_color_roles=()
+for role in "${canonical_color_roles[@]}"; do
+  if ! grep -q "readonly property color $role:" "$quickshell_colors"; then
+    missing_color_roles+=("$role")
+  fi
+done
+
+if [ "${#missing_color_roles[@]}" -eq 0 ]; then
+  pass "Quickshell semantic color roles"
 else
-  pass "Quickshell legacy color aliases removed"
+  fail "Quickshell semantic color roles missing: ${missing_color_roles[*]}"
+fi
+
+signal_handler_color_roles=$(grep -n -E 'readonly property color on[A-Z]' "$quickshell_colors" "$KITANA_DIR/bin/kitana-matugen" 2>/dev/null || true)
+if [ -z "$signal_handler_color_roles" ]; then
+  pass "Quickshell signal-handler color roles avoided"
+else
+  fail "Quickshell signal-handler color roles found"
+fi
+
+icon_color_roles=(
+  iconPrimary iconSecondary iconMuted iconSubtle iconAccent iconOnAccent iconInverse iconBrand iconDisabled iconDanger
+)
+missing_icon_color_roles=()
+for role in "${icon_color_roles[@]}"; do
+  if ! grep -q "readonly property color $role:" "$quickshell_colors"; then
+    missing_icon_color_roles+=("$role")
+  fi
+done
+
+if [ "${#missing_icon_color_roles[@]}" -eq 0 ] && grep -q 'Kitana.Colors.iconPrimary' "$KITANA_DIR/config/quickshell/kitana/Config/Icons.qml" && grep -q 'Kitana.Colors.iconDanger' "$KITANA_DIR/config/quickshell/kitana/Config/Icons.qml"; then
+  pass "Quickshell icon color roles"
+else
+  fail "Quickshell icon color roles missing or unused: ${missing_icon_color_roles[*]}"
+fi
+
+component_color_roles=(
+  barBackground barForeground barHoverBackground barBorder
+  panelBackground panelForeground panelBorder
+  containerBackground containerForeground containerBorder
+  cardBackground cardForeground cardBorder
+  controlBackground controlForeground controlBorder controlSubtleBackground controlHoverBackground controlPressedBackground controlActiveBackground controlActiveForeground controlActiveBorder
+  inputBackground inputForeground inputPlaceholderForeground inputBorder inputActiveBorder
+  workspaceInactiveBackground workspaceInactiveForeground workspaceOccupiedBackground workspaceOccupiedForeground workspaceActiveBackground workspaceActiveForeground workspaceUrgentBackground workspaceUrgentForeground
+)
+missing_component_color_roles=()
+for role in "${component_color_roles[@]}"; do
+  if ! grep -q "readonly property color $role:" "$quickshell_colors"; then
+    missing_component_color_roles+=("$role")
+  fi
+done
+
+if [ "${#missing_component_color_roles[@]}" -eq 0 ]; then
+  pass "Quickshell component color roles"
+else
+  fail "Quickshell component color roles missing: ${missing_component_color_roles[*]}"
+fi
+
+independent_color_role_re='readonly property color (foregroundOnAccent|surfaceActive|surfaceSelected|iconPrimary|iconSecondary|iconMuted|iconSubtle|iconAccent|iconOnAccent|iconInverse|iconBrand|iconDisabled|iconDanger|barBackground|barForeground|barHoverBackground|barBorder|panelBackground|panelForeground|panelBorder|containerBackground|containerForeground|containerBorder|cardBackground|cardForeground|cardBorder|controlBackground|controlForeground|controlBorder|controlSubtleBackground|controlHoverBackground|controlPressedBackground|controlActiveBackground|controlActiveForeground|controlActiveBorder|inputBackground|inputForeground|inputPlaceholderForeground|inputBorder|inputActiveBorder|workspaceInactiveBackground|workspaceInactiveForeground|workspaceOccupiedBackground|workspaceOccupiedForeground|workspaceActiveBackground|workspaceActiveForeground|workspaceUrgentBackground|workspaceUrgentForeground): [[:alpha:]_][[:alnum:]_]*$'
+raw_color_role_ref_re=': (foreground|foregroundMuted|accent|foregroundOnAccent|border|borderStrong|borderFocus|surfaceCard|surfaceSubtle|danger)$'
+linked_color_roles=$(grep -n -E "$independent_color_role_re" "$quickshell_colors" "$KITANA_DIR/bin/kitana-matugen" 2>/dev/null | grep -v -E "$raw_color_role_ref_re" || true)
+if [ -z "$linked_color_roles" ]; then
+  pass "Quickshell independently tunable color roles"
+else
+  fail "Quickshell independently tunable color roles are linked"
+fi
+
+migration_color_aliases=(
+  primaryForeground secondaryForeground mutedForeground accentForeground onAccentForeground
+  infoForeground successForeground warningForeground dangerForeground
+  primaryBackground secondaryBackground mutedBackground
+  panelContainerBackground panelContainerForeground panelContainerBorder
+  panelCardBackground panelCardForeground panelCardBorder
+  panelButtonBackground panelButtonBackgroundSubtle panelButtonBackgroundHover panelButtonBackgroundActive panelButtonForeground panelButtonBorder panelButtonBorderActive
+  panelInputBackground panelInputForeground panelInputBorder panelInputBorderActive
+)
+cleanup_color_alias_names="$(IFS='|'; printf '%s' "${migration_color_aliases[*]}")"
+cleanup_color_alias_definition_re="Migration aliases|readonly property color ($cleanup_color_alias_names):"
+cleanup_color_alias_definitions=$(grep -n -E "$cleanup_color_alias_definition_re" "$quickshell_colors" "$KITANA_DIR/bin/kitana-matugen" "$HOME/.config/quickshell/kitana/Config/Colors.qml" 2>/dev/null || true)
+if [ -z "$cleanup_color_alias_definitions" ]; then
+  pass "Quickshell cleanup color aliases removed"
+else
+  fail "Quickshell cleanup color aliases still defined"
+fi
+
+cleanup_color_alias_re="Colors\.($cleanup_color_alias_names)([^[:alnum:]_]|$)"
+cleanup_color_alias_usage=$(grep -R -n -E --include='*.qml' "$cleanup_color_alias_re" "$KITANA_DIR/config/quickshell/kitana" "$HOME/.config/quickshell/kitana" 2>/dev/null | grep -v '/Config/Colors.qml:' || true)
+if [ -z "$cleanup_color_alias_usage" ]; then
+  pass "Quickshell cleanup color alias call sites"
+else
+  fail "Quickshell cleanup color alias call sites remain"
+fi
+
+generated_color_roles=(
+  foreground foregroundStrong foregroundMuted foregroundSubtle foregroundInverted
+  accent accentStrong foregroundOnAccent
+  background surface surfaceContainer surfaceCard surfaceControl surfaceSubtle surfaceHover surfacePressed surfaceActive surfaceSelected surfaceFloating surfaceFloatingStrong
+  border borderMuted borderStrong borderFocus
+  info success warning danger
+  iconPrimary iconSecondary iconMuted iconSubtle iconAccent iconOnAccent iconInverse iconBrand iconDanger
+)
+
+generated_alpha_color_roles=(
+  iconDisabled
+)
+
+validate_quickshell_color_contrast() {
+  local file="$1"
+  local label="$2"
+  local contrast_failures
+
+  contrast_failures=$(lua - "$file" <<'LUA'
+local path = arg[1]
+local handle = io.open(path, "r")
+if not handle then
+  print("missing file: " .. path)
+  os.exit(0)
+end
+
+local content = handle:read("*a")
+handle:close()
+
+local raw = {}
+local alphas = {}
+local expressions = {}
+local colors = {}
+local failures = {}
+
+local function round(value)
+  return math.floor(value + 0.5)
+end
+
+local function alpha_from_percent(percent)
+  return round(math.max(0, math.min(255, 255 * tonumber(percent) / 100)))
+end
+
+for name, value in content:gmatch('readonly%s+property%s+color%s+([%w_]+):%s+"#?(%x+)"') do
+  value = value:lower()
+  if #value == 6 then
+    colors[name] = '#' .. value
+  elseif #value == 2 then
+    alphas[name] = tonumber(value, 16)
+  end
+end
+
+for name, percent in content:gmatch('readonly%s+property%s+string%s+([%w_]+):%s+alpha%((%d+)%)') do
+  alphas[name] = alpha_from_percent(percent)
+end
+
+local function parse_color_expression(expression)
+  expression = expression:gsub('%s+$', '')
+
+  local direct_field = expression:match('^([%w_]+)$')
+  if direct_field and colors[direct_field] then
+    return colors[direct_field]
+  end
+
+  local field = expression:match('^"#"%s*%+%s*([%w_]+)$')
+  if field and colors[field] then
+    return colors[field]
+  end
+
+  local fixed_alpha, alpha_field = expression:match('^"#(%x%x)"%s*%+%s*([%w_]+)$')
+  if fixed_alpha and colors[alpha_field] then
+    return '#' .. fixed_alpha:lower() .. colors[alpha_field]:gsub('^#', '')
+  end
+
+  local alpha_name
+  field, alpha_name = expression:match('^withAlpha%(([%w_]+),%s*([%w_]+)%)$')
+  if field and colors[field] and alphas[alpha_name] then
+    return string.format('#%02x%s', alphas[alpha_name], colors[field]:gsub('^#', ''))
+  end
+
+  local fixed_alpha
+  field, fixed_alpha = expression:match('^withAlpha%(([%w_]+),%s*"(%x%x)"%)$')
+  if field and colors[field] then
+    return '#' .. fixed_alpha:lower() .. colors[field]:gsub('^#', '')
+  end
+
+  local percent
+  field, percent = expression:match('^withAlpha%(([%w_]+),%s*alpha%((%d+)%)%)$')
+  if field and colors[field] then
+    return string.format('#%02x%s', alpha_from_percent(percent), colors[field]:gsub('^#', ''))
+  end
+
+  field, percent = expression:match('^withAlpha%(([%w_]+),%s*(%d+)%)$')
+  if field and colors[field] then
+    return string.format('#%02x%s', alpha_from_percent(percent), colors[field]:gsub('^#', ''))
+  end
+
+  local hex
+  hex, percent = expression:match('^withAlpha%("#?(%x+)",%s*alpha%((%d+)%)%)$')
+  if hex and #hex == 6 then
+    return string.format('#%02x%s', alpha_from_percent(percent), hex:lower())
+  end
+
+  hex, percent = expression:match('^withAlpha%("#?(%x+)",%s*(%d+)%)$')
+  if hex and #hex == 6 then
+    return string.format('#%02x%s', alpha_from_percent(percent), hex:lower())
+  end
+
+  hex, fixed_alpha = expression:match('^withAlpha%("#?(%x+)",%s*"(%x%x)"%)$')
+  if hex and #hex == 6 then
+    return '#' .. fixed_alpha:lower() .. hex:lower()
+  end
+
+  hex = expression:match('^"#(%x+)"$')
+  if hex and (#hex == 6 or #hex == 8) then
+    return '#' .. hex:lower()
+  end
+
+  return nil
+end
+
+for name, expression in content:gmatch('readonly%s+property%s+color%s+([%w_]+):%s*([^\n]+)') do
+  expressions[name] = expression
+  colors[name] = parse_color_expression(expression)
+end
+
+for _ = 1, 3 do
+  for name, expression in pairs(expressions) do
+    if not colors[name] then
+      local direct_field = expression:gsub('%s+$', ''):match('^([%w_]+)$')
+      if direct_field and colors[direct_field] then
+        colors[name] = colors[direct_field]
+      end
+    end
+  end
+end
+
+local function hex_channel(hex, offset)
+  return tonumber(hex:sub(offset, offset + 1), 16)
+end
+
+local function rgba(color)
+  local hex = color:gsub('^#', '')
+  if #hex == 6 then
+    return hex_channel(hex, 1), hex_channel(hex, 3), hex_channel(hex, 5), 255
+  end
+  if #hex == 8 then
+    return hex_channel(hex, 3), hex_channel(hex, 5), hex_channel(hex, 7), hex_channel(hex, 1)
+  end
+  return nil
+end
+
+local function composite(color, under)
+  local red, green, blue, alpha = rgba(color)
+  if not red then
+    return nil
+  end
+
+  local ratio = alpha / 255
+  return {
+    round(red * ratio + under[1] * (1 - ratio)),
+    round(green * ratio + under[2] * (1 - ratio)),
+    round(blue * ratio + under[3] * (1 - ratio)),
+  }
+end
+
+local function luminance_channel(value)
+  local channel = value / 255
+  if channel <= 0.03928 then
+    return channel / 12.92
+  end
+  return ((channel + 0.055) / 1.055) ^ 2.4
+end
+
+local function luminance(rgb)
+  return 0.2126 * luminance_channel(rgb[1]) + 0.7152 * luminance_channel(rgb[2]) + 0.0722 * luminance_channel(rgb[3])
+end
+
+local function contrast_ratio(foreground, background, base)
+  local background_rgb = composite(background, base)
+  local foreground_rgb = composite(foreground, background_rgb)
+  if not background_rgb or not foreground_rgb then
+    return nil
+  end
+
+  local foreground_luminance = luminance(foreground_rgb)
+  local background_luminance = luminance(background_rgb)
+  local lighter = math.max(foreground_luminance, background_luminance)
+  local darker = math.min(foreground_luminance, background_luminance)
+  return (lighter + 0.05) / (darker + 0.05)
+end
+
+local base_color = colors.background
+if not base_color then
+  table.insert(failures, 'missing base0')
+else
+  local base_red, base_green, base_blue = rgba(base_color)
+  local base = { base_red, base_green, base_blue }
+  local pairs = {
+    { 'foreground', 'background', 4.5 },
+    { 'foregroundStrong', 'background', 4.5 },
+    { 'foregroundMuted', 'background', 3.0 },
+    { 'foregroundSubtle', 'background', 3.0 },
+    { 'barForeground', 'barBackground', 4.5 },
+    { 'panelForeground', 'panelBackground', 4.5 },
+    { 'containerForeground', 'containerBackground', 4.5 },
+    { 'cardForeground', 'cardBackground', 4.5 },
+    { 'controlForeground', 'controlBackground', 4.5 },
+    { 'controlActiveForeground', 'controlActiveBackground', 4.5 },
+    { 'inputForeground', 'inputBackground', 4.5 },
+    { 'inputPlaceholderForeground', 'inputBackground', 3.0 },
+    { 'workspaceInactiveForeground', 'workspaceInactiveBackground', 1.8 },
+    { 'workspaceOccupiedForeground', 'workspaceOccupiedBackground', 3.0 },
+    { 'workspaceActiveForeground', 'workspaceActiveBackground', 4.5 },
+    { 'workspaceUrgentForeground', 'workspaceUrgentBackground', 3.0 },
+    { 'foregroundOnAccent', 'accent', 4.5 },
+    { 'iconPrimary', 'background', 4.5 },
+    { 'iconMuted', 'background', 3.0 },
+    { 'iconSubtle', 'background', 3.0 },
+    { 'iconAccent', 'background', 3.0 },
+    { 'iconOnAccent', 'accent', 4.5 },
+    { 'iconDanger', 'background', 3.0 },
+    { 'info', 'background', 3.0 },
+    { 'success', 'background', 3.0 },
+    { 'warning', 'background', 3.0 },
+    { 'danger', 'background', 3.0 },
+  }
+
+  for _, pair in ipairs(pairs) do
+    local foreground, background, minimum = pair[1], pair[2], pair[3]
+    if not expressions[foreground] then
+      table.insert(failures, 'missing role ' .. foreground)
+    elseif not colors[foreground] then
+      table.insert(failures, 'unsupported expression ' .. foreground .. ': ' .. expressions[foreground])
+    elseif not expressions[background] then
+      table.insert(failures, 'missing role ' .. background)
+    elseif not colors[background] then
+      table.insert(failures, 'unsupported expression ' .. background .. ': ' .. expressions[background])
+    else
+      local ratio = contrast_ratio(colors[foreground], colors[background], base)
+      if not ratio then
+        table.insert(failures, 'invalid color ' .. foreground .. '/' .. background)
+      elseif ratio < minimum then
+        table.insert(failures, string.format('%s/%s %.2f < %.1f', foreground, background, ratio, minimum))
+      end
+    end
+  end
+end
+
+if #failures > 0 then
+  print(table.concat(failures, '; '))
+end
+LUA
+)
+
+  if [ -z "$contrast_failures" ]; then
+    pass "$label contrast"
+  else
+    fail "$label contrast: $contrast_failures"
+  fi
+}
+
+validate_quickshell_colors_file() {
+  local file="$1"
+  local label="$2"
+  local missing_roles=()
+  local invalid_generated=()
+  local role
+  local field
+
+  if [ ! -f "$file" ]; then
+    fail "$label missing: $file"
+    return
+  fi
+
+  for role in "${canonical_color_roles[@]}" "${icon_color_roles[@]}" "${component_color_roles[@]}"; do
+    if ! grep -q "readonly property color $role:" "$file"; then
+      missing_roles+=("$role")
+    fi
+  done
+
+  if [ "${#missing_roles[@]}" -eq 0 ]; then
+    pass "$label semantic roles"
+  else
+    fail "$label semantic roles missing: ${missing_roles[*]}"
+  fi
+
+  for field in "${generated_color_roles[@]}"; do
+    if ! grep -Eq "readonly property color $field: \"#[0-9a-fA-F]{6}\"" "$file"; then
+      invalid_generated+=("$field")
+    fi
+  done
+
+  for field in "${generated_alpha_color_roles[@]}"; do
+    if ! grep -Eq "readonly property color $field: withAlpha\(\"#[0-9a-fA-F]{6}\", [0-9]+\)" "$file"; then
+      invalid_generated+=("$field")
+    fi
+  done
+
+  if [ "${#invalid_generated[@]}" -eq 0 ]; then
+    pass "$label generated color roles"
+  else
+    fail "$label generated color roles invalid: ${invalid_generated[*]}"
+  fi
+
+  if grep -E "$cleanup_color_alias_definition_re" "$file" >/dev/null 2>&1; then
+    fail "$label cleanup aliases removed"
+  else
+    pass "$label cleanup aliases removed"
+  fi
+
+  validate_quickshell_color_contrast "$file" "$label"
+}
+
+theme_audit_home="$(mktemp -d)"
+theme_audit_target="$theme_audit_home/.config/quickshell/kitana/Config/Colors.qml"
+
+for theme in catppuccin-mocha rose-pine tokyo-night dracula kanagawa-dragon cyberdream; do
+  if HOME="$theme_audit_home" KITANA_DIR="$KITANA_DIR" "$KITANA_DIR/bin/kitana-theme-quickshell" "$theme" >/dev/null 2>&1; then
+    validate_quickshell_colors_file "$theme_audit_target" "Quickshell theme colors: $theme"
+  else
+    fail "Quickshell theme colors generation failed: $theme"
+  fi
+done
+
+if HOME="$theme_audit_home" KITANA_DIR="$KITANA_DIR" KITANA_NO_RELOAD=1 "$KITANA_DIR/bin/kitana-matugen" '#89b4fa' >/dev/null 2>&1; then
+  validate_quickshell_colors_file "$theme_audit_target" "Quickshell matugen hex colors"
+else
+  fail "Quickshell matugen hex colors generation failed"
+fi
+
+rm -rf "$theme_audit_home"
+
+matugen_icon_role_count=$(grep -c 'readonly property color iconPrimary:' "$KITANA_DIR/bin/kitana-matugen")
+matugen_component_role_count=$(grep -c 'readonly property color barHoverBackground:' "$KITANA_DIR/bin/kitana-matugen")
+if [ "$matugen_icon_role_count" -ge 1 ] && [ "$matugen_component_role_count" -ge 1 ]; then
+  pass "Quickshell matugen color framework parity"
+else
+  fail "Quickshell matugen color framework parity missing"
+fi
+
+raw_palette_usage_re='Colors\.(crust[01]|mantle[01]|base[01]|surface[01]|overlay[01]|subtext[01]|text[01]|accent[01]|info0|success0|warning0|danger0)([^[:alnum:]_]|$)'
+raw_palette_usage=$(grep -R -n -E --include='*.qml' "$raw_palette_usage_re" "$KITANA_DIR/config/quickshell/kitana" "$HOME/.config/quickshell/kitana" 2>/dev/null | grep -v '/Config/Colors.qml:' || true)
+if [ -z "$raw_palette_usage" ]; then
+  pass "Quickshell raw palette use contained"
+else
+  fail "Quickshell raw palette use outside Config/Colors.qml"
 fi
 
 if [ ! -f "$HOME/.config/quickshell/kitana/Colors.qml" ]; then

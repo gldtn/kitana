@@ -21,8 +21,8 @@ Rectangle {
     height: implicitHeight
 
     radius: height / settings.radiusDivisor
-    color: Colors.panelBackground
-    border.color: Colors.panelBorder
+    color: Colors.barBackground
+    border.color: Colors.barBorder
     border.width: settings.borderWidth
 
     Row {
@@ -35,7 +35,7 @@ Rectangle {
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: Qt.formatDate(clockRow.now, "ddd MMM d")
-            color: Colors.primaryForeground
+            color: Colors.barForeground
             font.family: Typography.fontFamily
             font.pixelSize: settings.clockPixelSize
             font.weight: Font.DemiBold
@@ -48,7 +48,7 @@ Rectangle {
             width: settings.iconPixelSize + 10
             height: settings.iconPixelSize + 8
             radius: 8
-            color: dashboardMouse.containsMouse ? Colors.panelButtonBackgroundHover : "transparent"
+            color: dashboardMouse.containsMouse ? Colors.barHoverBackground : "transparent"
 
             Controls.Icon {
                 anchors.centerIn: parent
@@ -70,7 +70,7 @@ Rectangle {
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: Qt.formatTime(clockRow.now, "h:mm AP")
-            color: Colors.primaryForeground
+            color: Colors.barForeground
             font.family: Typography.fontFamily
             font.pixelSize: settings.clockPixelSize
             font.weight: Font.DemiBold

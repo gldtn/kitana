@@ -18,7 +18,7 @@ Rectangle {
     Layout.fillWidth: true
     Layout.preferredHeight: searchActive ? 36 : (helpVisible ? 52 : 24)
     radius: 10
-    color: searchActive ? Colors.panelCardBackground : "transparent"
+    color: searchActive ? Colors.cardBackground : "transparent"
     border.color: searchActive ? Colors.panelBorder : "transparent"
     border.width: searchActive ? 1 : 0
 
@@ -30,9 +30,9 @@ Rectangle {
         visible: root.searchActive
         clip: true
         text: root.dashboard ? root.dashboard.pickerQuery : ""
-        color: Colors.primaryForeground
-        selectionColor: Colors.panelButtonBackgroundActive
-        selectedTextColor: Colors.primaryForeground
+        color: Colors.foreground
+        selectionColor: Colors.controlActiveBackground
+        selectedTextColor: Colors.foreground
         font.family: Typography.fontFamily
         font.pixelSize: settings.textPixelSize
         onVisibleChanged: if (visible) forceActiveFocus()
@@ -61,7 +61,7 @@ Rectangle {
         visible: !root.searchActive
         verticalAlignment: Text.AlignVCenter
         text: root.helpVisible ? "arrows/hjkl move  ·  p/n pages  ·  enter/space apply  ·  / search  ·  ? hide help  ·  esc close" : "? help  ·  arrows/hjkl move  ·  / search  ·  enter/space apply  ·  esc close"
-        color: Colors.mutedForeground
+        color: Colors.foregroundMuted
         font.family: Typography.fontFamily
         font.pixelSize: settings.textPixelSize
         horizontalAlignment: Text.AlignHCenter

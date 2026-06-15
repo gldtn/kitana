@@ -138,7 +138,7 @@ ColumnLayout {
                 height: 28
                 text: (root.themePage + 1) + " / " + root.themePageCount()
                 verticalAlignment: Text.AlignVCenter
-                color: Colors.mutedForeground
+                color: Colors.foregroundMuted
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
                 font.weight: Font.DemiBold
@@ -153,7 +153,7 @@ ColumnLayout {
             anchors.verticalCenter: parent.verticalCenter
             width: 90
             text: root.filteredThemes().length + " themes"
-            color: Colors.mutedForeground
+            color: Colors.foregroundMuted
             horizontalAlignment: Text.AlignRight
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize

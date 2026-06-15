@@ -18,8 +18,8 @@ Rectangle {
     height: implicitHeight
 
     radius: height / settings.radiusDivisor
-    color: startMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelBackground
-    border.color: Colors.panelBorder
+    color: startMouse.containsMouse ? Colors.barHoverBackground : Colors.barBackground
+    border.color: Colors.barBorder
     border.width: settings.borderWidth
 
     Controls.Icon {

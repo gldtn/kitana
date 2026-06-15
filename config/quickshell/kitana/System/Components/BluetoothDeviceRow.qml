@@ -21,8 +21,8 @@ Rectangle {
     width: parent ? parent.width : 0
     height: 48
     radius: 11
-    color: rowMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelCardBackground
-    border.color: modelData.connected ? Colors.panelButtonBorderActive : "transparent"
+    color: rowMouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground
+    border.color: modelData.connected ? Colors.controlActiveBorder : "transparent"
     border.width: modelData.connected ? 1 : 0
 
     Controls.Icon {
@@ -46,7 +46,7 @@ Rectangle {
         Text {
             width: parent.width
             text: root.title
-            color: Colors.primaryForeground
+            color: Colors.foreground
             elide: Text.ElideRight
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize
@@ -56,7 +56,7 @@ Rectangle {
         Text {
             width: parent.width
             text: root.subtitle
-            color: Colors.mutedForeground
+            color: Colors.foregroundMuted
             elide: Text.ElideRight
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize - 1
@@ -72,7 +72,7 @@ Rectangle {
         width: visible ? 30 : 0
         height: 30
         radius: 9
-        color: disconnectMouse.containsMouse ? Colors.panelButtonBackgroundActive : Colors.panelButtonBackgroundSubtle
+        color: disconnectMouse.containsMouse ? Colors.controlActiveBackground : Colors.controlSubtleBackground
 
         Controls.Icon {
             anchors.centerIn: parent
@@ -99,7 +99,7 @@ Rectangle {
         width: visible ? 30 : 0
         height: 30
         radius: 9
-        color: forgetMouse.containsMouse ? Colors.panelButtonBackgroundActive : Colors.panelButtonBackgroundSubtle
+        color: forgetMouse.containsMouse ? Colors.controlActiveBackground : Colors.controlSubtleBackground
 
         Controls.Icon {
             anchors.centerIn: parent
@@ -134,7 +134,7 @@ Rectangle {
             id: actionTooltipLabel
             anchors.centerIn: parent
             text: disconnectMouse.containsMouse ? "Disconnect" : "Forget"
-            color: Colors.primaryForeground
+            color: Colors.foreground
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize - 2
             font.weight: Font.DemiBold

@@ -67,7 +67,7 @@ PanelWindow {
         Layout.fillWidth: true
         Layout.preferredHeight: 48
         radius: 12
-        color: actionMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelCardBackground
+        color: actionMouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground
         border.color: Colors.panelBorder
         border.width: 1
 
@@ -90,7 +90,7 @@ PanelWindow {
                 Text {
                     Layout.fillWidth: true
                     text: actionRoot.title
-                    color: Colors.primaryForeground
+                    color: Colors.foreground
                     elide: Text.ElideRight
                     font.family: Typography.fontFamily
                     font.pixelSize: settings.textPixelSize
@@ -100,7 +100,7 @@ PanelWindow {
                 Text {
                     Layout.fillWidth: true
                     text: actionRoot.subtitle
-                    color: Colors.mutedForeground
+                    color: Colors.foregroundMuted
                     elide: Text.ElideRight
                     font.family: Typography.fontFamily
                     font.pixelSize: settings.textPixelSize - 1
@@ -190,7 +190,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: "Kitana"
-                        color: Colors.primaryForeground
+                        color: Colors.foreground
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize + 2
                         font.weight: Font.Bold
@@ -199,7 +199,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: "System menu"
-                        color: Colors.mutedForeground
+                        color: Colors.foregroundMuted
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize - 1
                     }

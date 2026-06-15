@@ -174,8 +174,8 @@ PanelWindow {
         Layout.preferredWidth: tabContent.implicitWidth + 22
         Layout.preferredHeight: 34
         radius: 10
-        color: selected ? Colors.panelButtonBackgroundActive : (tabMouse.containsMouse ? Colors.panelButtonBackgroundHover : "transparent")
-        border.color: selected ? Colors.panelButtonBorderActive : "transparent"
+        color: selected ? Colors.controlActiveBackground : (tabMouse.containsMouse ? Colors.controlHoverBackground : "transparent")
+        border.color: selected ? Colors.controlActiveBorder : "transparent"
         border.width: 1
 
         Row {
@@ -193,7 +193,7 @@ PanelWindow {
             Text {
                 height: tabRoot.height
                 text: tabRoot.label
-                color: Colors.primaryForeground
+                color: Colors.foreground
                 verticalAlignment: Text.AlignVCenter
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
@@ -223,8 +223,8 @@ PanelWindow {
         Layout.fillWidth: true
         Layout.preferredHeight: 52
         radius: 12
-        color: rowMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelCardBackground
-        border.color: active ? Colors.panelButtonBorderActive : Colors.panelBorder
+        color: rowMouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground
+        border.color: active ? Colors.controlActiveBorder : Colors.panelBorder
         border.width: 1
 
         RowLayout {
@@ -247,7 +247,7 @@ PanelWindow {
                 Text {
                     Layout.fillWidth: true
                     text: rowRoot.title
-                    color: Colors.primaryForeground
+                    color: Colors.foreground
                     elide: Text.ElideRight
                     font.family: Typography.fontFamily
                     font.pixelSize: settings.textPixelSize
@@ -257,7 +257,7 @@ PanelWindow {
                 Text {
                     Layout.fillWidth: true
                     text: rowRoot.subtitle
-                    color: Colors.mutedForeground
+                    color: Colors.foregroundMuted
                     elide: Text.ElideRight
                     font.family: Typography.fontFamily
                     font.pixelSize: settings.textPixelSize - 1
@@ -283,8 +283,8 @@ PanelWindow {
         Layout.fillWidth: true
         Layout.preferredHeight: 88
         radius: 13
-        color: selected ? Colors.panelButtonBackgroundActive : (optionMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelCardBackground)
-        border.color: selected ? Colors.panelButtonBorderActive : Colors.panelBorder
+        color: selected ? Colors.controlActiveBackground : (optionMouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground)
+        border.color: selected ? Colors.controlActiveBorder : Colors.panelBorder
         border.width: 1
 
         Column {
@@ -302,7 +302,7 @@ PanelWindow {
             Text {
                 width: parent.width
                 text: root.modeTitle(optionRoot.mode)
-                color: Colors.primaryForeground
+                color: Colors.foreground
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 elide: Text.ElideRight
@@ -314,7 +314,7 @@ PanelWindow {
             Text {
                 width: parent.width
                 text: root.modeSubtitle(optionRoot.mode)
-                color: Colors.mutedForeground
+                color: Colors.foregroundMuted
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 elide: Text.ElideRight
@@ -341,7 +341,7 @@ PanelWindow {
             Text {
                 Layout.fillWidth: true
                 text: "Bar"
-                color: Colors.primaryForeground
+                color: Colors.foreground
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize + 4
                 font.weight: Font.Bold
@@ -351,8 +351,8 @@ PanelWindow {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 176
                 radius: 14
-                color: Colors.panelContainerBackground
-                border.color: Colors.panelContainerBorder
+                color: Colors.containerBackground
+                border.color: Colors.containerBorder
                 border.width: 1
 
                 ColumnLayout {
@@ -363,7 +363,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: "Workspace layout control"
-                        color: Colors.primaryForeground
+                        color: Colors.foreground
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize
                         font.weight: Font.Bold
@@ -383,7 +383,7 @@ PanelWindow {
             Text {
                 Layout.fillWidth: true
                 text: "The control toggles the focused workspace between dwindle and scrolling without changing your Hyprland default layout."
-                color: Colors.mutedForeground
+                color: Colors.foregroundMuted
                 wrapMode: Text.WordWrap
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
@@ -402,7 +402,7 @@ PanelWindow {
             Text {
                 Layout.fillWidth: true
                 text: "System"
-                color: Colors.primaryForeground
+                color: Colors.foreground
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize + 4
                 font.weight: Font.Bold
@@ -427,7 +427,7 @@ PanelWindow {
             Text {
                 Layout.fillWidth: true
                 text: "Network, Bluetooth, and audio routing stay in the quick system panel."
-                color: Colors.mutedForeground
+                color: Colors.foregroundMuted
                 wrapMode: Text.WordWrap
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize

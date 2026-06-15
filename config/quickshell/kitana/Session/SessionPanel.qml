@@ -166,7 +166,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: "Session"
-                        color: Colors.primaryForeground
+                        color: Colors.foreground
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize + 4
                         font.weight: Font.Bold
@@ -175,7 +175,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: "Choose a session action"
-                        color: Colors.mutedForeground
+                        color: Colors.foregroundMuted
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize - 1
                     }
@@ -252,7 +252,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: root.confirmTitle
-                        color: Colors.primaryForeground
+                        color: Colors.foreground
                         horizontalAlignment: Text.AlignHCenter
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize + 4
@@ -262,7 +262,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: "Press Enter to confirm or Escape to cancel"
-                        color: Colors.mutedForeground
+                        color: Colors.foregroundMuted
                         horizontalAlignment: Text.AlignHCenter
                         wrapMode: Text.WordWrap
                         font.family: Typography.fontFamily
@@ -307,8 +307,8 @@ PanelWindow {
         Layout.fillWidth: true
         Layout.fillHeight: true
         radius: 14
-        color: actionMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelCardBackground
-        border.color: actionMouse.containsMouse ? Colors.panelButtonBorderActive : Colors.panelBorder
+        color: actionMouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground
+        border.color: actionMouse.containsMouse ? Colors.controlActiveBorder : Colors.panelBorder
         border.width: 1
 
         Rectangle {
@@ -319,7 +319,7 @@ PanelWindow {
             width: shortcutLabel.implicitWidth + 10
             height: 18
             radius: 6
-            color: Colors.panelButtonBackground
+            color: Colors.controlBackground
             border.color: Colors.panelBorder
             border.width: 1
 
@@ -327,7 +327,7 @@ PanelWindow {
                 id: shortcutLabel
                 anchors.centerIn: parent
                 text: action.shortcut
-                color: Colors.mutedForeground
+                color: Colors.foregroundMuted
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize - 2
                 font.weight: Font.Bold
@@ -349,7 +349,7 @@ PanelWindow {
             Text {
                 Layout.fillWidth: true
                 text: action.title
-                color: Colors.primaryForeground
+                color: Colors.foreground
                 horizontalAlignment: Text.AlignHCenter
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
@@ -360,7 +360,7 @@ PanelWindow {
             Text {
                 Layout.fillWidth: true
                 text: action.subtitle
-                color: Colors.mutedForeground
+                color: Colors.foregroundMuted
                 horizontalAlignment: Text.AlignHCenter
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
@@ -388,14 +388,14 @@ PanelWindow {
         Layout.fillWidth: true
         Layout.preferredHeight: 34
         radius: 10
-        color: accent ? Colors.panelButtonBackgroundActive : (buttonMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelCardBackground)
-        border.color: accent ? Colors.panelButtonBorderActive : Colors.panelBorder
+        color: accent ? Colors.controlActiveBackground : (buttonMouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground)
+        border.color: accent ? Colors.controlActiveBorder : Colors.panelBorder
         border.width: 1
 
         Text {
             anchors.centerIn: parent
             text: button.label
-            color: Colors.primaryForeground
+            color: Colors.foreground
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize
             font.weight: Font.Bold

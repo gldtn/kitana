@@ -145,28 +145,28 @@ QtObject {
 
     function toneColor(tone: string): color {
         if (tone === "primary")
-            return Kitana.Colors.primaryForeground;
+            return Kitana.Colors.iconPrimary;
         if (tone === "secondary")
-            return Kitana.Colors.secondaryForeground;
+            return Kitana.Colors.iconSecondary;
         if (tone === "muted")
-            return Kitana.Colors.mutedForeground;
+            return Kitana.Colors.iconMuted;
         if (tone === "subtle")
-            return Kitana.Colors.panelBorder;
+            return Kitana.Colors.iconSubtle;
         if (tone === "accent")
-            return Kitana.Colors.accentForeground;
+            return Kitana.Colors.iconAccent;
         if (tone === "onAccent")
-            return Kitana.Colors.onAccentForeground;
+            return Kitana.Colors.iconOnAccent;
         if (tone === "inverse")
-            return Kitana.Colors.secondaryForeground;
+            return Kitana.Colors.iconInverse;
         if (tone === "brand")
-            return Kitana.Colors.accentForeground;
+            return Kitana.Colors.iconBrand;
         if (tone === "disabled")
-            return Kitana.Colors.mutedForeground;
+            return Kitana.Colors.iconDisabled;
         if (tone === "danger")
-            return Kitana.Colors.dangerForeground;
+            return Kitana.Colors.iconDanger;
 
         console.warn("Unknown icon tone:", tone);
-        return Kitana.Colors.primaryForeground;
+        return Kitana.Colors.iconPrimary;
     }
 
     function bluetoothName(enabled: bool, connectedCount: int): string {

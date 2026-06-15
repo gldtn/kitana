@@ -21,7 +21,7 @@ Column {
     Text {
         width: root.width
         text: root.title
-        color: Colors.primaryForeground
+        color: Colors.foreground
         font.family: Typography.fontFamily
         font.pixelSize: 14
         font.weight: Font.Bold
@@ -36,7 +36,7 @@ Column {
         width: root.width
         visible: root.modelData.length === 0 && !root.headerComponent
         text: root.emptyText
-        color: Colors.mutedForeground
+        color: Colors.foregroundMuted
         horizontalAlignment: Text.AlignHCenter
         font.family: Typography.fontFamily
         font.pixelSize: settings.textPixelSize

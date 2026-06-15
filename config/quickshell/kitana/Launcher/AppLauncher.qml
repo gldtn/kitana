@@ -251,7 +251,7 @@ PanelWindow {
                 Text {
                     Layout.fillWidth: true
                     text: "Launch"
-                    color: Colors.primaryForeground
+                    color: Colors.foreground
                     font.family: Typography.fontFamily
                     font.pixelSize: 22
                     font.weight: Font.DemiBold
@@ -261,8 +261,8 @@ PanelWindow {
                     Layout.fillWidth: true
                     height: 52
                     radius: 12
-                    color: Colors.panelInputBackground
-                    border.color: search.activeFocus ? Colors.panelInputBorderActive : Colors.panelInputBorder
+                    color: Colors.inputBackground
+                    border.color: search.activeFocus ? Colors.inputActiveBorder : Colors.inputBorder
                     border.width: 1
 
                     RowLayout {
@@ -281,9 +281,9 @@ PanelWindow {
                             id: search
                             Layout.fillWidth: true
                             focus: true
-                            color: Colors.panelInputForeground
+                            color: Colors.inputForeground
                             selectionColor: Colors.accentBackground
-                            selectedTextColor: Colors.primaryForeground
+                            selectedTextColor: Colors.foreground
                             font.family: Typography.fontFamily
                             font.pixelSize: 18
                             clip: true
@@ -334,8 +334,8 @@ PanelWindow {
                             width: listView.width
                             height: 58
                             radius: 12
-                            color: index === root.selectedIndex ? Colors.panelButtonBackgroundActive : (mouse.containsMouse ? Colors.panelButtonBackgroundHover : "transparent")
-                            border.color: index === root.selectedIndex ? Colors.panelButtonBorderActive : "transparent"
+                            color: index === root.selectedIndex ? Colors.controlActiveBackground : (mouse.containsMouse ? Colors.controlHoverBackground : "transparent")
+                            border.color: index === root.selectedIndex ? Colors.controlActiveBorder : "transparent"
                             border.width: 1
 
                             MouseArea {
@@ -372,7 +372,7 @@ PanelWindow {
                                         anchors.fill: parent
                                         visible: parent.resolvedIcon.length === 0 || !appIcon.visible
                                         radius: 9
-                                        color: Colors.panelButtonBackgroundHover
+                                        color: Colors.controlHoverBackground
 
                                         Controls.Icon {
                                             visible: modelData.fallbackIconName && modelData.fallbackIconName.length > 0
@@ -386,7 +386,7 @@ PanelWindow {
                                             visible: !modelData.fallbackIconName || modelData.fallbackIconName.length === 0
                                             anchors.centerIn: parent
                                             text: (modelData.name || "A").charAt(0).toUpperCase()
-                                            color: Colors.accentForeground
+                                            color: Colors.accent
                                             font.family: Typography.fontFamily
                                             font.pixelSize: 15
                                             font.weight: Font.Bold
@@ -401,7 +401,7 @@ PanelWindow {
                                     Text {
                                         Layout.fillWidth: true
                                         text: modelData.name || "Application"
-                                        color: Colors.primaryForeground
+                                        color: Colors.foreground
                                         elide: Text.ElideRight
                                         font.family: Typography.fontFamily
                                         font.pixelSize: 14
@@ -411,7 +411,7 @@ PanelWindow {
                                     Text {
                                         Layout.fillWidth: true
                                         text: modelData.subtitle || ""
-                                        color: Colors.mutedForeground
+                                        color: Colors.foregroundMuted
                                         elide: Text.ElideRight
                                         font.family: Typography.fontFamily
                                         font.pixelSize: 12
@@ -421,7 +421,7 @@ PanelWindow {
                                 Text {
                                     visible: index === root.selectedIndex
                                     text: modelData.hint || "Enter"
-                                    color: Colors.accentForeground
+                                    color: Colors.accent
                                     font.family: Typography.fontFamily
                                     font.pixelSize: 11
                                 }
@@ -444,7 +444,7 @@ PanelWindow {
                         Text {
                             Layout.alignment: Qt.AlignHCenter
                             text: "No results found"
-                            color: Colors.mutedForeground
+                            color: Colors.foregroundMuted
                             horizontalAlignment: Text.AlignHCenter
                             font.family: Typography.fontFamily
                             font.pixelSize: 14

@@ -128,7 +128,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: "Screenshot"
-                        color: Colors.primaryForeground
+                        color: Colors.foreground
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize + 4
                         font.weight: Font.Bold
@@ -137,7 +137,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: "Choose what to capture"
-                        color: Colors.mutedForeground
+                        color: Colors.foregroundMuted
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize - 1
                     }
@@ -198,8 +198,8 @@ PanelWindow {
         Layout.fillWidth: true
         Layout.fillHeight: true
         radius: 14
-        color: actionMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelCardBackground
-        border.color: actionMouse.containsMouse ? Colors.panelButtonBorderActive : Colors.panelBorder
+        color: actionMouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground
+        border.color: actionMouse.containsMouse ? Colors.controlActiveBorder : Colors.panelBorder
         border.width: 1
 
         Rectangle {
@@ -210,7 +210,7 @@ PanelWindow {
             width: shortcutLabel.implicitWidth + 10
             height: 18
             radius: 6
-            color: Colors.panelButtonBackground
+            color: Colors.controlBackground
             border.color: Colors.panelBorder
             border.width: 1
 
@@ -218,7 +218,7 @@ PanelWindow {
                 id: shortcutLabel
                 anchors.centerIn: parent
                 text: action.shortcut
-                color: Colors.mutedForeground
+                color: Colors.foregroundMuted
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize - 2
                 font.weight: Font.Bold
@@ -240,7 +240,7 @@ PanelWindow {
             Text {
                 Layout.fillWidth: true
                 text: action.title
-                color: Colors.primaryForeground
+                color: Colors.foreground
                 horizontalAlignment: Text.AlignHCenter
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
@@ -251,7 +251,7 @@ PanelWindow {
             Text {
                 Layout.fillWidth: true
                 text: action.subtitle
-                color: Colors.mutedForeground
+                color: Colors.foregroundMuted
                 horizontalAlignment: Text.AlignHCenter
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily

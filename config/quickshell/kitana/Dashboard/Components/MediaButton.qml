@@ -19,8 +19,8 @@ Rectangle {
     Layout.preferredWidth: prominent ? 48 : 40
     Layout.preferredHeight: prominent ? 40 : 36
     radius: 12
-    color: prominent ? Colors.panelButtonBackgroundActive : (mediaButtonMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelCardBackground)
-    border.color: prominent ? Colors.panelButtonBorderActive : Colors.panelBorder
+    color: prominent ? Colors.controlActiveBackground : (mediaButtonMouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground)
+    border.color: prominent ? Colors.controlActiveBorder : Colors.panelBorder
     border.width: 1
 
     Controls.Icon {

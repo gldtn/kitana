@@ -14,6 +14,10 @@ remove_legacy_target() {
 }
 
 reload_quickshell() {
+  if [ "${KITANA_NO_RELOAD:-}" = 1 ]; then
+    return 0
+  fi
+
   "${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-quickshell" >/dev/null 2>&1 || true
 }
 
@@ -24,337 +28,334 @@ finish() {
   exit 0
 }
 
-generate_from_hex() {
-  local color="#${1#\#}"
-
-  python - "$color" "$target" <<'PY'
+generate_colors() {
+  python - "$1" "$2" "$target" <<'PY'
 import colorsys
-import pathlib
-import sys
-
-source = sys.argv[1]
-target = pathlib.Path(sys.argv[2])
-
-r, g, b = (int(source[i:i + 2], 16) / 255 for i in (1, 3, 5))
-h, l, s = colorsys.rgb_to_hls(r, g, b)
-
-def hex_color(lightness, saturation=None):
-    rr, gg, bb = colorsys.hls_to_rgb(h, lightness, s if saturation is None else saturation)
-    return "#{:02x}{:02x}{:02x}".format(round(rr * 255), round(gg * 255), round(bb * 255))
-
-def alpha(color, opacity):
-    return "#{:02x}{}".format(round(opacity * 255), color.lstrip("#"))
-
-background = hex_color(0.10, max(s * 0.45, 0.12))
-surface = hex_color(0.16, max(s * 0.40, 0.10))
-surface_alt = hex_color(0.24, max(s * 0.40, 0.10))
-background_rgb = background.lstrip("#")
-surface_rgb = surface.lstrip("#")
-surface_alt_rgb = surface_alt.lstrip("#")
-source_rgb = source.lstrip("#")
-
-target.write_text(f'''// Kitana managed Quickshell colors
-
-pragma Singleton
-
-import QtQuick
-
-QtObject {{
-  // Alpha reference:
-  // 98% = fa
-  // 96% = f5
-  // 90% = e6
-  // 86% = db
-  // 80% = cc
-  // 76% = c2
-  // 70% = b3
-  // 66% = a8
-  // 60% = 99
-  // 45% = 73
-
-  function withAlpha(rgb: string, alpha: string): string {{
-    return "#" + alpha + rgb;
-  }}
-
-  // Raw palette. Suffix 0 is darker, suffix 1 is lighter.
-  readonly property string crust0: "{background_rgb}"
-  readonly property string crust1: "{surface_rgb}"
-  readonly property string mantle0: "{background_rgb}"
-  readonly property string mantle1: "{surface_rgb}"
-  readonly property string base0: "{background_rgb}"
-  readonly property string base1: "{surface_rgb}"
-  readonly property string surface0: "{surface_rgb}"
-  readonly property string surface1: "{surface_alt_rgb}"
-  readonly property string overlay0: "{surface_alt_rgb}"
-  readonly property string overlay1: "a1a1aa"
-  readonly property string subtext0: "a1a1aa"
-  readonly property string subtext1: "f4f4f5"
-  readonly property string text0: "f4f4f5"
-  readonly property string text1: "ffffff"
-  readonly property string accent0: "{source_rgb}"
-  readonly property string accent1: "{source_rgb}"
-  readonly property string info0: "{source_rgb}"
-  readonly property string success0: "a6e3a1"
-  readonly property string warning0: "f9e2af"
-  readonly property string danger0: "f38ba8"
-
-  // Alpha presets for blur-friendly panel layers.
-  readonly property string panelAlpha: "fa"
-  readonly property string panelContainerAlpha: "73"
-  readonly property string panelCardAlpha: "99"
-  readonly property string panelButtonAlpha: "cc"
-  readonly property string panelInputAlpha: "cc"
-  readonly property string scrimAlpha: "85"
-  readonly property string scrimSoftAlpha: "52"
-  readonly property string imageOverlayAlpha: "99"
-
-  // Semantic foreground and background roles.
-  readonly property color accentForeground: "#" + accent0
-  readonly property color onAccentForeground: "#" + crust0
-  readonly property color primaryForeground: "#" + text0
-  readonly property color secondaryForeground: "#" + text1
-  readonly property color mutedForeground: "#" + subtext0
-  readonly property color accentBackground: "#33" + accent0
-  readonly property color primaryBackground: "#" + base0
-  readonly property color secondaryBackground: "#" + mantle0
-  readonly property color mutedBackground: "#" + crust0
-
-  // Outer dashboard/system/wallpaper picker shell.
-  readonly property color panelBackground: withAlpha(base0, panelAlpha)
-  readonly property color panelForeground: primaryForeground
-  readonly property color panelBorder: "#9e" + surface0
-
-  // Sidebar/calendar/content sections inside larger panels.
-  readonly property color panelContainerBackground: withAlpha(crust0, panelContainerAlpha)
-  readonly property color panelContainerForeground: primaryForeground
-  readonly property color panelContainerBorder: "#40" + mantle1
-
-  // Repeated cards such as media cards, theme cards, and wallpaper cards.
-  readonly property color panelCardBackground: withAlpha(base1, panelCardAlpha)
-  readonly property color panelCardForeground: primaryForeground
-  readonly property color panelCardBorder: "#9e" + surface1
-
-  // Buttons, tabs, pills, and calendar day cells.
-  readonly property color panelButtonBackground: withAlpha(surface0, panelButtonAlpha)
-  readonly property color panelButtonBackgroundSubtle: "#" + surface1
-  readonly property color panelButtonBackgroundHover: "#ee" + surface1
-  readonly property color panelButtonBackgroundActive: accentBackground
-  readonly property color panelButtonForeground: primaryForeground
-  readonly property color panelButtonBorder: panelBorder
-  readonly property color panelButtonBorderActive: "#b8" + accent0
-
-  // Workspace pills.
-  readonly property color workspaceInactiveBackground: "#c2" + surface0
-  readonly property color workspaceOccupiedBackground: "#e6" + surface1
-
-  // Text inputs and search fields.
-  readonly property color panelInputBackground: withAlpha(surface0, panelInputAlpha)
-  readonly property color panelInputForeground: primaryForeground
-  readonly property color panelInputBorder: panelBorder
-  readonly property color panelInputBorderActive: panelButtonBorderActive
-
-  // Status colors.
-  readonly property color infoForeground: "#" + info0
-  readonly property color successForeground: "#" + success0
-  readonly property color warningForeground: "#" + warning0
-  readonly property color dangerForeground: "#" + danger0
-  readonly property color infoBackground: "#33" + info0
-  readonly property color successBackground: "#33" + success0
-  readonly property color warningBackground: "#33" + warning0
-  readonly property color dangerBackground: "#33" + danger0
-
-  // Overlays.
-  readonly property color scrim: withAlpha(crust1, scrimAlpha)
-  readonly property color scrimSoft: withAlpha(crust1, scrimSoftAlpha)
-  readonly property color imageOverlay: withAlpha(crust1, imageOverlayAlpha)
-}}
-''')
-PY
-}
-
-generate_from_json() {
-  python - "$1" "$target" <<'PY'
 import json
 import pathlib
 import sys
 
-data = json.loads(pathlib.Path(sys.argv[1]).read_text())
-colors = data.get("colors", data)
+mode, source, target_path = sys.argv[1], sys.argv[2], pathlib.Path(sys.argv[3])
 
-def get(name, fallback):
-    value = colors.get(name)
+direct_roles = [
+    "foreground", "foregroundStrong", "foregroundMuted", "foregroundSubtle", "foregroundInverted",
+    "accent", "accentStrong", "onAccent",
+    "background", "surface", "surfaceContainer", "surfaceCard", "surfaceControl", "surfaceSubtle", "surfaceHover", "surfacePressed", "surfaceFloating", "surfaceFloatingStrong",
+    "border", "borderMuted", "borderStrong", "borderFocus",
+    "info", "success", "warning", "danger",
+    "iconPrimary", "iconSecondary", "iconMuted", "iconSubtle",
+]
 
-    if value is None and isinstance(colors.get("dark"), dict):
-        value = colors["dark"].get(name)
+def normalize(color):
+    color = color.strip()
+    if len(color) == 8 and not color.startswith("#"):
+        color = color[2:]
+    if color.startswith("#") and len(color) == 9:
+        color = "#" + color[3:]
+    return "#" + color.lstrip("#")
+
+def write_qml(sources):
+    lines = [
+        "// Kitana managed Quickshell colors",
+        "",
+        "pragma Singleton",
+        "",
+        "import QtQuick",
+        "",
+        "QtObject {",
+        "",
+        "  function colorChannel(color: string): string {",
+        "    return color.startsWith(\"#\") ? color.slice(1) : color;",
+        "  }",
+        "",
+        "  function alpha(percent: real): string {",
+        "    const value = Math.max(0, Math.min(255, Math.round(255 * percent / 100)));",
+        "    return value.toString(16).padStart(2, \"0\");",
+        "  }",
+        "",
+        "  function withAlpha(color: string, opacity): string {",
+        "    const value = typeof opacity === \"number\" ? alpha(opacity) : opacity;",
+        "    return \"#\" + value + colorChannel(color);",
+        "  }",
+        "",
+        "  function alphaColor(rgb: string, percent: real): string {",
+        "    return withAlpha(rgb, percent);",
+        "  }",
+    ]
+
+    lines.extend([
+        "",
+        "  // Canonical foreground roles.",
+        f"  readonly property color foreground: \"{normalize(sources['foreground'])}\"",
+        f"  readonly property color foregroundStrong: \"{normalize(sources['foregroundStrong'])}\"",
+        f"  readonly property color foregroundMuted: \"{normalize(sources['foregroundMuted'])}\"",
+        f"  readonly property color foregroundSubtle: \"{normalize(sources['foregroundSubtle'])}\"",
+        "  readonly property color foregroundDisabled: withAlpha(foregroundMuted, 50)",
+        f"  readonly property color foregroundInverted: \"{normalize(sources['foregroundInverted'])}\"",
+        "",
+        "  // Canonical accent roles.",
+        f"  readonly property color accent: \"{normalize(sources['accent'])}\"",
+        f"  readonly property color accentStrong: \"{normalize(sources['accentStrong'])}\"",
+        f"  readonly property color foregroundOnAccent: \"{normalize(sources['onAccent'])}\"",
+        "  readonly property color accentBackground: withAlpha(accent, 20)",
+        "  readonly property color accentSelectedBackground: withAlpha(accent, 30)",
+        "",
+        "  // Canonical surface roles.",
+        f"  readonly property color background: \"{normalize(sources['background'])}\"",
+        f"  readonly property color surface: \"{normalize(sources['surface'])}\"",
+        f"  readonly property color surfaceContainer: \"{normalize(sources['surfaceContainer'])}\"",
+        f"  readonly property color surfaceCard: \"{normalize(sources['surfaceCard'])}\"",
+        f"  readonly property color surfaceControl: \"{normalize(sources['surfaceControl'])}\"",
+        f"  readonly property color surfaceSubtle: \"{normalize(sources['surfaceSubtle'])}\"",
+        f"  readonly property color surfaceHover: \"{normalize(sources['surfaceHover'])}\"",
+        f"  readonly property color surfacePressed: \"{normalize(sources['surfacePressed'])}\"",
+        f"  readonly property color surfaceActive: \"{normalize(sources['surfaceActive'])}\"",
+        f"  readonly property color surfaceSelected: \"{normalize(sources['surfaceSelected'])}\"",
+        f"  readonly property color surfaceFloating: \"{normalize(sources['surfaceFloating'])}\"",
+        f"  readonly property color surfaceFloatingStrong: \"{normalize(sources['surfaceFloatingStrong'])}\"",
+        "",
+        "  // Canonical border roles.",
+        f"  readonly property color border: \"{normalize(sources['border'])}\"",
+        f"  readonly property color borderMuted: \"{normalize(sources['borderMuted'])}\"",
+        f"  readonly property color borderStrong: \"{normalize(sources['borderStrong'])}\"",
+        f"  readonly property color borderFocus: \"{normalize(sources['borderFocus'])}\"",
+        "",
+        "  // Canonical status roles.",
+        f"  readonly property color info: \"{normalize(sources['info'])}\"",
+        f"  readonly property color success: \"{normalize(sources['success'])}\"",
+        f"  readonly property color warning: \"{normalize(sources['warning'])}\"",
+        f"  readonly property color danger: \"{normalize(sources['danger'])}\"",
+        "  readonly property color infoBackground: withAlpha(info, 20)",
+        "  readonly property color successBackground: withAlpha(success, 20)",
+        "  readonly property color warningBackground: withAlpha(warning, 20)",
+        "  readonly property color dangerBackground: withAlpha(danger, 20)",
+        "",
+        "  // Permanent icon foreground roles used by Config/Icons.qml tone mapping.",
+        f"  readonly property color iconPrimary: \"{normalize(sources['iconPrimary'])}\"",
+        f"  readonly property color iconSecondary: \"{normalize(sources['iconSecondary'])}\"",
+        f"  readonly property color iconMuted: \"{normalize(sources['iconMuted'])}\"",
+        f"  readonly property color iconSubtle: \"{normalize(sources['iconSubtle'])}\"",
+        f"  readonly property color iconAccent: \"{normalize(sources['iconAccent'])}\"",
+        f"  readonly property color iconOnAccent: \"{normalize(sources['iconOnAccent'])}\"",
+        f"  readonly property color iconInverse: \"{normalize(sources['iconInverse'])}\"",
+        f"  readonly property color iconBrand: \"{normalize(sources['iconBrand'])}\"",
+        f"  readonly property color iconDisabled: withAlpha(\"{normalize(sources['iconDisabled'])}\", 50)",
+        f"  readonly property color iconDanger: \"{normalize(sources['iconDanger'])}\"",
+        "",
+        "  // Shallow Kitana component roles. Keep these independently defined for future per-component tuning.",
+        "  readonly property color barBackground: withAlpha(background, 92)",
+        "  readonly property color barForeground: foreground",
+        "  readonly property color barHoverBackground: withAlpha(surfaceHover, 93)",
+        "  readonly property color barBorder: borderStrong",
+        "",
+        "  readonly property color panelBackground: withAlpha(background, 92)",
+        "  readonly property color panelForeground: foreground",
+        "  readonly property color panelBorder: border",
+        "",
+        "  readonly property color containerBackground: withAlpha(surfaceContainer, 85)",
+        "  readonly property color containerForeground: foreground",
+        "  readonly property color containerBorder: border",
+        "",
+        "  readonly property color cardBackground: withAlpha(surfaceCard, 68)",
+        "  readonly property color cardForeground: foreground",
+        "  readonly property color cardBorder: borderStrong",
+        "",
+        "  readonly property color controlBackground: withAlpha(surfaceControl, 80)",
+        "  readonly property color controlForeground: foreground",
+        "  readonly property color controlBorder: border",
+        "  readonly property color controlSubtleBackground: surfaceSubtle",
+        "  readonly property color controlHoverBackground: withAlpha(surfaceHover, 95)",
+        "  readonly property color controlPressedBackground: withAlpha(surfacePressed, 96)",
+        "  readonly property color controlActiveBackground: withAlpha(surfaceActive, 25)",
+        "  readonly property color controlActiveForeground: foreground",
+        "  readonly property color controlActiveBorder: borderFocus",
+        "",
+        "  readonly property color inputBackground: withAlpha(surfaceControl, 80)",
+        "  readonly property color inputForeground: foreground",
+        "  readonly property color inputPlaceholderForeground: foregroundMuted",
+        "  readonly property color inputBorder: border",
+        "  readonly property color inputActiveBorder: borderFocus",
+        "",
+        "  readonly property color workspaceInactiveBackground: surfaceCard",
+        "  readonly property color workspaceInactiveForeground: foregroundMuted",
+        "  readonly property color workspaceOccupiedBackground: withAlpha(surfaceSubtle, 90)",
+        "  readonly property color workspaceOccupiedForeground: foreground",
+        "  readonly property color workspaceActiveBackground: accent",
+        "  readonly property color workspaceActiveForeground: foregroundOnAccent",
+        "  readonly property color workspaceUrgentBackground: withAlpha(danger, 20)",
+        "  readonly property color workspaceUrgentForeground: danger",
+        "",
+        "  // Overlays.",
+        "  readonly property color scrim: withAlpha(background, 52)",
+        "  readonly property color scrimSoft: withAlpha(background, 32)",
+        "  readonly property color imageOverlay: withAlpha(background, 60)",
+        f"  readonly property color shadow: withAlpha(\"{normalize(sources['shadow'])}\", 45)",
+        "}",
+    ])
+
+    target_path.write_text("\n".join(lines) + "\n")
+
+def sources_from_hex(color):
+    color = normalize(color)
+    r, g, b = (int(color[i:i + 2], 16) / 255 for i in (1, 3, 5))
+    h, lightness, saturation = colorsys.rgb_to_hls(r, g, b)
+
+    def hex_color(lightness, saturation_override=None):
+        rr, gg, bb = colorsys.hls_to_rgb(h, lightness, saturation if saturation_override is None else saturation_override)
+        return "#{:02x}{:02x}{:02x}".format(round(rr * 255), round(gg * 255), round(bb * 255))
+
+    background = hex_color(0.10, max(saturation * 0.45, 0.12))
+    surface = hex_color(0.16, max(saturation * 0.40, 0.10))
+    surface_alt = hex_color(0.24, max(saturation * 0.40, 0.10))
+    foreground = "#f4f4f5"
+    muted = "#a1a1aa"
+
+    return {
+        "foreground": foreground,
+        "foregroundStrong": "#ffffff",
+        "foregroundMuted": muted,
+        "foregroundSubtle": muted,
+        "foregroundDisabled": muted,
+        "foregroundInverted": background,
+        "accent": color,
+        "accentStrong": color,
+        "onAccent": background,
+        "accentBackground": color,
+        "accentSelectedBackground": color,
+        "background": background,
+        "surface": background,
+        "surfaceContainer": background,
+        "surfaceCard": surface,
+        "surfaceControl": surface,
+        "surfaceSubtle": surface_alt,
+        "surfaceHover": surface_alt,
+        "surfacePressed": surface_alt,
+        "surfaceActive": color,
+        "surfaceSelected": color,
+        "surfaceFloating": background,
+        "surfaceFloatingStrong": surface,
+        "border": surface,
+        "borderMuted": surface,
+        "borderStrong": surface_alt,
+        "borderFocus": color,
+        "info": color,
+        "success": "#a6e3a1",
+        "warning": "#f9e2af",
+        "danger": "#f38ba8",
+        "infoBackground": color,
+        "successBackground": "#a6e3a1",
+        "warningBackground": "#f9e2af",
+        "dangerBackground": "#f38ba8",
+        "iconPrimary": foreground,
+        "iconSecondary": "#ffffff",
+        "iconMuted": muted,
+        "iconSubtle": muted,
+        "iconAccent": color,
+        "iconOnAccent": background,
+        "iconInverse": background,
+        "iconBrand": color,
+        "iconDisabled": muted,
+        "iconDanger": "#f38ba8",
+        "scrim": surface,
+        "scrimSoft": surface,
+        "imageOverlay": surface,
+        "shadow": "#000000",
+    }
+
+def sources_from_json(path):
+    data = json.loads(pathlib.Path(path).read_text())
+    colors = data.get("colors", data)
 
     def extract(candidate):
         if isinstance(candidate, str):
             return candidate
         if not isinstance(candidate, dict):
             return None
-
         for key in ("color", "hex"):
             if isinstance(candidate.get(key), str):
                 return candidate[key]
-
-        for mode in ("dark", "default", "light"):
-            extracted = extract(candidate.get(mode))
+        for mode_name in ("dark", "default", "light"):
+            extracted = extract(candidate.get(mode_name))
             if extracted:
                 return extracted
-
         return None
 
-    return extract(value) or fallback
+    def get(name, fallback):
+        value = colors.get(name)
+        if value is None and isinstance(colors.get("dark"), dict):
+            value = colors["dark"].get(name)
+        return normalize(extract(value) or fallback)
 
-def alpha(color, opacity):
-    color = color.lstrip("#")
-    if len(color) == 8:
-        color = color[2:]
-    return "#{:02x}{}".format(round(opacity * 255), color)
+    background = get("background", "#1e1e2e")
+    surface = get("surface_container", "#313244")
+    surface_alt = get("surface_container_high", "#45475a")
+    surface_hover = get("surface_container_highest", surface_alt)
+    accent = get("primary", "#89b4fa")
+    accent_strong = get("primary_container", accent)
+    foreground = get("on_background", "#cdd6f4")
+    muted = get("on_surface_variant", "#9399b2")
+    on_accent = get("on_primary", background)
+    warning = get("tertiary", "#f9e2af")
+    danger = get("error", "#f38ba8")
+    success = get("secondary", "#a6e3a1")
+    outline = get("outline", muted)
+    outline_variant = get("outline_variant", surface_alt)
+    workspace_inactive = get("surface_container", surface)
+    workspace_occupied = get("secondary_container", surface_alt)
 
-background = get("background", "#1e1e2e")
-surface = get("surface_container", "#313244")
-surface_alt = get("surface_container_high", "#45475a")
-surface_hover = get("surface_container_highest", surface_alt)
-surface_highlight = get("primary_container", get("primary", "#89b4fa"))
-workspace_inactive = get("surface_container", surface)
-workspace_occupied = get("secondary_container", get("surface_container_high", surface_alt))
-outline = get("outline", "#7f849c")
-outline_variant = get("outline_variant", surface_alt)
-background_rgb = background.lstrip("#")
-surface_rgb = surface.lstrip("#")
-surface_alt_rgb = surface_alt.lstrip("#")
-surface_hover_rgb = surface_hover.lstrip("#")
-surface_highlight_rgb = surface_highlight.lstrip("#")
-workspace_inactive_rgb = workspace_inactive.lstrip("#")
-workspace_occupied_rgb = workspace_occupied.lstrip("#")
-outline_rgb = outline.lstrip("#")
-outline_variant_rgb = outline_variant.lstrip("#")
-foreground_rgb = get("on_background", "#cdd6f4").lstrip("#")
-muted_rgb = get("on_surface_variant", "#9399b2").lstrip("#")
-accent_rgb = get("primary", "#89b4fa").lstrip("#")
-accent_text_rgb = get("on_primary", "#11111b").lstrip("#")
-warning_rgb = get("tertiary", "#f9e2af").lstrip("#")
-danger_rgb = get("error", "#f38ba8").lstrip("#")
-info_rgb = get("primary", "#89b4fa").lstrip("#")
-success_rgb = get("secondary", "#a6e3a1").lstrip("#")
+    return {
+        "foreground": foreground,
+        "foregroundStrong": foreground,
+        "foregroundMuted": muted,
+        "foregroundSubtle": outline,
+        "foregroundDisabled": muted,
+        "foregroundInverted": on_accent,
+        "accent": accent,
+        "accentStrong": accent_strong,
+        "onAccent": on_accent,
+        "accentBackground": accent,
+        "accentSelectedBackground": accent,
+        "background": background,
+        "surface": background,
+        "surfaceContainer": on_accent,
+        "surfaceCard": surface,
+        "surfaceControl": surface,
+        "surfaceSubtle": surface_alt,
+        "surfaceHover": surface_hover,
+        "surfacePressed": surface_hover,
+        "surfaceActive": accent,
+        "surfaceSelected": accent,
+        "surfaceFloating": background,
+        "surfaceFloatingStrong": surface,
+        "border": outline_variant,
+        "borderMuted": outline_variant,
+        "borderStrong": outline,
+        "borderFocus": accent,
+        "info": accent,
+        "success": success,
+        "warning": warning,
+        "danger": danger,
+        "infoBackground": accent,
+        "successBackground": success,
+        "warningBackground": warning,
+        "dangerBackground": danger,
+        "iconPrimary": foreground,
+        "iconSecondary": foreground,
+        "iconMuted": muted,
+        "iconSubtle": outline,
+        "iconAccent": accent,
+        "iconOnAccent": on_accent,
+        "iconInverse": on_accent,
+        "iconBrand": accent,
+        "iconDisabled": muted,
+        "iconDanger": danger,
+        "scrim": background,
+        "scrimSoft": background,
+        "imageOverlay": background,
+        "shadow": "#000000",
+    }
 
-pathlib.Path(sys.argv[2]).write_text(f'''// Kitana managed Quickshell colors
-
-pragma Singleton
-
-import QtQuick
-
-QtObject {{
-  // Alpha reference:
-  // 98% = fa
-  // 96% = f5
-  // 90% = e6
-  // 86% = db
-  // 80% = cc
-  // 76% = c2
-  // 70% = b3
-  // 66% = a8
-  // 60% = 99
-  // 45% = 73
-
-  function withAlpha(rgb: string, alpha: string): string {{
-    return "#" + alpha + rgb;
-  }}
-
-  // Raw palette. Suffix 0 is darker, suffix 1 is lighter.
-  readonly property string crust0: "{accent_text_rgb}"
-  readonly property string crust1: "{background_rgb}"
-  readonly property string mantle0: "{background_rgb}"
-  readonly property string mantle1: "{surface_rgb}"
-  readonly property string base0: "{background_rgb}"
-  readonly property string base1: "{surface_rgb}"
-  readonly property string surface0: "{surface_rgb}"
-  readonly property string surface1: "{surface_alt_rgb}"
-  readonly property string overlay0: "{outline_variant_rgb}"
-  readonly property string overlay1: "{outline_rgb}"
-  readonly property string subtext0: "{muted_rgb}"
-  readonly property string subtext1: "{foreground_rgb}"
-  readonly property string text0: "{foreground_rgb}"
-  readonly property string text1: "ffffff"
-  readonly property string accent0: "{accent_rgb}"
-  readonly property string accent1: "{surface_highlight_rgb}"
-  readonly property string info0: "{info_rgb}"
-  readonly property string success0: "{success_rgb}"
-  readonly property string warning0: "{warning_rgb}"
-  readonly property string danger0: "{danger_rgb}"
-
-  // Alpha presets for blur-friendly panel layers.
-  readonly property string panelAlpha: "fa"
-  readonly property string panelContainerAlpha: "73"
-  readonly property string panelCardAlpha: "99"
-  readonly property string panelButtonAlpha: "cc"
-  readonly property string panelInputAlpha: "cc"
-  readonly property string scrimAlpha: "85"
-  readonly property string scrimSoftAlpha: "52"
-  readonly property string imageOverlayAlpha: "99"
-
-  // Semantic foreground and background roles.
-  readonly property color accentForeground: "#" + accent0
-  readonly property color onAccentForeground: "#" + crust0
-  readonly property color primaryForeground: "#" + text0
-  readonly property color secondaryForeground: "#" + text1
-  readonly property color mutedForeground: "#" + subtext0
-  readonly property color accentBackground: "#33" + accent0
-  readonly property color primaryBackground: "#" + base0
-  readonly property color secondaryBackground: "#" + mantle0
-  readonly property color mutedBackground: "#" + crust0
-
-  // Outer dashboard/system/wallpaper picker shell.
-  readonly property color panelBackground: withAlpha(base0, panelAlpha)
-  readonly property color panelForeground: primaryForeground
-  readonly property color panelBorder: "#9e" + surface0
-
-  // Sidebar/calendar/content sections inside larger panels.
-  readonly property color panelContainerBackground: withAlpha(crust0, panelContainerAlpha)
-  readonly property color panelContainerForeground: primaryForeground
-  readonly property color panelContainerBorder: "#40" + mantle1
-
-  // Repeated cards such as media cards, theme cards, and wallpaper cards.
-  readonly property color panelCardBackground: withAlpha(base1, panelCardAlpha)
-  readonly property color panelCardForeground: primaryForeground
-  readonly property color panelCardBorder: "#9e" + surface1
-
-  // Buttons, tabs, pills, and calendar day cells.
-  readonly property color panelButtonBackground: withAlpha(surface0, panelButtonAlpha)
-  readonly property color panelButtonBackgroundSubtle: "#" + surface1
-  readonly property color panelButtonBackgroundHover: "#ee" + surface1
-  readonly property color panelButtonBackgroundActive: accentBackground
-  readonly property color panelButtonForeground: primaryForeground
-  readonly property color panelButtonBorder: panelBorder
-  readonly property color panelButtonBorderActive: "#b8" + accent0
-
-  // Workspace pills.
-  readonly property color workspaceInactiveBackground: "#c2{workspace_inactive_rgb}"
-  readonly property color workspaceOccupiedBackground: "#e6{workspace_occupied_rgb}"
-
-  // Text inputs and search fields.
-  readonly property color panelInputBackground: withAlpha(surface0, panelInputAlpha)
-  readonly property color panelInputForeground: primaryForeground
-  readonly property color panelInputBorder: panelBorder
-  readonly property color panelInputBorderActive: panelButtonBorderActive
-
-  // Status colors.
-  readonly property color infoForeground: "#" + info0
-  readonly property color successForeground: "#" + success0
-  readonly property color warningForeground: "#" + warning0
-  readonly property color dangerForeground: "#" + danger0
-  readonly property color infoBackground: "#33" + info0
-  readonly property color successBackground: "#33" + success0
-  readonly property color warningBackground: "#33" + warning0
-  readonly property color dangerBackground: "#33" + danger0
-
-  // Overlays.
-  readonly property color scrim: withAlpha(crust1, scrimAlpha)
-  readonly property color scrimSoft: withAlpha(crust1, scrimSoftAlpha)
-  readonly property color imageOverlay: withAlpha(crust1, imageOverlayAlpha)
-}}
-''')
+write_qml(sources_from_hex(source) if mode == "hex" else sources_from_json(source))
 PY
 }
 
@@ -369,7 +370,7 @@ average_color() {
 }
 
 if [[ "$source_value" =~ ^#?[0-9a-fA-F]{6}$ ]]; then
-  generate_from_hex "$source_value"
+  generate_colors hex "#${source_value#\#}"
   finish "Generated $target from #${source_value#\#}"
 fi
 
@@ -382,12 +383,12 @@ tmpdir="$(mktemp -d)"
 trap 'rm -rf "$tmpdir"' EXIT
 
 if command -v matugen >/dev/null 2>&1 && matugen image "$source_value" --dry-run --source-color-index 0 --json hex >"$tmpdir/colors.json" 2>"$tmpdir/matugen.err"; then
-  generate_from_json "$tmpdir/colors.json"
+  generate_colors json "$tmpdir/colors.json"
   finish "Generated $target from $source_value"
 fi
 
 if color="$(average_color)"; then
-  generate_from_hex "$color"
+  generate_colors hex "$color"
   finish "Generated $target from average wallpaper color $color"
 fi
 

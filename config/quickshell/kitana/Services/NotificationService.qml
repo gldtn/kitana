@@ -161,12 +161,12 @@ Singleton {
     function toneForeground(item): color {
         const nextTone = tone(item);
         if (nextTone === "critical")
-            return Colors.dangerForeground;
+            return Colors.danger;
         if (nextTone === "warning")
-            return Colors.warningForeground;
+            return Colors.warning;
         if (nextTone === "success")
-            return Colors.successForeground;
-        return Colors.infoForeground;
+            return Colors.success;
+        return Colors.info;
     }
 
     function toneBackground(item): color {

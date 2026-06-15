@@ -17,8 +17,8 @@ Rectangle {
     height: implicitHeight
 
     radius: height / settings.radiusDivisor
-    color: sessionMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelBackground
-    border.color: Colors.panelBorder
+    color: sessionMouse.containsMouse ? Colors.barHoverBackground : Colors.barBackground
+    border.color: Colors.barBorder
     border.width: settings.borderWidth
 
     Process { id: sessionMenu }

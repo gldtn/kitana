@@ -58,13 +58,13 @@ Row {
             width: control.availableWidth
             height: 6
             radius: 3
-            color: Colors.panelButtonBackgroundSubtle
+            color: Colors.controlSubtleBackground
 
             Rectangle {
                 width: control.visualPosition * parent.width
                 height: parent.height
                 radius: parent.radius
-                color: Colors.accentForeground
+                color: Colors.accent
             }
         }
 
@@ -74,8 +74,8 @@ Row {
             width: 16
             height: 16
             radius: 8
-            color: Colors.accentForeground
-            border.color: Colors.panelButtonBorderActive
+            color: Colors.accent
+            border.color: Colors.controlActiveBorder
             border.width: 1
         }
     }
@@ -86,7 +86,7 @@ Row {
         anchors.verticalCenter: parent.verticalCenter
         width: 34
         text: root.label
-        color: Colors.primaryForeground
+        color: Colors.foreground
         horizontalAlignment: Text.AlignRight
         font.family: Typography.fontFamily
         font.pixelSize: settings.textPixelSize

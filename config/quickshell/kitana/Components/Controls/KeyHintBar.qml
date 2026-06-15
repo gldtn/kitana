@@ -14,7 +14,7 @@ Text {
 
     Layout.fillWidth: true
     text: hints
-    color: Colors.mutedForeground
+    color: Colors.foregroundMuted
     horizontalAlignment: Text.AlignHCenter
     font.family: Typography.fontFamily
     font.pixelSize: settings.textPixelSize - 1

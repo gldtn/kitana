@@ -15,8 +15,8 @@ Rectangle {
 
     Layout.preferredHeight: 34
     radius: 10
-    color: Colors.panelCardBackground
-    border.color: volumeMouse.containsMouse ? Colors.panelButtonBorderActive : Colors.panelBorder
+    color: Colors.cardBackground
+    border.color: volumeMouse.containsMouse ? Colors.controlActiveBorder : Colors.panelBorder
     border.width: 1
     clip: true
 
@@ -26,13 +26,13 @@ Rectangle {
         anchors.bottom: parent.bottom
         width: parent.width * Math.max(0, Math.min(100, root.value)) / 100
         radius: parent.radius
-        color: Colors.panelButtonBackgroundActive
+        color: Colors.controlActiveBackground
     }
 
     Text {
         anchors.centerIn: parent
         text: "Volume " + root.value + "%"
-        color: Colors.primaryForeground
+        color: Colors.foreground
         font.family: Typography.fontFamily
         font.pixelSize: settings.textPixelSize
         font.weight: Font.DemiBold

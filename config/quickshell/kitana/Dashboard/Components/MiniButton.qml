@@ -23,7 +23,7 @@ Rectangle {
     width: widthOverride
     height: heightOverride
     radius: 9
-    color: miniMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelCardBackground
+    color: miniMouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground
     border.color: Colors.panelBorder
     border.width: 1
 
@@ -31,7 +31,7 @@ Rectangle {
         visible: root.iconName.length === 0
         anchors.centerIn: parent
         text: root.text
-        color: Colors.primaryForeground
+        color: Colors.foreground
         font.family: Typography.fontFamily
         font.pixelSize: settings.textPixelSize
     }

@@ -6,8 +6,8 @@ import QtQuick
 
 QtObject {
 
-  function withAlpha(rgb: string, alpha: string): string {
-    return "#" + alpha + rgb;
+  function colorChannel(color: string): string {
+    return color.startsWith("#") ? color.slice(1) : color;
   }
 
   function alpha(percent: real): string {
@@ -15,99 +15,119 @@ QtObject {
     return value.toString(16).padStart(2, "0");
   }
 
-  function alphaColor(rgb: string, percent: real): string {
-    return withAlpha(rgb, alpha(percent));
+  function withAlpha(color: string, opacity): string {
+    const value = typeof opacity === "number" ? alpha(opacity) : opacity;
+    return "#" + value + colorChannel(color);
   }
 
-  // Raw palette. Suffix 0 is darker, suffix 1 is lighter.
-  readonly property string crust0: "11111b"
-  readonly property string crust1: "1e1e2e"
-  readonly property string mantle0: "181825"
-  readonly property string mantle1: "313244"
-  readonly property string base0: "1e1e2e"
-  readonly property string base1: "313244"
-  readonly property string surface0: "313244"
-  readonly property string surface1: "45475a"
-  readonly property string overlay0: "45475a"
-  readonly property string overlay1: "9399b2"
-  readonly property string subtext0: "9399b2"
-  readonly property string subtext1: "a6adc8"
-  readonly property string text0: "cdd6f4"
-  readonly property string text1: "ffffff"
-  readonly property string accent0: "89b4fa"
-  readonly property string accent1: "b4befe"
-  readonly property string info0: "89b4fa"
-  readonly property string success0: "a6e3a1"
-  readonly property string warning0: "f9e2af"
-  readonly property string danger0: "f38ba8"
+  function alphaColor(rgb: string, percent: real): string {
+    return withAlpha(rgb, percent);
+  }
 
-  // Alpha presets for blur-friendly panel layers.
-  readonly property string panelAlpha: alpha(92)
-  readonly property string panelContainerAlpha: alpha(85)
-  readonly property string panelCardAlpha: alpha(60)
-  readonly property string panelButtonAlpha: alpha(80)
-  readonly property string panelInputAlpha: alpha(80)
-  readonly property string scrimAlpha: alpha(52)
-  readonly property string scrimSoftAlpha: alpha(32)
-  readonly property string imageOverlayAlpha: alpha(60)
+  // Canonical foreground roles.
+  readonly property color foreground: "#cdd6f4"
+  readonly property color foregroundStrong: "#f5e0dc"
+  readonly property color foregroundMuted: "#9399b2"
+  readonly property color foregroundSubtle: "#9399b2"
+  readonly property color foregroundDisabled: withAlpha(foregroundMuted, 50)
+  readonly property color foregroundInverted: "#181825"
 
-  // Semantic foreground and background roles.
-  readonly property color accentForeground: "#" + accent0
-  readonly property color onAccentForeground: "#" + crust0
-  readonly property color primaryForeground: "#" + text0
-  readonly property color secondaryForeground: "#" + text1
-  readonly property color mutedForeground: "#" + subtext0
-  readonly property color accentBackground: "#33" + accent0
-  readonly property color primaryBackground: "#" + base0
-  readonly property color secondaryBackground: "#" + mantle0
-  readonly property color mutedBackground: "#" + crust0
+  // Canonical accent roles.
+  readonly property color accent: "#cba6f7"
+  readonly property color accentStrong: "#b4befe"
+  readonly property color foregroundOnAccent: "#181825"
+  readonly property color accentBackground: withAlpha(accent, 20)
+  readonly property color accentSelectedBackground: withAlpha(accent, 30)
 
-  // Outer dashboard/system/wallpaper picker shell.
-  readonly property color panelBackground: withAlpha(mantle0, panelAlpha)
-  readonly property color panelForeground: primaryForeground
-  readonly property color panelBorder: "#" + surface0
+  // Canonical surface roles.
+  readonly property color background: "#1e1e2e"
+  readonly property color surface: "#181825"
+  readonly property color surfaceContainer: "#181825"
+  readonly property color surfaceCard: "#313244"
+  readonly property color surfaceControl: "#313244"
+  readonly property color surfaceSubtle: "#45475a"
+  readonly property color surfaceHover: "#45475a"
+  readonly property color surfacePressed: "#45475a"
+  readonly property color surfaceActive: "#cba6f7"
+  readonly property color surfaceSelected: "#cba6f7"
+  readonly property color surfaceFloating: "#1e1e2e"
+  readonly property color surfaceFloatingStrong: "#313244"
 
-  // Sidebar/calendar/content sections inside larger panels.
-  readonly property color panelContainerBackground: withAlpha(crust0, panelContainerAlpha)
-  readonly property color panelContainerForeground: primaryForeground
-  readonly property color panelContainerBorder: "#40" + mantle1
+  // Canonical border roles.
+  readonly property color border: "#313244"
+  readonly property color borderMuted: "#45475a"
+  readonly property color borderStrong: "#45475a"
+  readonly property color borderFocus: "#cba6f7"
 
-  // Repeated cards such as media cards, theme cards, and wallpaper cards.
-  readonly property color panelCardBackground: withAlpha(base1, panelCardAlpha)
-  readonly property color panelCardForeground: primaryForeground
-  readonly property color panelCardBorder: "#9e" + surface1
+  // Canonical status roles.
+  readonly property color info: "#89b4fa"
+  readonly property color success: "#a6e3a1"
+  readonly property color warning: "#f9e2af"
+  readonly property color danger: "#f38ba8"
+  readonly property color infoBackground: withAlpha(info, 20)
+  readonly property color successBackground: withAlpha(success, 20)
+  readonly property color warningBackground: withAlpha(warning, 20)
+  readonly property color dangerBackground: withAlpha(danger, 20)
 
-  // Buttons, tabs, pills, and calendar day cells.
-  readonly property color panelButtonBackground: withAlpha(surface0, panelButtonAlpha)
-  readonly property color panelButtonBackgroundSubtle: "#" + surface1
-  readonly property color panelButtonBackgroundHover: "#ee" + surface1
-  readonly property color panelButtonBackgroundActive: accentBackground
-  readonly property color panelButtonForeground: primaryForeground
-  readonly property color panelButtonBorder: panelBorder
-  readonly property color panelButtonBorderActive: "#b8" + accent0
+  // Permanent icon foreground roles used by Config/Icons.qml tone mapping.
+  readonly property color iconPrimary: "#cdd6f4"
+  readonly property color iconSecondary: "#f5e0dc"
+  readonly property color iconMuted: "#9399b2"
+  readonly property color iconSubtle: "#9399b2"
+  readonly property color iconAccent: "#cba6f7"
+  readonly property color iconOnAccent: "#181825"
+  readonly property color iconInverse: "#181825"
+  readonly property color iconBrand: "#cba6f7"
+  readonly property color iconDisabled: withAlpha("#9399b2", 50)
+  readonly property color iconDanger: "#f38ba8"
 
-  // Workspace pills.
-  readonly property color workspaceInactiveBackground: "#c2" + surface0
-  readonly property color workspaceOccupiedBackground: "#e6" + surface1
+  // Shallow Kitana component roles. Keep these independently defined for future per-component tuning.
+  readonly property color barBackground: withAlpha(background, 92)
+  readonly property color barForeground: foreground
+  readonly property color barHoverBackground: withAlpha(surfaceHover, 93)
+  readonly property color barBorder: withAlpha(borderMuted, 25)
 
-  // Text inputs and search fields.
-  readonly property color panelInputBackground: withAlpha(surface0, panelInputAlpha)
-  readonly property color panelInputForeground: primaryForeground
-  readonly property color panelInputBorder: panelBorder
-  readonly property color panelInputBorderActive: panelButtonBorderActive
+  readonly property color panelBackground: withAlpha(background, 92)
+  readonly property color panelForeground: foreground
+  readonly property color panelBorder: border
 
-  // Status colors.
-  readonly property color infoForeground: "#" + info0
-  readonly property color successForeground: "#" + success0
-  readonly property color warningForeground: "#" + warning0
-  readonly property color dangerForeground: "#" + danger0
-  readonly property color infoBackground: "#33" + info0
-  readonly property color successBackground: "#33" + success0
-  readonly property color warningBackground: "#33" + warning0
-  readonly property color dangerBackground: "#33" + danger0
+  readonly property color containerBackground: withAlpha(surfaceContainer, 85)
+  readonly property color containerForeground: foreground
+  readonly property color containerBorder: border
+
+  readonly property color cardBackground: withAlpha(surfaceCard, 68)
+  readonly property color cardForeground: foreground
+  readonly property color cardBorder: borderStrong
+
+  readonly property color controlBackground: withAlpha(surfaceControl, 80)
+  readonly property color controlForeground: foreground
+  readonly property color controlBorder: border
+  readonly property color controlSubtleBackground: surfaceSubtle
+  readonly property color controlHoverBackground: withAlpha(surfaceHover, 95)
+  readonly property color controlPressedBackground: withAlpha(surfacePressed, 96)
+  readonly property color controlActiveBackground: withAlpha(surfaceActive, 25)
+  readonly property color controlActiveForeground: foreground
+  readonly property color controlActiveBorder: borderFocus
+
+  readonly property color inputBackground: withAlpha(surfaceControl, 80)
+  readonly property color inputForeground: foreground
+  readonly property color inputPlaceholderForeground: foregroundMuted
+  readonly property color inputBorder: border
+  readonly property color inputActiveBorder: borderFocus
+
+  readonly property color workspaceInactiveBackground: withAlpha(surfaceSubtle, 45)
+  readonly property color workspaceInactiveForeground: withAlpha(foregroundMuted, 55)
+  readonly property color workspaceOccupiedBackground: withAlpha(surfaceSubtle, 90)
+  readonly property color workspaceOccupiedForeground: foreground
+  readonly property color workspaceActiveBackground: accent
+  readonly property color workspaceActiveForeground: foregroundOnAccent
+  readonly property color workspaceUrgentBackground: withAlpha(danger, 20)
+  readonly property color workspaceUrgentForeground: danger
 
   // Overlays.
-  readonly property color scrim: withAlpha(crust1, scrimAlpha)
-  readonly property color scrimSoft: withAlpha(crust1, scrimSoftAlpha)
-  readonly property color imageOverlay: withAlpha(crust1, imageOverlayAlpha)
+  readonly property color scrim: withAlpha(background, 52)
+  readonly property color scrimSoft: withAlpha(background, 32)
+  readonly property color imageOverlay: withAlpha(background, 60)
+  readonly property color shadow: withAlpha("#000000", 45)
+  readonly property color popupBackground: withAlpha(surfaceFloatingStrong, 65) // use for floating elements
 }

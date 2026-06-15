@@ -21,8 +21,8 @@ Rectangle {
     Layout.fillWidth: true
     Layout.preferredHeight: 46
     radius: 12
-    color: active ? Colors.panelButtonBackgroundActive : (mediaDeviceMouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelCardBackground)
-    border.color: active ? Colors.panelButtonBorderActive : Colors.panelBorder
+    color: active ? Colors.controlActiveBackground : (mediaDeviceMouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground)
+    border.color: active ? Colors.controlActiveBorder : Colors.panelBorder
     border.width: 1
 
     RowLayout {
@@ -44,7 +44,7 @@ Rectangle {
             Text {
                 Layout.fillWidth: true
                 text: root.name
-                color: Colors.primaryForeground
+                color: Colors.foreground
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
@@ -54,7 +54,7 @@ Rectangle {
             Text {
                 Layout.fillWidth: true
                 text: root.active ? "Current output" : root.subtitle
-                color: Colors.mutedForeground
+                color: Colors.foregroundMuted
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize - 1

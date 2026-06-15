@@ -24,8 +24,8 @@ Rectangle {
     height: implicitHeight
 
     radius: height / settings.radiusDivisor
-    color: Colors.panelBackground
-    border.color: Colors.panelBorder
+    color: Colors.barBackground
+    border.color: Colors.barBorder
     border.width: settings.borderWidth
 
     function range(start, end) {
@@ -90,12 +90,12 @@ Rectangle {
                 width: active ? settings.workspaceActiveWidth : settings.workspaceInactiveWidth
                 height: settings.workspacePillHeight
                 radius: height / settings.radiusDivisor
-                color: active ? Colors.accentForeground : (occupied ? Colors.workspaceOccupiedBackground : Colors.workspaceInactiveBackground)
+                color: active ? Colors.workspaceActiveBackground : (occupied ? Colors.workspaceOccupiedBackground : Colors.workspaceInactiveBackground)
 
                 Text {
                     anchors.centerIn: parent
                     text: workspacePill.workspaceId
-                    color: workspacePill.active ? Colors.onAccentForeground : (workspacePill.occupied ? Colors.primaryForeground : Colors.mutedForeground)
+                    color: workspacePill.active ? Colors.workspaceActiveForeground : (workspacePill.occupied ? Colors.workspaceOccupiedForeground : Colors.workspaceInactiveForeground)
                     font.family: Typography.fontFamily
                     font.pixelSize: settings.textPixelSize
                     font.weight: Font.DemiBold

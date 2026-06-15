@@ -17,14 +17,14 @@ Rectangle {
 
     height: 64
     radius: 13
-    color: mouse.containsMouse ? Colors.panelButtonBackgroundHover : Colors.panelCardBackground
+    color: mouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground
 
     Rectangle {
         anchors.centerIn: parent
         width: 38
         height: 38
         radius: 12
-        color: root.active ? Colors.accentForeground : Colors.panelButtonBackgroundSubtle
+        color: root.active ? Colors.accent : Colors.controlSubtleBackground
 
         Controls.Icon {
             anchors.centerIn: parent

@@ -220,7 +220,7 @@ PanelWindow {
                 Layout.fillWidth: true
                 visible: root.statusText.length > 0
                 text: root.statusText
-                color: Colors.mutedForeground
+                color: Colors.foregroundMuted
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
             }
@@ -251,8 +251,8 @@ PanelWindow {
                     width: grid.cellWidth - 12
                     height: grid.cellHeight - 12
                     radius: 14
-                    color: Colors.panelCardBackground
-                    border.color: selected || mouse.containsMouse ? Colors.panelButtonBorderActive : Colors.panelBorder
+                    color: Colors.cardBackground
+                    border.color: selected || mouse.containsMouse ? Colors.controlActiveBorder : Colors.panelBorder
                     border.width: 1
                     clip: true
                     antialiasing: true
@@ -287,8 +287,8 @@ PanelWindow {
                     Rectangle {
                         anchors.fill: parent
                         visible: card.selected
-                        color: Colors.panelButtonBackgroundActive
-                        border.color: Colors.accentForeground
+                        color: Colors.controlActiveBackground
+                        border.color: Colors.accent
                         border.width: 1
                         radius: parent.radius
                         antialiasing: true
@@ -348,7 +348,7 @@ PanelWindow {
                 Layout.fillWidth: true
                 Layout.preferredHeight: root.searchActive ? 38 : (root.helpVisible ? 56 : 24)
                 radius: 10
-                color: root.searchActive ? Colors.panelCardBackground : "transparent"
+                color: root.searchActive ? Colors.cardBackground : "transparent"
                 border.color: root.searchActive ? Colors.panelBorder : "transparent"
                 border.width: root.searchActive ? 1 : 0
 
@@ -361,9 +361,9 @@ PanelWindow {
                     verticalAlignment: TextInput.AlignVCenter
                     visible: root.searchActive
                     clip: true
-                    color: Colors.primaryForeground
-                    selectionColor: Colors.accentForeground
-                    selectedTextColor: Colors.onAccentForeground
+                    color: Colors.foreground
+                    selectionColor: Colors.accent
+                    selectedTextColor: Colors.foregroundOnAccent
                     font.family: Typography.fontFamily
                     font.pixelSize: settings.textPixelSize
 
@@ -388,7 +388,7 @@ PanelWindow {
                     visible: !root.searchActive
                     verticalAlignment: Text.AlignVCenter
                     text: root.helpVisible ? "arrows/hjkl move  ·  enter/space apply  ·  / search  ·  ? hide help  ·  esc close" : "? help  ·  arrows/hjkl move  ·  / search  ·  enter/space apply  ·  esc close"
-                    color: Colors.mutedForeground
+                    color: Colors.foregroundMuted
                     font.family: Typography.fontFamily
                     font.pixelSize: settings.textPixelSize
                     horizontalAlignment: Text.AlignHCenter

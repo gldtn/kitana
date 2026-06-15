@@ -30,7 +30,7 @@ Row {
         anchors.verticalCenter: parent.verticalCenter
         width: parent.width - brandIcon.implicitWidth - headerActions.width - parent.spacing * 2
         text: (Quickshell.env("USER") || "kitana") + "@" + (Quickshell.env("HOSTNAME") || "host")
-        color: Colors.primaryForeground
+        color: Colors.foreground
         elide: Text.ElideRight
         font.family: Typography.fontFamily
         font.pixelSize: settings.textPixelSize + 1

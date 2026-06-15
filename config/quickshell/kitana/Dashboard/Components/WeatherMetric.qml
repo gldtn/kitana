@@ -55,7 +55,7 @@ Item {
             Text {
                 width: parent.width
                 text: root.label
-                color: Colors.mutedForeground
+                color: Colors.foregroundMuted
                 horizontalAlignment: Text.AlignLeft
                 font.family: Typography.fontFamily
                 font.pixelSize: root.labelPixelSize
@@ -64,7 +64,7 @@ Item {
             Text {
                 width: parent.width
                 text: root.value
-                color: Colors.primaryForeground
+                color: Colors.foreground
                 horizontalAlignment: Text.AlignLeft
                 font.family: Typography.fontFamily
                 font.pixelSize: root.valuePixelSize

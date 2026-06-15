@@ -110,8 +110,8 @@ PanelWindow {
                 width: parent.width
                 height: Math.max(0, content.height - panelHeader.height - quickGrid.height - sliders.height - content.spacing * 3)
                 radius: 14
-                color: Colors.panelContainerBackground
-                border.color: Colors.panelContainerBorder
+                color: Colors.containerBackground
+                border.color: Colors.containerBorder
                 border.width: 1
                 clip: true
 
