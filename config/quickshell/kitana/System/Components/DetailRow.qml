@@ -21,9 +21,9 @@ Rectangle {
     width: parent ? parent.width : 0
     height: 48
     radius: 11
-    color: mouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground
-    border.color: active ? Colors.controlActiveBorder : "transparent"
-    border.width: active ? 1 : 0
+    color: mouse.containsMouse ? Colors.controlHoverBackground : Colors.controlBackground
+    border.color: active ? Colors.controlActiveBorder : Colors.controlBorder
+    border.width: 0.8
 
     Row {
         anchors.fill: parent

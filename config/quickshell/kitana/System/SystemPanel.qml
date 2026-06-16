@@ -112,7 +112,7 @@ PanelWindow {
                 radius: 14
                 color: Colors.containerBackground
                 border.color: Colors.containerBorder
-                border.width: 1
+                border.width: 0.6
                 clip: true
 
                 Loader {

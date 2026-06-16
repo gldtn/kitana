@@ -100,15 +100,17 @@ QtObject {
   readonly property color cardForeground: foreground
   readonly property color cardBorder: border
 
-  readonly property color controlBackground: withAlpha(surfaceControl, 80)
+  readonly property color controlBackground: surfaceControl
+  readonly property color controlButtonBackground: "transparent"
   readonly property color controlForeground: foreground
   readonly property color controlBorder: border
   readonly property color controlSubtleBackground: surfaceSubtle
-  readonly property color controlHoverBackground: withAlpha(surfaceHover, 95)
+  readonly property color controlHoverBackground: withAlpha(surfaceHover, 75)
+  readonly property color controlButtonHoverBackground: withAlpha(surfaceContainer, 65)
   readonly property color controlPressedBackground: withAlpha(surfacePressed, 96)
   readonly property color controlActiveBackground: withAlpha(surfaceActive, 25)
   readonly property color controlActiveForeground: foreground
-  readonly property color controlActiveBorder: borderFocus
+  readonly property color controlActiveBorder: withAlpha(borderFocus, 60)
 
   // Floating elements (OSD, Notifications)
   readonly property color popupBackground: withAlpha(surfaceFloatingStrong, 65)

@@ -19,14 +19,15 @@ Rectangle {
     property bool groupCollapsed: false
     property bool groupHeader: false
     readonly property int verticalPadding: 16
+
     signal toggleGroup
 
     width: parent ? parent.width : 0
     height: Math.max(84, contentColumn.implicitHeight + verticalPadding * 2)
     radius: 14
-    color: hoverHandler.hovered ? Colors.controlHoverBackground : Colors.surfaceSubtle
-    border.color: Colors.borderSubtle
-    border.width: 1
+    color: hoverHandler.hovered ? Colors.controlHoverBackground : Colors.controlBackground
+    border.color: Colors.controlBorder
+    border.width: 0.8
 
     HoverHandler { id: hoverHandler }
 
@@ -80,13 +81,13 @@ Rectangle {
                 font.pixelSize: settings.textPixelSize - 1
                 font.weight: Font.DemiBold
             }
-
+            // Expand/collapse button for groups
             Rectangle {
                 visible: root.groupExpandable && root.groupHeader
                 Layout.preferredWidth: countRow.implicitWidth + 14
                 Layout.preferredHeight: 22
                 radius: 11
-                color: countMouse.containsMouse ? Colors.surfaceFloating : Colors.controlBackground
+                color: countMouse.containsMouse ? Colors.controlButtonHoverBackground : "transparent"
 
                 Row {
                     id: countRow
@@ -120,12 +121,12 @@ Rectangle {
                     onClicked: root.toggleGroup()
                 }
             }
-
+            // Dismiss button
             Rectangle {
-                Layout.preferredWidth: 28
+                Layout.preferredWidth: 22
                 Layout.preferredHeight: 22
                 radius: 11
-                color: dismissMouse.containsMouse ? Colors.surfaceFloating : Colors.controlBackground
+              color: dismissMouse.containsMouse ? Colors.controlButtonHoverBackground : "transparent"
 
                 Controls.Icon {
                     anchors.centerIn: parent
