@@ -34,6 +34,7 @@ local quickshell_roles = {
   "surfaceFloating",
   "surfaceFloatingStrong",
   "border",
+  "borderSubtle",
   "borderMuted",
   "borderStrong",
   "borderFocus",

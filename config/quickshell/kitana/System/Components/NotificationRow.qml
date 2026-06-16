@@ -24,8 +24,8 @@ Rectangle {
     width: parent ? parent.width : 0
     height: Math.max(84, contentColumn.implicitHeight + verticalPadding * 2)
     radius: 14
-    color: hoverHandler.hovered ? Colors.controlHoverBackground : Colors.cardBackground
-    border.color: Colors.cardBorder
+    color: hoverHandler.hovered ? Colors.controlHoverBackground : Colors.surfaceSubtle
+    border.color: Colors.borderSubtle
     border.width: 1
 
     HoverHandler { id: hoverHandler }
@@ -86,7 +86,7 @@ Rectangle {
                 Layout.preferredWidth: countRow.implicitWidth + 14
                 Layout.preferredHeight: 22
                 radius: 11
-                color: countMouse.containsMouse ? Colors.controlHoverBackground : Colors.controlBackground
+                color: countMouse.containsMouse ? Colors.surfaceFloating : Colors.controlBackground
 
                 Row {
                     id: countRow
@@ -125,7 +125,7 @@ Rectangle {
                 Layout.preferredWidth: 28
                 Layout.preferredHeight: 22
                 radius: 11
-                color: dismissMouse.containsMouse ? Colors.controlHoverBackground : Colors.controlBackground
+                color: dismissMouse.containsMouse ? Colors.surfaceFloating : Colors.controlBackground
 
                 Controls.Icon {
                     anchors.centerIn: parent
@@ -148,7 +148,7 @@ Rectangle {
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 1
-            color: Colors.cardBorder
+            color: Colors.borderSubtle
         }
 
         Text {

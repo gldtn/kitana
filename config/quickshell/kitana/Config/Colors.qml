@@ -55,6 +55,7 @@ QtObject {
 
   // Canonical border roles.
   readonly property color border: "#313244"
+  readonly property color borderSubtle: "#313244"
   readonly property color borderMuted: "#45475a"
   readonly property color borderStrong: "#45475a"
   readonly property color borderFocus: "#cba6f7"

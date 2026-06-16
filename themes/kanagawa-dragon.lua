@@ -92,6 +92,7 @@ return {
 			surfaceFloatingStrong = "sumiInk3",
 
 			border = "sumiInk3",
+			borderSubtle = "sumiInk3",
 			borderMuted = "sumiInk4",
 			borderStrong = "dragonBlack5",
 			borderFocus = "dragonGreen",

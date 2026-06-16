@@ -60,6 +60,7 @@ return {
 			surfaceFloatingStrong = "surface0",
 
 			border = "surface0",
+			borderSubtle = "surface0",
 			borderMuted = "surface1",
 			borderStrong = "surface1",
 			borderFocus = "mauve",

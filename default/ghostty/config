@@ -34,11 +34,11 @@ keybind = ctrl+shift+l=unbind
 keybind = ctrl+shift+o=unbind
 
 # -- window management
-keybind = ctrl+w>q=close_surface
-keybind = ctrl+w>h=new_split:left
-keybind = ctrl+w>k=new_split:up
-keybind = ctrl+w>j=new_split:down
-keybind = ctrl+w>l=new_split:right
+keybind = ctrl+q>q=close_surface
+keybind = ctrl+q>h=new_split:left
+keybind = ctrl+q>k=new_split:up
+keybind = ctrl+q>j=new_split:down
+keybind = ctrl+q>l=new_split:right
 
 keybind = ctrl+shift+h=goto_split:left
 keybind = ctrl+shift+k=goto_split:up

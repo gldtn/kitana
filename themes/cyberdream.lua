@@ -22,6 +22,10 @@ return {
 		-- custom colors
 		bg_pop = color.lighten("#21202e", 0.06),
 		border_mantle = color.lighten("#3c4048", 0.06),
+		surface_mantle = color.lighten("#3c4048", 0.012),
+		surface_scrim = color.darken("#3c4048", 0.01),
+		surface_scrim_strong = color.darken("#3c4048", 0.25),
+		surface_scrim_subtle = color.darken("#3c4048", 0.20),
 	},
 
 	kitana = {
@@ -29,8 +33,8 @@ return {
 			foreground = "fg",
 			foregroundStrong = "fg",
 			foregroundMuted = "grey",
-			foregroundSubtle = "grey",
-			foregroundDisabled = "grey",
+			foregroundSubtle = "bg_highlight",
+			foregroundDisabled = "bg_alt",
 			foregroundInverted = "bg",
 
 			accent = "orange",
@@ -43,17 +47,18 @@ return {
 			surface = "bg",
 			surfaceContainer = "bg_alt",
 			surfaceCard = "bg_alt",
-			surfaceControl = "bg",
+			surfaceControl = "surface_scrim_subtle",
 			surfaceSubtle = "bg_highlight",
-			surfaceHover = "bg_highlight",
-			surfacePressed = "bg_highlight",
+			surfaceHover = "surface_scrim",
+			surfacePressed = "surface_mantle",
 			surfaceActive = "orange",
 			surfaceSelected = "orange",
-			surfaceFloating = "bg",
+			surfaceFloating = "surface_scrim_strong",
 			surfaceFloatingStrong = "bg_alt",
 
 			border = color.darken("#3c4048", 0.03),
 			borderMuted = color.lighten("#1e2124", 0.08),
+			borderSubtle = color.darken("#7b8496", 0.35),
 			borderStrong = color.darken("#7b8496", 0.1),
 			borderFocus = "orange",
 

@@ -22,7 +22,7 @@ source_roles=(
   foreground foregroundStrong foregroundMuted foregroundSubtle foregroundInverted
   accent accentStrong onAccent
   background surface surfaceContainer surfaceCard surfaceControl surfaceSubtle surfaceHover surfacePressed surfaceActive surfaceSelected surfaceFloating surfaceFloatingStrong
-  border borderMuted borderStrong borderFocus
+  border borderSubtle borderMuted borderStrong borderFocus
   info success warning danger
   iconPrimary iconSecondary iconMuted iconSubtle iconAccent iconOnAccent iconInverse iconBrand iconDisabled iconDanger
 )
@@ -56,6 +56,7 @@ local fields = {
   { qml = "surfaceFloating", env = "surfaceFloating" },
   { qml = "surfaceFloatingStrong", env = "surfaceFloatingStrong" },
   { qml = "border", env = "border" },
+  { qml = "borderSubtle", env = "borderSubtle" },
   { qml = "borderMuted", env = "borderMuted" },
   { qml = "borderStrong", env = "borderStrong" },
   { qml = "borderFocus", env = "borderFocus" },

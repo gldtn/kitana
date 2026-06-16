@@ -52,6 +52,7 @@ return {
 			surfaceFloatingStrong = "surface",
 
 			border = "border1",
+			borderSubtle = "border1",
 			borderMuted = "current_line",
 			borderStrong = "current_line",
 			borderFocus = "purple",

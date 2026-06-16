@@ -64,6 +64,7 @@ return {
       surfaceFloatingStrong = "bg_surface",
 
       border = "bg_surface",
+      borderSubtle = "bg_surface",
       borderMuted = "terminal_black",
       borderStrong = "terminal_black",
       borderFocus = "blue",

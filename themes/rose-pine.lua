@@ -53,6 +53,7 @@ return {
 			surfaceFloatingStrong = "overlay",
 
 			border = "border1",
+			borderSubtle = "border1",
 			borderMuted = "highlight_high",
 			borderStrong = "highlight_med",
 			borderFocus = "rose",

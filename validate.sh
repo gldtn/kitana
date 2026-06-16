@@ -729,7 +729,7 @@ canonical_color_roles=(
   foreground foregroundStrong foregroundMuted foregroundSubtle foregroundDisabled foregroundInverted
   accent accentStrong foregroundOnAccent accentBackground accentSelectedBackground
   background surface surfaceContainer surfaceCard surfaceControl surfaceSubtle surfaceHover surfacePressed surfaceActive surfaceSelected surfaceFloating surfaceFloatingStrong
-  border borderMuted borderStrong
+  border borderSubtle borderMuted borderStrong borderFocus
   info success warning danger infoBackground successBackground warningBackground dangerBackground
   scrim scrimSoft imageOverlay shadow
 )
@@ -793,7 +793,7 @@ else
 fi
 
 independent_color_role_re='readonly property color (foregroundOnAccent|surfaceActive|surfaceSelected|iconPrimary|iconSecondary|iconMuted|iconSubtle|iconAccent|iconOnAccent|iconInverse|iconBrand|iconDisabled|iconDanger|barBackground|barForeground|barHoverBackground|barBorder|panelBackground|panelForeground|panelBorder|containerBackground|containerForeground|containerBorder|cardBackground|cardForeground|cardBorder|controlBackground|controlForeground|controlBorder|controlSubtleBackground|controlHoverBackground|controlPressedBackground|controlActiveBackground|controlActiveForeground|controlActiveBorder|popupBackground|popupForeground|popupForegroundMuted|popupSurface|popupBorder|inputBackground|inputForeground|inputPlaceholderForeground|inputBorder|inputActiveBorder|workspaceInactiveBackground|workspaceInactiveForeground|workspaceOccupiedBackground|workspaceOccupiedForeground|workspaceActiveBackground|workspaceActiveForeground|workspaceUrgentBackground|workspaceUrgentForeground): [[:alpha:]_][[:alnum:]_]*$'
-raw_color_role_ref_re=': (foreground|foregroundMuted|accent|foregroundOnAccent|border|borderMuted|borderStrong|borderFocus|surfaceCard|surfaceSubtle|danger)$'
+raw_color_role_ref_re=': (foreground|foregroundMuted|accent|foregroundOnAccent|border|borderSubtle|borderMuted|borderStrong|borderFocus|surfaceCard|surfaceSubtle|danger)$'
 linked_color_roles=$(grep -n -E "$independent_color_role_re" "$quickshell_colors" "$KITANA_DIR/bin/kitana-matugen" 2>/dev/null | grep -v -E "$raw_color_role_ref_re" || true)
 if [ -z "$linked_color_roles" ]; then
   pass "Quickshell independently tunable color roles"
@@ -831,7 +831,7 @@ generated_color_roles=(
   foreground foregroundStrong foregroundMuted foregroundSubtle foregroundInverted
   accent accentStrong foregroundOnAccent
   background surface surfaceContainer surfaceCard surfaceControl surfaceSubtle surfaceHover surfacePressed surfaceActive surfaceSelected surfaceFloating surfaceFloatingStrong
-  border borderMuted borderStrong borderFocus
+  border borderSubtle borderMuted borderStrong borderFocus
   info success warning danger
   iconPrimary iconSecondary iconMuted iconSubtle iconAccent iconOnAccent iconInverse iconBrand iconDanger
 )
