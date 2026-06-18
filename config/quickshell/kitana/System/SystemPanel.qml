@@ -2,7 +2,6 @@
 
 import QtQuick
 import Quickshell
-import Quickshell.Io
 import Quickshell.Wayland
 import ".."
 import "../custom" as Custom
@@ -18,15 +17,16 @@ PanelWindow {
     readonly property var panelSelf: root
     // Mirrors Hyprland general.gaps_out.
     readonly property int outerGap: 6
+    property bool panelVisible: false
     property real revealProgress: 0
     property var panelScreen: null
     property string section: "notifications"
 
     function open(targetSection): void {
-        const wasVisible = visible;
+        const wasVisible = panelVisible;
         section = targetSection || "notifications";
         Services.SystemStatus.refresh();
-        visible = true;
+        panelVisible = true;
         if (!wasVisible) {
             revealProgress = 0;
             revealAnimation.restart();
@@ -35,19 +35,19 @@ PanelWindow {
     }
 
     function close(): void {
-        visible = false;
+        panelVisible = false;
         revealProgress = 0;
     }
 
     function toggle(targetSection): void {
-        if (visible && section === targetSection)
+        if (panelVisible && section === targetSection)
             close();
         else
             open(targetSection);
     }
 
     screen: panelScreen
-    visible: false
+    visible: panelVisible
     focusable: true
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
@@ -103,8 +103,8 @@ PanelWindow {
             anchors.margins: 16
             spacing: 12
 
-            System.PanelHeader { id: panelHeader; panel: panelSelf }
-            System.QuickSettingsGrid { id: quickGrid; panel: panelSelf }
+            System.PanelHeader { id: panelHeader; panel: root.panelSelf }
+            System.QuickSettingsGrid { id: quickGrid; panel: root.panelSelf }
 
             Rectangle {
                 width: parent.width

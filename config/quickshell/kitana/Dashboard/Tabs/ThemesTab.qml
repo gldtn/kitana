@@ -1,5 +1,7 @@
 // Kitana managed Quickshell dashboard tab
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import "../.."
@@ -7,15 +9,17 @@ import "../Components"
 import "../../custom" as Custom
 
 ColumnLayout {
+    id: tabRoot
+
     Custom.Settings { id: settings }
 
     property var dashboard: null
-    readonly property var root: dashboard
+    readonly property var panel: dashboard
 
     spacing: 8
 
     PickerTopInset {}
-    PickerHelp { dashboard: root }
+    PickerHelp { dashboard: tabRoot.panel }
 
     Item {
         id: themeGrid
@@ -32,15 +36,15 @@ ColumnLayout {
         readonly property real trackWidth: columns * cardWidth + (columns - 1) * gap
 
         Repeater {
-            model: root.themePageItems()
+            model: tabRoot.panel.themePageItems()
 
             Rectangle {
                 id: themeCard
 
                 required property int index
                 required property var modelData
-                readonly property int sourceIndex: root.themePage * root.themePageSize + index
-                readonly property bool selected: sourceIndex === root.themeCurrentIndex
+                readonly property int sourceIndex: tabRoot.panel.themePage * tabRoot.panel.themePageSize + index
+                readonly property bool selected: sourceIndex === tabRoot.panel.themeCurrentIndex
                 readonly property int row: Math.floor(index / themeGrid.columns)
                 readonly property int column: index % themeGrid.columns
                 x: Math.round((themeGrid.width - themeGrid.trackWidth) / 2 + column * (themeGrid.cardWidth + themeGrid.gap))
@@ -60,8 +64,8 @@ ColumnLayout {
                     anchors.fill: parent
                     anchors.margins: 14
                     radius: 12
-                    color: modelData.previewSurface
-                    border.color: modelData.previewBorder
+                    color: themeCard.modelData.previewSurface
+                    border.color: themeCard.modelData.previewBorder
                     border.width: 1
 
                     Row {
@@ -75,6 +79,8 @@ ColumnLayout {
                             model: [themeCard.modelData.previewAccent, themeCard.modelData.previewWarning, themeCard.modelData.previewDanger, themeCard.modelData.previewMuted]
 
                             Rectangle {
+                                required property color modelData
+
                                 width: 18
                                 height: 18
                                 radius: 9
@@ -116,8 +122,8 @@ ColumnLayout {
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onEntered: root.themeCurrentIndex = themeCard.sourceIndex
-                    onClicked: root.applyTheme(themeCard.modelData)
+                    onEntered: tabRoot.panel.themeCurrentIndex = themeCard.sourceIndex
+                    onClicked: tabRoot.panel.applyTheme(themeCard.modelData)
                 }
             }
         }
@@ -132,11 +138,11 @@ ColumnLayout {
             anchors.verticalCenter: parent.verticalCenter
             spacing: 10
 
-            MiniButton { iconName: "ui.chevron.left"; onClicked: root.shiftThemePage(-1) }
+            MiniButton { iconName: "ui.chevron.left"; onClicked: tabRoot.panel.shiftThemePage(-1) }
 
             Text {
                 height: 28
-                text: (root.themePage + 1) + " / " + root.themePageCount()
+                text: (tabRoot.panel.themePage + 1) + " / " + tabRoot.panel.themePageCount()
                 verticalAlignment: Text.AlignVCenter
                 color: Colors.foregroundMuted
                 font.family: Typography.fontFamily
@@ -144,7 +150,7 @@ ColumnLayout {
                 font.weight: Font.DemiBold
             }
 
-            MiniButton { iconName: "ui.chevron.right"; onClicked: root.shiftThemePage(1) }
+            MiniButton { iconName: "ui.chevron.right"; onClicked: tabRoot.panel.shiftThemePage(1) }
         }
 
         Text {
@@ -152,7 +158,7 @@ ColumnLayout {
             anchors.rightMargin: 5
             anchors.verticalCenter: parent.verticalCenter
             width: 90
-            text: root.filteredThemes().length + " themes"
+            text: tabRoot.panel.filteredThemes().length + " themes"
             color: Colors.foregroundMuted
             horizontalAlignment: Text.AlignRight
             font.family: Typography.fontFamily

@@ -1,5 +1,7 @@
 // Kitana managed Quickshell dashboard tab
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import "../.."
@@ -8,12 +10,14 @@ import "../../Components/Controls" as Controls
 import "../../custom" as Custom
 
 ColumnLayout {
+    id: tabRoot
+
     Custom.Settings { id: settings }
 
     property var dashboard: null
     property var weatherPrefs: null
-    readonly property var root: dashboard
-    readonly property var weather: root ? root.weather : ({})
+    readonly property var panel: dashboard
+    readonly property var weatherData: panel ? panel.weather : ({})
 
     spacing: 12
 
@@ -25,8 +29,8 @@ ColumnLayout {
             Layout.fillWidth: true
             Layout.preferredHeight: 34
             radius: 10
-            color: Colors.cardBackground
-            border.color: locationInput.activeFocus ? Colors.controlActiveBorder : Colors.panelBorder
+            color: Colors.controlBackground
+            border.color: locationInput.activeFocus ? Colors.controlActiveBorder : Colors.controlBorder
             border.width: 1
 
             TextInput {
@@ -35,44 +39,44 @@ ColumnLayout {
                 anchors.leftMargin: 12
                 anchors.rightMargin: 12
                 verticalAlignment: TextInput.AlignVCenter
-                text: root.weatherLocation
-                echoMode: weatherPrefs.hideLocation ? TextInput.Password : TextInput.Normal
-                color: Colors.foreground
+                text: tabRoot.panel.weatherLocation
+                echoMode: tabRoot.weatherPrefs.hideLocation ? TextInput.Password : TextInput.Normal
+                color: Colors.controlForeground
                 selectionColor: Colors.controlActiveBackground
-                selectedTextColor: Colors.foreground
+                selectedTextColor: Colors.controlForeground
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
                 onEditingFinished: {
-                    root.weatherLocation = text;
-                    root.refreshWeather();
+                    tabRoot.panel.weatherLocation = text;
+                    tabRoot.panel.refreshWeather();
                 }
             }
         }
 
         MiniButton {
-            iconName: weatherPrefs.hideLocation ? "weather.visibility.off" : "weather.visibility"
+            iconName: tabRoot.weatherPrefs.hideLocation ? "weather.visibility.off" : "weather.visibility"
             widthOverride: 46
             heightOverride: 34
-            onClicked: weatherPrefs.hideLocation = !weatherPrefs.hideLocation
+            onClicked: tabRoot.weatherPrefs.hideLocation = !tabRoot.weatherPrefs.hideLocation
         }
 
         MiniButton {
-            text: root.weatherUnits === "C" ? "°C" : "°F"
+            text: tabRoot.panel.weatherUnits === "C" ? "°C" : "°F"
             widthOverride: 46
             heightOverride: 34
-            onClicked: root.weatherUnits = root.weatherUnits === "C" ? "F" : "C"
+            onClicked: tabRoot.panel.weatherUnits = tabRoot.panel.weatherUnits === "C" ? "F" : "C"
         }
 
-        MiniButton { iconName: "ui.refresh"; heightOverride: 34; onClicked: root.refreshWeather() }
+        MiniButton { iconName: "ui.refresh"; heightOverride: 34; onClicked: tabRoot.panel.refreshWeather() }
     }
-
+    // Stats container
     Rectangle {
         Layout.fillWidth: true
         Layout.preferredHeight: 122
         radius: 16
         color: Colors.containerBackground
         border.color: Colors.containerBorder
-        border.width: 1
+        border.width: 0.8
 
         RowLayout {
             id: weatherSummaryContent
@@ -93,7 +97,7 @@ ColumnLayout {
                 spacing: 4
 
                 Text {
-                    text: weather.current_condition ? root.tempValue(weather.current_condition[0], "temp_C", "temp_F") : "--°"
+                    text: tabRoot.weatherData.current_condition ? tabRoot.panel.tempValue(tabRoot.weatherData.current_condition[0], "temp_C", "temp_F") : "--°"
                     color: Colors.foreground
                     font.family: Typography.fontFamily
                     font.pixelSize: 28
@@ -101,14 +105,14 @@ ColumnLayout {
                 }
 
                 Text {
-                    text: weather.current_condition ? weather.current_condition[0].weatherDesc[0].value : root.weatherStatus
+                    text: tabRoot.weatherData.current_condition ? tabRoot.weatherData.current_condition[0].weatherDesc[0].value : tabRoot.panel.weatherStatus
                     color: Colors.foregroundMuted
                     font.family: Typography.fontFamily
                     font.pixelSize: settings.textPixelSize + 1
                 }
 
                 Text {
-                    text: weather.nearest_area ? weather.nearest_area[0].areaName[0].value : root.weatherLocation
+                    text: tabRoot.weatherData.nearest_area ? tabRoot.weatherData.nearest_area[0].areaName[0].value : tabRoot.panel.weatherLocation
                     color: Colors.foregroundMuted
                     font.family: Typography.fontFamily
                     font.pixelSize: settings.textPixelSize
@@ -127,36 +131,36 @@ ColumnLayout {
                     columns: 3
                     rowSpacing: 10
                     columnSpacing: 28
-                    WeatherMetric { iconName: "weather.water"; label: "Humidity"; value: weather.current_condition ? weather.current_condition[0].humidity + "%" : "--" }
-                    WeatherMetric { iconName: "weather.wind"; label: "Wind"; value: root.windValue(weather.current_condition ? weather.current_condition[0] : null) }
-                    WeatherMetric { iconName: "weather.thermometer"; label: "Feels"; value: weather.current_condition ? root.tempValue(weather.current_condition[0], "FeelsLikeC", "FeelsLikeF") : "--" }
-                    WeatherMetric { iconName: "weather.water"; label: "Precip"; value: weather.current_condition ? weather.current_condition[0].precipMM + " mm" : "--" }
-                    WeatherMetric { iconName: "weather.pressure"; label: "Pressure"; value: weather.current_condition ? weather.current_condition[0].pressure + " hPa" : "--" }
-                    WeatherMetric { iconName: "weather.visibility"; label: "Visibility"; value: weather.current_condition ? weather.current_condition[0].visibility + " km" : "--" }
+                    WeatherMetric { iconName: "weather.water"; label: "Humidity"; value: tabRoot.weatherData.current_condition ? tabRoot.weatherData.current_condition[0].humidity + "%" : "--" }
+                    WeatherMetric { iconName: "weather.wind"; label: "Wind"; value: tabRoot.panel.windValue(tabRoot.weatherData.current_condition ? tabRoot.weatherData.current_condition[0] : null) }
+                    WeatherMetric { iconName: "weather.thermometer"; label: "Feels"; value: tabRoot.weatherData.current_condition ? tabRoot.panel.tempValue(tabRoot.weatherData.current_condition[0], "FeelsLikeC", "FeelsLikeF") : "--" }
+                    WeatherMetric { iconName: "weather.water"; label: "Precip"; value: tabRoot.weatherData.current_condition ? tabRoot.weatherData.current_condition[0].precipMM + " mm" : "--" }
+                    WeatherMetric { iconName: "weather.pressure"; label: "Pressure"; value: tabRoot.weatherData.current_condition ? tabRoot.weatherData.current_condition[0].pressure + " hPa" : "--" }
+                    WeatherMetric { iconName: "weather.visibility"; label: "Visibility"; value: tabRoot.weatherData.current_condition ? tabRoot.weatherData.current_condition[0].visibility + " km" : "--" }
                 }
             }
         }
     }
-
+    // Sunrise, sunset, moon astronomy container
     Rectangle {
         Layout.fillWidth: true
         Layout.preferredHeight: 74
         radius: 14
         color: Colors.containerBackground
         border.color: Colors.containerBorder
-        border.width: 1
+        border.width: 0.8
 
         RowLayout {
             anchors.fill: parent
             anchors.margins: 14
             spacing: 8
 
-            WeatherMetric { iconName: "weather.sunrise"; label: "Sunrise"; value: weather.weather ? weather.weather[0].astronomy[0].sunrise : "--"; centerContent: true; Layout.fillWidth: true }
-            WeatherMetric { iconName: "weather.sunset"; label: "Sunset"; value: weather.weather ? weather.weather[0].astronomy[0].sunset : "--"; centerContent: true; Layout.fillWidth: true }
-            WeatherMetric { iconName: "weather.moon"; label: "Moon"; value: weather.weather ? weather.weather[0].astronomy[0].moon_phase : "--"; centerContent: true; Layout.fillWidth: true }
+            WeatherMetric { iconName: "weather.sunrise"; label: "Sunrise"; value: tabRoot.weatherData.weather ? tabRoot.weatherData.weather[0].astronomy[0].sunrise : "--"; centerContent: true; Layout.fillWidth: true }
+            WeatherMetric { iconName: "weather.sunset"; label: "Sunset"; value: tabRoot.weatherData.weather ? tabRoot.weatherData.weather[0].astronomy[0].sunset : "--"; centerContent: true; Layout.fillWidth: true }
+            WeatherMetric { iconName: "weather.moon"; label: "Moon"; value: tabRoot.weatherData.weather ? tabRoot.weatherData.weather[0].astronomy[0].moon_phase : "--"; centerContent: true; Layout.fillWidth: true }
         }
     }
-
+    // Weather forecast container
     GridLayout {
         Layout.fillWidth: true
         columns: 5
@@ -164,17 +168,21 @@ ColumnLayout {
         columnSpacing: 10
 
         Repeater {
-            model: root.forecastDays()
+            model: tabRoot.panel.forecastDays()
 
             Rectangle {
+                id: forecastCard
+
                 required property var modelData
+                readonly property var forecastHours: modelData.hourly || []
+                readonly property var forecastHour: forecastHours.length > 4 ? forecastHours[4] : (forecastHours.length > 0 ? forecastHours[0] : null)
 
                 Layout.fillWidth: true
                 Layout.preferredHeight: 96
                 radius: 14
-                color: Colors.cardBackground
-                border.color: Colors.panelBorder
-                border.width: 1
+                color: Colors.containerBackground
+                border.color: Colors.containerBorder
+                border.width: 0.8
 
                 Column {
                     anchors.left: parent.left
@@ -185,7 +193,7 @@ ColumnLayout {
 
                     Text {
                         width: parent.width
-                        text: Qt.formatDate(new Date(modelData.date), "ddd")
+                        text: Qt.formatDate(new Date(forecastCard.modelData.date), "ddd")
                         color: Colors.foreground
                         horizontalAlignment: Text.AlignHCenter
                         font.family: Typography.fontFamily
@@ -195,7 +203,7 @@ ColumnLayout {
 
                     Text {
                         width: parent.width
-                        text: modelData.hourly && modelData.hourly.length > 0 ? modelData.hourly[4].weatherDesc[0].value : ""
+                        text: forecastCard.forecastHour ? forecastCard.forecastHour.weatherDesc[0].value : ""
                         color: Colors.foregroundMuted
                         elide: Text.ElideRight
                         horizontalAlignment: Text.AlignHCenter
@@ -211,7 +219,7 @@ ColumnLayout {
                         Controls.Icon {
                             id: forecastIcon
 
-                            name: modelData.hourly && modelData.hourly.length > 0 && modelData.hourly[4].chanceofrain > 0 ? "weather.water" : "weather.default"
+                            name: forecastCard.forecastHour && forecastCard.forecastHour.chanceofrain > 0 ? "weather.water" : "weather.default"
                             tone: "accent"
                             size: settings.textPixelSize
                         }
@@ -219,8 +227,8 @@ ColumnLayout {
                         Text {
                             id: chanceText
 
-                            visible: modelData.hourly && modelData.hourly.length > 0 && modelData.hourly[4].chanceofrain > 0
-                            text: visible ? modelData.hourly[4].chanceofrain + "%" : ""
+                            visible: forecastCard.forecastHour && forecastCard.forecastHour.chanceofrain > 0
+                            text: visible ? forecastCard.forecastHour.chanceofrain + "%" : ""
                             color: Colors.accent
                             font.family: Typography.fontFamily
                             font.pixelSize: settings.textPixelSize
@@ -229,7 +237,7 @@ ColumnLayout {
 
                     Text {
                         width: parent.width
-                        text: root.weatherUnits === "F" ? modelData.mintempF + "°/" + modelData.maxtempF + "°" : modelData.mintempC + "°/" + modelData.maxtempC + "°"
+                        text: tabRoot.panel.weatherUnits === "F" ? forecastCard.modelData.mintempF + "°/" + forecastCard.modelData.maxtempF + "°" : forecastCard.modelData.mintempC + "°/" + forecastCard.modelData.maxtempC + "°"
                         color: Colors.foregroundMuted
                         horizontalAlignment: Text.AlignHCenter
                         font.family: Typography.fontFamily

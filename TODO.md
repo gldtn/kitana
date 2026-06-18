@@ -8,6 +8,7 @@
   - Keep package installation, config file deployment, SDDM setup, firmware metadata refresh, and hardware package detection in install/reinstall stages rather than first-run.
 - Revisit real CAVA integration for the dashboard media visualizer. Current bars are synthetic; a later pass should add a small `cava` service/process parser with graceful fallback.
 - Revisit theme-specific blur coordination between Hyprland and Quickshell. Hyprland now has blur profiles, but Quickshell still owns separate alpha/color tokens in `Colors.qml`; later theme generation could set both together.
+- Simplify the theming system further so adding a new Quickshell source color does not require touching `Colors.qml`, `lib/kitana-quickshell-colors.lua`, every `themes/*.lua`, and `kitana-matugen`. Prefer one schema/source of truth that can validate or derive theme defaults and generate consumers.
 - Visually audit Quickshell semantic colors across packaged themes and matugen output. Generated files and baseline contrast are validated; next check component-specific tuning in the live UI now that all QML call sites use canonical/component roles.
 - Consider optional Plymouth boot splash support for a smoother branded boot after Limine. Keep it opt-in for non-encrypted installs, and provide a migration/helper for existing Kitana installs that installs Plymouth, configures mkinitcpio/kernel args, applies a Kitana theme, regenerates initramfs, and validates rollback safety.
 - Consider Bitwarden lock separately after confirming the right command/session behavior.

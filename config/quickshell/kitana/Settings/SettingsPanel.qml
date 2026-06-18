@@ -1,5 +1,7 @@
 // Kitana managed Quickshell settings panel
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -15,13 +17,15 @@ PanelWindow {
 
     Custom.Settings { id: settings }
 
+    property bool panelVisible: false
     property real revealProgress: 0
     property string activeTab: "bar"
+    property alias backdropItem: backdrop
 
     function open(tab: string): void {
-        const wasVisible = visible;
+        const wasVisible = panelVisible;
         activeTab = tab || "bar";
-        visible = true;
+        panelVisible = true;
         if (!wasVisible) {
             revealProgress = 0;
             revealAnimation.restart();
@@ -30,13 +34,13 @@ PanelWindow {
     }
 
     function close(): void {
-        visible = false;
+        panelVisible = false;
         revealProgress = 0;
     }
 
     function toggle(tab: string): void {
         const targetTab = tab || activeTab;
-        if (visible && activeTab === targetTab)
+        if (panelVisible && activeTab === targetTab)
             close();
         else
             open(targetTab);
@@ -66,7 +70,7 @@ PanelWindow {
         function toggle(tab: string): void { root.toggle(tab || "bar"); }
     }
 
-    visible: false
+    visible: panelVisible
     focusable: true
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
@@ -74,7 +78,7 @@ PanelWindow {
     WlrLayershell.layer: WlrLayershell.Overlay
     WlrLayershell.exclusiveZone: -1
     WlrLayershell.keyboardFocus: visible ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
-    BackgroundEffect.blurRegion: Region { item: backdrop }
+    BackgroundEffect.blurRegion: Region { item: root.backdropItem }
 
     anchors {
         top: true
@@ -142,7 +146,7 @@ PanelWindow {
 
             Rectangle {
                 Layout.fillWidth: true
-                height: 1
+                Layout.preferredHeight: 1
                 color: Colors.panelBorder
             }
 

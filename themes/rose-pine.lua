@@ -30,14 +30,11 @@ return {
 			foregroundStrong = "subtle",
 			foregroundMuted = "subtle",
 			foregroundSubtle = "subtle",
-			foregroundDisabled = "subtle",
 			foregroundInverted = "surface",
 
 			accent = "rose",
 			accentStrong = "foam",
 			onAccent = "surface",
-			accentBackground = "rose",
-			accentSelectedBackground = "rose",
 
 			background = "base",
 			surface = "surface",
@@ -62,10 +59,6 @@ return {
 			success = "pine",
 			warning = "gold",
 			danger = "love",
-			infoBackground = "foam",
-			successBackground = "pine",
-			warningBackground = "gold",
-			dangerBackground = "love",
 
 			iconPrimary = "text",
 			iconSecondary = "subtle",
@@ -77,11 +70,6 @@ return {
 			iconBrand = "rose",
 			iconDisabled = "subtle",
 			iconDanger = "love",
-
-			scrim = "highlight_low",
-			scrimSoft = "highlight_low",
-			imageOverlay = "highlight_low",
-			shadow = "#000000",
 		},
 
 		hypr = {

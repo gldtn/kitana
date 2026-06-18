@@ -29,14 +29,11 @@ return {
 			foregroundStrong = "foreground",
 			foregroundMuted = "muted",
 			foregroundSubtle = "muted",
-			foregroundDisabled = "muted",
 			foregroundInverted = "background",
 
 			accent = "purple",
 			accentStrong = "pink",
 			onAccent = "background",
-			accentBackground = "purple",
-			accentSelectedBackground = "purple",
 
 			background = "background1",
 			surface = "surface",
@@ -61,10 +58,6 @@ return {
 			success = "green",
 			warning = "yellow",
 			danger = "red",
-			infoBackground = "cyan",
-			successBackground = "green",
-			warningBackground = "yellow",
-			dangerBackground = "red",
 
 			iconPrimary = "foreground",
 			iconSecondary = "foreground",
@@ -76,11 +69,6 @@ return {
 			iconBrand = "purple",
 			iconDisabled = "muted",
 			iconDanger = "red",
-
-			scrim = "background1",
-			scrimSoft = "background1",
-			imageOverlay = "background1",
-			shadow = "#000000",
 		},
 
 		hypr = {

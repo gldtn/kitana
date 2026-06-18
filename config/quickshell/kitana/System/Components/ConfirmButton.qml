@@ -24,7 +24,7 @@ Rectangle {
     Text {
         anchors.centerIn: parent
         text: root.label
-        color: danger ? Colors.danger : Colors.foreground
+        color: root.danger ? Colors.danger : Colors.foreground
         font.family: Typography.fontFamily
         font.pixelSize: settings.textPixelSize
         font.weight: Font.Bold

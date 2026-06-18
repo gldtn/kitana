@@ -33,17 +33,22 @@ keybind = ctrl+shift+k=unbind
 keybind = ctrl+shift+l=unbind
 keybind = ctrl+shift+o=unbind
 
-# -- window management
-keybind = ctrl+q>q=close_surface
-keybind = ctrl+q>h=new_split:left
-keybind = ctrl+q>k=new_split:up
-keybind = ctrl+q>j=new_split:down
-keybind = ctrl+q>l=new_split:right
+keybind = ctrl+h=unbind
+keybind = ctrl+k=unbind
+keybind = ctrl+j=unbind
+keybind = ctrl+l=unbind
 
-keybind = ctrl+shift+h=goto_split:left
-keybind = ctrl+shift+k=goto_split:up
-keybind = ctrl+shift+j=goto_split:down
-keybind = ctrl+shift+l=goto_split:right
+# -- window management
+keybind = ctrl+q=close_surface
+keybind = alt+shift+h=new_split:left
+keybind = alt+shift+k=new_split:up
+keybind = alt+shift+j=new_split:down
+keybind = alt+shift+l=new_split:right
+
+keybind = alt+h=goto_split:left
+keybind = alt+k=goto_split:up
+keybind = alt+j=goto_split:down
+keybind = alt+l=goto_split:right
 
 # -- define "resize" key table
 keybind = resize/

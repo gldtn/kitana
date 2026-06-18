@@ -14,108 +14,13 @@ if [ -z "$theme" ]; then
   exit 2
 fi
 
-theme_env="$(lua "$kitana_dir/lib/kitana-theme.lua" env "$theme")" || exit 1
+theme_env="$(lua "$kitana_dir/lib/kitana-theme.lua" quickshell-env "$theme")" || exit 1
+set -a
 eval "$theme_env"
+set +a
 mkdir -p "$(dirname "$target")"
 
-source_roles=(
-  foreground foregroundStrong foregroundMuted foregroundSubtle foregroundInverted
-  accent accentStrong onAccent
-  background surface surfaceContainer surfaceCard surfaceControl surfaceSubtle surfaceHover surfacePressed surfaceActive surfaceSelected surfaceFloating surfaceFloatingStrong
-  border borderSubtle borderMuted borderStrong borderFocus
-  info success warning danger
-  iconPrimary iconSecondary iconMuted iconSubtle iconAccent iconOnAccent iconInverse iconBrand iconDisabled iconDanger
-)
-
-for role in "${source_roles[@]}"; do
-  export "$role"
-done
-
-lua - "$template" "$target" <<'LUA'
-local template_path = arg[1]
-local target_path = arg[2]
-local fields = {
-  { qml = "foreground", env = "foreground" },
-  { qml = "foregroundStrong", env = "foregroundStrong" },
-  { qml = "foregroundMuted", env = "foregroundMuted" },
-  { qml = "foregroundSubtle", env = "foregroundSubtle" },
-  { qml = "foregroundInverted", env = "foregroundInverted" },
-  { qml = "accent", env = "accent" },
-  { qml = "accentStrong", env = "accentStrong" },
-  { qml = "foregroundOnAccent", env = "onAccent" },
-  { qml = "background", env = "background" },
-  { qml = "surface", env = "surface" },
-  { qml = "surfaceContainer", env = "surfaceContainer" },
-  { qml = "surfaceCard", env = "surfaceCard" },
-  { qml = "surfaceControl", env = "surfaceControl" },
-  { qml = "surfaceSubtle", env = "surfaceSubtle" },
-  { qml = "surfaceHover", env = "surfaceHover" },
-  { qml = "surfacePressed", env = "surfacePressed" },
-  { qml = "surfaceActive", env = "surfaceActive" },
-  { qml = "surfaceSelected", env = "surfaceSelected" },
-  { qml = "surfaceFloating", env = "surfaceFloating" },
-  { qml = "surfaceFloatingStrong", env = "surfaceFloatingStrong" },
-  { qml = "border", env = "border" },
-  { qml = "borderSubtle", env = "borderSubtle" },
-  { qml = "borderMuted", env = "borderMuted" },
-  { qml = "borderStrong", env = "borderStrong" },
-  { qml = "borderFocus", env = "borderFocus" },
-  { qml = "info", env = "info" },
-  { qml = "success", env = "success" },
-  { qml = "warning", env = "warning" },
-  { qml = "danger", env = "danger" },
-  { qml = "iconPrimary", env = "iconPrimary" },
-  { qml = "iconSecondary", env = "iconSecondary" },
-  { qml = "iconMuted", env = "iconMuted" },
-  { qml = "iconSubtle", env = "iconSubtle" },
-  { qml = "iconAccent", env = "iconAccent" },
-  { qml = "iconOnAccent", env = "iconOnAccent" },
-  { qml = "iconInverse", env = "iconInverse" },
-  { qml = "iconBrand", env = "iconBrand" },
-  { qml = "iconDanger", env = "iconDanger" },
-}
-
-local alpha_fields = {
-  "iconDisabled",
-}
-
-local function read_file(path)
-  local file = assert(io.open(path, "r"))
-  local content = file:read("*a")
-  file:close()
-  return content
-end
-
-local function write_file(path, content)
-  local file = assert(io.open(path, "w"))
-  file:write(content)
-  file:close()
-end
-
-local content = read_file(template_path)
-
-for _, field in ipairs(fields) do
-  local value = assert(os.getenv(field.env), "missing theme field: " .. field.env)
-  value = "#" .. value:gsub("^#", "")
-  local pattern = "(readonly%s+property%s+color%s+" .. field.qml .. "%s*:%s*\")[^\"]*(\")"
-  local replacement = "%1" .. value .. "%2"
-  local count
-  content, count = content:gsub(pattern, replacement, 1)
-  assert(count == 1, "missing Colors.qml color field: " .. field.qml)
-end
-
-for _, field in ipairs(alpha_fields) do
-  local value = assert(os.getenv(field), "missing theme field: " .. field)
-  value = "#" .. value:gsub("^#", "")
-  local pattern = "(readonly%s+property%s+color%s+" .. field .. "%s*:%s*withAlpha%s*%(%s*\")[^\"]*(\")"
-  local replacement = "%1" .. value .. "%2"
-  local count
-  content, count = content:gsub(pattern, replacement, 1)
-  assert(count == 1, "missing Colors.qml alpha color field: " .. field)
-end
-
-write_file(target_path, content)
-LUA
+lua "$kitana_dir/lib/kitana-quickshell-colors.lua" "$template" "$target"
 
 if [ -f "$legacy_target" ] && grep -q "Kitana managed Quickshell colors" "$legacy_target"; then
   rm "$legacy_target"

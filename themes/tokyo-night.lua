@@ -41,14 +41,11 @@ return {
       foregroundStrong = "#ffffff",
       foregroundMuted = "dark5",
       foregroundSubtle = "dark5",
-      foregroundDisabled = "dark5",
       foregroundInverted = "bg_dark",
 
       accent = "blue",
       accentStrong = "cyan",
       onAccent = "bg_dark",
-      accentBackground = "blue",
-      accentSelectedBackground = "blue",
 
       background = "bg",
       surface = "bg_dark",
@@ -73,10 +70,6 @@ return {
       success = "green",
       warning = "yellow",
       danger = "red",
-      infoBackground = "blue",
-      successBackground = "green",
-      warningBackground = "yellow",
-      dangerBackground = "red",
 
       iconPrimary = "fg",
       iconSecondary = "#ffffff",
@@ -88,11 +81,6 @@ return {
       iconBrand = "blue",
       iconDisabled = "dark5",
       iconDanger = "red",
-
-      scrim = "bg_surface",
-      scrimSoft = "bg_surface",
-      imageOverlay = "bg_surface",
-      shadow = "#000000",
     },
 
     hypr = {

@@ -1,7 +1,8 @@
 // Kitana managed Quickshell module
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
-import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.SystemTray
 import Quickshell.Widgets as QW
@@ -10,7 +11,7 @@ import "../../Components/Controls" as Controls
 import "../../custom" as Custom
 import "../../Services" as Services
 
-Rectangle {
+Item {
     id: root
 
     Custom.Settings { id: settings }
@@ -18,6 +19,7 @@ Rectangle {
     property var systemPanel: null
     property var panelWindow: null
     property bool trayExpanded: false
+    property bool embedded: false
 
     function traySource(item: var): string {
         const icon = item && item.icon ? item.icon : "";
@@ -76,10 +78,14 @@ Rectangle {
     width: implicitWidth
     height: implicitHeight
 
-    radius: height / settings.radiusDivisor
-    color: Colors.barBackground
-    border.color: Colors.barBorder
-    border.width: settings.borderWidth
+    Rectangle {
+        anchors.fill: parent
+        visible: !root.embedded
+        radius: root.height / settings.radiusDivisor
+        color: Colors.barBackground
+        border.color: Colors.barBorder
+        border.width: settings.borderWidth
+    }
 
     Row {
         id: statusRow
@@ -104,7 +110,7 @@ Rectangle {
             visible: SystemTray.items.values.length > 0
             width: trayToggle.width + trayContainer.width + (root.trayExpanded && trayContainer.width > 0 ? settings.statusItemSpacing : 0)
             implicitWidth: width
-            height: statusRow.height
+            height: settings.iconPixelSize + 8
 
             StatusButton {
                 id: trayToggle
@@ -147,10 +153,10 @@ Rectangle {
                             id: trayButton
 
                             required property var modelData
+                            readonly property string resolvedIconSource: root.traySource(modelData)
 
                             width: settings.iconPixelSize + 6
                             height: settings.iconPixelSize + 8
-                            clip: true
 
                             function displayMenu(mouse: var): void {
                                 if (modelData.hasMenu) {
@@ -168,17 +174,29 @@ Rectangle {
 
                             Rectangle {
                                 anchors.fill: parent
+                                visible: trayMouse.containsMouse
                                 radius: 6
-                                color: trayMouse.containsMouse ? Colors.barHoverBackground : "transparent"
+                                color: Colors.barHoverBackground
                             }
 
                             QW.IconImage {
+                                id: trayIcon
+
                                 anchors.centerIn: parent
+                                visible: trayButton.resolvedIconSource.length > 0 && (status === Image.Ready || status === Image.Loading)
                                 width: settings.iconPixelSize
                                 height: settings.iconPixelSize
                                 implicitSize: settings.iconPixelSize
-                                source: root.traySource(trayButton.modelData)
+                                source: trayButton.resolvedIconSource
                                 mipmap: true
+                            }
+
+                            Controls.Icon {
+                                anchors.centerIn: parent
+                                visible: !trayIcon.visible
+                                name: Icons.defaultIcon
+                                tone: "accent"
+                                sizeRole: "bar"
                             }
 
                             MouseArea {

@@ -1,5 +1,7 @@
 // Kitana managed Quickshell dashboard tab
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import "../.."
@@ -7,31 +9,33 @@ import "../Components"
 import "../../custom" as Custom
 
 ColumnLayout {
+    id: tabRoot
+
     Custom.Settings { id: settings }
 
     property var dashboard: null
     property var weatherPrefs: null
     property var worldClockPrefs: null
-    readonly property var root: dashboard
+    readonly property var panel: dashboard
 
     spacing: 12
 
     Text {
         Layout.fillWidth: true
         text: "Dashboard Settings"
-        color: Colors.foreground
+        color: Colors.controlForeground
         font.family: Typography.fontFamily
         font.pixelSize: 16
         font.weight: Font.Bold
     }
-
+    // Weather location and units settings
     Rectangle {
         Layout.fillWidth: true
         Layout.preferredHeight: 128
         radius: 16
         color: Colors.containerBackground
         border.color: Colors.containerBorder
-        border.width: 1
+        border.width: 0.8
 
         ColumnLayout {
             anchors.fill: parent
@@ -41,7 +45,7 @@ ColumnLayout {
             Text {
                 Layout.fillWidth: true
                 text: "Weather"
-                color: Colors.foreground
+                color: Colors.controlForeground
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
                 font.weight: Font.DemiBold
@@ -54,40 +58,40 @@ ColumnLayout {
                 DashboardField {
                     Layout.fillWidth: true
                     label: "Location"
-                    value: root.weatherLocation
-                    secret: weatherPrefs.hideLocation
+                    value: tabRoot.panel.weatherLocation
+                    secret: tabRoot.weatherPrefs.hideLocation
                     onCommitted: value => {
-                        root.weatherLocation = value;
-                        root.refreshWeather();
+                        tabRoot.panel.weatherLocation = value;
+                        tabRoot.panel.refreshWeather();
                     }
                 }
 
                 MiniButton {
                     Layout.alignment: Qt.AlignBottom
-                    iconName: weatherPrefs.hideLocation ? "weather.visibility.off" : "weather.visibility"
+                    iconName: tabRoot.weatherPrefs.hideLocation ? "weather.visibility.off" : "weather.visibility"
                     widthOverride: 46
                     heightOverride: 34
-                    onClicked: weatherPrefs.hideLocation = !weatherPrefs.hideLocation
+                    onClicked: tabRoot.weatherPrefs.hideLocation = !tabRoot.weatherPrefs.hideLocation
                 }
 
                 MiniButton {
                     Layout.alignment: Qt.AlignBottom
-                    text: root.weatherUnits === "C" ? "°C" : "°F"
+                    text: tabRoot.panel.weatherUnits === "C" ? "°C" : "°F"
                     widthOverride: 46
                     heightOverride: 34
-                    onClicked: root.weatherUnits = root.weatherUnits === "C" ? "F" : "C"
+                    onClicked: tabRoot.panel.weatherUnits = tabRoot.panel.weatherUnits === "C" ? "F" : "C"
                 }
             }
         }
     }
-
+    // World clock names and timezones settings
     Rectangle {
         Layout.fillWidth: true
         Layout.preferredHeight: 184
         radius: 16
         color: Colors.containerBackground
         border.color: Colors.containerBorder
-        border.width: 1
+        border.width: 0.8
 
         ColumnLayout {
             anchors.fill: parent
@@ -97,7 +101,7 @@ ColumnLayout {
             Text {
                 Layout.fillWidth: true
                 text: "World Clocks"
-                color: Colors.foreground
+                color: Colors.controlForeground
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
                 font.weight: Font.DemiBold
@@ -112,34 +116,34 @@ ColumnLayout {
                 DashboardField {
                     Layout.fillWidth: true
                     label: "Clock 1 Name"
-                    value: worldClockPrefs.firstName
-                    onCommitted: value => worldClockPrefs.firstName = value
+                    value: tabRoot.worldClockPrefs.firstName
+                    onCommitted: value => tabRoot.worldClockPrefs.firstName = value
                 }
 
                 DashboardField {
                     Layout.fillWidth: true
                     label: "Clock 1 Timezone"
-                    value: worldClockPrefs.firstTimeZone
+                    value: tabRoot.worldClockPrefs.firstTimeZone
                     onCommitted: value => {
-                        worldClockPrefs.firstTimeZone = value;
-                        root.refreshWorldClocks();
+                        tabRoot.worldClockPrefs.firstTimeZone = value;
+                        tabRoot.panel.refreshWorldClocks();
                     }
                 }
 
                 DashboardField {
                     Layout.fillWidth: true
                     label: "Clock 2 Name"
-                    value: worldClockPrefs.secondName
-                    onCommitted: value => worldClockPrefs.secondName = value
+                    value: tabRoot.worldClockPrefs.secondName
+                    onCommitted: value => tabRoot.worldClockPrefs.secondName = value
                 }
 
                 DashboardField {
                     Layout.fillWidth: true
                     label: "Clock 2 Timezone"
-                    value: worldClockPrefs.secondTimeZone
+                    value: tabRoot.worldClockPrefs.secondTimeZone
                     onCommitted: value => {
-                        worldClockPrefs.secondTimeZone = value;
-                        root.refreshWorldClocks();
+                        tabRoot.worldClockPrefs.secondTimeZone = value;
+                        tabRoot.panel.refreshWorldClocks();
                     }
                 }
             }

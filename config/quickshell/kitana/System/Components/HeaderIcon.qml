@@ -1,7 +1,6 @@
 // Kitana managed Quickshell system component
 
 import QtQuick
-import "../.."
 import "../../Components/Controls" as Controls
 
 Controls.Icon {

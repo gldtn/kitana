@@ -9,7 +9,7 @@ import "../../Components/Controls" as Controls
 import "../../Services" as Services
 import "../../custom" as Custom
 
-Rectangle {
+Item {
     id: root
 
     Custom.Settings { id: settings }
@@ -20,16 +20,21 @@ Rectangle {
     readonly property var workspaceIpc: activeWorkspace && activeWorkspace.lastIpcObject ? activeWorkspace.lastIpcObject : ({})
     readonly property string currentLayout: normalizeLayout(workspaceIpc.tiledLayout || "dwindle")
     readonly property string displayMode: Services.UiPreferences.layoutPillDisplayMode
+    property bool embedded: false
 
     implicitHeight: settings.pillHeight
     implicitWidth: content.implicitWidth + 18
     width: implicitWidth
     height: implicitHeight
 
-    radius: height / settings.radiusDivisor
-    color: Colors.barBackground
-    border.color: Colors.barBorder
-    border.width: settings.borderWidth
+    Rectangle {
+        anchors.fill: parent
+        visible: !root.embedded
+        radius: root.height / settings.radiusDivisor
+        color: Colors.barBackground
+        border.color: Colors.barBorder
+        border.width: settings.borderWidth
+    }
 
     function normalizeLayout(layout: string): string {
         return layout === "scrolling" ? "scrolling" : "dwindle";
@@ -76,7 +81,7 @@ Rectangle {
         id: content
 
         anchors.centerIn: parent
-        spacing: displayMode === "icons" ? 0 : 6
+        spacing: root.displayMode === "icons" ? 0 : 6
 
         Controls.Icon {
             anchors.verticalCenter: parent.verticalCenter

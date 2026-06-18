@@ -15,6 +15,8 @@ export EDITOR="${EDITOR:-nvim}"
 export VISUAL="${VISUAL:-$EDITOR}"
 export SUDO_EDITOR="${SUDO_EDITOR:-$EDITOR}"
 export TERMINAL="${TERMINAL:-ghostty}"
+export QT_HOST_PATH="${QT_HOST_PATH:-/usr/lib/qt6}"
+export PATH="$QT_HOST_PATH/bin:$PATH"
 export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
 
 alias lsa='ls -a'

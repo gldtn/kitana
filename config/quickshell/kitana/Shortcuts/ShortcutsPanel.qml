@@ -1,5 +1,7 @@
 // Kitana managed Quickshell shortcuts panel
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -15,6 +17,7 @@ PanelWindow {
     Custom.Settings { id: settings }
 
     property var panelScreen: null
+    property bool panelVisible: false
     property string query: ""
     property var shortcuts: []
     property var filteredShortcuts: []
@@ -22,7 +25,7 @@ PanelWindow {
     property int selectedIndex: 0
 
     function open(): void {
-        visible = true;
+        panelVisible = true;
         query = "";
         statusText = "Loading shortcuts...";
         refreshShortcuts();
@@ -30,11 +33,11 @@ PanelWindow {
     }
 
     function close(): void {
-        visible = false;
+        panelVisible = false;
     }
 
     function toggle(): void {
-        visible ? close() : open();
+        panelVisible ? close() : open();
     }
 
     function refreshShortcuts(): void {
@@ -45,7 +48,6 @@ PanelWindow {
         if (filteredShortcuts.length === 0)
             return;
         selectedIndex = Math.max(0, Math.min(filteredShortcuts.length - 1, selectedIndex + delta));
-        shortcutList.currentIndex = selectedIndex;
         shortcutList.positionViewAtIndex(selectedIndex, ListView.Contain);
     }
 
@@ -61,13 +63,13 @@ PanelWindow {
             event.accepted = true;
         } else if (event.key === Qt.Key_Home) {
             selectedIndex = filteredShortcuts.length > 0 ? 0 : -1;
-            shortcutList.currentIndex = selectedIndex;
-            shortcutList.positionViewAtIndex(selectedIndex, ListView.Beginning);
+            if (selectedIndex >= 0)
+                shortcutList.positionViewAtIndex(selectedIndex, ListView.Beginning);
             event.accepted = true;
         } else if (event.key === Qt.Key_End) {
             selectedIndex = filteredShortcuts.length - 1;
-            shortcutList.currentIndex = selectedIndex;
-            shortcutList.positionViewAtIndex(selectedIndex, ListView.End);
+            if (selectedIndex >= 0)
+                shortcutList.positionViewAtIndex(selectedIndex, ListView.End);
             event.accepted = true;
         }
     }
@@ -163,11 +165,10 @@ PanelWindow {
                 || item.category.toLowerCase().indexOf(needle) !== -1;
         });
         selectedIndex = filteredShortcuts.length > 0 ? 0 : -1;
-        shortcutList.currentIndex = selectedIndex;
     }
 
     screen: panelScreen
-    visible: false
+    visible: panelVisible
     focusable: true
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
@@ -333,14 +334,16 @@ PanelWindow {
                 currentIndex: root.selectedIndex
 
                 delegate: Rectangle {
+                    id: shortcutDelegate
+
                     required property int index
                     required property var modelData
 
                     width: shortcutList.width
                     height: 54
                     radius: 12
-                    color: index === root.selectedIndex ? Colors.controlActiveBackground : (shortcutMouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground)
-                    border.color: index === root.selectedIndex ? Colors.controlActiveBorder : Colors.panelBorder
+                    color: shortcutDelegate.index === root.selectedIndex ? Colors.controlActiveBackground : (shortcutMouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground)
+                    border.color: shortcutDelegate.index === root.selectedIndex ? Colors.controlActiveBorder : Colors.panelBorder
                     border.width: 1
 
                     RowLayout {
@@ -360,7 +363,7 @@ PanelWindow {
                             Text {
                                 id: keyText
                                 anchors.centerIn: parent
-                                text: modelData.keys
+                                text: shortcutDelegate.modelData.keys
                                 color: Colors.foreground
                                 font.family: Typography.fontFamily
                                 font.pixelSize: settings.textPixelSize
@@ -374,7 +377,7 @@ PanelWindow {
 
                             Text {
                                 Layout.fillWidth: true
-                                text: modelData.description
+                                text: shortcutDelegate.modelData.description
                                 color: Colors.foreground
                                 elide: Text.ElideRight
                                 font.family: Typography.fontFamily
@@ -384,7 +387,7 @@ PanelWindow {
 
                             Text {
                                 Layout.fillWidth: true
-                                text: modelData.category
+                                text: shortcutDelegate.modelData.category
                                 color: Colors.foregroundMuted
                                 elide: Text.ElideRight
                                 font.family: Typography.fontFamily
@@ -397,14 +400,14 @@ PanelWindow {
                         id: shortcutMouse
                         anchors.fill: parent
                         hoverEnabled: true
-                        onEntered: root.selectedIndex = index
+                        onEntered: root.selectedIndex = shortcutDelegate.index
                     }
                 }
             }
 
             Rectangle {
                 Layout.fillWidth: true
-                height: 1
+                Layout.preferredHeight: 1
                 color: Colors.panelBorder
                 opacity: 0.55
             }

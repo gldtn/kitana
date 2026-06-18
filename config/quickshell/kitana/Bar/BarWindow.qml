@@ -22,6 +22,7 @@ PanelWindow {
     property var screenshotPanel: null
     property var settingsPanel: null
     property var shortcutsPanel: null
+    readonly property int sectionGap: settings.rowSpacing
 
     screen: panelScreen
     implicitHeight: root.barVisible ? settings.panelHeight : 1
@@ -68,28 +69,69 @@ PanelWindow {
     }
 
     Item {
+        id: barContent
+
+        readonly property real normalCenterX: (width - centerSection.width) / 2
+        readonly property bool compactMode: normalCenterX < leftSection.width + root.sectionGap
+            || normalCenterX + centerSection.width + root.sectionGap > width - rightSection.width
+        readonly property real compactContentWidth: leftSection.width + centerSection.width + rightSection.width + root.sectionGap * 2
+        readonly property real compactPillWidth: Math.min(width, compactContentWidth + root.sectionGap * 2)
+        readonly property real compactPillX: Math.max(0, (width - compactPillWidth) / 2)
+        readonly property real compactContentX: compactPillX + Math.max(0, (compactPillWidth - compactContentWidth) / 2)
+        readonly property real compactCenterX: compactContentX + leftSection.width + root.sectionGap
+        readonly property real compactRightX: compactCenterX + centerSection.width + root.sectionGap
+
         anchors.fill: parent
         visible: root.barVisible
 
+        Rectangle {
+            id: compactPill
+
+            visible: barContent.compactMode
+            x: barContent.compactPillX
+            y: (parent.height - height) / 2
+            width: barContent.compactPillWidth
+            height: settings.pillHeight
+            radius: height / settings.radiusDivisor
+            color: Colors.barBackground
+            border.color: Colors.barBorder
+            border.width: settings.borderWidth
+        }
+
         Sections.Left {
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
+            id: leftSection
+
+            x: barContent.compactMode ? barContent.compactContentX : 0
+            y: (parent.height - height) / 2
+            embedded: barContent.compactMode
             panelScreen: root.panelScreen
             startMenu: startMenu
+
+            Behavior on x { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
         }
 
         Sections.Center {
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
+            id: centerSection
+
+            x: barContent.compactMode ? barContent.compactCenterX : barContent.normalCenterX
+            y: (parent.height - height) / 2
+            embedded: barContent.compactMode
             dashboardPanel: root.dashboardPanel
+
+            Behavior on x { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
         }
 
         Sections.Right {
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
+            id: rightSection
+
+            x: barContent.compactMode ? barContent.compactRightX : parent.width - width
+            y: (parent.height - height) / 2
+            embedded: barContent.compactMode
             panelWindow: root
             screenshotPanel: root.screenshotPanel
             systemPanel: systemPanel
+
+            Behavior on x { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
         }
     }
 }

@@ -1,6 +1,8 @@
 // Kitana managed Quickshell bar
 //@ pragma UseQApplication
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import Quickshell
 import Quickshell.Hyprland
@@ -56,32 +58,54 @@ ShellRoot {
     IpcHandler {
         target: "kitana-notifications"
 
-        function dismissLast(): void { Services.NotificationService.dismissLast(); }
-        function clear(): void { Services.NotificationService.clear(); }
+        function dismissLast(): void {
+            Services.NotificationService.dismissLast();
+        }
+        function clear(): void {
+            Services.NotificationService.clear();
+        }
     }
 
     IpcHandler {
         target: "kitana-bar"
 
-        function show(): void { root.barVisible = true; }
-        function hide(): void { root.barVisible = false; }
-        function toggle(): void { root.barVisible = !root.barVisible; }
+        function show(): void {
+            root.barVisible = true;
+        }
+        function hide(): void {
+            root.barVisible = false;
+        }
+        function toggle(): void {
+            root.barVisible = !root.barVisible;
+        }
     }
 
     IpcHandler {
         target: "kitana-shell"
 
-        function refreshWorkspaces(): void { Hyprland.refreshWorkspaces(); }
-        function reload(): void { Quickshell.reload(false); }
-        function hardReload(): void { Quickshell.reload(true); }
+        function refreshWorkspaces(): void {
+            Hyprland.refreshWorkspaces();
+        }
+        function reload(): void {
+            Quickshell.reload(false);
+        }
+        function hardReload(): void {
+            Quickshell.reload(true);
+        }
     }
 
     IpcHandler {
         target: "kitana-screenshot"
 
-        function open(): void { screenshotPanel.open(); }
-        function close(): void { screenshotPanel.close(); }
-        function toggle(): void { screenshotPanel.toggle(); }
+        function open(): void {
+            screenshotPanel.open();
+        }
+        function close(): void {
+            screenshotPanel.close();
+        }
+        function toggle(): void {
+            screenshotPanel.toggle();
+        }
     }
 
     Variants {

@@ -1,5 +1,7 @@
 // Kitana managed Quickshell screenshot panel
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -14,9 +16,10 @@ PanelWindow {
 
     Custom.Settings { id: settings }
 
+    property bool panelVisible: false
     property string kitanaDir: Quickshell.env("KITANA_DIR") || Quickshell.env("HOME") + "/.local/share/kitana"
 
-    visible: false
+    visible: panelVisible
     focusable: true
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
@@ -34,16 +37,16 @@ PanelWindow {
     }
 
     function open(): void {
-        visible = true;
+        panelVisible = true;
         closeArea.forceActiveFocus();
     }
 
     function close(): void {
-        visible = false;
+        panelVisible = false;
     }
 
     function toggle(): void {
-        visible ? close() : open();
+        panelVisible ? close() : open();
     }
 
     function capture(mode: string, clipboardOnly: bool): void {

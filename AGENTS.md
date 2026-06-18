@@ -117,7 +117,17 @@ Useful lifecycle commands:
 - `kitana-quickshell restart`
 - `kitana-quickshell reload`
 
-When adding a new Quickshell service singleton, register it in `config/quickshell/kitana/Services/qmldir` and update validation if it is required.
+When adding a new Quickshell service singleton, register it in `config/quickshell/kitana/Services/qmldir`. Update install validation only when the service is a baseline install requirement.
+
+Quickshell color role shape lives in:
+
+- `config/quickshell/kitana/Config/Colors.qml`
+- `lib/kitana-quickshell-colors.lua` for source-role rendering
+- `lib/kitana-theme.lua` and `themes/*.lua` when the role is theme-sourced
+
+`kitana-theme-quickshell` and `kitana-matugen` both render through the shared Quickshell color renderer. Keep derived/component treatment roles in `Colors.qml`; do not duplicate them in `kitana-matugen`.
+
+Do not add broad Quickshell color-role audits to `validate.sh` while the shell is still evolving. Use targeted generation checks for the roles touched.
 
 For launcher or modal changes:
 
@@ -167,10 +177,11 @@ Common checks:
 - `bash -n <script>` for shell scripts.
 - `luac -p <file>` for Lua files.
 - `git diff --check` for whitespace issues.
-- `bash validate.sh` for full install validation when feasible.
+- `bash validate.sh` for full install or repair validation when feasible.
 
-For Quickshell work, also check:
+Do not run `bash validate.sh` for every small QML, theme, or component change. For Quickshell work, prefer targeted checks such as:
 
+- `qmllint --json - -I config/quickshell/kitana -I config/quickshell <files>`
 - `quickshell ipc -c kitana show`
 - `quickshell log -c kitana --no-color`
 - `kitana-quickshell restart`

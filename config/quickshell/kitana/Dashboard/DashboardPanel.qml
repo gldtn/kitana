@@ -1,5 +1,7 @@
 // Kitana managed Quickshell module
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import Qt.labs.folderlistmodel
@@ -18,6 +20,7 @@ PanelWindow {
     Custom.Settings { id: settings }
 
     readonly property var panelSelf: root
+    property bool panelVisible: false
     property real revealProgress: 0
     property string activeTab: "datetime"
     property var wallpapers: []
@@ -68,10 +71,10 @@ PanelWindow {
     }
 
     function open(tab: string): void {
-        const wasVisible = visible;
+        const wasVisible = panelVisible;
         activeTab = tab || "datetime";
         resetPickerState();
-        visible = true;
+        panelVisible = true;
         if (!wasVisible) {
             revealProgress = 0;
             revealAnimation.restart();
@@ -81,13 +84,13 @@ PanelWindow {
     }
 
     function close(): void {
-        visible = false;
+        panelVisible = false;
         revealProgress = 0;
         mediaAudioOverlayOpen = false;
     }
 
     function toggle(tab: string): void {
-        if (visible && activeTab === tab)
+        if (panelVisible && activeTab === tab)
             close();
         else
             open(tab || activeTab);
@@ -444,7 +447,7 @@ PanelWindow {
         secondClockProcess.exec(["env", "TZ=" + worldClockPreferences.secondTimeZone, "date", "+%l:%M %p|%a, %b %-d"]);
     }
 
-    visible: false
+    visible: panelVisible
     focusable: true
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
@@ -625,20 +628,20 @@ PanelWindow {
                 Layout.fillWidth: true
                 spacing: 8
 
-                Dashboard.TabButton { dashboard: panelSelf; iconName: "calendar"; label: "Date"; tab: "datetime" }
-                Dashboard.TabButton { dashboard: panelSelf; iconName: "weather.default"; label: "Weather"; tab: "weather" }
-                Dashboard.TabButton { dashboard: panelSelf; iconName: "media.default"; label: "Media"; tab: "media" }
-                Dashboard.TabButton { dashboard: panelSelf; iconName: "wallpaper"; label: "Wallpapers"; tab: "wallpapers" }
-                Dashboard.TabButton { dashboard: panelSelf; iconName: "theme"; label: "Themes"; tab: "themes" }
+                Dashboard.TabButton { dashboard: root.panelSelf; iconName: "calendar"; label: "Date"; tab: "datetime" }
+                Dashboard.TabButton { dashboard: root.panelSelf; iconName: "weather.default"; label: "Weather"; tab: "weather" }
+                Dashboard.TabButton { dashboard: root.panelSelf; iconName: "media.default"; label: "Media"; tab: "media" }
+                Dashboard.TabButton { dashboard: root.panelSelf; iconName: "wallpaper"; label: "Wallpapers"; tab: "wallpapers" }
+                Dashboard.TabButton { dashboard: root.panelSelf; iconName: "theme"; label: "Themes"; tab: "themes" }
 
                 Item { Layout.fillWidth: true }
 
-                Dashboard.TabButton { dashboard: panelSelf; iconName: "settings"; label: ""; tab: "settings"; compact: true }
+                Dashboard.TabButton { dashboard: root.panelSelf; iconName: "settings"; label: ""; tab: "settings"; compact: true }
             }
 
             Rectangle {
                 Layout.fillWidth: true
-                height: 1
+                Layout.preferredHeight: 1
                 color: Colors.panelBorder
             }
 
@@ -659,10 +662,10 @@ PanelWindow {
         easing.type: Easing.OutCubic
     }
 
-    Component { id: datetimeTab; Tabs.DateTimeTab { dashboard: panelSelf; worldClockPrefs: worldClockPreferences } }
-    Component { id: weatherTab; Tabs.WeatherTab { dashboard: panelSelf; weatherPrefs: weatherPreferences } }
-    Component { id: mediaTab; Tabs.MediaTab { dashboard: panelSelf } }
-    Component { id: wallpapersTab; Tabs.WallpapersTab { dashboard: panelSelf } }
-    Component { id: themesTab; Tabs.ThemesTab { dashboard: panelSelf } }
-    Component { id: settingsTab; Tabs.SettingsTab { dashboard: panelSelf; weatherPrefs: weatherPreferences; worldClockPrefs: worldClockPreferences } }
+    Component { id: datetimeTab; Tabs.DateTimeTab { dashboard: root.panelSelf; worldClockPrefs: worldClockPreferences } }
+    Component { id: weatherTab; Tabs.WeatherTab { dashboard: root.panelSelf; weatherPrefs: weatherPreferences } }
+    Component { id: mediaTab; Tabs.MediaTab { dashboard: root.panelSelf } }
+    Component { id: wallpapersTab; Tabs.WallpapersTab { dashboard: root.panelSelf } }
+    Component { id: themesTab; Tabs.ThemesTab { dashboard: root.panelSelf } }
+    Component { id: settingsTab; Tabs.SettingsTab { dashboard: root.panelSelf; weatherPrefs: weatherPreferences; worldClockPrefs: worldClockPreferences } }
 }

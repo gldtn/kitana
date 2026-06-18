@@ -37,14 +37,11 @@ return {
 			foregroundStrong = "rosewater",
 			foregroundMuted = "overlay2",
 			foregroundSubtle = "overlay2",
-			foregroundDisabled = "overlay2",
 			foregroundInverted = "mantle",
 
 			accent = "mauve",
 			accentStrong = "lavender",
 			onAccent = "mantle",
-			accentBackground = "mauve",
-			accentSelectedBackground = "mauve",
 
 			background = "base",
 			surface = "mantle",
@@ -69,10 +66,6 @@ return {
 			success = "green",
 			warning = "yellow",
 			danger = "red",
-			infoBackground = "blue",
-			successBackground = "green",
-			warningBackground = "yellow",
-			dangerBackground = "red",
 
 			iconPrimary = "text",
 			iconSecondary = "rosewater",
@@ -84,11 +77,6 @@ return {
 			iconBrand = "mauve",
 			iconDisabled = "overlay2",
 			iconDanger = "red",
-
-			scrim = "crust",
-			scrimSoft = "crust",
-			imageOverlay = "crust",
-			shadow = "#000000",
 		},
 
 		hypr = {

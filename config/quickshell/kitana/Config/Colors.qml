@@ -83,7 +83,7 @@ QtObject {
   readonly property color iconDanger: "#f38ba8"
 
   // Shallow Kitana component roles. Keep these independently defined for future per-component tuning.
-  readonly property color barBackground: withAlpha(background, 92)
+  readonly property color barBackground: withAlpha(background, 96)
   readonly property color barForeground: foreground
   readonly property color barHoverBackground: withAlpha(surfaceHover, 93)
   readonly property color barBorder: withAlpha(borderMuted, 25)
@@ -94,7 +94,7 @@ QtObject {
 
   readonly property color containerBackground: withAlpha(surfaceContainer, 96)
   readonly property color containerForeground: foreground
-  readonly property color containerBorder: borderMuted
+  readonly property color containerBorder: withAlpha(borderMuted, 65)
 
   readonly property color cardBackground: withAlpha(surfaceCard, 68)
   readonly property color cardForeground: foreground
@@ -103,20 +103,21 @@ QtObject {
   readonly property color controlBackground: surfaceControl
   readonly property color controlButtonBackground: "transparent"
   readonly property color controlForeground: foreground
-  readonly property color controlBorder: border
+  readonly property color controlBorder: withAlpha(borderStrong, 45)
+  readonly property color controlSubtleBorder: withAlpha(borderSubtle, 65)
   readonly property color controlSubtleBackground: surfaceSubtle
   readonly property color controlHoverBackground: withAlpha(surfaceHover, 75)
   readonly property color controlButtonHoverBackground: withAlpha(surfaceContainer, 65)
   readonly property color controlPressedBackground: withAlpha(surfacePressed, 96)
   readonly property color controlActiveBackground: withAlpha(surfaceActive, 25)
   readonly property color controlActiveForeground: foreground
-  readonly property color controlActiveBorder: withAlpha(borderFocus, 60)
+  readonly property color controlActiveBorder: withAlpha(borderFocus, 50)
 
   // Floating elements (OSD, Notifications)
-  readonly property color popupBackground: withAlpha(surfaceFloatingStrong, 65)
+  readonly property color popupBackground: withAlpha(surfaceFloatingStrong, 90)
   readonly property color popupForeground: foreground
   readonly property color popupForegroundMuted: foregroundMuted
-  readonly property color popupSurface: withAlpha(surfaceControl, 80)
+  readonly property color popupSurface: surfaceControl
   readonly property color popupBorder: borderMuted
 
   readonly property color inputBackground: withAlpha(surfaceControl, 80)

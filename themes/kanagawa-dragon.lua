@@ -69,14 +69,11 @@ return {
 			foregroundStrong = "dragonGray",
 			foregroundMuted = "dragonGray",
 			foregroundSubtle = "dragonGray",
-			foregroundDisabled = "dragonGray",
 			foregroundInverted = "dragonBlack3",
 
 			accent = "dragonGreen",
 			accentStrong = "dragonViolet",
 			onAccent = "dragonBlack3",
-			accentBackground = "dragonGreen",
-			accentSelectedBackground = "dragonGreen",
 
 			background = "sumiInk1",
 			surface = "dragonBlack3",
@@ -101,10 +98,6 @@ return {
 			success = "dragonGreen",
 			warning = "dragonYellow",
 			danger = "dragonRed",
-			infoBackground = "crystalBlue",
-			successBackground = "dragonGreen",
-			warningBackground = "dragonYellow",
-			dangerBackground = "dragonRed",
 
 			iconPrimary = "dragonWhite",
 			iconSecondary = "dragonGray",
@@ -116,11 +109,6 @@ return {
 			iconBrand = "dragonGreen",
 			iconDisabled = "dragonGray",
 			iconDanger = "dragonRed",
-
-			scrim = "dragonBlack4",
-			scrimSoft = "dragonBlack4",
-			imageOverlay = "dragonBlack4",
-			shadow = "#000000",
 		},
 
 		hypr = {

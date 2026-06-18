@@ -20,7 +20,7 @@ Temporary notes for clean-install testing and session handoff. Update this befor
 
 ## Recently Verified
 
-- `bash validate.sh` passes on the current machine.
+- Install-focused `bash validate.sh` passes on the current machine.
 - `SUPER+D` opens the Kitana Quickshell launcher.
 - Launcher search, icons, hidden app filtering, and keyboard behavior were tested interactively.
 - `kitana-quickshell start`, `stop`, `restart`, and `reload` were tested.
@@ -30,14 +30,14 @@ Temporary notes for clean-install testing and session handoff. Update this befor
   - Hyprland restores the seeded wallpaper and theme on first login.
   - Quickshell starts without the routine `Quickshell reload requested` notification.
 - `bin/kitana-arch-usb --download-only`, `--help`, and `--list` were checked; `/dev/sda` was written successfully and reappeared as Arch install media labeled `ARCH_202606` with `ARCHISO_EFI`.
-- `bash validate.sh` passed after adding `kitana-arch-usb` to validation.
+- Install-focused `bash validate.sh` passed after adding `kitana-arch-usb` to validation.
 
 ## Before Clean Install
 
 - Commit or stash any local changes.
 - Push the latest commits if this machine may be wiped.
 - Run `git status --short` and ensure only intentional changes remain.
-- Run `bash validate.sh` if the current install is still available.
+- Run `bash validate.sh` if the current install is still available and install health needs checking.
 - Confirm the fresh machine pulls at least commit `a232cf9` before testing the new Arch USB helper or README instructions.
 - Record any open issues in the section below.
 
@@ -48,7 +48,7 @@ Temporary notes for clean-install testing and session handoff. Update this befor
 ## Fresh Machine Test Focus
 
 - Run the normal bootstrap from the README and confirm the installer still completes from a clean Arch environment.
-- After first reboot, verify SDDM, Hyprland, Quickshell, wallpaper/theme state, launcher bind, browser handlers, and `bash validate.sh`.
+- After first reboot, verify SDDM, Hyprland, Quickshell, wallpaper/theme state, launcher bind, browser handlers, and install-focused `bash validate.sh`.
 - If the Arch USB helper is tested again, prefer `kitana-arch-usb --list` first, then `--select --unmount`; confirm the selected device is a whole disk and not the internal NVMe.
 - Plymouth is intentionally not configured yet. It is tracked in `TODO.md` as optional future boot polish with a migration/helper for existing installs.
 
@@ -58,10 +58,13 @@ Temporary notes for clean-install testing and session handoff. Update this befor
 
 ## Useful Commands
 
+Use `bash validate.sh` for install/repair validation. During Quickshell iteration, prefer targeted `qmllint`, logs, and reload/restart checks.
+
 ```bash
 git status --short
 git log --oneline -10
 bash validate.sh
+qmllint --json - -I config/quickshell/kitana -I config/quickshell <files>
 kitana-refresh --applications
 kitana-refresh --configs
 kitana-refresh --sddm

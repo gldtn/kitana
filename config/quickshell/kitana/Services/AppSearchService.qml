@@ -4,7 +4,6 @@ pragma Singleton
 
 import QtQuick
 import Quickshell
-import ".."
 import Quickshell.Io
 
 Singleton {

@@ -1,5 +1,7 @@
 // Kitana managed Quickshell dashboard tab
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import "../.."
@@ -7,22 +9,26 @@ import "../Components"
 import "../../custom" as Custom
 
 RowLayout {
-    Custom.Settings { id: settings }
+    id: tabRoot
+
+    Custom.Settings {
+        id: settings
+    }
 
     property var dashboard: null
     property var worldClockPrefs: null
-    readonly property var root: dashboard
-    readonly property var weather: root ? root.weather : ({})
+    readonly property var panel: dashboard
+    readonly property var weather: panel ? panel.weather : ({})
 
     spacing: 14
-
+    // Sidebar
     Rectangle {
         Layout.preferredWidth: 250
         Layout.fillHeight: true
         radius: 16
         color: Colors.containerBackground
         border.color: Colors.containerBorder
-        border.width: 1
+        border.width: 0.8
 
         ColumnLayout {
             anchors.fill: parent
@@ -31,7 +37,7 @@ RowLayout {
 
             Text {
                 Layout.fillWidth: true
-                text: Qt.formatDate(root.currentTime, "dddd")
+                text: Qt.formatDate(tabRoot.panel.currentTime, "dddd")
                 color: Colors.foregroundMuted
                 horizontalAlignment: Text.AlignHCenter
                 font.family: Typography.fontFamily
@@ -41,8 +47,8 @@ RowLayout {
 
             Text {
                 Layout.fillWidth: true
-                text: Qt.formatDate(root.currentTime, "d")
-                color: Colors.foreground
+                text: Qt.formatDate(tabRoot.panel.currentTime, "d")
+                color: Colors.containerForeground
                 horizontalAlignment: Text.AlignHCenter
                 font.family: Typography.fontFamily
                 font.pixelSize: 58
@@ -51,7 +57,7 @@ RowLayout {
 
             Text {
                 Layout.fillWidth: true
-                text: Qt.formatDate(root.currentTime, "MMMM yyyy")
+                text: Qt.formatDate(tabRoot.panel.currentTime, "MMMM yyyy")
                 color: Colors.foregroundMuted
                 horizontalAlignment: Text.AlignHCenter
                 font.family: Typography.fontFamily
@@ -60,8 +66,8 @@ RowLayout {
 
             Rectangle {
                 Layout.fillWidth: true
-                height: 1
-                color: Colors.panelBorder
+                Layout.preferredHeight: 1
+                color: Colors.containerBorder
             }
 
             ColumnLayout {
@@ -70,29 +76,31 @@ RowLayout {
 
                 TodayFact {
                     iconName: "weather.default"
-                    label: weather.current_condition ? weather.current_condition[0].weatherDesc[0].value : "Weather"
-                    value: weather.current_condition ? root.tempValue(weather.current_condition[0], "temp_C", "temp_F") : "--"
+                    label: tabRoot.weather.current_condition ? tabRoot.weather.current_condition[0].weatherDesc[0].value : "Weather"
+                    value: tabRoot.weather.current_condition ? tabRoot.panel.tempValue(tabRoot.weather.current_condition[0], "temp_C", "temp_F") : "--"
                 }
 
                 TodayFact {
                     iconName: "weather.sunset"
                     label: "Sunset"
-                    value: weather.weather ? weather.weather[0].astronomy[0].sunset : "--"
+                    value: tabRoot.weather.weather ? tabRoot.weather.weather[0].astronomy[0].sunset : "--"
                 }
 
                 TodayFact {
                     iconName: "calendar"
-                    label: "Week " + root.isoWeek(root.currentTime)
-                    value: "Day " + root.dayOfYear(root.currentTime) + "/" + root.daysInYear(root.currentTime)
+                    label: "Week " + tabRoot.panel.isoWeek(tabRoot.panel.currentTime)
+                    value: "Day " + tabRoot.panel.dayOfYear(tabRoot.panel.currentTime) + "/" + tabRoot.panel.daysInYear(tabRoot.panel.currentTime)
                 }
             }
 
-            Item { Layout.fillHeight: true }
+            Item {
+                Layout.fillHeight: true
+            }
 
             Rectangle {
                 Layout.fillWidth: true
-                height: 1
-                color: Colors.panelBorder
+                Layout.preferredHeight: 1
+                color: Colors.containerBorder
             }
 
             Text {
@@ -110,27 +118,27 @@ RowLayout {
                 spacing: 4
 
                 WorldClockRow {
-                    name: worldClockPrefs.firstName
-                    clockDateText: root.firstClockDate
-                    clockTimeText: root.firstClockTime
+                    name: tabRoot.worldClockPrefs.firstName
+                    clockDateText: tabRoot.panel.firstClockDate
+                    clockTimeText: tabRoot.panel.firstClockTime
                 }
 
                 WorldClockRow {
-                    name: worldClockPrefs.secondName
-                    clockDateText: root.secondClockDate
-                    clockTimeText: root.secondClockTime
+                    name: tabRoot.worldClockPrefs.secondName
+                    clockDateText: tabRoot.panel.secondClockDate
+                    clockTimeText: tabRoot.panel.secondClockTime
                 }
             }
         }
     }
-
+    // Calendar
     Rectangle {
         Layout.fillWidth: true
         Layout.fillHeight: true
         radius: 16
         color: Colors.containerBackground
         border.color: Colors.containerBorder
-        border.width: 1
+        border.width: 0.8
 
         ColumnLayout {
             anchors.fill: parent
@@ -142,16 +150,26 @@ RowLayout {
 
                 Text {
                     Layout.fillWidth: true
-                    text: Qt.formatDate(root.calendarMonth, "MMMM yyyy")
+                    text: Qt.formatDate(tabRoot.panel.calendarMonth, "MMMM yyyy")
                     color: Colors.foreground
                     font.family: Typography.fontFamily
                     font.pixelSize: 15
                     font.weight: Font.Bold
                 }
 
-                MiniButton { iconName: "ui.chevron.left"; onClicked: root.shiftMonth(-1) }
-                MiniButton { text: "Today"; widthOverride: 58; onClicked: root.calendarMonth = new Date(root.currentTime.getFullYear(), root.currentTime.getMonth(), 1) }
-                MiniButton { iconName: "ui.chevron.right"; onClicked: root.shiftMonth(1) }
+                MiniButton {
+                    iconName: "ui.chevron.left"
+                    onClicked: tabRoot.panel.shiftMonth(-1)
+                }
+                MiniButton {
+                    text: "Today"
+                    widthOverride: 58
+                    onClicked: tabRoot.panel.calendarMonth = new Date(tabRoot.panel.currentTime.getFullYear(), tabRoot.panel.currentTime.getMonth(), 1)
+                }
+                MiniButton {
+                    iconName: "ui.chevron.right"
+                    onClicked: tabRoot.panel.shiftMonth(1)
+                }
             }
 
             GridLayout {
@@ -163,9 +181,11 @@ RowLayout {
                 Repeater {
                     model: ["S", "M", "T", "W", "T", "F", "S"]
                     Text {
+                        required property string modelData
+
                         Layout.fillWidth: true
                         text: modelData
-                        color: Colors.foregroundMuted
+                        color: Colors.accent
                         horizontalAlignment: Text.AlignHCenter
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize
@@ -176,23 +196,25 @@ RowLayout {
                     model: 42
 
                     Rectangle {
+                        id: dayCell
+
                         required property int index
-                        readonly property int day: root.calendarDay(index)
+                        readonly property int day: tabRoot.panel.calendarDay(index)
 
                         Layout.fillWidth: true
                         Layout.preferredHeight: 34
                         radius: 10
-                        color: root.isToday(day) ? Colors.controlActiveBackground : (day > 0 ? Colors.cardBackground : "transparent")
-                        border.color: root.isToday(day) ? Colors.controlActiveBorder : "transparent"
-                        border.width: 1
+                        color: tabRoot.panel.isToday(dayCell.day) ? Colors.controlActiveBackground : (dayCell.day > 0 ? Colors.controlBackground : "transparent")
+                        border.color: tabRoot.panel.isToday(dayCell.day) ? Colors.controlActiveBorder : "transparent"
+                        border.width: .5
 
                         Text {
                             anchors.centerIn: parent
-                            text: day > 0 ? day : ""
-                            color: root.isToday(day) ? Colors.accent : Colors.foreground
+                            text: dayCell.day > 0 ? dayCell.day : ""
+                            color: tabRoot.panel.isToday(dayCell.day) ? Colors.accent : Colors.controlForeground
                             font.family: Typography.fontFamily
                             font.pixelSize: settings.textPixelSize
-                            font.weight: root.isToday(day) ? Font.Bold : Font.Normal
+                            font.weight: tabRoot.panel.isToday(dayCell.day) ? Font.Bold : Font.Normal
                         }
                     }
                 }

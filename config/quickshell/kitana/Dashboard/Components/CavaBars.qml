@@ -1,5 +1,7 @@
 // Kitana managed Quickshell dashboard component
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import "../.."
 

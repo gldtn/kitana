@@ -1,14 +1,15 @@
 // Kitana managed Quickshell module
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
-import QtQuick.Layouts
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Io
 import "../.."
 import "../../custom" as Custom
 
-Rectangle {
+Item {
     id: root
 
     Custom.Settings {
@@ -16,23 +17,36 @@ Rectangle {
     }
 
     required property var panelScreen
+    readonly property var defaultWorkspaceSet: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    readonly property int activeWorkspaceId: {
+        const activeWorkspace = Hyprland.workspaces.values.find(workspace => workspace.active);
+        return activeWorkspace ? activeWorkspace.id : -1;
+    }
+    readonly property var workspaceStates: {
+        const states = ({});
+        for (const workspace of Hyprland.workspaces.values) {
+            states[workspace.id] = {
+                active: workspace.active,
+                occupied: workspace.toplevels.values.length > 0,
+            };
+        }
+        return states;
+    }
     property var workspaceSets: [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]]
+    property bool embedded: false
 
     implicitHeight: settings.pillHeight
     implicitWidth: workspaceRow.implicitWidth + settings.workspaceSpacing * 2
     width: implicitWidth
     height: implicitHeight
 
-    radius: height / settings.radiusDivisor
-    color: Colors.barBackground
-    border.color: Colors.barBorder
-    border.width: settings.borderWidth
-
-    function range(start, end) {
-        const workspaces = [];
-        for (let workspace = start; workspace <= end; workspace++)
-            workspaces.push(workspace);
-        return workspaces;
+    Rectangle {
+        anchors.fill: parent
+        visible: !root.embedded
+        radius: root.height / settings.radiusDivisor
+        color: Colors.barBackground
+        border.color: Colors.barBorder
+        border.width: settings.borderWidth
     }
 
     function screenIndex(screen) {
@@ -49,11 +63,10 @@ Rectangle {
 
     function workspacesFor(screen) {
         const index = screenIndex(screen);
-        const configured = Quickshell.screens.length === 1 ? range(1, 10) : workspaceSets[Math.min(index, workspaceSets.length - 1)];
-        const activeWorkspace = Hyprland.workspaces.values.find(workspace => workspace.active);
+        const configured = Quickshell.screens.length === 1 ? defaultWorkspaceSet : workspaceSets[Math.min(index, workspaceSets.length - 1)];
 
-        if (Quickshell.screens.length === 1 && activeWorkspace && activeWorkspace.id > 0 && configured.indexOf(activeWorkspace.id) === -1) {
-            return [activeWorkspace.id].concat(configured);
+        if (Quickshell.screens.length === 1 && activeWorkspaceId > 0 && configured.indexOf(activeWorkspaceId) === -1) {
+            return [activeWorkspaceId].concat(configured);
         }
 
         return configured;
@@ -83,9 +96,11 @@ Rectangle {
             Rectangle {
                 id: workspacePill
 
-                property int workspaceId: modelData
-                property bool active: Hyprland.workspaces.values.some(workspace => workspace.id === workspaceId && workspace.active)
-                property bool occupied: Hyprland.workspaces.values.some(workspace => workspace.id === workspaceId && workspace.toplevels.values.length > 0)
+                required property int modelData
+                readonly property int workspaceId: modelData
+                readonly property var workspaceState: root.workspaceStates[workspaceId] || null
+                readonly property bool active: workspaceState ? workspaceState.active : false
+                readonly property bool occupied: workspaceState ? workspaceState.occupied : false
 
                 width: active ? settings.workspaceActiveWidth : settings.workspaceInactiveWidth
                 height: settings.workspacePillHeight

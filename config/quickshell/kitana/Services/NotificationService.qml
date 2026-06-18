@@ -197,21 +197,21 @@ Singleton {
             notification.tracked = true;
 
             const item = {
-                id: nextId++,
+                id: root.nextId++,
                 notification: notification,
                 summary: notification.summary || "Notification",
                 body: notification.body || "",
                 bodyMarkup: root.linkify(notification.body || ""),
                 appName: notification.appName || notification.desktopEntry || "app",
                 appIcon: notification.appIcon || "",
-                category: notification.category || "",
+                category: "",
                 time: new Date(),
                 urgency: notification.urgency
             };
 
-            notifications = [item, ...notifications].slice(0, 50);
-            if (!doNotDisturb)
-                popups = [item, ...popups].slice(0, 4);
+            root.notifications = [item, ...root.notifications].slice(0, 50);
+            if (!root.doNotDisturb)
+                root.popups = [item, ...root.popups].slice(0, 4);
         }
     }
 

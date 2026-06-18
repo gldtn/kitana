@@ -31,8 +31,8 @@ Rectangle {
         anchors.leftMargin: 9
         anchors.verticalCenter: parent.verticalCenter
         width: 24
-        name: modelData.connected ? "bluetooth.connected" : "bluetooth.on"
-        tone: modelData.connected ? "accent" : "primary"
+        name: root.modelData.connected ? "bluetooth.connected" : "bluetooth.on"
+        tone: root.modelData.connected ? "accent" : "primary"
         sizeRole: "button"
     }
 
@@ -68,7 +68,7 @@ Rectangle {
         anchors.right: parent.right
         anchors.rightMargin: 8
         anchors.verticalCenter: parent.verticalCenter
-        visible: modelData.connected
+        visible: root.modelData.connected
         width: visible ? 30 : 0
         height: 30
         radius: 9
@@ -95,7 +95,7 @@ Rectangle {
         anchors.right: parent.right
         anchors.rightMargin: 8
         anchors.verticalCenter: parent.verticalCenter
-        visible: root.saved && !modelData.connected
+        visible: root.saved && !root.modelData.connected
         width: visible ? 30 : 0
         height: 30
         radius: 9
@@ -147,7 +147,7 @@ Rectangle {
         anchors.right: root.actionButton ? root.actionButton.left : parent.right
         anchors.top: parent.top
         anchors.bottom: parent.bottom
-        enabled: !modelData.connected
+        enabled: !root.modelData.connected
         hoverEnabled: true
         cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
         onClicked: Services.SystemStatus.connectBluetoothDevice(root.modelData)

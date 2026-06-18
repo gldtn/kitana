@@ -7,6 +7,7 @@ Item {
     id: root
 
     property var dashboardPanel: null
+    property bool embedded: false
 
     implicitWidth: dateTime.implicitWidth
     implicitHeight: dateTime.implicitHeight
@@ -15,6 +16,7 @@ Item {
 
     Items.DateTime {
         id: dateTime
+        embedded: root.embedded
         dashboardPanel: root.dashboardPanel
     }
 }

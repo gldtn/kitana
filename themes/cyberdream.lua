@@ -27,20 +27,17 @@ return {
 			foregroundStrong = "fg",
 			foregroundMuted = "grey",
 			foregroundSubtle = "bg_highlight",
-			foregroundDisabled = "bg_alt",
 			foregroundInverted = "bg",
 
 			accent = "orange",
 			accentStrong = "cyan",
 			onAccent = "bg",
-			accentBackground = "orange",
-			accentSelectedBackground = "orange",
 
 			background = "bg",
-			surface = "bg",
+			surface = "grey",
 			surfaceContainer = "bg_alt",
-			surfaceCard = "bg_alt",
-			surfaceControl = color.darken("#3c4048", 0.20),
+			surfaceCard = "bg_highlight",
+			surfaceControl = color.darken("#3c4048", 0.1),
 			surfaceSubtle = "bg_highlight",
 			surfaceHover = color.darken("#3c4048", 0.01),
 			surfacePressed = color.lighten("#3c4048", 0.012),
@@ -59,10 +56,6 @@ return {
 			success = "green",
 			warning = "yellow",
 			danger = "red",
-			infoBackground = "blue",
-			successBackground = "green",
-			warningBackground = "yellow",
-			dangerBackground = "red",
 
 			iconPrimary = "fg",
 			iconSecondary = "fg",
@@ -74,11 +67,6 @@ return {
 			iconBrand = "orange",
 			iconDisabled = "grey",
 			iconDanger = "red",
-
-			scrim = "bg_alt",
-			scrimSoft = "bg_alt",
-			imageOverlay = "bg_alt",
-			shadow = "#000000",
 		},
 
 		hypr = {

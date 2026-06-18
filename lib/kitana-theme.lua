@@ -9,61 +9,6 @@ M.order = {
   "cyberdream",
 }
 
-local quickshell_roles = {
-  "foreground",
-  "foregroundStrong",
-  "foregroundMuted",
-  "foregroundSubtle",
-  "foregroundDisabled",
-  "foregroundInverted",
-  "accent",
-  "accentStrong",
-  "onAccent",
-  "accentBackground",
-  "accentSelectedBackground",
-  "background",
-  "surface",
-  "surfaceContainer",
-  "surfaceCard",
-  "surfaceControl",
-  "surfaceSubtle",
-  "surfaceHover",
-  "surfacePressed",
-  "surfaceActive",
-  "surfaceSelected",
-  "surfaceFloating",
-  "surfaceFloatingStrong",
-  "border",
-  "borderSubtle",
-  "borderMuted",
-  "borderStrong",
-  "borderFocus",
-  "info",
-  "success",
-  "warning",
-  "danger",
-  "infoBackground",
-  "successBackground",
-  "warningBackground",
-  "dangerBackground",
-  "iconPrimary",
-  "iconSecondary",
-  "iconMuted",
-  "iconSubtle",
-  "iconAccent",
-  "iconOnAccent",
-  "iconInverse",
-  "iconBrand",
-  "iconDisabled",
-  "iconDanger",
-  "scrim",
-  "scrimSoft",
-  "imageOverlay",
-  "shadow",
-}
-
-M.quickshell_roles = quickshell_roles
-
 local function kitana_dir()
   return os.getenv("KITANA_DIR") or (os.getenv("HOME") .. "/.local/share/kitana")
 end
@@ -75,6 +20,12 @@ local function ensure_package_path()
     package.path = paths .. package.path
   end
 end
+
+ensure_package_path()
+
+local quickshell_roles = require("lib.kitana-quickshell-colors").env_roles()
+
+M.quickshell_roles = quickshell_roles
 
 local function shell_quote(value)
   value = tostring(value or "")
@@ -214,6 +165,13 @@ function M.pipe_line(theme)
   return table.concat(values, "|")
 end
 
+function M.print_quickshell_env(theme)
+  local quickshell = M.quickshell(theme)
+  for _, role in ipairs(quickshell_roles) do
+    print(role .. "=" .. shell_quote(quickshell[role]))
+  end
+end
+
 function M.print_env(theme)
   local preview = M.preview(theme)
   local hypr = M.hypr(theme)
@@ -256,7 +214,7 @@ function M.print_env(theme)
 end
 
 local function usage()
-  io.stderr:write("Usage: lua lib/kitana-theme.lua [list|env|find] [THEME]\n")
+  io.stderr:write("Usage: lua lib/kitana-theme.lua [list|env|quickshell-env|find] [THEME]\n")
 end
 
 if arg and arg[0] and arg[0]:match("kitana%-theme%.lua$") then
@@ -272,6 +230,12 @@ if arg and arg[0] and arg[0]:match("kitana%-theme%.lua$") then
       os.exit(1)
     end
     M.print_env(theme)
+  elseif command == "quickshell-env" then
+    local theme = M.find(arg[2] or "")
+    if not theme then
+      os.exit(1)
+    end
+    M.print_quickshell_env(theme)
   elseif command == "find" then
     local theme = M.find(arg[2] or "")
     if not theme then

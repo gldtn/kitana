@@ -1,5 +1,7 @@
 // Kitana managed Quickshell launcher
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -18,7 +20,7 @@ PanelWindow {
 
     Custom.Settings { id: settings }
 
-    visible: false
+    visible: panelVisible
     focusable: true
     aboveWindows: true
     exclusionMode: ExclusionMode.Ignore
@@ -27,7 +29,7 @@ PanelWindow {
     WlrLayershell.layer: WlrLayershell.Overlay
     WlrLayershell.exclusiveZone: -1
     WlrLayershell.keyboardFocus: visible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
-    BackgroundEffect.blurRegion: Region { item: backdrop }
+    BackgroundEffect.blurRegion: Region { item: root.backdropItem }
 
     anchors {
         top: true
@@ -38,22 +40,22 @@ PanelWindow {
 
     property string query: ""
     property var results: []
+    property bool panelVisible: false
     property int selectedIndex: 0
     property string statusText: ""
-    property int cardWidth: Math.min(720, width - 96)
-    property int cardHeight: Math.min(620, height - 120)
+    readonly property int cardWidth: Math.min(720, width - 96)
+    readonly property int cardHeight: Math.min(620, height - 120)
+    property alias backdropItem: backdrop
 
     function refreshResults(): void {
         results = Services.AppSearchService.search(query);
         selectedIndex = results.length > 0 ? Math.min(selectedIndex, results.length - 1) : -1;
-        listView.currentIndex = selectedIndex;
     }
 
     function moveSelection(delta: int): void {
         if (results.length === 0)
             return;
         selectedIndex = Math.max(0, Math.min(results.length - 1, selectedIndex + delta));
-        listView.currentIndex = selectedIndex;
         listView.positionViewAtIndex(selectedIndex, ListView.Contain);
     }
 
@@ -154,9 +156,8 @@ PanelWindow {
 
     function open(): void {
         Services.AppSearchService.refresh();
-        visible = true;
+        panelVisible = true;
         query = "";
-        search.text = "";
         statusText = "";
         selectedIndex = 0;
         refreshResults();
@@ -164,11 +165,11 @@ PanelWindow {
     }
 
     function close(): void {
-        visible = false;
+        panelVisible = false;
     }
 
     function toggle(): void {
-        if (visible)
+        if (panelVisible)
             close();
         else
             open();
@@ -211,14 +212,14 @@ PanelWindow {
                 root.moveSelection(-1);
                 event.accepted = true;
             } else if (event.key === Qt.Key_Home) {
-                root.selectedIndex = 0;
-                listView.currentIndex = root.selectedIndex;
-                listView.positionViewAtIndex(root.selectedIndex, ListView.Beginning);
+                root.selectedIndex = root.results.length > 0 ? 0 : -1;
+                if (root.selectedIndex >= 0)
+                    listView.positionViewAtIndex(root.selectedIndex, ListView.Beginning);
                 event.accepted = true;
             } else if (event.key === Qt.Key_End) {
-                root.selectedIndex = Math.max(0, root.results.length - 1);
-                listView.currentIndex = root.selectedIndex;
-                listView.positionViewAtIndex(root.selectedIndex, ListView.End);
+                root.selectedIndex = root.results.length > 0 ? root.results.length - 1 : -1;
+                if (root.selectedIndex >= 0)
+                    listView.positionViewAtIndex(root.selectedIndex, ListView.End);
                 event.accepted = true;
             }
         }
@@ -259,7 +260,7 @@ PanelWindow {
 
                 Rectangle {
                     Layout.fillWidth: true
-                    height: 52
+                    Layout.preferredHeight: 52
                     radius: 12
                     color: Colors.inputBackground
                     border.color: search.activeFocus ? Colors.inputActiveBorder : Colors.inputBorder
@@ -280,6 +281,7 @@ PanelWindow {
                         TextInput {
                             id: search
                             Layout.fillWidth: true
+                            text: root.query
                             focus: true
                             color: Colors.inputForeground
                             selectionColor: Colors.accentBackground
@@ -328,22 +330,24 @@ PanelWindow {
                         currentIndex: root.selectedIndex
 
                         delegate: Rectangle {
+                            id: resultDelegate
+
                             required property int index
                             required property var modelData
 
                             width: listView.width
                             height: 58
                             radius: 12
-                            color: index === root.selectedIndex ? Colors.controlActiveBackground : (mouse.containsMouse ? Colors.controlHoverBackground : "transparent")
-                            border.color: index === root.selectedIndex ? Colors.controlActiveBorder : "transparent"
+                            color: resultDelegate.index === root.selectedIndex ? Colors.controlActiveBackground : (mouse.containsMouse ? Colors.controlHoverBackground : "transparent")
+                            border.color: resultDelegate.index === root.selectedIndex ? Colors.controlActiveBorder : "transparent"
                             border.width: 1
 
                             MouseArea {
                                 id: mouse
                                 anchors.fill: parent
                                 hoverEnabled: true
-                                onEntered: root.selectedIndex = index
-                                onClicked: root.launchItem(modelData)
+                                onEntered: root.selectedIndex = resultDelegate.index
+                                onClicked: root.launchItem(resultDelegate.modelData)
                             }
 
                             RowLayout {
@@ -356,7 +360,7 @@ PanelWindow {
                                     Layout.preferredWidth: 34
                                     Layout.preferredHeight: 34
 
-                                    readonly property string resolvedIcon: root.iconSource(modelData)
+                                    readonly property string resolvedIcon: root.iconSource(resultDelegate.modelData)
 
                                     QW.IconImage {
                                         id: appIcon
@@ -375,17 +379,17 @@ PanelWindow {
                                         color: Colors.controlHoverBackground
 
                                         Controls.Icon {
-                                            visible: modelData.fallbackIconName && modelData.fallbackIconName.length > 0
+                                            visible: resultDelegate.modelData.fallbackIconName && resultDelegate.modelData.fallbackIconName.length > 0
                                             anchors.centerIn: parent
-                                            name: modelData.fallbackIconName || Icons.defaultIcon
+                                            name: resultDelegate.modelData.fallbackIconName || Icons.defaultIcon
                                             tone: "accent"
                                             size: 15
                                         }
 
                                         Text {
-                                            visible: !modelData.fallbackIconName || modelData.fallbackIconName.length === 0
+                                            visible: !resultDelegate.modelData.fallbackIconName || resultDelegate.modelData.fallbackIconName.length === 0
                                             anchors.centerIn: parent
-                                            text: (modelData.name || "A").charAt(0).toUpperCase()
+                                            text: (resultDelegate.modelData.name || "A").charAt(0).toUpperCase()
                                             color: Colors.accent
                                             font.family: Typography.fontFamily
                                             font.pixelSize: 15
@@ -400,7 +404,7 @@ PanelWindow {
 
                                     Text {
                                         Layout.fillWidth: true
-                                        text: modelData.name || "Application"
+                                        text: resultDelegate.modelData.name || "Application"
                                         color: Colors.foreground
                                         elide: Text.ElideRight
                                         font.family: Typography.fontFamily
@@ -410,7 +414,7 @@ PanelWindow {
 
                                     Text {
                                         Layout.fillWidth: true
-                                        text: modelData.subtitle || ""
+                                        text: resultDelegate.modelData.subtitle || ""
                                         color: Colors.foregroundMuted
                                         elide: Text.ElideRight
                                         font.family: Typography.fontFamily
@@ -419,8 +423,8 @@ PanelWindow {
                                 }
 
                                 Text {
-                                    visible: index === root.selectedIndex
-                                    text: modelData.hint || "Enter"
+                                    visible: resultDelegate.index === root.selectedIndex
+                                    text: resultDelegate.modelData.hint || "Enter"
                                     color: Colors.accent
                                     font.family: Typography.fontFamily
                                     font.pixelSize: 11
@@ -454,7 +458,7 @@ PanelWindow {
 
                 Rectangle {
                     Layout.fillWidth: true
-                    height: 1
+                    Layout.preferredHeight: 1
                     color: Colors.panelBorder
                     opacity: 0.55
                 }

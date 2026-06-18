@@ -1,5 +1,7 @@
 // Kitana managed Quickshell dashboard tab
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Effects
 import QtQuick.Layouts
@@ -10,10 +12,12 @@ import "../../custom" as Custom
 import "../../Services" as Services
 
 Item {
+    id: tabRoot
+
     Custom.Settings { id: settings }
 
     property var dashboard: null
-    readonly property var root: dashboard
+    readonly property var panel: dashboard
 
     Layout.fillWidth: true
     Layout.fillHeight: true
@@ -36,7 +40,7 @@ Item {
             anchors.rightMargin: 18
             anchors.bottomMargin: 92
             height: 82
-            dashboard: root
+            dashboard: tabRoot.panel
         }
 
         ColumnLayout {
@@ -155,14 +159,14 @@ Item {
                             Layout.preferredWidth: 84
                             Layout.preferredHeight: 30
                             radius: 10
-                            color: root.mediaPlaying ? Colors.controlActiveBackground : Colors.cardBackground
+                            color: tabRoot.panel.mediaPlaying ? Colors.controlActiveBackground : Colors.cardBackground
                             border.color: Colors.panelBorder
                             border.width: 1
 
                             Text {
                                 anchors.centerIn: parent
                                 text: Services.MediaService.status
-                                color: root.mediaPlaying ? Colors.foreground : Colors.foregroundMuted
+                                color: tabRoot.panel.mediaPlaying ? Colors.foreground : Colors.foregroundMuted
                                 font.family: Typography.fontFamily
                                 font.pixelSize: settings.textPixelSize
                                 font.weight: Font.DemiBold
@@ -173,7 +177,7 @@ Item {
                             iconName: Services.SystemStatus.audioIconName
                             onClicked: {
                                 Services.SystemStatus.refresh();
-                                root.mediaAudioOverlayOpen = !root.mediaAudioOverlayOpen;
+                                tabRoot.panel.mediaAudioOverlayOpen = !tabRoot.panel.mediaAudioOverlayOpen;
                             }
                         }
                     }
@@ -202,7 +206,7 @@ Item {
                             id: mediaTitleMarquee
 
                             loops: Animation.Infinite
-                            running: root.visible && root.activeTab === "media" && mediaTitleText.implicitWidth > mediaTitleClip.width
+                            running: tabRoot.panel.visible && tabRoot.panel.activeTab === "media" && mediaTitleText.implicitWidth > mediaTitleClip.width
                             onRunningChanged: if (!running) mediaTitleText.x = 0
 
                             PauseAnimation { duration: 900 }
@@ -241,11 +245,11 @@ Item {
                         spacing: 10
 
                         MediaButton { iconName: "media.previous"; onClicked: Services.MediaService.previous() }
-                        MediaButton { iconName: root.mediaPlaying ? "media.pause" : "media.play"; prominent: true; onClicked: Services.MediaService.playPause() }
+                        MediaButton { iconName: tabRoot.panel.mediaPlaying ? "media.pause" : "media.play"; prominent: true; onClicked: Services.MediaService.playPause() }
                         MediaButton { iconName: "media.stop"; onClicked: Services.MediaService.stop() }
                         MediaButton { iconName: "media.next"; onClicked: Services.MediaService.next() }
                         Item { Layout.fillWidth: true }
-                        MediaButton { iconName: "media.refresh"; onClicked: root.refreshMedia() }
+                        MediaButton { iconName: "media.refresh"; onClicked: tabRoot.panel.refreshMedia() }
                     }
                 }
             }
@@ -253,13 +257,13 @@ Item {
 
         MouseArea {
             anchors.fill: parent
-            visible: root.mediaAudioOverlayOpen
-            onClicked: root.mediaAudioOverlayOpen = false
+            visible: tabRoot.panel.mediaAudioOverlayOpen
+            onClicked: tabRoot.panel.mediaAudioOverlayOpen = false
         }
 
         Rectangle {
             anchors.fill: parent
-            visible: root.mediaAudioOverlayOpen
+            visible: tabRoot.panel.mediaAudioOverlayOpen
             color: Colors.scrimSoft
         }
 
@@ -271,7 +275,7 @@ Item {
             anchors.top: parent.top
             anchors.right: parent.right
             anchors.margins: 18
-            visible: root.mediaAudioOverlayOpen
+            visible: tabRoot.panel.mediaAudioOverlayOpen
             radius: 16
             color: Colors.background
             border.color: Colors.controlActiveBorder
@@ -300,7 +304,7 @@ Item {
                         iconName: "ui.close"
                         widthOverride: 32
                         heightOverride: 30
-                        onClicked: root.mediaAudioOverlayOpen = false
+                        onClicked: tabRoot.panel.mediaAudioOverlayOpen = false
                     }
                 }
 

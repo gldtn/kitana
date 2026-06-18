@@ -8,6 +8,7 @@ Item {
 
     property var panelScreen: null
     property var startMenu: null
+    property bool embedded: false
 
     implicitWidth: leftRow.implicitWidth
     implicitHeight: leftRow.implicitHeight
@@ -21,13 +22,17 @@ Item {
         spacing: 6
 
         Items.Start {
+            embedded: root.embedded
             startMenu: root.startMenu
         }
 
         Items.Workspaces {
+            embedded: root.embedded
             panelScreen: root.panelScreen
         }
 
-        Items.Layout {}
+        Items.Layout {
+            embedded: root.embedded
+        }
     }
 }

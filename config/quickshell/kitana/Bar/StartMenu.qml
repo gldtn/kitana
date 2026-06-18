@@ -1,5 +1,7 @@
 // Kitana managed Quickshell start menu
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -17,11 +19,12 @@ PanelWindow {
     property var systemPanel: null
     property var settingsPanel: null
     property var shortcutsPanel: null
+    property bool panelVisible: false
     property real revealProgress: 0
 
     function open(): void {
-        const wasVisible = visible;
-        visible = true;
+        const wasVisible = panelVisible;
+        panelVisible = true;
         if (!wasVisible) {
             revealProgress = 0;
             revealAnimation.restart();
@@ -30,12 +33,12 @@ PanelWindow {
     }
 
     function close(): void {
-        visible = false;
+        panelVisible = false;
         revealProgress = 0;
     }
 
     function toggle(): void {
-        visible ? close() : open();
+        panelVisible ? close() : open();
     }
 
     function openLauncher(): void {
@@ -118,7 +121,7 @@ PanelWindow {
     }
 
     screen: panelScreen
-    visible: false
+    visible: panelVisible
     focusable: true
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
@@ -208,7 +211,7 @@ PanelWindow {
 
             Rectangle {
                 Layout.fillWidth: true
-                height: 1
+                Layout.preferredHeight: 1
                 color: Colors.panelBorder
             }
 

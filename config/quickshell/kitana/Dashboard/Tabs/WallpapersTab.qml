@@ -1,5 +1,7 @@
 // Kitana managed Quickshell dashboard tab
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Effects
 import QtQuick.Layouts
@@ -8,15 +10,17 @@ import "../Components"
 import "../../custom" as Custom
 
 ColumnLayout {
+    id: tabRoot
+
     Custom.Settings { id: settings }
 
     property var dashboard: null
-    readonly property var root: dashboard
+    readonly property var panel: dashboard
 
     spacing: 8
 
     PickerTopInset {}
-    PickerHelp { dashboard: root }
+    PickerHelp { dashboard: tabRoot.panel }
 
     Item {
         id: wallpaperGrid
@@ -33,15 +37,15 @@ ColumnLayout {
         readonly property real trackWidth: columns * cardWidth + (columns - 1) * gap
 
         Repeater {
-            model: root.wallpaperPageItems()
+            model: tabRoot.panel.wallpaperPageItems()
 
             Rectangle {
                 id: wallpaperCard
 
                 required property string modelData
                 required property int index
-                readonly property int sourceIndex: root.wallpaperPage * root.wallpaperPageSize + index
-                readonly property bool selected: sourceIndex === root.wallpaperCurrentIndex
+                readonly property int sourceIndex: tabRoot.panel.wallpaperPage * tabRoot.panel.wallpaperPageSize + index
+                readonly property bool selected: sourceIndex === tabRoot.panel.wallpaperCurrentIndex
                 readonly property int row: Math.floor(index / wallpaperGrid.columns)
                 readonly property int column: index % wallpaperGrid.columns
                 x: Math.round((wallpaperGrid.width - wallpaperGrid.trackWidth) / 2 + column * (wallpaperGrid.cardWidth + wallpaperGrid.gap))
@@ -58,7 +62,7 @@ ColumnLayout {
                 Image {
                     id: wallpaperImage
                     anchors.fill: parent
-                    source: root.fileUrl(wallpaperCard.modelData)
+                    source: tabRoot.panel.fileUrl(wallpaperCard.modelData)
                     fillMode: Image.PreserveAspectCrop
                     asynchronous: true
                     sourceSize.width: Math.max(1, wallpaperCard.width)
@@ -94,8 +98,8 @@ ColumnLayout {
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onEntered: root.wallpaperCurrentIndex = wallpaperCard.sourceIndex
-                    onClicked: root.applyWallpaper(wallpaperCard.modelData)
+                    onEntered: tabRoot.panel.wallpaperCurrentIndex = wallpaperCard.sourceIndex
+                    onClicked: tabRoot.panel.applyWallpaper(wallpaperCard.modelData)
                 }
             }
         }
@@ -110,11 +114,11 @@ ColumnLayout {
             anchors.verticalCenter: parent.verticalCenter
             spacing: 10
 
-            MiniButton { iconName: "ui.chevron.left"; onClicked: root.shiftWallpaperPage(-1) }
+            MiniButton { iconName: "ui.chevron.left"; onClicked: tabRoot.panel.shiftWallpaperPage(-1) }
 
             Text {
                 height: 28
-                text: (root.wallpaperPage + 1) + " / " + root.wallpaperPageCount()
+                text: (tabRoot.panel.wallpaperPage + 1) + " / " + tabRoot.panel.wallpaperPageCount()
                 verticalAlignment: Text.AlignVCenter
                 color: Colors.foregroundMuted
                 font.family: Typography.fontFamily
@@ -122,7 +126,7 @@ ColumnLayout {
                 font.weight: Font.DemiBold
             }
 
-            MiniButton { iconName: "ui.chevron.right"; onClicked: root.shiftWallpaperPage(1) }
+            MiniButton { iconName: "ui.chevron.right"; onClicked: tabRoot.panel.shiftWallpaperPage(1) }
         }
 
         Text {
@@ -130,7 +134,7 @@ ColumnLayout {
             anchors.rightMargin: 5
             anchors.verticalCenter: parent.verticalCenter
             width: 110
-            text: root.filteredWallpapers().length + " wallpapers"
+            text: tabRoot.panel.filteredWallpapers().length + " wallpapers"
             color: Colors.foregroundMuted
             horizontalAlignment: Text.AlignRight
             font.family: Typography.fontFamily

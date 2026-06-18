@@ -1,12 +1,11 @@
 // Kitana managed Quickshell module
 
 import QtQuick
-import QtQuick.Layouts
 import "../.."
 import "../../Components/Controls" as Controls
 import "../../custom" as Custom
 
-Rectangle {
+Item {
     id: root
 
     Custom.Settings {
@@ -14,16 +13,21 @@ Rectangle {
     }
 
     property var dashboardPanel: null
+    property bool embedded: false
 
     implicitHeight: settings.pillHeight
     implicitWidth: clockRow.implicitWidth + settings.clockHorizontalPadding
     width: implicitWidth
     height: implicitHeight
 
-    radius: height / settings.radiusDivisor
-    color: Colors.barBackground
-    border.color: Colors.barBorder
-    border.width: settings.borderWidth
+    Rectangle {
+        anchors.fill: parent
+        visible: !root.embedded
+        radius: root.height / settings.radiusDivisor
+        color: Colors.barBackground
+        border.color: Colors.barBorder
+        border.width: settings.borderWidth
+    }
 
     Row {
         id: clockRow
@@ -35,20 +39,26 @@ Rectangle {
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: Qt.formatDate(clockRow.now, "ddd MMM d")
+            textFormat: Text.PlainText
             color: Colors.barForeground
             font.family: Typography.fontFamily
             font.pixelSize: settings.clockPixelSize
             font.weight: Font.DemiBold
         }
 
-        Rectangle {
+        Item {
             id: dashboardButton
 
             anchors.verticalCenter: parent.verticalCenter
             width: settings.iconPixelSize + 10
             height: settings.iconPixelSize + 8
-            radius: 8
-            color: dashboardMouse.containsMouse ? Colors.barHoverBackground : "transparent"
+
+            Rectangle {
+                anchors.fill: parent
+                visible: dashboardMouse.containsMouse
+                radius: 8
+                color: Colors.barHoverBackground
+            }
 
             Controls.Icon {
                 anchors.centerIn: parent
@@ -70,6 +80,7 @@ Rectangle {
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: Qt.formatTime(clockRow.now, "h:mm AP")
+            textFormat: Text.PlainText
             color: Colors.barForeground
             font.family: Typography.fontFamily
             font.pixelSize: settings.clockPixelSize

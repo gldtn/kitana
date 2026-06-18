@@ -1,5 +1,7 @@
 // Kitana managed Quickshell module
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
@@ -29,10 +31,8 @@ PanelWindow {
         right: true
     }
 
-    margins {
-        top: settings.panelHeight + settings.topMargin + 10
-        right: settings.sideMargin
-    }
+    margins.top: settings.panelHeight + settings.topMargin + 10
+    margins.right: settings.sideMargin
 
     implicitWidth: 360
     implicitHeight: popupColumn.implicitHeight
@@ -47,6 +47,8 @@ PanelWindow {
             model: Services.NotificationService.popups
 
             Rectangle {
+                id: notificationPopup
+
                 required property var modelData
                 readonly property int verticalPadding: 16
 
@@ -66,12 +68,12 @@ PanelWindow {
                     width: 42
                     height: 42
                     radius: 21
-                    color: Services.NotificationService.toneBackground(modelData)
+                    color: Services.NotificationService.toneBackground(notificationPopup.modelData)
 
                     Controls.Icon {
                         anchors.centerIn: parent
                         name: "notifications.on"
-                        color: Services.NotificationService.toneForeground(modelData)
+                        color: Services.NotificationService.toneForeground(notificationPopup.modelData)
                         size: 20
                     }
                 }
@@ -88,7 +90,7 @@ PanelWindow {
 
                     Text {
                         width: parent.width
-                        text: modelData.summary
+                        text: notificationPopup.modelData.summary
                         color: Colors.foreground
                         elide: Text.ElideRight
                         clip: true
@@ -99,7 +101,7 @@ PanelWindow {
 
                     Text {
                         width: parent.width
-                        text: modelData.appName
+                        text: notificationPopup.modelData.appName
                         color: Colors.foregroundMuted
                         elide: Text.ElideRight
                         clip: true
@@ -111,7 +113,7 @@ PanelWindow {
                         id: bodyText
                         width: parent.width
                         visible: text.length > 0
-                        text: modelData.bodyMarkup
+                        text: notificationPopup.modelData.bodyMarkup
                         color: Colors.popupForegroundMuted
                         elide: Text.ElideRight
                         wrapMode: Text.WrapAnywhere
@@ -151,7 +153,7 @@ PanelWindow {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: Services.NotificationService.dismiss(modelData)
+                        onClicked: Services.NotificationService.dismiss(notificationPopup.modelData)
                     }
                 }
             }

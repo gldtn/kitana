@@ -1,5 +1,7 @@
 // Kitana managed Quickshell module
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Effects
@@ -18,7 +20,7 @@ PanelWindow {
         id: settings
     }
 
-    visible: false
+    visible: panelVisible
     focusable: true
     aboveWindows: true
     exclusionMode: ExclusionMode.Ignore
@@ -45,11 +47,13 @@ PanelWindow {
     property var filteredWallpapers: []
     property string query: ""
     property string statusText: ""
+    property bool panelVisible: false
     property bool helpVisible: false
     property bool searchActive: false
     property string kitanaDir: Quickshell.env("KITANA_DIR") || Quickshell.env("HOME") + "/.local/share/kitana"
-    property int cardWidth: Math.min(900, width - 160)
-    property int cardHeight: Math.min(560, height - 160)
+    property int selectedIndex: -1
+    readonly property int cardWidth: Math.min(900, width - 160)
+    readonly property int cardHeight: Math.min(560, height - 160)
 
     function basename(path) {
         return path.split("/").pop();
@@ -62,7 +66,7 @@ PanelWindow {
     function refreshFilter() {
         const needle = query.toLowerCase();
         filteredWallpapers = wallpapers.filter(path => basename(path).toLowerCase().indexOf(needle) !== -1);
-        grid.currentIndex = filteredWallpapers.length > 0 ? 0 : -1;
+        selectedIndex = filteredWallpapers.length > 0 ? 0 : -1;
         if (visible && !searchActive)
             Qt.callLater(() => grid.forceActiveFocus());
     }
@@ -76,7 +80,7 @@ PanelWindow {
     }
 
     function applyCurrent() {
-        applyWallpaper(filteredWallpapers[grid.currentIndex]);
+        applyWallpaper(filteredWallpapers[selectedIndex]);
     }
 
     function gridColumns() {
@@ -87,8 +91,8 @@ PanelWindow {
         if (filteredWallpapers.length === 0)
             return;
 
-        const next = (grid.currentIndex + delta + filteredWallpapers.length) % filteredWallpapers.length;
-        grid.currentIndex = next;
+        const next = (selectedIndex + delta + filteredWallpapers.length) % filteredWallpapers.length;
+        selectedIndex = next;
         grid.positionViewAtIndex(next, GridView.Contain);
     }
 
@@ -128,11 +132,10 @@ PanelWindow {
     }
 
     function open(): void {
-        visible = true;
+        panelVisible = true;
         query = "";
         helpVisible = false;
         searchActive = false;
-        search.text = "";
         statusText = "Loading wallpapers...";
         listProcess.exec([kitanaDir + "/bin/kitana-wallpaper", "--list"]);
         overlay.forceActiveFocus();
@@ -140,11 +143,11 @@ PanelWindow {
     }
 
     function close(): void {
-        visible = false;
+        panelVisible = false;
     }
 
     function toggle(): void {
-        if (visible)
+        if (panelVisible)
             close();
         else
             open();
@@ -234,6 +237,7 @@ PanelWindow {
                 focus: true
                 activeFocusOnTab: true
                 model: root.filteredWallpapers
+                currentIndex: root.selectedIndex
                 cellWidth: Math.floor(width / Math.max(1, Math.floor(width / 200)))
                 cellHeight: cellWidth * 0.62
                 keyNavigationWraps: true
@@ -246,7 +250,7 @@ PanelWindow {
 
                     required property int index
                     required property string modelData
-                    readonly property bool selected: index === grid.currentIndex
+                    readonly property bool selected: index === root.selectedIndex
 
                     width: grid.cellWidth - 12
                     height: grid.cellHeight - 12
@@ -335,9 +339,9 @@ PanelWindow {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onEntered: grid.currentIndex = card.index
+                        onEntered: root.selectedIndex = card.index
                         onClicked: {
-                            grid.currentIndex = card.index;
+                            root.selectedIndex = card.index;
                             root.applyWallpaper(card.modelData);
                         }
                     }
@@ -360,6 +364,7 @@ PanelWindow {
                     anchors.rightMargin: 12
                     verticalAlignment: TextInput.AlignVCenter
                     visible: root.searchActive
+                    text: root.query
                     clip: true
                     color: Colors.foreground
                     selectionColor: Colors.accent

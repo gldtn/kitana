@@ -1,5 +1,7 @@
 // Kitana managed Quickshell system pane
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import "../.."
 import "../Components"

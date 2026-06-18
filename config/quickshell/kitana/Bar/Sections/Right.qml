@@ -9,6 +9,7 @@ Item {
     property var panelWindow: null
     property var screenshotPanel: null
     property var systemPanel: null
+    property bool embedded: false
 
     implicitWidth: rightRow.implicitWidth
     implicitHeight: rightRow.implicitHeight
@@ -22,15 +23,19 @@ Item {
         spacing: 6
 
         Items.Screenshot {
+            embedded: root.embedded
             screenshotPanel: root.screenshotPanel
         }
 
         Items.Status {
             id: status
+            embedded: root.embedded
             panelWindow: root.panelWindow
             systemPanel: root.systemPanel
         }
 
-        Items.Session {}
+        Items.Session {
+            embedded: root.embedded
+        }
     }
 }
