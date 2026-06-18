@@ -26,27 +26,36 @@ ShellRoot {
     readonly property var sharedSettingsPanel: settingsPanel
     readonly property var sharedShortcutsPanel: shortcutsPanel
 
+    // Global wallpaper picker panel
     Wallpaper.WallpaperGrid {}
+
+    // Global application launcher panel
     Launcher.AppLauncher {}
 
+    // Shared dashboard panel opened from the clock
     Dashboard.DashboardPanel {
         id: dashboardPanel
     }
 
+    // Shared screenshot panel opened from bar and IPC
     Screenshot.ScreenshotPanel {
         id: screenshotPanel
     }
 
+    // Global power/session action panel
     Session.SessionPanel {}
 
+    // Shared Kitana settings panel
     Settings.SettingsPanel {
         id: settingsPanel
     }
 
+    // Shared Hyprland shortcuts panel
     Shortcuts.ShortcutsPanel {
         id: shortcutsPanel
     }
 
+    // OSD command bridge
     IpcHandler {
         target: "kitana-osd"
 
@@ -55,6 +64,7 @@ ShellRoot {
         }
     }
 
+    // Notification command bridge
     IpcHandler {
         target: "kitana-notifications"
 
@@ -66,6 +76,7 @@ ShellRoot {
         }
     }
 
+    // Bar visibility command bridge
     IpcHandler {
         target: "kitana-bar"
 
@@ -80,6 +91,7 @@ ShellRoot {
         }
     }
 
+    // Shell lifecycle command bridge
     IpcHandler {
         target: "kitana-shell"
 
@@ -94,6 +106,7 @@ ShellRoot {
         }
     }
 
+    // Screenshot panel command bridge
     IpcHandler {
         target: "kitana-screenshot"
 
@@ -108,9 +121,11 @@ ShellRoot {
         }
     }
 
+    // Per-monitor bar windows
     Variants {
         model: Quickshell.screens
 
+        // Bar instance for one output
         Bar.BarWindow {
             required property var modelData
             panelScreen: modelData

@@ -27,6 +27,7 @@ Item {
     implicitWidth: contentWidth
     implicitHeight: Math.max(iconSlot.implicitHeight, textColumn.implicitHeight)
 
+    // Metric icon and text content
     Item {
         id: content
         width: root.contentWidth
@@ -34,6 +35,7 @@ Item {
         x: Math.round((parent.width - width) / 2)
         y: root.centerContent ? Math.round((parent.height - height) / 2) : 0
 
+        // Metric icon
         Controls.Icon {
             id: iconSlot
             width: root.iconWidth
@@ -44,6 +46,7 @@ Item {
             sizeRole: "bar"
         }
 
+        // Metric label and value column
         Column {
             id: textColumn
             anchors.left: parent.left

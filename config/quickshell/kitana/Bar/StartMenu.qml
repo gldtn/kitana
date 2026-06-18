@@ -58,6 +58,7 @@ PanelWindow {
             shortcutsPanel.open();
     }
 
+    // Reusable start menu action row
     component MenuAction: Rectangle {
         id: actionRoot
 
@@ -74,6 +75,7 @@ PanelWindow {
         border.color: Colors.panelBorder
         border.width: 1
 
+        // Action icon and labels
         RowLayout {
             anchors.fill: parent
             anchors.leftMargin: 10
@@ -111,6 +113,7 @@ PanelWindow {
             }
         }
 
+        // Action click target
         MouseArea {
             id: actionMouse
             anchors.fill: parent
@@ -137,6 +140,7 @@ PanelWindow {
         bottom: true
     }
 
+    // Full-screen close catcher
     MouseArea {
         id: closeArea
         anchors.fill: parent
@@ -145,6 +149,7 @@ PanelWindow {
         onClicked: root.close()
     }
 
+    // Sliding start menu card
     Rectangle {
         width: 320
         height: menuColumn.implicitHeight + 28
@@ -162,11 +167,13 @@ PanelWindow {
             x: (1 - root.revealProgress) * -14
         }
 
+        // Prevent clicks inside card from closing panel
         MouseArea {
             anchors.fill: parent
             onPressed: mouse => mouse.accepted = true
         }
 
+        // Start menu content stack
         ColumnLayout {
             id: menuColumn
 
@@ -176,6 +183,7 @@ PanelWindow {
             anchors.margins: 14
             spacing: 10
 
+            // Menu title header
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 10
@@ -209,12 +217,14 @@ PanelWindow {
                 }
             }
 
+            // Header divider
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 1
                 color: Colors.panelBorder
             }
 
+            // App launcher entry
             MenuAction {
                 iconName: "launcher.apps"
                 title: "App launcher"
@@ -222,6 +232,7 @@ PanelWindow {
                 onClicked: root.openLauncher()
             }
 
+            // Settings panel entry
             MenuAction {
                 iconName: "settings"
                 title: "Settings"
@@ -229,6 +240,7 @@ PanelWindow {
                 onClicked: root.openSettings()
             }
 
+            // Shortcuts panel entry
             MenuAction {
                 iconName: "input.keyboard"
                 title: "Shortcuts"
@@ -238,6 +250,7 @@ PanelWindow {
         }
     }
 
+    // Card reveal animation
     NumberAnimation {
         id: revealAnimation
         target: root

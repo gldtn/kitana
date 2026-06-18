@@ -18,6 +18,7 @@ Item {
     width: implicitWidth
     height: implicitHeight
 
+    // Start button pill background
     Rectangle {
         anchors.fill: parent
         visible: !root.embedded || startMouse.containsMouse
@@ -27,6 +28,7 @@ Item {
         border.width: root.embedded ? 0 : settings.borderWidth
     }
 
+    // Arch start icon
     Controls.Icon {
         anchors.fill: parent
         name: "brand.arch"
@@ -34,6 +36,7 @@ Item {
         sizeRole: "bar"
     }
 
+    // Start menu click target
     MouseArea {
         id: startMouse
 

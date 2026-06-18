@@ -17,6 +17,7 @@ RowLayout {
     Layout.fillWidth: true
     spacing: 6
 
+    // Clock name and date column
     ColumnLayout {
         Layout.fillWidth: true
         spacing: 0
@@ -41,6 +42,7 @@ RowLayout {
         }
     }
 
+    // Clock time value
     Text {
         text: root.clockTimeText
         color: Colors.accent

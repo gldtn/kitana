@@ -18,6 +18,7 @@ Column {
     width: parent ? parent.width : 0
     spacing: 10
 
+    // Detail list heading
     Text {
         width: root.width
         text: root.title
@@ -27,11 +28,13 @@ Column {
         font.weight: Font.Bold
     }
 
+    // Optional detail list header
     Loader {
         width: root.width
         sourceComponent: root.headerComponent
     }
 
+    // Empty detail list message
     Text {
         width: root.width
         visible: root.modelData.length === 0 && !root.headerComponent
@@ -42,6 +45,7 @@ Column {
         font.pixelSize: settings.textPixelSize
     }
 
+    // Detail list row repeater
     Repeater {
         model: root.modelData
         delegate: root.delegateComponent

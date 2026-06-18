@@ -17,6 +17,7 @@ ColumnLayout {
     signal committed(string value)
     spacing: 5
 
+    // Field label
     Text {
         Layout.fillWidth: true
         text: root.label
@@ -26,6 +27,7 @@ ColumnLayout {
         font.pixelSize: settings.textPixelSize - 1
     }
 
+    // Text input frame
     Rectangle {
         Layout.fillWidth: true
         Layout.preferredHeight: 34
@@ -34,6 +36,7 @@ ColumnLayout {
         border.color: fieldInput.activeFocus ? Colors.controlActiveBorder : Colors.panelBorder
         border.width: 1
 
+        // Editable field value
         TextInput {
             id: fieldInput
             anchors.fill: parent

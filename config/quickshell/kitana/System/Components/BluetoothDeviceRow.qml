@@ -25,6 +25,7 @@ Rectangle {
     border.color: modelData.connected ? Colors.controlActiveBorder : "transparent"
     border.width: modelData.connected ? 1 : 0
 
+    // Bluetooth device icon
     Controls.Icon {
         id: bluetoothIcon
         anchors.left: parent.left
@@ -36,6 +37,7 @@ Rectangle {
         sizeRole: "button"
     }
 
+    // Bluetooth device title and status
     Column {
         anchors.left: bluetoothIcon.right
         anchors.right: root.actionButton ? root.actionButton.left : parent.right
@@ -63,6 +65,7 @@ Rectangle {
         }
     }
 
+    // Disconnect current device button
     Rectangle {
         id: disconnectButton
         anchors.right: parent.right
@@ -74,6 +77,7 @@ Rectangle {
         radius: 9
         color: disconnectMouse.containsMouse ? Colors.controlActiveBackground : Colors.controlSubtleBackground
 
+        // Disconnect icon
         Controls.Icon {
             anchors.centerIn: parent
             name: "bluetooth.disconnect"
@@ -81,6 +85,7 @@ Rectangle {
             size: 14
         }
 
+        // Disconnect click target
         MouseArea {
             id: disconnectMouse
             anchors.fill: parent
@@ -90,6 +95,7 @@ Rectangle {
         }
     }
 
+    // Forget saved device button
     Rectangle {
         id: forgetButton
         anchors.right: parent.right
@@ -101,6 +107,7 @@ Rectangle {
         radius: 9
         color: forgetMouse.containsMouse ? Colors.controlActiveBackground : Colors.controlSubtleBackground
 
+        // Forget icon
         Controls.Icon {
             anchors.centerIn: parent
             name: "ui.delete"
@@ -108,6 +115,7 @@ Rectangle {
             size: 14
         }
 
+        // Forget click target
         MouseArea {
             id: forgetMouse
             anchors.fill: parent
@@ -117,6 +125,7 @@ Rectangle {
         }
     }
 
+    // Disconnect or forget tooltip
     Rectangle {
         id: actionTooltip
         visible: disconnectMouse.containsMouse || forgetMouse.containsMouse
@@ -130,6 +139,7 @@ Rectangle {
         border.color: Colors.panelBorder
         border.width: 1
 
+        // Tooltip label
         Text {
             id: actionTooltipLabel
             anchors.centerIn: parent
@@ -141,6 +151,7 @@ Rectangle {
         }
     }
 
+    // Connect device click target
     MouseArea {
         id: rowMouse
         anchors.left: parent.left

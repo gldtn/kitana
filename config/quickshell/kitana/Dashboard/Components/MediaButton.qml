@@ -23,6 +23,7 @@ Rectangle {
     border.color: prominent ? Colors.controlActiveBorder : Colors.panelBorder
     border.width: 1
 
+    // Media control icon
     Controls.Icon {
         anchors.centerIn: parent
         name: root.iconName
@@ -30,6 +31,7 @@ Rectangle {
         size: root.prominent ? settings.iconPixelSize + 2 : settings.iconPixelSize - 1
     }
 
+    // Media control click target
     MouseArea {
         id: mediaButtonMouse
         anchors.fill: parent

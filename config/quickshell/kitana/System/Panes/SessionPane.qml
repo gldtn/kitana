@@ -16,6 +16,7 @@ Column {
     height: parent ? parent.height : 0
     spacing: 10
 
+    // Session pane heading
     Text {
         width: parent.width
         text: "Session"
@@ -25,8 +26,15 @@ Column {
         font.weight: Font.Bold
     }
 
+    // Lock session action
     DetailRow { iconName: "power.lock"; title: "Lock"; subtitle: "Lock this session"; onClicked: if (root.panel) root.panel.lockSession() }
+
+    // Log out action
     DetailRow { iconName: "power.logout"; title: "Log out"; subtitle: "Confirm before ending session"; onClicked: if (root.panel) root.panel.ask("logout", "Log out?") }
+
+    // Restart action
     DetailRow { iconName: "power.reboot"; title: "Restart"; subtitle: "Confirm before reboot"; onClicked: if (root.panel) root.panel.ask("restart", "Restart?") }
+
+    // Shut down action
     DetailRow { iconName: "power.shutdown"; title: "Shut down"; subtitle: "Confirm before poweroff"; onClicked: if (root.panel) root.panel.ask("shutdown", "Shut down?") }
 }

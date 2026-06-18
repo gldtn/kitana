@@ -14,6 +14,7 @@ Item {
     width: implicitWidth
     height: implicitHeight
 
+    // Center clock and dashboard button
     Items.DateTime {
         id: dateTime
         embedded: root.embedded

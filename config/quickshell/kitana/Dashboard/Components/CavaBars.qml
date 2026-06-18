@@ -12,9 +12,11 @@ Item {
     readonly property var levels: dashboard ? dashboard.cavaLevels : []
     readonly property bool playing: dashboard ? dashboard.mediaPlaying : false
 
+    // Audio visualizer bar repeater
     Repeater {
         model: root.levels.length
 
+        // One animated visualizer bar
         Rectangle {
             required property int index
 

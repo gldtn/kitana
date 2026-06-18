@@ -9,7 +9,9 @@ import "../../custom" as Custom
 Rectangle {
     id: root
 
-    Custom.Settings { id: settings }
+    Custom.Settings {
+        id: settings
+    }
 
     property var dashboard: null
     property string iconName: Icons.defaultIcon
@@ -22,9 +24,10 @@ Rectangle {
     Layout.preferredHeight: 34
     radius: 10
     color: selected ? Colors.controlActiveBackground : (tabMouse.containsMouse ? Colors.controlHoverBackground : "transparent")
-    border.color: selected ? Colors.controlActiveBorder : "transparent"
-    border.width: 1
+    // border.color: selected ? Colors.controlActiveBorder : "transparent"
+    // border.width: 1
 
+    // Tab icon and label row
     Row {
         id: tabContent
         anchors.centerIn: parent
@@ -49,6 +52,7 @@ Rectangle {
         }
     }
 
+    // Tab selection click target
     MouseArea {
         id: tabMouse
         anchors.fill: parent

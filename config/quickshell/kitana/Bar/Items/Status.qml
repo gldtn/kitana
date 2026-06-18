@@ -78,6 +78,7 @@ Item {
     width: implicitWidth
     height: implicitHeight
 
+    // Status cluster pill background
     Rectangle {
         anchors.fill: parent
         visible: !root.embedded
@@ -87,6 +88,7 @@ Item {
         border.width: settings.borderWidth
     }
 
+    // Tray, notifications, and system status row
     Row {
         id: statusRow
 
@@ -95,6 +97,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         spacing: settings.statusSpacing
 
+        // System tray menu anchor
         QsMenuAnchor {
             id: trayMenuAnchor
 
@@ -103,6 +106,7 @@ Item {
             anchor.adjustment: PopupAdjustment.None
         }
 
+        // Expandable tray icon section
         Item {
             id: traySection
 
@@ -112,6 +116,7 @@ Item {
             implicitWidth: width
             height: settings.iconPixelSize + 8
 
+            // Tray expand/collapse button
             StatusButton {
                 id: trayToggle
                 anchors.left: parent.left
@@ -122,6 +127,7 @@ Item {
                 onClicked: root.trayExpanded = !root.trayExpanded
             }
 
+            // Animated tray icon container
             Item {
                 id: trayContainer
 
@@ -140,15 +146,18 @@ Item {
                     NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
                 }
 
+                // Visible tray icon row
                 Row {
                     id: trayRow
 
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: settings.statusItemSpacing
 
+                    // System tray item repeater
                     Repeater {
                         model: SystemTray.items
 
+                        // One tray icon button
                         delegate: Item {
                             id: trayButton
 
@@ -172,6 +181,7 @@ Item {
                                 root.callContextMenuFallback(modelData, Math.round(globalPoint.x), Math.round(globalPoint.y));
                             }
 
+                            // Tray hover background
                             Rectangle {
                                 anchors.fill: parent
                                 visible: trayMouse.containsMouse
@@ -179,6 +189,7 @@ Item {
                                 color: Colors.barHoverBackground
                             }
 
+                            // Native tray icon image
                             QW.IconImage {
                                 id: trayIcon
 
@@ -191,6 +202,7 @@ Item {
                                 mipmap: true
                             }
 
+                            // Fallback tray icon
                             Controls.Icon {
                                 anchors.centerIn: parent
                                 visible: !trayIcon.visible
@@ -199,6 +211,7 @@ Item {
                                 sizeRole: "bar"
                             }
 
+                            // Tray activation target
                             MouseArea {
                                 id: trayMouse
 
@@ -225,6 +238,7 @@ Item {
             }
         }
 
+        // Tray/status separator
         Text {
             anchors.verticalCenter: parent.verticalCenter
             visible: traySection.visible && root.trayExpanded && trayContainer.width > 0
@@ -235,12 +249,14 @@ Item {
             verticalAlignment: Text.AlignVCenter
         }
 
+        // Notifications panel button
         StatusButton {
             iconName: Icons.notificationName(Services.NotificationService.count, Services.NotificationService.doNotDisturb)
             label: ""
             onClicked: if (root.systemPanel) root.systemPanel.toggle("notifications")
         }
 
+        // Audio panel button
         StatusButton {
             iconName: Services.SystemStatus.audioIconName
             alignIconLeft: true
@@ -249,6 +265,7 @@ Item {
             onClicked: if (root.systemPanel) root.systemPanel.toggle("audio")
         }
 
+        // Microphone status button
         StatusButton {
             visible: Services.SystemStatus.micAvailable
             iconName: Services.SystemStatus.micIconName
@@ -256,12 +273,14 @@ Item {
             onClicked: if (root.systemPanel) root.systemPanel.toggle("audio")
         }
 
+        // Bluetooth panel button
         StatusButton {
             iconName: Services.SystemStatus.bluetoothIconName
             label: ""
             onClicked: if (root.systemPanel) root.systemPanel.toggle("bluetooth")
         }
 
+        // Network panel button
         StatusButton {
             iconName: Services.SystemStatus.networkIconName
             label: ""
@@ -270,6 +289,7 @@ Item {
 
     }
 
+    // Reusable status icon button
     component StatusButton: Item {
         id: button
 
@@ -283,12 +303,14 @@ Item {
         width: visible ? buttonRow.implicitWidth : 0
         height: settings.iconPixelSize + 8
 
+        // Button icon and optional label row
         Row {
             id: buttonRow
 
             anchors.centerIn: parent
             spacing: settings.statusItemSpacing
 
+            // Button status icon
             Controls.Icon {
                 width: settings.iconPixelSize + 4
                 height: button.height
@@ -300,6 +322,7 @@ Item {
                 leftPadding: button.alignIconLeft ? button.iconVisualOffset : 0
             }
 
+            // Optional button text label
             Text {
                 height: button.height
                 text: button.label
@@ -312,6 +335,7 @@ Item {
             }
         }
 
+        // Status button click target
         MouseArea {
             id: mouse
             anchors.fill: parent

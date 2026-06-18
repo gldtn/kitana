@@ -14,6 +14,7 @@ Flickable {
     contentWidth: width
     contentHeight: networkList.implicitHeight
 
+    // Wi-Fi networks detail list
     DetailList {
         id: networkList
         width: parent.width
@@ -24,13 +25,16 @@ Flickable {
         headerComponent: networkHeader
     }
 
+    // Network status and scan header
     Component {
         id: networkHeader
 
+        // Network header stack
         Column {
             width: parent.width
             spacing: 10
 
+            // Current network status row
             DetailRow {
                 iconName: Services.SystemStatus.networkIconName
                 title: Services.SystemStatus.networkKind === "off" ? "Not connected" : Services.SystemStatus.networkName
@@ -39,6 +43,7 @@ Flickable {
                 clickable: false
             }
 
+            // Wi-Fi enable toggle row
             DetailRow {
                 iconName: Services.SystemStatus.wifiEnabled ? "network.wifi" : "network.wifi.off"
                 title: Services.SystemStatus.wifiEnabled ? "Turn Wi-Fi off" : "Turn Wi-Fi on"
@@ -47,6 +52,7 @@ Flickable {
                 onClicked: Services.SystemStatus.toggleWifi()
             }
 
+            // Wi-Fi scan row
             DetailRow {
                 iconName: Services.SystemStatus.wifiScanning ? "ui.scan" : "ui.refresh"
                 title: Services.SystemStatus.wifiScanning ? "Scanning networks" : "Scan networks"
@@ -57,9 +63,11 @@ Flickable {
         }
     }
 
+    // Wi-Fi network row component
     Component {
         id: wifiRow
 
+        // One Wi-Fi network row
         DetailRow {
             required property var modelData
             iconName: modelData.active ? "network.wifi" : Icons.networkName("wifi", modelData.signal)

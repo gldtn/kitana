@@ -14,9 +14,11 @@ Item {
 
     Custom.Settings { id: settings }
 
+    // Notification list and footer container
     Item {
         anchors.fill: parent
 
+        // Empty notifications message
         Column {
             anchors.centerIn: parent
             visible: Services.NotificationService.count === 0
@@ -40,6 +42,7 @@ Item {
             }
         }
 
+        // Notification rows list
         ListView {
             id: notificationList
 
@@ -53,6 +56,7 @@ Item {
             spacing: 8
             model: Services.NotificationService.visibleNotifications().slice(0, 20)
 
+            // One notification row delegate
             delegate: NotificationRow {
                 required property var modelData
                 item: modelData.item
@@ -64,6 +68,7 @@ Item {
             }
         }
 
+        // Footer divider
         Rectangle {
             id: footerDivider
 
@@ -75,6 +80,7 @@ Item {
             color: Colors.cardBorder
         }
 
+        // Notification footer actions
         Row {
             id: footer
 
@@ -84,6 +90,7 @@ Item {
             height: 30
             spacing: 12
 
+            // Notification count label
             Text {
                 width: parent.width - silentAction.width - clearAction.width - parent.spacing * 2
                 anchors.verticalCenter: parent.verticalCenter
@@ -95,6 +102,7 @@ Item {
                 font.weight: Font.DemiBold
             }
 
+            // Do not disturb footer action
             FooterAction {
                 id: silentAction
                 iconName: Services.NotificationService.doNotDisturb ? "notifications.off" : "notifications.on"
@@ -103,6 +111,7 @@ Item {
                 onClicked: Services.NotificationService.toggleDoNotDisturb()
             }
 
+            // Clear notifications footer action
             FooterAction {
                 id: clearAction
                 iconName: "notifications.dismiss.all"
@@ -114,6 +123,7 @@ Item {
         }
     }
 
+    // Reusable footer action button
     component FooterAction: Item {
         id: action
 
@@ -125,6 +135,7 @@ Item {
         width: actionRow.implicitWidth
         height: 30
 
+        // Footer action icon and label
         Row {
             id: actionRow
 
@@ -148,6 +159,7 @@ Item {
             }
         }
 
+        // Footer action click target
         MouseArea {
             id: actionMouse
 

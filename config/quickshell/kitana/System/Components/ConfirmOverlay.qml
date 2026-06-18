@@ -19,6 +19,7 @@ Rectangle {
     visible: confirming
     z: 20
 
+    // Confirmation dialog card
     Rectangle {
         width: parent.width - 48
         height: 150
@@ -28,11 +29,13 @@ Rectangle {
         border.color: Colors.panelBorder
         border.width: 1
 
+        // Confirmation text and buttons
         Column {
             anchors.fill: parent
             anchors.margins: 18
             spacing: 16
 
+            // Confirmation title
             Text {
                 width: parent.width
                 text: root.panel ? root.panel.confirmTitle : ""
@@ -43,6 +46,7 @@ Rectangle {
                 font.weight: Font.Bold
             }
 
+            // Confirmation message
             Text {
                 width: parent.width
                 text: "Confirm this session action."
@@ -52,6 +56,7 @@ Rectangle {
                 font.pixelSize: settings.textPixelSize
             }
 
+            // Confirmation action row
             Row {
                 anchors.horizontalCenter: parent.horizontalCenter
                 spacing: 10

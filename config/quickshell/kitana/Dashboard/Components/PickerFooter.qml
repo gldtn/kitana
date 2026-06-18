@@ -22,6 +22,7 @@ Rectangle {
     border.color: searchActive ? Colors.panelBorder : "transparent"
     border.width: searchActive ? 1 : 0
 
+    // Picker search input
     TextInput {
         anchors.fill: parent
         anchors.leftMargin: 12
@@ -56,6 +57,7 @@ Rectangle {
         }
     }
 
+    // Picker keyboard help text
     Text {
         anchors.fill: parent
         visible: !root.searchActive

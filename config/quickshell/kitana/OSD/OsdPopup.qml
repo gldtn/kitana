@@ -40,6 +40,7 @@ PanelWindow {
     implicitWidth: 330
     implicitHeight: 70
 
+    // OSD popup card
     Rectangle {
         id: card
 
@@ -56,6 +57,7 @@ PanelWindow {
             NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
         }
 
+        // OSD icon, meter, and value row
         RowLayout {
             anchors.fill: parent
             anchors.leftMargin: 22
@@ -64,6 +66,7 @@ PanelWindow {
             anchors.bottomMargin: 16
             spacing: 16
 
+            // OSD icon slot
             Item {
                 readonly property real iconVisualOffset: {
                     if (Services.OsdService.kind !== "volume")
@@ -75,6 +78,7 @@ PanelWindow {
                 Layout.preferredHeight: 34
                 Layout.alignment: Qt.AlignVCenter
 
+                // OSD status icon
                 Controls.Icon {
                     anchors.left: parent.left
                     anchors.leftMargin: parent.iconVisualOffset
@@ -88,6 +92,7 @@ PanelWindow {
                 }
             }
 
+            // OSD value track
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 7
@@ -95,6 +100,7 @@ PanelWindow {
                 radius: 4
                 color: Colors.popupSurface
 
+                // OSD filled value bar
                 Rectangle {
                     width: parent.width * Services.OsdService.value / 100
                     height: parent.height
@@ -107,6 +113,7 @@ PanelWindow {
                 }
             }
 
+            // OSD numeric value label
             Text {
                 Layout.preferredWidth: 42
                 Layout.alignment: Qt.AlignVCenter

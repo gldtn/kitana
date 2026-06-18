@@ -17,6 +17,7 @@ Flickable {
     contentWidth: width
     contentHeight: bluetoothList.implicitHeight
 
+    // Bluetooth detail list
     Column {
         id: bluetoothList
 
@@ -25,6 +26,7 @@ Flickable {
         width: parent.width
         spacing: 10
 
+        // Bluetooth section heading
         Text {
             width: bluetoothList.width
             text: "Bluetooth"
@@ -34,6 +36,7 @@ Flickable {
             font.weight: Font.Bold
         }
 
+        // Bluetooth scan or enable row
         DetailRow {
             visible: Services.SystemStatus.bluetoothAvailable
             iconName: Services.SystemStatus.bluetoothDiscovering ? "bluetooth.scan" : "bluetooth.on"
@@ -48,6 +51,7 @@ Flickable {
             }
         }
 
+        // Bluetooth empty state
         Text {
             width: bluetoothList.width
             visible: bluetoothList.empty
@@ -58,11 +62,13 @@ Flickable {
             font.pixelSize: settings.textPixelSize
         }
 
+        // Saved Bluetooth device rows
         Repeater {
             model: Services.SystemStatus.bluetoothSavedDevices
             delegate: BluetoothDeviceRow {}
         }
 
+        // Nearby devices divider
         Row {
             visible: Services.SystemStatus.bluetoothSavedDevices.length > 0 && Services.SystemStatus.bluetoothAvailableDevices.length > 0
             width: bluetoothList.width
@@ -93,6 +99,7 @@ Flickable {
             }
         }
 
+        // Nearby Bluetooth device rows
         Repeater {
             model: Services.SystemStatus.bluetoothAvailableDevices
             delegate: BluetoothDeviceRow {}

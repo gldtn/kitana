@@ -21,6 +21,7 @@ Rectangle {
     border.color: danger ? Colors.danger : Colors.panelBorder
     border.width: 1
 
+    // Confirm button label
     Text {
         anchors.centerIn: parent
         text: root.label
@@ -30,6 +31,7 @@ Rectangle {
         font.weight: Font.Bold
     }
 
+    // Confirm button click target
     MouseArea {
         id: mouse
         anchors.fill: parent

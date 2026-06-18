@@ -77,6 +77,7 @@ PanelWindow {
         }
     }
 
+    // Full-screen close and keyboard handler
     MouseArea {
         id: closeArea
 
@@ -87,12 +88,14 @@ PanelWindow {
         onClicked: root.close()
     }
 
+    // Blurred screenshot panel backdrop
     Controls.BlurredBackdrop {
         id: backdrop
 
         anchors.fill: parent
     }
 
+    // Main screenshot action card
     Rectangle {
         id: card
 
@@ -104,16 +107,19 @@ PanelWindow {
         border.color: Colors.panelBorder
         border.width: 1
 
+        // Prevent clicks inside card from closing panel
         MouseArea {
             anchors.fill: parent
             onPressed: mouse => mouse.accepted = true
         }
 
+        // Screenshot card content stack
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: 16
             spacing: 14
 
+            // Screenshot panel header
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 10
@@ -147,6 +153,7 @@ PanelWindow {
                 }
             }
 
+            // Screenshot mode buttons row
             RowLayout {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -187,8 +194,10 @@ PanelWindow {
         }
     }
 
+    // Screenshot command runner
     Process { id: captureProcess }
 
+    // Reusable screenshot action tile
     component ScreenshotAction: Rectangle {
         id: action
 
@@ -205,6 +214,7 @@ PanelWindow {
         border.color: actionMouse.containsMouse ? Colors.controlActiveBorder : Colors.panelBorder
         border.width: 1
 
+        // Shortcut badge
         Rectangle {
             anchors.top: parent.top
             anchors.right: parent.right
@@ -217,6 +227,7 @@ PanelWindow {
             border.color: Colors.panelBorder
             border.width: 1
 
+            // Shortcut letter label
             Text {
                 id: shortcutLabel
                 anchors.centerIn: parent
@@ -228,6 +239,7 @@ PanelWindow {
             }
         }
 
+        // Action icon and labels
         ColumnLayout {
             anchors.centerIn: parent
             width: parent.width - 16
@@ -262,6 +274,7 @@ PanelWindow {
             }
         }
 
+        // Screenshot action click target
         MouseArea {
             id: actionMouse
 

@@ -62,6 +62,7 @@ PanelWindow {
         return "DWL / SCR labels";
     }
 
+    // Settings panel IPC command bridge
     IpcHandler {
         target: "kitana-settings"
 
@@ -87,6 +88,7 @@ PanelWindow {
         bottom: true
     }
 
+    // Full-screen close catcher
     MouseArea {
         id: closeArea
         anchors.fill: parent
@@ -95,12 +97,14 @@ PanelWindow {
         onClicked: root.close()
     }
 
+    // Blurred settings panel backdrop
     Controls.BlurredBackdrop {
         id: backdrop
 
         anchors.fill: parent
     }
 
+    // Main settings card
     Rectangle {
         id: card
 
@@ -118,16 +122,19 @@ PanelWindow {
             y: (1 - root.revealProgress) * 14
         }
 
+        // Prevent clicks inside card from closing panel
         MouseArea {
             anchors.fill: parent
             onPressed: mouse => mouse.accepted = true
         }
 
+        // Settings tab chrome and content area
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: 14
             spacing: 10
 
+            // Settings tab selector row
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 8
@@ -144,12 +151,14 @@ PanelWindow {
                 }
             }
 
+            // Settings tab divider
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 1
                 color: Colors.panelBorder
             }
 
+            // Active settings tab loader
             Loader {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -158,6 +167,7 @@ PanelWindow {
         }
     }
 
+    // Settings card reveal animation
     NumberAnimation {
         id: revealAnimation
         target: root
@@ -167,6 +177,7 @@ PanelWindow {
         easing.type: Easing.OutCubic
     }
 
+    // Reusable settings tab button
     component TabButton: Rectangle {
         id: tabRoot
 
@@ -182,6 +193,7 @@ PanelWindow {
         border.color: selected ? Colors.controlActiveBorder : "transparent"
         border.width: 1
 
+        // Tab icon and label row
         Row {
             id: tabContent
             anchors.centerIn: parent
@@ -205,6 +217,7 @@ PanelWindow {
             }
         }
 
+        // Tab selection click target
         MouseArea {
             id: tabMouse
             anchors.fill: parent
@@ -214,6 +227,7 @@ PanelWindow {
         }
     }
 
+    // Reusable system setting row
     component SettingRow: Rectangle {
         id: rowRoot
 
@@ -231,6 +245,7 @@ PanelWindow {
         border.color: active ? Colors.controlActiveBorder : Colors.panelBorder
         border.width: 1
 
+        // Setting icon and labels
         RowLayout {
             anchors.fill: parent
             anchors.leftMargin: 12
@@ -269,6 +284,7 @@ PanelWindow {
             }
         }
 
+        // Setting row click target
         MouseArea {
             id: rowMouse
             anchors.fill: parent
@@ -278,6 +294,7 @@ PanelWindow {
         }
     }
 
+    // Workspace layout display option card
     component OptionButton: Rectangle {
         id: optionRoot
 
@@ -291,6 +308,7 @@ PanelWindow {
         border.color: selected ? Colors.controlActiveBorder : Colors.panelBorder
         border.width: 1
 
+        // Option icon and description
         Column {
             anchors.centerIn: parent
             width: parent.width - 24
@@ -327,6 +345,7 @@ PanelWindow {
             }
         }
 
+        // Option selection click target
         MouseArea {
             id: optionMouse
             anchors.fill: parent
@@ -336,9 +355,11 @@ PanelWindow {
         }
     }
 
+    // Bar settings tab content
     Component {
         id: barTab
 
+        // Bar settings stack
         ColumnLayout {
             spacing: 12
 
@@ -351,6 +372,7 @@ PanelWindow {
                 font.weight: Font.Bold
             }
 
+            // Workspace layout options card
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 176
@@ -359,6 +381,7 @@ PanelWindow {
                 border.color: Colors.containerBorder
                 border.width: 1
 
+                // Workspace layout options content
                 ColumnLayout {
                     anchors.fill: parent
                     anchors.margins: 12
@@ -397,9 +420,11 @@ PanelWindow {
         }
     }
 
+    // System settings tab content
     Component {
         id: systemTab
 
+        // System settings stack
         ColumnLayout {
             spacing: 12
 
@@ -412,6 +437,7 @@ PanelWindow {
                 font.weight: Font.Bold
             }
 
+            // Do not disturb toggle row
             SettingRow {
                 iconName: "notifications.on"
                 title: "Do Not Disturb"
@@ -420,6 +446,7 @@ PanelWindow {
                 onClicked: Services.NotificationService.toggleDoNotDisturb()
             }
 
+            // Caffeine toggle row
             SettingRow {
                 iconName: Services.CaffeineService.iconName
                 title: "Caffeine"

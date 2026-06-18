@@ -18,9 +18,13 @@ ColumnLayout {
 
     spacing: 8
 
+    // Top breathing space for picker tabs
     PickerTopInset {}
+
+    // Search/help overlay for picker navigation
     PickerHelp { dashboard: tabRoot.panel }
 
+    // Theme preview grid area
     Item {
         id: themeGrid
 
@@ -35,9 +39,11 @@ ColumnLayout {
         readonly property real cardHeight: Math.floor((height - 2 * edgeInset - gap) / 2)
         readonly property real trackWidth: columns * cardWidth + (columns - 1) * gap
 
+        // Theme page item repeater
         Repeater {
             model: tabRoot.panel.themePageItems()
 
+            // Selectable theme preview card
             Rectangle {
                 id: themeCard
 
@@ -60,6 +66,7 @@ ColumnLayout {
 
                 Behavior on scale { NumberAnimation { duration: 120 } }
 
+                // Theme preview surface
                 Rectangle {
                     anchors.fill: parent
                     anchors.margins: 14
@@ -68,6 +75,7 @@ ColumnLayout {
                     border.color: themeCard.modelData.previewBorder
                     border.width: 1
 
+                    // Theme accent swatches
                     Row {
                         anchors.left: parent.left
                         anchors.leftMargin: 14
@@ -75,9 +83,11 @@ ColumnLayout {
                         anchors.topMargin: 14
                         spacing: 8
 
+                        // Color swatch repeater
                         Repeater {
                             model: [themeCard.modelData.previewAccent, themeCard.modelData.previewWarning, themeCard.modelData.previewDanger, themeCard.modelData.previewMuted]
 
+                            // Theme color swatch
                             Rectangle {
                                 required property color modelData
 
@@ -89,6 +99,7 @@ ColumnLayout {
                         }
                     }
 
+                    // Theme name and slug labels
                     ColumnLayout {
                         anchors.left: parent.left
                         anchors.right: parent.right
@@ -117,6 +128,7 @@ ColumnLayout {
                     }
                 }
 
+                // Theme selection click target
                 MouseArea {
                     id: themeMouse
                     anchors.fill: parent
@@ -129,10 +141,12 @@ ColumnLayout {
         }
     }
 
+    // Theme pagination footer
     Item {
         Layout.fillWidth: true
         Layout.preferredHeight: 30
 
+        // Previous and next page controls
         Row {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
@@ -153,6 +167,7 @@ ColumnLayout {
             MiniButton { iconName: "ui.chevron.right"; onClicked: tabRoot.panel.shiftThemePage(1) }
         }
 
+        // Filtered theme count label
         Text {
             anchors.right: parent.right
             anchors.rightMargin: 5

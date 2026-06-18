@@ -17,12 +17,14 @@ Flickable {
     contentWidth: width
     contentHeight: audioList.implicitHeight
 
+    // Audio detail list
     Column {
         id: audioList
 
         width: parent.width
         spacing: 10
 
+        // Microphone section heading
         Text {
             width: parent.width
             text: "Microphone"
@@ -32,6 +34,7 @@ Flickable {
             font.weight: Font.Bold
         }
 
+        // Current microphone row
         DetailRow {
             iconName: Services.SystemStatus.micIconName
             title: Services.SystemStatus.micAvailable ? Services.SystemStatus.micSource : "No microphone"
@@ -41,6 +44,7 @@ Flickable {
             onClicked: Services.SystemStatus.toggleMicMute()
         }
 
+        // Available audio outputs list
         DetailList {
             width: parent.width
             title: "Audio Outputs"
@@ -50,9 +54,11 @@ Flickable {
         }
     }
 
+    // Audio output row component
     Component {
         id: audioSinkRow
 
+        // One audio output row
         DetailRow {
             required property var modelData
             iconName: modelData.iconName || "audio.output"

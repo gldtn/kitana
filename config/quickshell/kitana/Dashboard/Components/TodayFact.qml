@@ -18,6 +18,7 @@ RowLayout {
     Layout.fillWidth: true
     spacing: 7
 
+    // Fact icon
     Controls.Icon {
         Layout.preferredWidth: 18
         Layout.alignment: Qt.AlignVCenter
@@ -26,6 +27,7 @@ RowLayout {
         sizeRole: "bar"
     }
 
+    // Fact label
     Text {
         Layout.fillWidth: true
         Layout.alignment: Qt.AlignVCenter
@@ -37,6 +39,7 @@ RowLayout {
         font.pixelSize: settings.textPixelSize
     }
 
+    // Fact value
     Text {
         Layout.alignment: Qt.AlignVCenter
         text: root.value

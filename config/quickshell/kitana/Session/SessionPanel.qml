@@ -107,6 +107,7 @@ PanelWindow {
         }
     }
 
+    // Session panel IPC command bridge
     IpcHandler {
         target: "kitana-session"
 
@@ -115,6 +116,7 @@ PanelWindow {
         function toggle(): void { root.toggle(); }
     }
 
+    // Full-screen close and keyboard handler
     MouseArea {
         id: closeArea
 
@@ -125,12 +127,14 @@ PanelWindow {
         onClicked: root.close()
     }
 
+    // Blurred session panel backdrop
     Controls.BlurredBackdrop {
         id: backdrop
 
         anchors.fill: parent
     }
 
+    // Main session action card
     Rectangle {
         id: card
 
@@ -142,16 +146,19 @@ PanelWindow {
         border.color: Colors.panelBorder
         border.width: 1
 
+        // Prevent clicks inside card from closing panel
         MouseArea {
             anchors.fill: parent
             onPressed: mouse => mouse.accepted = true
         }
 
+        // Session card content stack
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: 16
             spacing: 14
 
+            // Session panel header
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 10
@@ -185,6 +192,7 @@ PanelWindow {
                 }
             }
 
+            // Session action buttons row
             RowLayout {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -224,12 +232,14 @@ PanelWindow {
             }
         }
 
+        // Destructive action confirmation overlay
         Rectangle {
             anchors.fill: parent
             visible: root.confirmAction.length > 0
             radius: parent.radius
             color: Colors.scrim
 
+            // Confirmation cancel click target
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
@@ -238,6 +248,7 @@ PanelWindow {
                 }
             }
 
+            // Confirmation dialog card
             Rectangle {
                 width: Math.min(320, parent.width - 48)
                 height: 136
@@ -247,6 +258,7 @@ PanelWindow {
                 border.color: Colors.panelBorder
                 border.width: 1
 
+                // Confirmation text and actions
                 ColumnLayout {
                     anchors.fill: parent
                     anchors.margins: 16
@@ -272,6 +284,7 @@ PanelWindow {
                         font.pixelSize: settings.textPixelSize
                     }
 
+                    // Confirmation action buttons
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: 10
@@ -296,8 +309,10 @@ PanelWindow {
         }
     }
 
+    // Session command runner
     Process { id: sessionAction }
 
+    // Reusable session action tile
     component SessionAction: Rectangle {
         id: action
 
@@ -314,6 +329,7 @@ PanelWindow {
         border.color: actionMouse.containsMouse ? Colors.controlActiveBorder : Colors.panelBorder
         border.width: 1
 
+        // Shortcut badge
         Rectangle {
             anchors.top: parent.top
             anchors.right: parent.right
@@ -326,6 +342,7 @@ PanelWindow {
             border.color: Colors.panelBorder
             border.width: 1
 
+            // Shortcut letter label
             Text {
                 id: shortcutLabel
                 anchors.centerIn: parent
@@ -337,6 +354,7 @@ PanelWindow {
             }
         }
 
+        // Action icon and labels
         ColumnLayout {
             anchors.centerIn: parent
             width: parent.width - 16
@@ -371,6 +389,7 @@ PanelWindow {
             }
         }
 
+        // Session action click target
         MouseArea {
             id: actionMouse
 
@@ -381,6 +400,7 @@ PanelWindow {
         }
     }
 
+    // Reusable confirmation button
     component ConfirmButton: Rectangle {
         id: button
 
@@ -395,6 +415,7 @@ PanelWindow {
         border.color: accent ? Colors.controlActiveBorder : Colors.panelBorder
         border.width: 1
 
+        // Confirmation button label
         Text {
             anchors.centerIn: parent
             text: button.label
@@ -404,6 +425,7 @@ PanelWindow {
             font.weight: Font.Bold
         }
 
+        // Confirmation button click target
         MouseArea {
             id: buttonMouse
 

@@ -22,11 +22,13 @@ Rectangle {
     radius: 13
     color: mouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground
 
+    // Quick tile icon and labels
     Row {
         anchors.fill: parent
         anchors.margins: 10
         spacing: 10
 
+        // Tile icon badge
         Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             width: 38
@@ -34,6 +36,7 @@ Rectangle {
             radius: 12
             color: root.active ? Colors.accent : Colors.controlSubtleBackground
 
+            // Tile icon glyph
             Controls.Icon {
                 anchors.centerIn: parent
                 name: root.iconName
@@ -42,6 +45,7 @@ Rectangle {
             }
         }
 
+        // Tile title and subtitle
         Column {
             anchors.verticalCenter: parent.verticalCenter
             width: parent.width - 48
@@ -69,6 +73,7 @@ Rectangle {
         }
     }
 
+    // Quick tile click target
     MouseArea {
         id: mouse
         anchors.fill: parent

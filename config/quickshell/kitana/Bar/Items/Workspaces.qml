@@ -40,6 +40,7 @@ Item {
     width: implicitWidth
     height: implicitHeight
 
+    // Workspace switcher pill background
     Rectangle {
         anchors.fill: parent
         visible: !root.embedded
@@ -72,6 +73,7 @@ Item {
         return configured;
     }
 
+    // Periodic Hyprland workspace refresh
     Timer {
         interval: 2000
         running: true
@@ -80,19 +82,23 @@ Item {
         onTriggered: Hyprland.refreshWorkspaces()
     }
 
+    // Workspace switch command runner
     Process {
         id: workspaceSwitch
     }
 
+    // Workspace pill row
     Row {
         id: workspaceRow
 
         anchors.centerIn: parent
         spacing: settings.workspaceSpacing
 
+        // One workspace pill per configured workspace
         Repeater {
             model: root.workspacesFor(root.panelScreen)
 
+            // Clickable workspace indicator
             Rectangle {
                 id: workspacePill
 
@@ -107,6 +113,7 @@ Item {
                 radius: height / settings.radiusDivisor
                 color: active ? Colors.workspaceActiveBackground : (occupied ? Colors.workspaceOccupiedBackground : Colors.workspaceInactiveBackground)
 
+                // Workspace number label
                 Text {
                     anchors.centerIn: parent
                     text: workspacePill.workspaceId
@@ -116,6 +123,7 @@ Item {
                     font.weight: Font.DemiBold
                 }
 
+                // Workspace focus click target
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor

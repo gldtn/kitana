@@ -27,6 +27,7 @@ Item {
     width: implicitWidth
     height: implicitHeight
 
+    // Layout toggle pill background
     Rectangle {
         anchors.fill: parent
         visible: !root.embedded
@@ -60,6 +61,7 @@ Item {
         Hyprland.refreshWorkspaces();
     }
 
+    // Layout toggle command runner
     Process {
         id: layoutToggle
 
@@ -70,6 +72,7 @@ Item {
         onRunningChanged: if (!running) refreshDelay.restart()
     }
 
+    // Delayed workspace state refresh
     Timer {
         id: refreshDelay
         interval: 120
@@ -77,12 +80,14 @@ Item {
         onTriggered: root.refreshWorkspaces()
     }
 
+    // Layout icon and optional text label
     Row {
         id: content
 
         anchors.centerIn: parent
         spacing: root.displayMode === "icons" ? 0 : 6
 
+        // Current layout icon
         Controls.Icon {
             anchors.verticalCenter: parent.verticalCenter
             name: Icons.workspaceLayoutName(root.currentLayout)
@@ -90,6 +95,7 @@ Item {
             sizeRole: "bar"
         }
 
+        // Current layout label
         Text {
             anchors.verticalCenter: parent.verticalCenter
             visible: root.visibleLabel(root.currentLayout).length > 0
@@ -101,6 +107,7 @@ Item {
         }
     }
 
+    // Layout toggle click target
     MouseArea {
         id: mouse
         anchors.fill: parent

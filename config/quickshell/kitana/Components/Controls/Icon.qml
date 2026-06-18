@@ -4,6 +4,7 @@ import QtQuick
 import "../.."
 import "../../custom" as Custom
 
+// Semantic icon glyph renderer
 Text {
     id: root
 

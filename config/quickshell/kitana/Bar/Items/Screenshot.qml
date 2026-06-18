@@ -18,6 +18,7 @@ Item {
     width: implicitWidth
     height: implicitHeight
 
+    // Screenshot button pill background
     Rectangle {
         anchors.fill: parent
         visible: !root.embedded || screenshotMouse.containsMouse
@@ -27,6 +28,7 @@ Item {
         border.width: root.embedded ? 0 : settings.borderWidth
     }
 
+    // Screenshot icon
     Controls.Icon {
         anchors.fill: parent
         name: "screenshot.default"
@@ -34,6 +36,7 @@ Item {
         sizeRole: "bar"
     }
 
+    // Screenshot panel click target
     MouseArea {
         id: screenshotMouse
 

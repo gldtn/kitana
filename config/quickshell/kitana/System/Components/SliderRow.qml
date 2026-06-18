@@ -23,6 +23,7 @@ Row {
     height: 28
     spacing: 10
 
+    // Slider row icon
     Controls.Icon {
         id: sliderIcon
 
@@ -32,6 +33,7 @@ Row {
         tone: "primary"
         sizeRole: "bar"
 
+        // Optional icon click target
         MouseArea {
             anchors.fill: parent
             enabled: root.iconClickable
@@ -41,6 +43,7 @@ Row {
         }
     }
 
+    // Slider control
     Slider {
         id: control
 
@@ -52,6 +55,7 @@ Row {
         value: root.value
         onMoved: root.moved(value)
 
+        // Slider track
         background: Rectangle {
             x: control.leftPadding
             y: control.topPadding + control.availableHeight / 2 - height / 2
@@ -60,6 +64,7 @@ Row {
             radius: 3
             color: Colors.controlSubtleBackground
 
+            // Filled slider track
             Rectangle {
                 width: control.visualPosition * parent.width
                 height: parent.height
@@ -68,6 +73,7 @@ Row {
             }
         }
 
+        // Slider handle
         handle: Rectangle {
             x: control.leftPadding + control.visualPosition * (control.availableWidth - width)
             y: control.topPadding + control.availableHeight / 2 - height / 2
@@ -80,6 +86,7 @@ Row {
         }
     }
 
+    // Slider value label
     Text {
         id: valueText
 

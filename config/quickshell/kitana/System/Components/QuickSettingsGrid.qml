@@ -18,6 +18,7 @@ Column {
             panel.section = name;
     }
 
+    // Primary quick settings rows
     Row {
         id: primaryRow
 
@@ -25,11 +26,13 @@ Column {
         height: implicitHeight
         spacing: root.spacing
 
+        // Network and audio tile column
         Column {
             width: (primaryRow.width - primaryRow.spacing) / 2
             height: implicitHeight
             spacing: 10
 
+            // Network status tile
             QuickTile {
                 width: parent.width
                 iconName: Services.SystemStatus.networkIconName
@@ -39,12 +42,14 @@ Column {
                 onClicked: root.selectSection("network")
             }
 
+            // Compact audio and mic tiles
             Row {
                 visible: Services.SystemStatus.micAvailable
                 width: parent.width
                 height: visible ? implicitHeight : 0
                 spacing: 10
 
+                // Audio compact tile
                 CompactIconTile {
                     width: (parent.width - parent.spacing) / 2
                     iconName: Services.SystemStatus.audioIconName
@@ -52,6 +57,7 @@ Column {
                     onClicked: root.selectSection("audio")
                 }
 
+                // Microphone compact tile
                 CompactIconTile {
                     width: (parent.width - parent.spacing) / 2
                     iconName: Services.SystemStatus.micIconName
@@ -60,6 +66,7 @@ Column {
                 }
             }
 
+            // Full-width audio tile when mic is unavailable
             QuickTile {
                 visible: !Services.SystemStatus.micAvailable
                 width: parent.width
@@ -72,11 +79,13 @@ Column {
             }
         }
 
+        // Bluetooth and keyboard tile column
         Column {
             width: (primaryRow.width - primaryRow.spacing) / 2
             height: implicitHeight
             spacing: 10
 
+            // Bluetooth status tile
             QuickTile {
                 width: parent.width
                 iconName: Services.SystemStatus.bluetoothIconName
@@ -86,6 +95,7 @@ Column {
                 onClicked: root.selectSection("bluetooth")
             }
 
+            // Keyboard layout cycle tile
             QuickTile {
                 width: parent.width
                 iconName: "input.keyboard"
@@ -97,11 +107,13 @@ Column {
         }
     }
 
+    // Secondary quick settings row
     Row {
         width: parent.width
         height: implicitHeight
         spacing: root.spacing
 
+        // Do not disturb tile
         QuickTile {
             width: (parent.width - parent.spacing) / 2
             iconName: Icons.notificationName(Services.NotificationService.count, Services.NotificationService.doNotDisturb)
@@ -111,6 +123,7 @@ Column {
             onClicked: Services.NotificationService.toggleDoNotDisturb()
         }
 
+        // Caffeine idle inhibit tile
         QuickTile {
             width: (parent.width - parent.spacing) / 2
             iconName: Services.CaffeineService.iconName

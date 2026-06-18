@@ -175,6 +175,7 @@ PanelWindow {
             open();
     }
 
+    // Launcher IPC command bridge
     IpcHandler {
         target: "kitana-launcher"
 
@@ -183,6 +184,7 @@ PanelWindow {
         function toggle(): void { root.toggle(); }
     }
 
+    // Refresh visible results when app cache changes
     Connections {
         target: Services.AppSearchService
         function onApplicationsChanged(): void {
@@ -191,6 +193,7 @@ PanelWindow {
         }
     }
 
+    // Full-screen launcher overlay and key handler
     FocusScope {
         id: overlay
         anchors.fill: parent
@@ -224,17 +227,20 @@ PanelWindow {
             }
         }
 
+        // Blurred launcher backdrop
         Controls.BlurredBackdrop {
             id: backdrop
 
             anchors.fill: parent
         }
 
+        // Full-screen close catcher
         MouseArea {
             anchors.fill: parent
             onClicked: root.close()
         }
 
+        // Main launcher card
         Rectangle {
             width: root.cardWidth
             height: root.cardHeight
@@ -244,11 +250,13 @@ PanelWindow {
             border.color: Colors.panelBorder
             border.width: 1
 
+            // Launcher content stack
             ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: 18
                 spacing: 12
 
+                // Launcher title
                 Text {
                     Layout.fillWidth: true
                     text: "Launch"
@@ -258,6 +266,7 @@ PanelWindow {
                     font.weight: Font.DemiBold
                 }
 
+                // Search input frame
                 Rectangle {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 52
@@ -266,18 +275,21 @@ PanelWindow {
                     border.color: search.activeFocus ? Colors.inputActiveBorder : Colors.inputBorder
                     border.width: 1
 
+                    // Search icon and input row
                     RowLayout {
                         anchors.fill: parent
                         anchors.leftMargin: 16
                         anchors.rightMargin: 16
                         spacing: 10
 
+                        // Search icon
                         Controls.Icon {
                             name: "search"
                             tone: "muted"
                             size: 18
                         }
 
+                        // Launcher search input
                         TextInput {
                             id: search
                             Layout.fillWidth: true
@@ -317,10 +329,12 @@ PanelWindow {
                     }
                 }
 
+                // Results list area
                 Item {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
+                    // Search results list
                     ListView {
                         id: listView
                         anchors.fill: parent
@@ -329,6 +343,7 @@ PanelWindow {
                         model: root.results
                         currentIndex: root.selectedIndex
 
+                        // One launcher result row
                         delegate: Rectangle {
                             id: resultDelegate
 
@@ -342,6 +357,7 @@ PanelWindow {
                             border.color: resultDelegate.index === root.selectedIndex ? Colors.controlActiveBorder : "transparent"
                             border.width: 1
 
+                            // Result row click target
                             MouseArea {
                                 id: mouse
                                 anchors.fill: parent
@@ -350,18 +366,21 @@ PanelWindow {
                                 onClicked: root.launchItem(resultDelegate.modelData)
                             }
 
+                            // Result row content
                             RowLayout {
                                 anchors.fill: parent
                                 anchors.leftMargin: 12
                                 anchors.rightMargin: 12
                                 spacing: 12
 
+                                // App icon slot
                                 Item {
                                     Layout.preferredWidth: 34
                                     Layout.preferredHeight: 34
 
                                     readonly property string resolvedIcon: root.iconSource(resultDelegate.modelData)
 
+                                    // Resolved desktop icon image
                                     QW.IconImage {
                                         id: appIcon
                                         anchors.fill: parent
@@ -372,6 +391,7 @@ PanelWindow {
                                         mipmap: true
                                     }
 
+                                    // Fallback app icon badge
                                     Rectangle {
                                         anchors.fill: parent
                                         visible: parent.resolvedIcon.length === 0 || !appIcon.visible
@@ -398,6 +418,7 @@ PanelWindow {
                                     }
                                 }
 
+                                // Result title and subtitle
                                 ColumnLayout {
                                     Layout.fillWidth: true
                                     spacing: 2
@@ -422,6 +443,7 @@ PanelWindow {
                                     }
                                 }
 
+                                // Selected result action hint
                                 Text {
                                     visible: resultDelegate.index === root.selectedIndex
                                     text: resultDelegate.modelData.hint || "Enter"
@@ -433,6 +455,7 @@ PanelWindow {
                         }
                     }
 
+                    // Empty results message
                     ColumnLayout {
                         anchors.centerIn: parent
                         visible: root.results.length === 0
@@ -456,6 +479,7 @@ PanelWindow {
                     }
                 }
 
+                // Footer divider
                 Rectangle {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 1
@@ -463,6 +487,7 @@ PanelWindow {
                     opacity: 0.55
                 }
 
+                // Launcher keyboard hints
                 Controls.KeyHintBar {
                     hints: "↑/↓ move · Enter run/copy · =2+2 calculator · lock/reboot actions · Esc close"
                 }

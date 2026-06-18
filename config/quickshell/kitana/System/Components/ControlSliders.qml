@@ -9,6 +9,7 @@ Column {
     width: parent ? parent.width : 0
     spacing: 10
 
+    // Audio volume slider
     SliderRow {
         iconName: Services.SystemStatus.audioIconName
         value: Services.SystemStatus.audioVolume
@@ -18,6 +19,7 @@ Column {
         onMoved: value => Services.SystemStatus.setAudioVolume(value)
     }
 
+    // Microphone volume slider
     SliderRow {
         visible: Services.SystemStatus.micAvailable
         height: visible ? 28 : 0
@@ -29,6 +31,7 @@ Column {
         onMoved: value => Services.SystemStatus.setMicVolume(value)
     }
 
+    // Brightness slider
     SliderRow {
         visible: Services.SystemStatus.brightnessAvailable
         height: visible ? 28 : 0

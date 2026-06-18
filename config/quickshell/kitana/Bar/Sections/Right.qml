@@ -16,17 +16,20 @@ Item {
     width: implicitWidth
     height: implicitHeight
 
+    // Right bar controls row
     Row {
         id: rightRow
 
         anchors.centerIn: parent
         spacing: 6
 
+        // Screenshot launcher button
         Items.Screenshot {
             embedded: root.embedded
             screenshotPanel: root.screenshotPanel
         }
 
+        // Tray and system status cluster
         Items.Status {
             id: status
             embedded: root.embedded
@@ -34,6 +37,7 @@ Item {
             systemPanel: root.systemPanel
         }
 
+        // Power/session button
         Items.Session {
             embedded: root.embedded
         }

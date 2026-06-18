@@ -185,6 +185,7 @@ PanelWindow {
         bottom: true
     }
 
+    // Hyprland binds command runner
     Process {
         id: shortcutsProcess
 
@@ -195,6 +196,7 @@ PanelWindow {
         onRunningChanged: if (!running && root.shortcuts.length === 0 && root.statusText === "Loading shortcuts...") root.statusText = "No shortcuts found"
     }
 
+    // Shortcuts panel IPC command bridge
     IpcHandler {
         target: "kitana-shortcuts"
 
@@ -203,6 +205,7 @@ PanelWindow {
         function toggle(): void { root.toggle(); }
     }
 
+    // Full-screen close and keyboard handler
     MouseArea {
         id: closeArea
         anchors.fill: parent
@@ -212,12 +215,14 @@ PanelWindow {
         onClicked: root.close()
     }
 
+    // Blurred shortcuts panel backdrop
     Controls.BlurredBackdrop {
         id: backdrop
 
         anchors.fill: parent
     }
 
+    // Main shortcuts card
     Rectangle {
         width: Math.min(760, parent.width - 96)
         height: Math.min(620, parent.height - 120)
@@ -228,16 +233,19 @@ PanelWindow {
         border.width: 1
         clip: true
 
+        // Prevent clicks inside card from closing panel
         MouseArea {
             anchors.fill: parent
             onPressed: mouse => mouse.accepted = true
         }
 
+        // Shortcuts content stack
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: 16
             spacing: 12
 
+            // Shortcuts panel header
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 10
@@ -271,6 +279,7 @@ PanelWindow {
                 }
             }
 
+            // Shortcut search input frame
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 36
@@ -279,6 +288,7 @@ PanelWindow {
                 border.color: searchInput.activeFocus ? Colors.controlActiveBorder : Colors.panelBorder
                 border.width: 1
 
+                // Search icon and input row
                 RowLayout {
                     anchors.fill: parent
                     anchors.leftMargin: 10
@@ -313,6 +323,7 @@ PanelWindow {
                 }
             }
 
+            // Shortcut loading or empty status
             Text {
                 Layout.fillWidth: true
                 visible: root.statusText.length > 0
@@ -323,6 +334,7 @@ PanelWindow {
                 font.pixelSize: settings.textPixelSize
             }
 
+            // Filtered shortcut list
             ListView {
                 id: shortcutList
 
@@ -333,6 +345,7 @@ PanelWindow {
                 model: root.filteredShortcuts
                 currentIndex: root.selectedIndex
 
+                // One shortcut result row
                 delegate: Rectangle {
                     id: shortcutDelegate
 
@@ -346,12 +359,14 @@ PanelWindow {
                     border.color: shortcutDelegate.index === root.selectedIndex ? Colors.controlActiveBorder : Colors.panelBorder
                     border.width: 1
 
+                    // Shortcut key and description row
                     RowLayout {
                         anchors.fill: parent
                         anchors.leftMargin: 10
                         anchors.rightMargin: 10
                         spacing: 10
 
+                        // Shortcut key badge
                         Rectangle {
                             Layout.preferredWidth: Math.max(150, keyText.implicitWidth + 18)
                             Layout.preferredHeight: 30
@@ -360,6 +375,7 @@ PanelWindow {
                             border.color: Colors.controlActiveBorder
                             border.width: 1
 
+                            // Shortcut key label
                             Text {
                                 id: keyText
                                 anchors.centerIn: parent
@@ -371,6 +387,7 @@ PanelWindow {
                             }
                         }
 
+                        // Shortcut description and category
                         ColumnLayout {
                             Layout.fillWidth: true
                             spacing: 1
@@ -396,6 +413,7 @@ PanelWindow {
                         }
                     }
 
+                    // Shortcut hover selection target
                     MouseArea {
                         id: shortcutMouse
                         anchors.fill: parent
@@ -405,6 +423,7 @@ PanelWindow {
                 }
             }
 
+            // Footer divider
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 1
@@ -412,6 +431,7 @@ PanelWindow {
                 opacity: 0.55
             }
 
+            // Shortcuts keyboard hints
             Controls.KeyHintBar {
                 hints: "↑/↓ move · Esc close"
             }

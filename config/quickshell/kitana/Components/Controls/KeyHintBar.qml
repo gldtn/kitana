@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import "../.."
 import "../../custom" as Custom
 
+// Keyboard hint text row
 Text {
     id: root
 

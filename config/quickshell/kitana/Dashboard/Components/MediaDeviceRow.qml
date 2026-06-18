@@ -25,6 +25,7 @@ Rectangle {
     border.color: active ? Colors.controlActiveBorder : Colors.panelBorder
     border.width: 1
 
+    // Audio device icon and labels
     RowLayout {
         anchors.fill: parent
         anchors.leftMargin: 12
@@ -62,6 +63,7 @@ Rectangle {
         }
     }
 
+    // Audio device selection target
     MouseArea {
         id: mediaDeviceMouse
         anchors.fill: parent

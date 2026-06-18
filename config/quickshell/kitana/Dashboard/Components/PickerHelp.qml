@@ -14,6 +14,7 @@ Item {
     Layout.fillWidth: true
     Layout.preferredHeight: searchActive ? 36 : (helpVisible ? 52 : 24)
 
+    // Centered picker footer
     PickerFooter {
         width: Math.min(parent.width, 590)
         anchors.horizontalCenter: parent.horizontalCenter

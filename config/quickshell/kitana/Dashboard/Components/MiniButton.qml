@@ -27,6 +27,7 @@ Rectangle {
     border.color: Colors.controlSubtleBorder
     border.width: 0.8
 
+    // Text button label
     Text {
         visible: root.iconName.length === 0
         anchors.centerIn: parent
@@ -36,6 +37,7 @@ Rectangle {
         font.pixelSize: settings.textPixelSize
     }
 
+    // Icon button glyph
     Controls.Icon {
         visible: root.iconName.length > 0
         anchors.centerIn: parent
@@ -44,6 +46,7 @@ Rectangle {
         sizeRole: "button"
     }
 
+    // Mini button click target
     MouseArea {
         id: miniMouse
         anchors.fill: parent

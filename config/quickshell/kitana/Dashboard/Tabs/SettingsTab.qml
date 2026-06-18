@@ -20,6 +20,7 @@ ColumnLayout {
 
     spacing: 12
 
+    // Dashboard settings heading
     Text {
         Layout.fillWidth: true
         text: "Dashboard Settings"
@@ -28,7 +29,8 @@ ColumnLayout {
         font.pixelSize: 16
         font.weight: Font.Bold
     }
-    // Weather location and units settings
+
+    // Weather location and unit settings card
     Rectangle {
         Layout.fillWidth: true
         Layout.preferredHeight: 128
@@ -37,6 +39,7 @@ ColumnLayout {
         border.color: Colors.containerBorder
         border.width: 0.8
 
+        // Weather settings form
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: 14
@@ -51,6 +54,7 @@ ColumnLayout {
                 font.weight: Font.DemiBold
             }
 
+            // Location, privacy, and unit controls
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 10
@@ -84,7 +88,8 @@ ColumnLayout {
             }
         }
     }
-    // World clock names and timezones settings
+
+    // World clock name and timezone settings card
     Rectangle {
         Layout.fillWidth: true
         Layout.preferredHeight: 184
@@ -93,6 +98,7 @@ ColumnLayout {
         border.color: Colors.containerBorder
         border.width: 0.8
 
+        // World clock settings form
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: 14
@@ -107,6 +113,7 @@ ColumnLayout {
                 font.weight: Font.DemiBold
             }
 
+            // Clock name and timezone fields
             GridLayout {
                 Layout.fillWidth: true
                 columns: 2
@@ -150,5 +157,6 @@ ColumnLayout {
         }
     }
 
+    // Fill remaining tab space
     Item { Layout.fillHeight: true }
 }

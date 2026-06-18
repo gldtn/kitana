@@ -17,7 +17,9 @@ import "./Tabs" as Tabs
 PanelWindow {
     id: root
 
-    Custom.Settings { id: settings }
+    Custom.Settings {
+        id: settings
+    }
 
     readonly property var panelSelf: root
     property bool panelVisible: false
@@ -51,6 +53,7 @@ PanelWindow {
     property bool mediaAudioOverlayOpen: false
     readonly property bool mediaPlaying: Services.MediaService.playing
 
+    // Saved weather preferences
     PersistentProperties {
         id: weatherPreferences
 
@@ -60,6 +63,7 @@ PanelWindow {
         property bool hideLocation: false
     }
 
+    // Saved world clock preferences
     PersistentProperties {
         id: worldClockPreferences
 
@@ -100,12 +104,19 @@ PanelWindow {
         closeArea.forceActiveFocus();
     }
 
+    // Dashboard IPC command bridge
     IpcHandler {
         target: "kitana-dashboard"
 
-        function open(tab: string): void { root.open(tab || "datetime"); }
-        function close(): void { root.close(); }
-        function toggle(tab: string): void { root.toggle(tab || "datetime"); }
+        function open(tab: string): void {
+            root.open(tab || "datetime");
+        }
+        function close(): void {
+            root.close();
+        }
+        function toggle(tab: string): void {
+            root.toggle(tab || "datetime");
+        }
     }
 
     function refreshTab(): void {
@@ -385,10 +396,20 @@ PanelWindow {
                 maxtempF: weatherUnits === "F" ? String(max) : "--",
                 mintempC: weatherUnits === "C" ? String(min) : "--",
                 maxtempC: weatherUnits === "C" ? String(max) : "--",
-                hourly: [{}, {}, {}, {}, {
-                    chanceofrain: String(rain),
-                    weatherDesc: [{ value: weatherCodeDescription(code) }]
-                }]
+                hourly: [
+                    {},
+                    {},
+                    {},
+                    {},
+                    {
+                        chanceofrain: String(rain),
+                        weatherDesc: [
+                            {
+                                value: weatherCodeDescription(code)
+                            }
+                        ]
+                    }
+                ]
             });
         }
         return days;
@@ -414,9 +435,7 @@ PanelWindow {
     }
 
     function isToday(day: int): bool {
-        return day === currentTime.getDate()
-            && calendarMonth.getMonth() === currentTime.getMonth()
-            && calendarMonth.getFullYear() === currentTime.getFullYear();
+        return day === currentTime.getDate() && calendarMonth.getMonth() === currentTime.getMonth() && calendarMonth.getFullYear() === currentTime.getFullYear();
     }
 
     function shiftMonth(delta: int): void {
@@ -463,6 +482,7 @@ PanelWindow {
         bottom: true
     }
 
+    // Clock and tab refresh timer
     Timer {
         interval: 1000
         running: true
@@ -476,6 +496,7 @@ PanelWindow {
         }
     }
 
+    // Media visualizer animation timer
     Timer {
         interval: 140
         running: root.visible && root.activeTab === "media" && root.mediaPlaying
@@ -483,6 +504,7 @@ PanelWindow {
         onTriggered: root.updateMediaVisual()
     }
 
+    // Wallpaper directory model
     FolderListModel {
         id: wallpaperFolderModel
 
@@ -497,15 +519,19 @@ PanelWindow {
         folder: root.wallpaperFolderUrl()
 
         onCountChanged: root.refreshWallpaperCache()
-        onStatusChanged: if (status === FolderListModel.Ready) root.refreshWallpaperCache()
+        onStatusChanged: if (status === FolderListModel.Ready)
+            root.refreshWallpaperCache()
     }
 
+    // Wallpaper apply command runner
     Process {
         id: applyProcess
 
-        onRunningChanged: if (!running) root.close()
+        onRunningChanged: if (!running)
+            root.close()
     }
 
+    // Theme list command runner
     Process {
         id: themeListProcess
 
@@ -518,12 +544,15 @@ PanelWindow {
         }
     }
 
+    // Theme apply command runner
     Process {
         id: themeApplyProcess
 
-        onRunningChanged: if (!running) root.close()
+        onRunningChanged: if (!running)
+            root.close()
     }
 
+    // Primary weather fetch process
     Process {
         id: weatherProcess
 
@@ -542,6 +571,7 @@ PanelWindow {
         }
     }
 
+    // Extended forecast fetch process
     Process {
         id: forecastProcess
 
@@ -562,6 +592,7 @@ PanelWindow {
         }
     }
 
+    // First world clock process
     Process {
         id: firstClockProcess
 
@@ -574,6 +605,7 @@ PanelWindow {
         }
     }
 
+    // Second world clock process
     Process {
         id: secondClockProcess
 
@@ -586,6 +618,7 @@ PanelWindow {
         }
     }
 
+    // Full-screen close and keyboard handler
     MouseArea {
         id: closeArea
         anchors.fill: parent
@@ -595,6 +628,7 @@ PanelWindow {
         onClicked: root.close()
     }
 
+    // Main dashboard card
     Rectangle {
         id: card
 
@@ -614,37 +648,75 @@ PanelWindow {
             y: (1 - root.revealProgress) * -14
         }
 
+        // Prevent clicks inside card from closing dashboard
         MouseArea {
             anchors.fill: parent
             onPressed: mouse => mouse.accepted = true
         }
 
+        // Dashboard tab chrome and content area
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: 14
             spacing: 10
 
+            // Dashboard tab selector row
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 8
 
-                Dashboard.TabButton { dashboard: root.panelSelf; iconName: "calendar"; label: "Date"; tab: "datetime" }
-                Dashboard.TabButton { dashboard: root.panelSelf; iconName: "weather.default"; label: "Weather"; tab: "weather" }
-                Dashboard.TabButton { dashboard: root.panelSelf; iconName: "media.default"; label: "Media"; tab: "media" }
-                Dashboard.TabButton { dashboard: root.panelSelf; iconName: "wallpaper"; label: "Wallpapers"; tab: "wallpapers" }
-                Dashboard.TabButton { dashboard: root.panelSelf; iconName: "theme"; label: "Themes"; tab: "themes" }
+                Dashboard.TabButton {
+                    dashboard: root.panelSelf
+                    iconName: "calendar"
+                    label: "Date"
+                    tab: "datetime"
+                }
+                Dashboard.TabButton {
+                    dashboard: root.panelSelf
+                    iconName: "weather.default"
+                    label: "Weather"
+                    tab: "weather"
+                }
+                Dashboard.TabButton {
+                    dashboard: root.panelSelf
+                    iconName: "media.default"
+                    label: "Media"
+                    tab: "media"
+                }
+                Dashboard.TabButton {
+                    dashboard: root.panelSelf
+                    iconName: "wallpaper"
+                    label: "Wallpapers"
+                    tab: "wallpapers"
+                }
+                Dashboard.TabButton {
+                    dashboard: root.panelSelf
+                    iconName: "theme"
+                    label: "Themes"
+                    tab: "themes"
+                }
 
-                Item { Layout.fillWidth: true }
+                Item {
+                    Layout.fillWidth: true
+                }
 
-                Dashboard.TabButton { dashboard: root.panelSelf; iconName: "settings"; label: ""; tab: "settings"; compact: true }
+                Dashboard.TabButton {
+                    dashboard: root.panelSelf
+                    iconName: "settings"
+                    label: ""
+                    tab: "settings"
+                    compact: true
+                }
             }
 
+            // Tab header divider
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 1
-                color: Colors.panelBorder
+                color: Colors.containerBorder
             }
 
+            // Active dashboard tab loader
             Loader {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -653,6 +725,7 @@ PanelWindow {
         }
     }
 
+    // Dashboard reveal animation
     NumberAnimation {
         id: revealAnimation
         target: root
@@ -662,10 +735,55 @@ PanelWindow {
         easing.type: Easing.OutCubic
     }
 
-    Component { id: datetimeTab; Tabs.DateTimeTab { dashboard: root.panelSelf; worldClockPrefs: worldClockPreferences } }
-    Component { id: weatherTab; Tabs.WeatherTab { dashboard: root.panelSelf; weatherPrefs: weatherPreferences } }
-    Component { id: mediaTab; Tabs.MediaTab { dashboard: root.panelSelf } }
-    Component { id: wallpapersTab; Tabs.WallpapersTab { dashboard: root.panelSelf } }
-    Component { id: themesTab; Tabs.ThemesTab { dashboard: root.panelSelf } }
-    Component { id: settingsTab; Tabs.SettingsTab { dashboard: root.panelSelf; weatherPrefs: weatherPreferences; worldClockPrefs: worldClockPreferences } }
+    // Date and calendar tab component
+    Component {
+        id: datetimeTab
+        Tabs.DateTimeTab {
+            dashboard: root.panelSelf
+            worldClockPrefs: worldClockPreferences
+        }
+    }
+
+    // Weather tab component
+    Component {
+        id: weatherTab
+        Tabs.WeatherTab {
+            dashboard: root.panelSelf
+            weatherPrefs: weatherPreferences
+        }
+    }
+
+    // Media tab component
+    Component {
+        id: mediaTab
+        Tabs.MediaTab {
+            dashboard: root.panelSelf
+        }
+    }
+
+    // Wallpaper picker tab component
+    Component {
+        id: wallpapersTab
+        Tabs.WallpapersTab {
+            dashboard: root.panelSelf
+        }
+    }
+
+    // Theme picker tab component
+    Component {
+        id: themesTab
+        Tabs.ThemesTab {
+            dashboard: root.panelSelf
+        }
+    }
+
+    // Dashboard settings tab component
+    Component {
+        id: settingsTab
+        Tabs.SettingsTab {
+            dashboard: root.panelSelf
+            weatherPrefs: weatherPreferences
+            worldClockPrefs: worldClockPreferences
+        }
+    }
 }

@@ -63,6 +63,7 @@ PanelWindow {
         bottom: true
     }
 
+    // Full-screen close catcher
     MouseArea {
         id: closeArea
         anchors.fill: parent
@@ -71,6 +72,7 @@ PanelWindow {
         onClicked: root.close()
     }
 
+    // Sliding system panel card
     Rectangle {
         id: card
 
@@ -91,11 +93,13 @@ PanelWindow {
             x: (1 - root.revealProgress) * 14
         }
 
+        // Prevent clicks inside card from closing panel
         MouseArea {
             anchors.fill: parent
             onPressed: mouse => mouse.accepted = true
         }
 
+        // System panel content stack
         Column {
             id: content
 
@@ -103,9 +107,13 @@ PanelWindow {
             anchors.margins: 16
             spacing: 12
 
+            // Panel title and section icons
             System.PanelHeader { id: panelHeader; panel: root.panelSelf }
+
+            // Quick settings tiles
             System.QuickSettingsGrid { id: quickGrid; panel: root.panelSelf }
 
+            // Active detail pane container
             Rectangle {
                 width: parent.width
                 height: Math.max(0, content.height - panelHeader.height - quickGrid.height - sliders.height - content.spacing * 3)
@@ -115,6 +123,7 @@ PanelWindow {
                 border.width: 0.6
                 clip: true
 
+                // Active detail pane loader
                 Loader {
                     anchors.fill: parent
                     anchors.margins: 14
@@ -122,11 +131,13 @@ PanelWindow {
                 }
             }
 
+            // Audio, microphone, and brightness sliders
             System.ControlSliders { id: sliders; height: implicitHeight }
         }
 
     }
 
+    // System panel reveal animation
     NumberAnimation {
         id: revealAnimation
         target: root
@@ -136,8 +147,15 @@ PanelWindow {
         easing.type: Easing.OutCubic
     }
 
+    // Notifications detail pane
     Component { id: notificationsView; Panes.NotificationsPane {} }
+
+    // Bluetooth detail pane
     Component { id: bluetoothDetails; Panes.BluetoothPane {} }
+
+    // Network detail pane
     Component { id: networkDetails; Panes.NetworkPane {} }
+
+    // Audio detail pane
     Component { id: audioDetails; Panes.AudioPane {} }
 }

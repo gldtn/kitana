@@ -15,22 +15,26 @@ Item {
     width: implicitWidth
     height: implicitHeight
 
+    // Left bar controls row
     Row {
         id: leftRow
 
         anchors.centerIn: parent
         spacing: 6
 
+        // Start menu button
         Items.Start {
             embedded: root.embedded
             startMenu: root.startMenu
         }
 
+        // Workspace switcher pills
         Items.Workspaces {
             embedded: root.embedded
             panelScreen: root.panelScreen
         }
 
+        // Workspace layout toggle
         Items.Layout {
             embedded: root.embedded
         }

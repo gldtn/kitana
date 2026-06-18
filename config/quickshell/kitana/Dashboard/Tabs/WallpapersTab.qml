@@ -19,9 +19,13 @@ ColumnLayout {
 
     spacing: 8
 
+    // Top breathing space for picker tabs
     PickerTopInset {}
+
+    // Search/help overlay for picker navigation
     PickerHelp { dashboard: tabRoot.panel }
 
+    // Wallpaper thumbnail grid area
     Item {
         id: wallpaperGrid
 
@@ -36,9 +40,11 @@ ColumnLayout {
         readonly property real cardHeight: Math.floor((height - 2 * edgeInset - 2 * gap) / 3)
         readonly property real trackWidth: columns * cardWidth + (columns - 1) * gap
 
+        // Wallpaper page item repeater
         Repeater {
             model: tabRoot.panel.wallpaperPageItems()
 
+            // Selectable wallpaper thumbnail card
             Rectangle {
                 id: wallpaperCard
 
@@ -59,6 +65,7 @@ ColumnLayout {
 
                 Behavior on scale { NumberAnimation { duration: 120 } }
 
+                // Raw wallpaper thumbnail image
                 Image {
                     id: wallpaperImage
                     anchors.fill: parent
@@ -70,6 +77,7 @@ ColumnLayout {
                     visible: false
                 }
 
+                // Rounded thumbnail mask
                 Rectangle {
                     id: wallpaperMask
                     anchors.fill: parent
@@ -78,6 +86,7 @@ ColumnLayout {
                     layer.enabled: true
                 }
 
+                // Masked thumbnail effect
                 MultiEffect {
                     anchors.fill: wallpaperImage
                     source: wallpaperImage
@@ -85,6 +94,7 @@ ColumnLayout {
                     maskSource: wallpaperMask
                 }
 
+                // Selection and hover border
                 Rectangle {
                     anchors.fill: parent
                     radius: parent.radius
@@ -93,6 +103,7 @@ ColumnLayout {
                     border.width: wallpaperCard.selected || wallpaperMouse.containsMouse ? 2 : 1
                 }
 
+                // Wallpaper selection click target
                 MouseArea {
                     id: wallpaperMouse
                     anchors.fill: parent
@@ -105,10 +116,12 @@ ColumnLayout {
         }
     }
 
+    // Wallpaper pagination footer
     Item {
         Layout.fillWidth: true
         Layout.preferredHeight: 30
 
+        // Previous and next page controls
         Row {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
@@ -129,6 +142,7 @@ ColumnLayout {
             MiniButton { iconName: "ui.chevron.right"; onClicked: tabRoot.panel.shiftWallpaperPage(1) }
         }
 
+        // Filtered wallpaper count label
         Text {
             anchors.right: parent.right
             anchors.rightMargin: 5

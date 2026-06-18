@@ -18,6 +18,7 @@ Item {
     width: implicitWidth
     height: implicitHeight
 
+    // Session button pill background
     Rectangle {
         anchors.fill: parent
         visible: !root.embedded || sessionMouse.containsMouse
@@ -27,8 +28,10 @@ Item {
         border.width: root.embedded ? 0 : settings.borderWidth
     }
 
+    // Session panel IPC runner
     Process { id: sessionMenu }
 
+    // Power icon
     Controls.Icon {
         anchors.centerIn: parent
         name: "power.power"
@@ -36,6 +39,7 @@ Item {
         sizeRole: "bar"
     }
 
+    // Session panel click target
     MouseArea {
         id: sessionMouse
 

@@ -24,6 +24,7 @@ Rectangle {
     border.color: highlighted ? Colors.controlActiveBorder : Colors.panelBorder
     border.width: 1
 
+    // Panel row icon and labels
     Row {
         anchors.fill: parent
         anchors.leftMargin: 12
@@ -63,6 +64,7 @@ Rectangle {
         }
     }
 
+    // Panel row click target
     MouseArea {
         id: mouse
         anchors.fill: parent

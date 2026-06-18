@@ -17,6 +17,7 @@ Column {
     height: parent ? parent.height : 0
     spacing: 10
 
+    // Settings pane heading
     Text {
         width: parent.width
         text: "Settings"
@@ -26,6 +27,7 @@ Column {
         font.weight: Font.Bold
     }
 
+    // Do not disturb quick toggle
     DetailRow {
         iconName: "notifications.on"
         title: "Do Not Disturb"
@@ -34,6 +36,7 @@ Column {
         onClicked: Services.NotificationService.toggleDoNotDisturb()
     }
 
+    // Network detail pane shortcut
     DetailRow {
         iconName: Services.SystemStatus.networkIconName
         title: "Network"
@@ -42,6 +45,7 @@ Column {
         onClicked: if (root.panel) root.panel.section = "network"
     }
 
+    // Audio detail pane shortcut
     DetailRow {
         iconName: Services.SystemStatus.audioIconName
         title: "Audio"

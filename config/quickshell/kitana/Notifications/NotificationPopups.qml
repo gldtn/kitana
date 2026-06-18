@@ -37,15 +37,18 @@ PanelWindow {
     implicitWidth: 360
     implicitHeight: popupColumn.implicitHeight
 
+    // Stack of active notification popups
     Column {
         id: popupColumn
 
         width: root.implicitWidth
         spacing: 8
 
+        // Popup notification repeater
         Repeater {
             model: Services.NotificationService.popups
 
+            // One notification popup card
             Rectangle {
                 id: notificationPopup
 
@@ -59,6 +62,7 @@ PanelWindow {
                 border.color: Colors.popupBorder
                 border.width: 1
 
+                // Notification tone icon badge
                 Rectangle {
                     id: notificationIcon
 
@@ -70,6 +74,7 @@ PanelWindow {
                     radius: 21
                     color: Services.NotificationService.toneBackground(notificationPopup.modelData)
 
+                    // Notification icon glyph
                     Controls.Icon {
                         anchors.centerIn: parent
                         name: "notifications.on"
@@ -78,6 +83,7 @@ PanelWindow {
                     }
                 }
 
+                // Notification title, app, and body text
                 Column {
                     id: contentColumn
 
@@ -124,12 +130,14 @@ PanelWindow {
                         textFormat: Text.RichText
                         onLinkActivated: link => Quickshell.execDetached(["xdg-open", link])
 
+                        // Link hover cursor handler
                         HoverHandler {
                             cursorShape: bodyText.hoveredLink.length > 0 ? Qt.PointingHandCursor : Qt.ArrowCursor
                         }
                     }
                 }
 
+                // Notification dismiss button
                 Item {
                     id: closeButton
 
@@ -140,6 +148,7 @@ PanelWindow {
                     width: 32
                     height: 32
 
+                    // Dismiss icon
                     Controls.Icon {
                         anchors.centerIn: parent
                         name: "ui.close"
@@ -147,6 +156,7 @@ PanelWindow {
                         size: 14
                     }
 
+                    // Dismiss click target
                     MouseArea {
                         id: closeMouse
 

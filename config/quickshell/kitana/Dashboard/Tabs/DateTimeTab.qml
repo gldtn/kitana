@@ -21,7 +21,8 @@ RowLayout {
     readonly property var weather: panel ? panel.weather : ({})
 
     spacing: 14
-    // Sidebar
+
+    // Date and world clock sidebar
     Rectangle {
         Layout.preferredWidth: 250
         Layout.fillHeight: true
@@ -30,6 +31,7 @@ RowLayout {
         border.color: Colors.containerBorder
         border.width: 0.8
 
+        // Sidebar content stack
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: 16
@@ -70,6 +72,7 @@ RowLayout {
                 color: Colors.containerBorder
             }
 
+            // Today fact rows
             ColumnLayout {
                 Layout.fillWidth: true
                 spacing: 8
@@ -93,10 +96,12 @@ RowLayout {
                 }
             }
 
+            // Sidebar flexible spacer
             Item {
                 Layout.fillHeight: true
             }
 
+            // World clock divider
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 1
@@ -113,6 +118,7 @@ RowLayout {
                 font.weight: Font.DemiBold
             }
 
+            // Configured world clock rows
             ColumnLayout {
                 Layout.fillWidth: true
                 spacing: 4
@@ -131,7 +137,8 @@ RowLayout {
             }
         }
     }
-    // Calendar
+
+    // Monthly calendar card
     Rectangle {
         Layout.fillWidth: true
         Layout.fillHeight: true
@@ -140,11 +147,13 @@ RowLayout {
         border.color: Colors.containerBorder
         border.width: 0.8
 
+        // Calendar header and day grid
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: 14
             spacing: 10
 
+            // Calendar month controls
             RowLayout {
                 Layout.fillWidth: true
 
@@ -172,14 +181,16 @@ RowLayout {
                 }
             }
 
+            // Weekday labels and day cells
             GridLayout {
                 Layout.fillWidth: true
                 columns: 7
                 rowSpacing: 6
                 columnSpacing: 6
 
+                // Weekday header letters
                 Repeater {
-                    model: ["S", "M", "T", "W", "T", "F", "S"]
+                    model: ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
                     Text {
                         required property string modelData
 
@@ -192,9 +203,11 @@ RowLayout {
                     }
                 }
 
+                // Calendar day cells
                 Repeater {
                     model: 42
 
+                    // One calendar slot
                     Rectangle {
                         id: dayCell
 
@@ -205,8 +218,8 @@ RowLayout {
                         Layout.preferredHeight: 34
                         radius: 10
                         color: tabRoot.panel.isToday(dayCell.day) ? Colors.controlActiveBackground : (dayCell.day > 0 ? Colors.controlBackground : "transparent")
-                        border.color: tabRoot.panel.isToday(dayCell.day) ? Colors.controlActiveBorder : "transparent"
-                        border.width: .5
+                        // border.color: tabRoot.panel.isToday(dayCell.day) ? Colors.controlSubtleBorder : "transparent"
+                        // border.width: .5
 
                         Text {
                             anchors.centerIn: parent

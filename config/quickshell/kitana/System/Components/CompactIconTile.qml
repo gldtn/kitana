@@ -19,6 +19,7 @@ Rectangle {
     radius: 13
     color: mouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground
 
+    // Compact tile icon badge
     Rectangle {
         anchors.centerIn: parent
         width: 38
@@ -26,6 +27,7 @@ Rectangle {
         radius: 12
         color: root.active ? Colors.accent : Colors.controlSubtleBackground
 
+        // Compact tile icon glyph
         Controls.Icon {
             anchors.centerIn: parent
             name: root.iconName
@@ -34,6 +36,7 @@ Rectangle {
         }
     }
 
+    // Compact tile click target
     MouseArea {
         id: mouse
         anchors.fill: parent

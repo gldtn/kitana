@@ -12,6 +12,7 @@ Controls.Icon {
     sizeRole: "bar"
     size: 15
 
+    // Header icon click target
     MouseArea {
         anchors.fill: parent
         hoverEnabled: true

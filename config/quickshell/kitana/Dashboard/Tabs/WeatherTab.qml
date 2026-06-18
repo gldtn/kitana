@@ -21,6 +21,7 @@ ColumnLayout {
 
     spacing: 12
 
+    // Weather search and unit controls
     RowLayout {
         Layout.fillWidth: true
         spacing: 10
@@ -69,7 +70,8 @@ ColumnLayout {
 
         MiniButton { iconName: "ui.refresh"; heightOverride: 34; onClicked: tabRoot.panel.refreshWeather() }
     }
-    // Stats container
+
+    // Current weather summary card
     Rectangle {
         Layout.fillWidth: true
         Layout.preferredHeight: 122
@@ -78,6 +80,7 @@ ColumnLayout {
         border.color: Colors.containerBorder
         border.width: 0.8
 
+        // Weather condition and metric content
         RowLayout {
             id: weatherSummaryContent
             anchors.centerIn: parent
@@ -91,6 +94,7 @@ ColumnLayout {
                 size: 42
             }
 
+            // Temperature, condition, and location labels
             ColumnLayout {
                 Layout.preferredWidth: 150
                 Layout.alignment: Qt.AlignVCenter
@@ -119,11 +123,13 @@ ColumnLayout {
                 }
             }
 
+            // Current weather metric grid wrapper
             Item {
                 Layout.preferredWidth: weatherMetricGrid.width
                 Layout.preferredHeight: weatherMetricGrid.implicitHeight
                 Layout.alignment: Qt.AlignVCenter
 
+                // Humidity, wind, feels-like, and visibility metrics
                 GridLayout {
                     id: weatherMetricGrid
                     anchors.centerIn: parent
@@ -141,7 +147,8 @@ ColumnLayout {
             }
         }
     }
-    // Sunrise, sunset, moon astronomy container
+
+    // Astronomy summary card
     Rectangle {
         Layout.fillWidth: true
         Layout.preferredHeight: 74
@@ -150,6 +157,7 @@ ColumnLayout {
         border.color: Colors.containerBorder
         border.width: 0.8
 
+        // Sunrise, sunset, and moon metrics
         RowLayout {
             anchors.fill: parent
             anchors.margins: 14
@@ -160,16 +168,19 @@ ColumnLayout {
             WeatherMetric { iconName: "weather.moon"; label: "Moon"; value: tabRoot.weatherData.weather ? tabRoot.weatherData.weather[0].astronomy[0].moon_phase : "--"; centerContent: true; Layout.fillWidth: true }
         }
     }
-    // Weather forecast container
+
+    // Forecast card grid
     GridLayout {
         Layout.fillWidth: true
         columns: 5
         rowSpacing: 10
         columnSpacing: 10
 
+        // One forecast card per day
         Repeater {
             model: tabRoot.panel.forecastDays()
 
+            // Daily forecast card
             Rectangle {
                 id: forecastCard
 
@@ -184,6 +195,7 @@ ColumnLayout {
                 border.color: Colors.containerBorder
                 border.width: 0.8
 
+                // Forecast day details
                 Column {
                     anchors.left: parent.left
                     anchors.right: parent.right
@@ -211,6 +223,7 @@ ColumnLayout {
                         font.pixelSize: settings.textPixelSize - 1
                     }
 
+                    // Rain chance row
                     Row {
                         width: implicitWidth
                         spacing: 3
@@ -248,8 +261,10 @@ ColumnLayout {
         }
     }
 
+    // Flexible spacer below forecast
     Item { Layout.fillHeight: true }
 
+    // Weather data attribution
     Text {
         Layout.fillWidth: true
         text: "Weather data from wttr.in"

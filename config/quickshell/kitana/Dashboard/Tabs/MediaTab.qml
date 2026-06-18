@@ -22,6 +22,7 @@ Item {
     Layout.fillWidth: true
     Layout.fillHeight: true
 
+    // Media playback card
     Rectangle {
         id: mediaCard
 
@@ -32,6 +33,7 @@ Item {
         border.width: 1
         clip: true
 
+        // Background audio visualizer bars
         CavaBars {
             anchors.left: parent.left
             anchors.right: parent.right
@@ -43,16 +45,19 @@ Item {
             dashboard: tabRoot.panel
         }
 
+        // Main media content layout
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: 18
             spacing: 16
 
+            // Album art and playback metadata row
             RowLayout {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 spacing: 18
 
+                // Album art frame
                 Rectangle {
                     id: albumCover
 
@@ -65,6 +70,7 @@ Item {
                     border.width: 1
                     clip: true
 
+                    // Raw album art image
                     Image {
                         id: albumArt
 
@@ -75,6 +81,7 @@ Item {
                         visible: false
                     }
 
+                    // Rounded album art mask
                     Rectangle {
                         id: albumArtMask
 
@@ -84,6 +91,7 @@ Item {
                         layer.enabled: true
                     }
 
+                    // Masked album art effect
                     MultiEffect {
                         anchors.fill: albumArt
                         source: albumArt
@@ -92,6 +100,7 @@ Item {
                         maskSource: albumArtMask
                     }
 
+                    // Fallback media icon
                     Controls.Icon {
                         anchors.centerIn: parent
                         visible: Services.MediaService.artSource().length === 0
@@ -100,12 +109,14 @@ Item {
                         size: 64
                     }
 
+                    // Album art dark overlay
                     Rectangle {
                         anchors.fill: parent
                         radius: albumCover.radius
                         color: "#18000000"
                     }
 
+                    // Album art highlight overlay
                     Rectangle {
                         anchors.fill: parent
                         radius: albumCover.radius
@@ -116,6 +127,7 @@ Item {
                         }
                     }
 
+                    // Album art bottom fade
                     Rectangle {
                         anchors.fill: parent
                         radius: albumCover.radius
@@ -126,6 +138,7 @@ Item {
                         }
                     }
 
+                    // Album art inner border
                     Rectangle {
                         anchors.fill: parent
                         anchors.margins: -1
@@ -136,11 +149,13 @@ Item {
                     }
                 }
 
+                // Playback metadata and controls
                 ColumnLayout {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     spacing: 12
 
+                    // Player name, status, and audio menu row
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: 10
@@ -182,6 +197,7 @@ Item {
                         }
                     }
 
+                    // Marquee title clip area
                     Item {
                         id: mediaTitleClip
 
@@ -189,6 +205,7 @@ Item {
                         Layout.preferredHeight: mediaTitleText.implicitHeight
                         clip: true
 
+                        // Track title text
                         Text {
                             id: mediaTitleText
 
@@ -202,6 +219,7 @@ Item {
                             onTextChanged: x = 0
                         }
 
+                        // Long title marquee animation
                         SequentialAnimation {
                             id: mediaTitleMarquee
 
@@ -238,8 +256,10 @@ Item {
                         font.pixelSize: settings.textPixelSize + 1
                     }
 
+                    // Push transport controls to the bottom
                     Item { Layout.fillHeight: true }
 
+                    // Playback transport controls
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: 10
@@ -255,18 +275,21 @@ Item {
             }
         }
 
+        // Audio overlay close catcher
         MouseArea {
             anchors.fill: parent
             visible: tabRoot.panel.mediaAudioOverlayOpen
             onClicked: tabRoot.panel.mediaAudioOverlayOpen = false
         }
 
+        // Audio overlay scrim
         Rectangle {
             anchors.fill: parent
             visible: tabRoot.panel.mediaAudioOverlayOpen
             color: Colors.scrimSoft
         }
 
+        // Audio output overlay card
         Rectangle {
             id: audioOverlay
 
@@ -282,11 +305,13 @@ Item {
             border.width: 2
             opacity: visible ? 1 : 0
 
+            // Audio output controls and device list
             ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: 14
                 spacing: 10
 
+                // Audio overlay header
                 RowLayout {
                     Layout.fillWidth: true
                     spacing: 8
@@ -329,6 +354,7 @@ Item {
                     onClicked: Services.SystemStatus.toggleAudioMute()
                 }
 
+                // Scrollable audio output devices
                 Flickable {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
@@ -336,12 +362,14 @@ Item {
                     contentWidth: width
                     contentHeight: mediaDeviceList.implicitHeight
 
+                    // Audio output device rows
                     ColumnLayout {
                         id: mediaDeviceList
 
                         width: parent.width
                         spacing: 8
 
+                        // One row per audio sink
                         Repeater {
                             model: Services.SystemStatus.audioSinks
 
@@ -356,6 +384,7 @@ Item {
                             }
                         }
 
+                        // Empty audio device message
                         Text {
                             Layout.fillWidth: true
                             visible: Services.SystemStatus.audioSinks.length === 0

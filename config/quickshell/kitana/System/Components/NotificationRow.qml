@@ -31,6 +31,7 @@ Rectangle {
 
     HoverHandler { id: hoverHandler }
 
+    // Notification app tone icon
     Rectangle {
         id: appIcon
 
@@ -42,6 +43,7 @@ Rectangle {
         radius: 21
         color: Services.NotificationService.toneBackground(root.item)
 
+        // Notification icon glyph
         Controls.Icon {
             anchors.centerIn: parent
             name: "notifications.on"
@@ -50,6 +52,7 @@ Rectangle {
         }
     }
 
+    // Notification metadata and body content
     ColumnLayout {
         id: contentColumn
 
@@ -60,6 +63,7 @@ Rectangle {
         anchors.rightMargin: 10
         spacing: 6
 
+        // App name, age, group count, and dismiss row
         RowLayout {
             Layout.fillWidth: true
             spacing: 8
@@ -81,7 +85,8 @@ Rectangle {
                 font.pixelSize: settings.textPixelSize - 1
                 font.weight: Font.DemiBold
             }
-            // Expand/collapse button for groups
+
+            // Notification group expand button
             Rectangle {
                 visible: root.groupExpandable && root.groupHeader
                 Layout.preferredWidth: countRow.implicitWidth + 14
@@ -89,6 +94,7 @@ Rectangle {
                 radius: 11
                 color: countMouse.containsMouse ? Colors.controlButtonHoverBackground : "transparent"
 
+                // Group count and chevron
                 Row {
                     id: countRow
 
@@ -121,13 +127,15 @@ Rectangle {
                     onClicked: root.toggleGroup()
                 }
             }
-            // Dismiss button
+
+            // Notification dismiss button
             Rectangle {
                 Layout.preferredWidth: 22
                 Layout.preferredHeight: 22
                 radius: 11
-              color: dismissMouse.containsMouse ? Colors.controlButtonHoverBackground : "transparent"
+                color: dismissMouse.containsMouse ? Colors.controlButtonHoverBackground : "transparent"
 
+                // Dismiss icon
                 Controls.Icon {
                     anchors.centerIn: parent
                     name: "ui.close"
@@ -135,6 +143,7 @@ Rectangle {
                     size: 13
                 }
 
+                // Dismiss click target
                 MouseArea {
                     id: dismissMouse
 
@@ -146,12 +155,14 @@ Rectangle {
             }
         }
 
+        // Notification content divider
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 1
             color: Colors.borderSubtle
         }
 
+        // Notification summary
         Text {
             Layout.fillWidth: true
             text: root.item ? Services.NotificationService.escapeMarkup(root.item.summary) : "Notification"
@@ -164,6 +175,7 @@ Rectangle {
             textFormat: Text.RichText
         }
 
+        // Notification body markup
         Text {
             id: bodyText
             Layout.fillWidth: true
@@ -179,6 +191,7 @@ Rectangle {
             textFormat: Text.RichText
             onLinkActivated: link => Quickshell.execDetached(["xdg-open", link])
 
+            // Link hover cursor handler
             HoverHandler {
                 cursorShape: bodyText.hoveredLink.length > 0 ? Qt.PointingHandCursor : Qt.ArrowCursor
             }

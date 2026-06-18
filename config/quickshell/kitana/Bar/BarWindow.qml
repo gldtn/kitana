@@ -42,16 +42,19 @@ PanelWindow {
 
     color: "transparent"
 
+    // Caffeine idle inhibitor binding
     IdleInhibitor {
         window: root
         enabled: Services.CaffeineService.enabled
     }
 
+    // Right-side quick system panel
     System.SystemPanel {
         id: systemPanel
         panelScreen: root.panelScreen
     }
 
+    // Left-side start menu panel
     StartMenu {
         id: startMenu
         panelScreen: root.panelScreen
@@ -60,14 +63,17 @@ PanelWindow {
         shortcutsPanel: root.shortcutsPanel
     }
 
+    // Top-right notification popups
     Notifications.NotificationPopups {
         panelScreen: root.panelScreen
     }
 
+    // Bottom-center OSD popup
     OSD.OsdPopup {
         panelScreen: root.panelScreen
     }
 
+    // Bar section layout and compact collision handling
     Item {
         id: barContent
 
@@ -84,6 +90,7 @@ PanelWindow {
         anchors.fill: parent
         visible: root.barVisible
 
+        // Single pill background used when sections collide
         Rectangle {
             id: compactPill
 
@@ -98,6 +105,7 @@ PanelWindow {
             border.width: settings.borderWidth
         }
 
+        // Start, workspace, and layout controls
         Sections.Left {
             id: leftSection
 
@@ -110,6 +118,7 @@ PanelWindow {
             Behavior on x { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
         }
 
+        // Clock and dashboard entry point
         Sections.Center {
             id: centerSection
 
@@ -121,6 +130,7 @@ PanelWindow {
             Behavior on x { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
         }
 
+        // Screenshot, tray, status, and power controls
         Sections.Right {
             id: rightSection
 

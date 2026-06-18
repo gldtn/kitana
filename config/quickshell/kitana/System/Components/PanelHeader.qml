@@ -18,6 +18,7 @@ Row {
     height: 34
     spacing: 12
 
+    // Kitana brand icon
     Controls.Icon {
         id: brandIcon
         anchors.verticalCenter: parent.verticalCenter
@@ -26,6 +27,7 @@ Row {
         sizeRole: "button"
     }
 
+    // User and host label
     Text {
         anchors.verticalCenter: parent.verticalCenter
         width: parent.width - brandIcon.implicitWidth - headerActions.width - parent.spacing * 2
@@ -37,11 +39,13 @@ Row {
         font.weight: Font.Bold
     }
 
+    // Header section action icons
     Row {
         id: headerActions
         anchors.verticalCenter: parent.verticalCenter
         spacing: 16
 
+        // Notifications section shortcut
         HeaderIcon { name: Icons.notificationName(Services.NotificationService.count, Services.NotificationService.doNotDisturb); onClicked: if (root.panel) root.panel.section = "notifications" }
     }
 }

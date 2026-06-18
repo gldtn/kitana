@@ -153,6 +153,7 @@ PanelWindow {
             open();
     }
 
+    // Wallpaper picker IPC command bridge
     IpcHandler {
         target: "kitana-wallpaper"
 
@@ -161,6 +162,7 @@ PanelWindow {
         function toggle(): void { root.toggle(); }
     }
 
+    // Wallpaper list command runner
     Process {
         id: listProcess
 
@@ -173,6 +175,7 @@ PanelWindow {
         }
     }
 
+    // Wallpaper apply command runner
     Process {
         id: applyProcess
 
@@ -184,6 +187,7 @@ PanelWindow {
         }
     }
 
+    // Full-screen wallpaper picker overlay
     FocusScope {
         id: overlay
 
@@ -194,17 +198,20 @@ PanelWindow {
         Keys.priority: Keys.BeforeItem
         Keys.onPressed: event => root.handleKey(event)
 
+        // Blurred wallpaper picker backdrop
         Controls.BlurredBackdrop {
             id: backdrop
 
             anchors.fill: parent
         }
 
+        // Full-screen close catcher
         MouseArea {
             anchors.fill: parent
             onClicked: root.close()
         }
 
+        // Main wallpaper picker card
         Rectangle {
             width: root.cardWidth
             height: root.cardHeight
@@ -214,192 +221,207 @@ PanelWindow {
             border.color: Colors.panelBorder
             border.width: 1
 
+            // Wallpaper picker content stack
             ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: 18
                 spacing: 12
 
-            Text {
-                Layout.fillWidth: true
-                visible: root.statusText.length > 0
-                text: root.statusText
-                color: Colors.foregroundMuted
-                font.family: Typography.fontFamily
-                font.pixelSize: settings.textPixelSize
-            }
-
-            GridView {
-                id: grid
-
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                clip: true
-                focus: true
-                activeFocusOnTab: true
-                model: root.filteredWallpapers
-                currentIndex: root.selectedIndex
-                cellWidth: Math.floor(width / Math.max(1, Math.floor(width / 200)))
-                cellHeight: cellWidth * 0.62
-                keyNavigationWraps: true
-
-                Keys.priority: Keys.BeforeItem
-                Keys.onPressed: event => root.handleKey(event)
-
-                delegate: Rectangle {
-                    id: card
-
-                    required property int index
-                    required property string modelData
-                    readonly property bool selected: index === root.selectedIndex
-
-                    width: grid.cellWidth - 12
-                    height: grid.cellHeight - 12
-                    radius: 14
-                    color: Colors.cardBackground
-                    border.color: selected || mouse.containsMouse ? Colors.controlActiveBorder : Colors.panelBorder
-                    border.width: 1
-                    clip: true
-                    antialiasing: true
-
-                    Image {
-                        id: thumbnail
-
-                        anchors.fill: parent
-                        source: root.fileUrl(card.modelData)
-                        fillMode: Image.PreserveAspectCrop
-                        asynchronous: true
-                        cache: true
-                        visible: false
-                    }
-
-                    Rectangle {
-                        id: thumbnailMask
-
-                        anchors.fill: parent
-                        radius: parent.radius
-                        visible: false
-                        layer.enabled: true
-                    }
-
-                    MultiEffect {
-                        anchors.fill: thumbnail
-                        source: thumbnail
-                        maskEnabled: true
-                        maskSource: thumbnailMask
-                    }
-
-                    Rectangle {
-                        anchors.fill: parent
-                        visible: card.selected
-                        color: Colors.controlActiveBackground
-                        border.color: Colors.accent
-                        border.width: 1
-                        radius: parent.radius
-                        antialiasing: true
-                        z: 10
-                    }
-
-                    Item {
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.bottom: parent.bottom
-                        height: 34
-
-                        Rectangle {
-                            anchors.fill: parent
-                            radius: card.radius
-                            color: Colors.imageOverlay
-                            antialiasing: true
-
-                            Rectangle {
-                                anchors.top: parent.top
-                                anchors.left: parent.left
-                                anchors.right: parent.right
-                                height: parent.radius
-                                color: parent.color
-                            }
-                        }
-
-                        Text {
-                            anchors.fill: parent
-                            anchors.leftMargin: 10
-                            anchors.rightMargin: 10
-                            verticalAlignment: Text.AlignVCenter
-                            text: root.basename(card.modelData)
-                            elide: Text.ElideRight
-                            color: "white"
-                            font.family: Typography.fontFamily
-                            font.pixelSize: settings.textPixelSize
-                        }
-                    }
-
-                    MouseArea {
-                        id: mouse
-
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onEntered: root.selectedIndex = card.index
-                        onClicked: {
-                            root.selectedIndex = card.index;
-                            root.applyWallpaper(card.modelData);
-                        }
-                    }
-                }
-            }
-
-            Rectangle {
-                Layout.fillWidth: true
-                Layout.preferredHeight: root.searchActive ? 38 : (root.helpVisible ? 56 : 24)
-                radius: 10
-                color: root.searchActive ? Colors.cardBackground : "transparent"
-                border.color: root.searchActive ? Colors.panelBorder : "transparent"
-                border.width: root.searchActive ? 1 : 0
-
-                TextInput {
-                    id: search
-
-                    anchors.fill: parent
-                    anchors.leftMargin: 12
-                    anchors.rightMargin: 12
-                    verticalAlignment: TextInput.AlignVCenter
-                    visible: root.searchActive
-                    text: root.query
-                    clip: true
-                    color: Colors.foreground
-                    selectionColor: Colors.accent
-                    selectedTextColor: Colors.foregroundOnAccent
-                    font.family: Typography.fontFamily
-                    font.pixelSize: settings.textPixelSize
-
-                    onTextChanged: {
-                        root.query = text;
-                        root.refreshFilter();
-                    }
-
-                    Keys.onEscapePressed: {
-                        root.searchActive = false;
-                        grid.forceActiveFocus();
-                    }
-
-                    Keys.onReturnPressed: {
-                        root.searchActive = false;
-                        grid.forceActiveFocus();
-                    }
-                }
-
+                // Wallpaper loading/apply status
                 Text {
-                    anchors.fill: parent
-                    visible: !root.searchActive
-                    verticalAlignment: Text.AlignVCenter
-                    text: root.helpVisible ? "arrows/hjkl move  ·  enter/space apply  ·  / search  ·  ? hide help  ·  esc close" : "? help  ·  arrows/hjkl move  ·  / search  ·  enter/space apply  ·  esc close"
+                    Layout.fillWidth: true
+                    visible: root.statusText.length > 0
+                    text: root.statusText
                     color: Colors.foregroundMuted
                     font.family: Typography.fontFamily
                     font.pixelSize: settings.textPixelSize
-                    horizontalAlignment: Text.AlignHCenter
-                    wrapMode: Text.WordWrap
                 }
-            }
+
+                // Wallpaper thumbnail grid
+                GridView {
+                    id: grid
+
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    clip: true
+                    focus: true
+                    activeFocusOnTab: true
+                    model: root.filteredWallpapers
+                    currentIndex: root.selectedIndex
+                    cellWidth: Math.floor(width / Math.max(1, Math.floor(width / 200)))
+                    cellHeight: cellWidth * 0.62
+                    keyNavigationWraps: true
+
+                    Keys.priority: Keys.BeforeItem
+                    Keys.onPressed: event => root.handleKey(event)
+
+                    // One wallpaper thumbnail card
+                    delegate: Rectangle {
+                        id: card
+
+                        required property int index
+                        required property string modelData
+                        readonly property bool selected: index === root.selectedIndex
+
+                        width: grid.cellWidth - 12
+                        height: grid.cellHeight - 12
+                        radius: 14
+                        color: Colors.cardBackground
+                        border.color: selected || mouse.containsMouse ? Colors.controlActiveBorder : Colors.panelBorder
+                        border.width: 1
+                        clip: true
+                        antialiasing: true
+
+                        // Raw wallpaper thumbnail image
+                        Image {
+                            id: thumbnail
+
+                            anchors.fill: parent
+                            source: root.fileUrl(card.modelData)
+                            fillMode: Image.PreserveAspectCrop
+                            asynchronous: true
+                            cache: true
+                            visible: false
+                        }
+
+                        // Rounded thumbnail mask
+                        Rectangle {
+                            id: thumbnailMask
+
+                            anchors.fill: parent
+                            radius: parent.radius
+                            visible: false
+                            layer.enabled: true
+                        }
+
+                        // Masked wallpaper thumbnail
+                        MultiEffect {
+                            anchors.fill: thumbnail
+                            source: thumbnail
+                            maskEnabled: true
+                            maskSource: thumbnailMask
+                        }
+
+                        // Selected wallpaper overlay
+                        Rectangle {
+                            anchors.fill: parent
+                            visible: card.selected
+                            color: Colors.controlActiveBackground
+                            border.color: Colors.accent
+                            border.width: 1
+                            radius: parent.radius
+                            antialiasing: true
+                            z: 10
+                        }
+
+                        // Wallpaper filename overlay
+                        Item {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.bottom: parent.bottom
+                            height: 34
+
+                            // Filename background overlay
+                            Rectangle {
+                                anchors.fill: parent
+                                radius: card.radius
+                                color: Colors.imageOverlay
+                                antialiasing: true
+
+                                Rectangle {
+                                    anchors.top: parent.top
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+                                    height: parent.radius
+                                    color: parent.color
+                                }
+                            }
+
+                            // Wallpaper filename label
+                            Text {
+                                anchors.fill: parent
+                                anchors.leftMargin: 10
+                                anchors.rightMargin: 10
+                                verticalAlignment: Text.AlignVCenter
+                                text: root.basename(card.modelData)
+                                elide: Text.ElideRight
+                                color: "white"
+                                font.family: Typography.fontFamily
+                                font.pixelSize: settings.textPixelSize
+                            }
+                        }
+
+                        // Wallpaper selection click target
+                        MouseArea {
+                            id: mouse
+
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onEntered: root.selectedIndex = card.index
+                            onClicked: {
+                                root.selectedIndex = card.index;
+                                root.applyWallpaper(card.modelData);
+                            }
+                        }
+                    }
+                }
+
+                // Search field or help footer
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: root.searchActive ? 38 : (root.helpVisible ? 56 : 24)
+                    radius: 10
+                    color: root.searchActive ? Colors.cardBackground : "transparent"
+                    border.color: root.searchActive ? Colors.panelBorder : "transparent"
+                    border.width: root.searchActive ? 1 : 0
+
+                    // Wallpaper search input
+                    TextInput {
+                        id: search
+
+                        anchors.fill: parent
+                        anchors.leftMargin: 12
+                        anchors.rightMargin: 12
+                        verticalAlignment: TextInput.AlignVCenter
+                        visible: root.searchActive
+                        text: root.query
+                        clip: true
+                        color: Colors.foreground
+                        selectionColor: Colors.accent
+                        selectedTextColor: Colors.foregroundOnAccent
+                        font.family: Typography.fontFamily
+                        font.pixelSize: settings.textPixelSize
+
+                        onTextChanged: {
+                            root.query = text;
+                            root.refreshFilter();
+                        }
+
+                        Keys.onEscapePressed: {
+                            root.searchActive = false;
+                            grid.forceActiveFocus();
+                        }
+
+                        Keys.onReturnPressed: {
+                            root.searchActive = false;
+                            grid.forceActiveFocus();
+                        }
+                    }
+
+                    // Wallpaper keyboard help text
+                    Text {
+                        anchors.fill: parent
+                        visible: !root.searchActive
+                        verticalAlignment: Text.AlignVCenter
+                        text: root.helpVisible ? "arrows/hjkl move  ·  enter/space apply  ·  / search  ·  ? hide help  ·  esc close" : "? help  ·  arrows/hjkl move  ·  / search  ·  enter/space apply  ·  esc close"
+                        color: Colors.foregroundMuted
+                        font.family: Typography.fontFamily
+                        font.pixelSize: settings.textPixelSize
+                        horizontalAlignment: Text.AlignHCenter
+                        wrapMode: Text.WordWrap
+                    }
+                }
             }
         }
     }

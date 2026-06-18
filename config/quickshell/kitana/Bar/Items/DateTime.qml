@@ -20,6 +20,7 @@ Item {
     width: implicitWidth
     height: implicitHeight
 
+    // Clock pill background
     Rectangle {
         anchors.fill: parent
         visible: !root.embedded
@@ -29,6 +30,7 @@ Item {
         border.width: settings.borderWidth
     }
 
+    // Date, dashboard button, and time row
     Row {
         id: clockRow
         anchors.centerIn: parent
@@ -36,6 +38,7 @@ Item {
 
         property date now: new Date()
 
+        // Current date label
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: Qt.formatDate(clockRow.now, "ddd MMM d")
@@ -46,6 +49,7 @@ Item {
             font.weight: Font.DemiBold
         }
 
+        // Dashboard opener button
         Item {
             id: dashboardButton
 
@@ -53,6 +57,7 @@ Item {
             width: settings.iconPixelSize + 10
             height: settings.iconPixelSize + 8
 
+            // Dashboard button hover background
             Rectangle {
                 anchors.fill: parent
                 visible: dashboardMouse.containsMouse
@@ -60,6 +65,7 @@ Item {
                 color: Colors.barHoverBackground
             }
 
+            // Dashboard icon
             Controls.Icon {
                 anchors.centerIn: parent
                 name: "dashboard"
@@ -67,6 +73,7 @@ Item {
                 sizeRole: "bar"
             }
 
+            // Dashboard click target
             MouseArea {
                 id: dashboardMouse
 
@@ -77,6 +84,7 @@ Item {
             }
         }
 
+        // Current time label
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: Qt.formatTime(clockRow.now, "h:mm AP")
@@ -87,6 +95,7 @@ Item {
             font.weight: Font.DemiBold
         }
 
+        // Clock refresh timer
         Timer {
             interval: 1000
             running: true

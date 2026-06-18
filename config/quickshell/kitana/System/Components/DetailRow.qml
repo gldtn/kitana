@@ -25,11 +25,13 @@ Rectangle {
     border.color: active ? Colors.controlActiveBorder : Colors.controlBorder
     border.width: 0.8
 
+    // Detail icon and text row
     Row {
         anchors.fill: parent
         anchors.margins: 9
         spacing: 10
 
+        // Detail row icon
         Controls.Icon {
             anchors.verticalCenter: parent.verticalCenter
             width: 24
@@ -38,6 +40,7 @@ Rectangle {
             sizeRole: "button"
         }
 
+        // Detail title and subtitle
         Column {
             anchors.verticalCenter: parent.verticalCenter
             width: parent.width - 38
@@ -63,6 +66,7 @@ Rectangle {
         }
     }
 
+    // Detail row click target
     MouseArea {
         id: mouse
         anchors.fill: parent

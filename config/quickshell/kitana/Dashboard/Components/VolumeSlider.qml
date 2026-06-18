@@ -20,6 +20,7 @@ Rectangle {
     border.width: 1
     clip: true
 
+    // Filled volume level track
     Rectangle {
         anchors.left: parent.left
         anchors.top: parent.top
@@ -29,6 +30,7 @@ Rectangle {
         color: Colors.controlActiveBackground
     }
 
+    // Volume value label
     Text {
         anchors.centerIn: parent
         text: "Volume " + root.value + "%"
@@ -38,6 +40,7 @@ Rectangle {
         font.weight: Font.DemiBold
     }
 
+    // Drag target for audio volume
     MouseArea {
         id: volumeMouse
         anchors.fill: parent
