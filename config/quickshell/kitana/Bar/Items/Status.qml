@@ -92,8 +92,8 @@ Item {
     Row {
         id: statusRow
 
-        anchors.right: parent.right
-        anchors.rightMargin: settings.statusHorizontalPadding / 2
+        anchors.left: parent.left
+        anchors.leftMargin: settings.statusHorizontalPadding / 2
         anchors.verticalCenter: parent.verticalCenter
         spacing: settings.statusSpacing
 
@@ -121,7 +121,7 @@ Item {
                 id: trayToggle
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
-                iconName: root.trayExpanded ? "ui.chevron.right" : "ui.chevron.left"
+                iconName: root.trayExpanded ? "ui.chevron.left" : "ui.chevron.right"
                 iconSize: Icons.size("bar") + 4
                 label: ""
                 onClicked: root.trayExpanded = !root.trayExpanded

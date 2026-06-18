@@ -42,7 +42,7 @@ local direct_fields = {
 }
 
 local alpha_fields = {
-  { qml = "iconDisabled", env = "iconDisabled" },
+  { qml = "iconDisabled", env = "iconDisabled", opacity = 50 },
 }
 
 M.direct_fields = direct_fields
@@ -67,6 +67,19 @@ local function normalize_color(value, role)
   end
 
   return "#" .. tostring(value):gsub("^#", "")
+end
+
+local function color_channel(color)
+  return tostring(color):gsub("^#", "")
+end
+
+local function alpha(percent)
+  local value = math.max(0, math.min(255, math.floor(255 * percent / 100 + 0.5)))
+  return string.format("%02x", value)
+end
+
+function M.with_alpha(color, opacity)
+  return "#" .. alpha(opacity) .. color_channel(color)
 end
 
 function M.env_roles()
@@ -96,7 +109,7 @@ function M.render(template_path, target_path, lookup)
 
   for _, field in ipairs(direct_fields) do
     local value = normalize_color(lookup(field.env), field.env)
-    local pattern = "(readonly%s+property%s+color%s+" .. field.qml .. "%s*:%s*\")[^\"]*(\")"
+    local pattern = "(property%s+color%s+" .. field.qml .. "%s*:%s*\")[^\"]*(\")"
     local replacement = "%1" .. value .. "%2"
     local count
     content, count = content:gsub(pattern, replacement, 1)
@@ -107,7 +120,7 @@ function M.render(template_path, target_path, lookup)
 
   for _, field in ipairs(alpha_fields) do
     local value = normalize_color(lookup(field.env), field.env)
-    local pattern = "(readonly%s+property%s+color%s+" .. field.qml .. "%s*:%s*withAlpha%s*%(%s*\")[^\"]*(\")"
+    local pattern = "(property%s+color%s+" .. field.qml .. "%s*:%s*withAlpha%s*%(%s*\")[^\"]*(\")"
     local replacement = "%1" .. value .. "%2"
     local count
     content, count = content:gsub(pattern, replacement, 1)

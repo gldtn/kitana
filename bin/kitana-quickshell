@@ -5,6 +5,8 @@ set -euo pipefail
 config_name="kitana"
 config_file="$HOME/.config/quickshell/$config_name/shell.qml"
 colors_file="$HOME/.config/quickshell/$config_name/Config/Colors.qml"
+kitana_dir="${KITANA_DIR:-$HOME/.local/share/kitana}"
+theme_file="$HOME/.config/kitana/theme"
 log_file="/tmp/kitana-quickshell.log"
 action="${1:-reload}"
 
@@ -43,11 +45,19 @@ wait_until_stopped() {
   return 1
 }
 
+prepare_theme() {
+  [ -x "$kitana_dir/bin/kitana-theme-quickshell" ] || return 0
+  [ -f "$theme_file" ] || return 0
+
+  "$kitana_dir/bin/kitana-theme-quickshell" --render-only "$(<"$theme_file")" >/dev/null 2>&1 || true
+}
+
 start_quickshell() {
   if is_running; then
     return 0
   fi
 
+  prepare_theme
   quickshell --daemonize --no-duplicate --config "$config_name" >"$log_file" 2>&1
   wait_until_running >/dev/null 2>&1 || true
 }
@@ -63,6 +73,7 @@ reload_quickshell() {
     return
   fi
 
+  prepare_theme
   if quickshell ipc -c "$config_name" call kitana-shell reload >/dev/null 2>&1; then
     return
   fi

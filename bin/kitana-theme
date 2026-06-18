@@ -53,7 +53,6 @@ apply_theme() {
   "$kitana_dir/bin/kitana-theme-neovim" "$slug" || true
 
   printf '%s\n' "$slug" >"$state_file"
-  "$kitana_dir/bin/kitana-quickshell" >/dev/null 2>&1 || true
   if [ "$notify" -eq 1 ] && [ "$current_slug" != "$slug" ]; then
     notify_theme "$name"
   fi

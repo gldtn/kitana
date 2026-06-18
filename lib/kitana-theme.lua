@@ -23,13 +23,24 @@ end
 
 ensure_package_path()
 
-local quickshell_roles = require("lib.kitana-quickshell-colors").env_roles()
+local quickshell_colors = require("lib.kitana-quickshell-colors")
+local quickshell_roles = quickshell_colors.env_roles()
 
 M.quickshell_roles = quickshell_roles
 
 local function shell_quote(value)
   value = tostring(value or "")
   return "'" .. value:gsub("'", "'\\''") .. "'"
+end
+
+local function json_quote(value)
+  value = tostring(value or "")
+  value = value:gsub("\\", "\\\\")
+  value = value:gsub('"', '\\"')
+  value = value:gsub("\n", "\\n")
+  value = value:gsub("\r", "\\r")
+  value = value:gsub("\t", "\\t")
+  return '"' .. value .. '"'
 end
 
 function M.load(slug)
@@ -94,6 +105,21 @@ function M.quickshell(theme)
   for _, role in ipairs(quickshell_roles) do
     values[role] = M.resolve_quickshell(theme, role)
   end
+  return values
+end
+
+function M.quickshell_qml(theme)
+  local quickshell = M.quickshell(theme)
+  local values = {}
+
+  for _, field in ipairs(quickshell_colors.direct_fields) do
+    values[field.qml] = quickshell[field.env]
+  end
+
+  for _, field in ipairs(quickshell_colors.alpha_fields) do
+    values[field.qml] = quickshell_colors.with_alpha(quickshell[field.env], field.opacity or 50)
+  end
+
   return values
 end
 
@@ -172,6 +198,28 @@ function M.print_quickshell_env(theme)
   end
 end
 
+function M.print_quickshell_json(theme)
+  local values = M.quickshell_qml(theme)
+  local fields = {}
+
+  for _, field in ipairs(quickshell_colors.direct_fields) do
+    table.insert(fields, field.qml)
+  end
+
+  for _, field in ipairs(quickshell_colors.alpha_fields) do
+    table.insert(fields, field.qml)
+  end
+
+  io.write("{")
+  for index, field in ipairs(fields) do
+    if index > 1 then
+      io.write(",")
+    end
+    io.write(json_quote(field) .. ":" .. json_quote(values[field]))
+  end
+  io.write("}\n")
+end
+
 function M.print_env(theme)
   local preview = M.preview(theme)
   local hypr = M.hypr(theme)
@@ -214,7 +262,7 @@ function M.print_env(theme)
 end
 
 local function usage()
-  io.stderr:write("Usage: lua lib/kitana-theme.lua [list|env|quickshell-env|find] [THEME]\n")
+  io.stderr:write("Usage: lua lib/kitana-theme.lua [list|env|quickshell-env|quickshell-json|find] [THEME]\n")
 end
 
 if arg and arg[0] and arg[0]:match("kitana%-theme%.lua$") then
@@ -236,6 +284,12 @@ if arg and arg[0] and arg[0]:match("kitana%-theme%.lua$") then
       os.exit(1)
     end
     M.print_quickshell_env(theme)
+  elseif command == "quickshell-json" then
+    local theme = M.find(arg[2] or "")
+    if not theme then
+      os.exit(1)
+    end
+    M.print_quickshell_json(theme)
   elseif command == "find" then
     local theme = M.find(arg[2] or "")
     if not theme then

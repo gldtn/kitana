@@ -119,6 +119,8 @@ Useful lifecycle commands:
 
 When adding a new Quickshell service singleton, register it in `config/quickshell/kitana/Services/qmldir`. Update install validation only when the service is a baseline install requirement.
 
+For QML UI files, add brief navigation comments above meaningful containers, cards, delegates, overlays, reusable components, and command bridges. Avoid commenting every trivial `Text`, `Rectangle`, or property.
+
 Quickshell color role shape lives in:
 
 - `config/quickshell/kitana/Config/Colors.qml`

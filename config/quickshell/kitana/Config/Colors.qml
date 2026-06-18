@@ -5,6 +5,7 @@ pragma Singleton
 import QtQuick
 
 QtObject {
+    id: root
 
     function colorChannel(color: string): string {
         return color.startsWith("#") ? color.slice(1) : color;
@@ -24,63 +25,82 @@ QtObject {
         return withAlpha(rgb, percent);
     }
 
+    function applyTheme(payload: string): void {
+        const values = JSON.parse(payload);
+        const roles = [
+            "foreground", "foregroundStrong", "foregroundMuted", "foregroundSubtle", "foregroundInverted",
+            "accent", "accentStrong", "foregroundOnAccent",
+            "background", "surface", "surfaceContainer", "surfaceCard", "surfaceControl", "surfaceSubtle",
+            "surfaceHover", "surfacePressed", "surfaceActive", "surfaceSelected", "surfaceFloating", "surfaceFloatingStrong",
+            "border", "borderSubtle", "borderMuted", "borderStrong", "borderFocus",
+            "info", "success", "warning", "danger",
+            "iconPrimary", "iconSecondary", "iconMuted", "iconSubtle", "iconAccent", "iconOnAccent",
+            "iconInverse", "iconBrand", "iconDisabled", "iconDanger"
+        ];
+
+        for (const role of roles) {
+            if (values[role])
+                root[role] = values[role];
+        }
+    }
+
     // Canonical foreground roles.
-    readonly property color foreground: "#cdd6f4"
-    readonly property color foregroundStrong: "#f5e0dc"
-    readonly property color foregroundMuted: "#9399b2"
-    readonly property color foregroundSubtle: "#9399b2"
+    property color foreground: "#cdd6f4"
+    property color foregroundStrong: "#f5e0dc"
+    property color foregroundMuted: "#9399b2"
+    property color foregroundSubtle: "#9399b2"
     readonly property color foregroundDisabled: withAlpha(foregroundMuted, 50)
-    readonly property color foregroundInverted: "#181825"
+    property color foregroundInverted: "#181825"
 
     // Canonical accent roles.
-    readonly property color accent: "#cba6f7"
-    readonly property color accentStrong: "#b4befe"
-    readonly property color foregroundOnAccent: "#181825"
+    property color accent: "#cba6f7"
+    property color accentStrong: "#b4befe"
+    property color foregroundOnAccent: "#181825"
     readonly property color accentBackground: withAlpha(accent, 20)
     readonly property color accentSelectedBackground: withAlpha(accent, 30)
 
     // Canonical surface roles.
-    readonly property color background: "#1e1e2e"
-    readonly property color surface: "#181825"
-    readonly property color surfaceContainer: "#181825"
-    readonly property color surfaceCard: "#313244"
-    readonly property color surfaceControl: "#313244"
-    readonly property color surfaceSubtle: "#45475a"
-    readonly property color surfaceHover: "#45475a"
-    readonly property color surfacePressed: "#45475a"
-    readonly property color surfaceActive: "#cba6f7"
-    readonly property color surfaceSelected: "#cba6f7"
-    readonly property color surfaceFloating: "#1e1e2e"
-    readonly property color surfaceFloatingStrong: "#313244"
+    property color background: "#1e1e2e"
+    property color surface: "#181825"
+    property color surfaceContainer: "#181825"
+    property color surfaceCard: "#313244"
+    property color surfaceControl: "#313244"
+    property color surfaceSubtle: "#45475a"
+    property color surfaceHover: "#45475a"
+    property color surfacePressed: "#45475a"
+    property color surfaceActive: "#cba6f7"
+    property color surfaceSelected: "#cba6f7"
+    property color surfaceFloating: "#1e1e2e"
+    property color surfaceFloatingStrong: "#313244"
 
     // Canonical border roles.
-    readonly property color border: "#313244"
-    readonly property color borderSubtle: "#313244"
-    readonly property color borderMuted: "#45475a"
-    readonly property color borderStrong: "#45475a"
-    readonly property color borderFocus: "#cba6f7"
+    property color border: "#313244"
+    property color borderSubtle: "#313244"
+    property color borderMuted: "#45475a"
+    property color borderStrong: "#45475a"
+    property color borderFocus: "#cba6f7"
 
     // Canonical status roles.
-    readonly property color info: "#89b4fa"
-    readonly property color success: "#a6e3a1"
-    readonly property color warning: "#f9e2af"
-    readonly property color danger: "#f38ba8"
+    property color info: "#89b4fa"
+    property color success: "#a6e3a1"
+    property color warning: "#f9e2af"
+    property color danger: "#f38ba8"
     readonly property color infoBackground: withAlpha(info, 20)
     readonly property color successBackground: withAlpha(success, 20)
     readonly property color warningBackground: withAlpha(warning, 20)
     readonly property color dangerBackground: withAlpha(danger, 20)
 
     // Permanent icon foreground roles used by Config/Icons.qml tone mapping.
-    readonly property color iconPrimary: "#cdd6f4"
-    readonly property color iconSecondary: "#f5e0dc"
-    readonly property color iconMuted: "#9399b2"
-    readonly property color iconSubtle: "#9399b2"
-    readonly property color iconAccent: "#cba6f7"
-    readonly property color iconOnAccent: "#181825"
-    readonly property color iconInverse: "#181825"
-    readonly property color iconBrand: "#cba6f7"
-    readonly property color iconDisabled: withAlpha("#9399b2", 50)
-    readonly property color iconDanger: "#f38ba8"
+    property color iconPrimary: "#cdd6f4"
+    property color iconSecondary: "#f5e0dc"
+    property color iconMuted: "#9399b2"
+    property color iconSubtle: "#9399b2"
+    property color iconAccent: "#cba6f7"
+    property color iconOnAccent: "#181825"
+    property color iconInverse: "#181825"
+    property color iconBrand: "#cba6f7"
+    property color iconDisabled: withAlpha("#9399b2", 50)
+    property color iconDanger: "#f38ba8"
 
     // Shallow Kitana component roles. Keep these independently defined for future per-component tuning.
     readonly property color barBackground: withAlpha(background, 96)
