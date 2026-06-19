@@ -21,7 +21,7 @@ ColumnLayout {
     Text {
         Layout.fillWidth: true
         text: root.label
-        color: Colors.foregroundMuted
+        color: Colors.fgSecondary
         elide: Text.ElideRight
         font.family: Typography.fontFamily
         font.pixelSize: settings.textPixelSize - 1
@@ -32,8 +32,8 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.preferredHeight: 34
         radius: 10
-        color: Colors.cardBackground
-        border.color: fieldInput.activeFocus ? Colors.controlActiveBorder : Colors.panelBorder
+        color: Colors.bgTertiary
+        border.color: fieldInput.activeFocus ? Colors.borderAccent : Colors.borderFaint
         border.width: 1
 
         // Editable field value
@@ -45,9 +45,9 @@ ColumnLayout {
             verticalAlignment: TextInput.AlignVCenter
             text: root.value
             echoMode: root.secret ? TextInput.Password : TextInput.Normal
-            color: Colors.foreground
-            selectionColor: Colors.controlActiveBackground
-            selectedTextColor: Colors.foreground
+            color: Colors.fgPrimary
+            selectionColor: Colors.subtlePrimary
+            selectedTextColor: Colors.fgPrimary
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize
             onEditingFinished: root.committed(text)

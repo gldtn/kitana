@@ -158,7 +158,7 @@ ColumnLayout {
                 height: 28
                 text: (tabRoot.panel.themePage + 1) + " / " + tabRoot.panel.themePageCount()
                 verticalAlignment: Text.AlignVCenter
-                color: Colors.foregroundMuted
+                color: Colors.fgSecondary
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
                 font.weight: Font.DemiBold
@@ -174,7 +174,7 @@ ColumnLayout {
             anchors.verticalCenter: parent.verticalCenter
             width: 90
             text: tabRoot.panel.filteredThemes().length + " themes"
-            color: Colors.foregroundMuted
+            color: Colors.fgSecondary
             horizontalAlignment: Text.AlignRight
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize

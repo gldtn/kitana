@@ -30,7 +30,7 @@ Flickable {
         Text {
             width: bluetoothList.width
             text: "Bluetooth"
-            color: Colors.foreground
+            color: Colors.fgPrimary
             font.family: Typography.fontFamily
             font.pixelSize: 14
             font.weight: Font.Bold
@@ -56,7 +56,7 @@ Flickable {
             width: bluetoothList.width
             visible: bluetoothList.empty
             text: Services.SystemStatus.bluetoothEnabled ? "No devices found" : "Bluetooth is off"
-            color: Colors.foregroundMuted
+            color: Colors.fgSecondary
             horizontalAlignment: Text.AlignHCenter
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize
@@ -79,14 +79,14 @@ Flickable {
                 anchors.verticalCenter: parent.verticalCenter
                 width: 42
                 height: 1
-                color: Colors.panelBorder
+                color: Colors.borderFaint
             }
 
             Text {
                 id: nearbyDividerLabel
                 anchors.verticalCenter: parent.verticalCenter
                 text: "Nearby devices"
-                color: Colors.foregroundMuted
+                color: Colors.fgSecondary
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize - 2
             }
@@ -95,7 +95,7 @@ Flickable {
                 anchors.verticalCenter: parent.verticalCenter
                 width: parent.width - 42 - parent.spacing * 2 - nearbyDividerLabel.implicitWidth
                 height: 1
-                color: Colors.panelBorder
+                color: Colors.borderFaint
             }
         }
 

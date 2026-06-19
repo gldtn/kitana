@@ -21,8 +21,8 @@ Rectangle {
     width: parent ? parent.width : 0
     height: 48
     radius: 11
-    color: mouse.containsMouse ? Colors.controlHoverBackground : Colors.controlBackground
-    border.color: active ? Colors.controlActiveBorder : Colors.controlBorder
+    color: mouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary
+    border.color: active ? Colors.borderAccent : Colors.borderFaint
     border.width: 0.8
 
     // Detail icon and text row
@@ -48,7 +48,7 @@ Rectangle {
             Text {
                 width: parent.width
                 text: root.title
-                color: Colors.foreground
+                color: Colors.fgPrimary
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
@@ -58,7 +58,7 @@ Rectangle {
             Text {
                 width: parent.width
                 text: root.subtitle
-                color: Colors.foregroundMuted
+                color: Colors.fgSecondary
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize - 1

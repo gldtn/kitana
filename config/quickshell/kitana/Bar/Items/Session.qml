@@ -9,7 +9,9 @@ import "../../custom" as Custom
 Item {
     id: root
 
-    Custom.Settings { id: settings }
+    Custom.Settings {
+        id: settings
+    }
 
     property bool embedded: false
 
@@ -23,19 +25,21 @@ Item {
         anchors.fill: parent
         visible: !root.embedded || sessionMouse.containsMouse
         radius: root.height / settings.radiusDivisor
-        color: sessionMouse.containsMouse ? Colors.barHoverBackground : Colors.barBackground
-        border.color: Colors.barBorder
+        color: Colors.bgSecondary
+        border.color: Colors.borderFaint
         border.width: root.embedded ? 0 : settings.borderWidth
     }
 
     // Session panel IPC runner
-    Process { id: sessionMenu }
+    Process {
+        id: sessionMenu
+    }
 
     // Power icon
     Controls.Icon {
         anchors.centerIn: parent
         name: "power.power"
-        tone: sessionMouse.containsMouse ? "primary" : "accent"
+        tone: sessionMouse.containsMouse ? "primary" : "subtle"
         sizeRole: "bar"
     }
 

@@ -25,8 +25,8 @@ Rectangle {
     width: parent ? parent.width : 0
     height: Math.max(84, contentColumn.implicitHeight + verticalPadding * 2)
     radius: 14
-    color: hoverHandler.hovered ? Colors.controlHoverBackground : Colors.controlBackground
-    border.color: Colors.controlBorder
+    color: hoverHandler.hovered ? Colors.bgTertiary : Colors.bgTertiary
+    border.color: Colors.borderFaint
     border.width: 0.8
 
     HoverHandler { id: hoverHandler }
@@ -71,7 +71,7 @@ Rectangle {
             Text {
                 Layout.fillWidth: true
                 text: root.item ? root.item.appName : "app"
-                color: Colors.foregroundMuted
+                color: Colors.fgSecondary
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize - 1
@@ -80,7 +80,7 @@ Rectangle {
 
             Text {
                 text: root.item ? Services.NotificationService.timeAgo(root.item.time) : "now"
-                color: Colors.foregroundMuted
+                color: Colors.fgSecondary
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize - 1
                 font.weight: Font.DemiBold
@@ -92,7 +92,7 @@ Rectangle {
                 Layout.preferredWidth: countRow.implicitWidth + 14
                 Layout.preferredHeight: 22
                 radius: 11
-                color: countMouse.containsMouse ? Colors.controlButtonHoverBackground : "transparent"
+                color: countMouse.containsMouse ? Colors.subtleSecondary : "transparent"
 
                 // Group count and chevron
                 Row {
@@ -104,7 +104,7 @@ Rectangle {
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
                         text: root.groupCount
-                        color: Colors.foreground
+                        color: Colors.fgPrimary
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize - 1
                         font.weight: Font.Bold
@@ -133,7 +133,7 @@ Rectangle {
                 Layout.preferredWidth: 22
                 Layout.preferredHeight: 22
                 radius: 11
-                color: dismissMouse.containsMouse ? Colors.controlButtonHoverBackground : "transparent"
+                color: dismissMouse.containsMouse ? Colors.subtleSecondary : "transparent"
 
                 // Dismiss icon
                 Controls.Icon {
@@ -159,14 +159,14 @@ Rectangle {
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 1
-            color: Colors.borderSubtle
+            color: Colors.borderFaint
         }
 
         // Notification summary
         Text {
             Layout.fillWidth: true
             text: root.item ? Services.NotificationService.escapeMarkup(root.item.summary) : "Notification"
-            color: Colors.foreground
+            color: Colors.fgPrimary
             elide: Text.ElideRight
             clip: true
             font.family: Typography.fontFamily
@@ -181,7 +181,7 @@ Rectangle {
             Layout.fillWidth: true
             visible: text.length > 0
             text: root.item ? root.item.bodyMarkup : ""
-            color: Colors.foregroundMuted
+            color: Colors.fgSecondary
             elide: Text.ElideRight
             wrapMode: Text.WrapAnywhere
             maximumLineCount: 2

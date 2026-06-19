@@ -25,8 +25,8 @@ Item {
         anchors.fill: parent
         visible: !root.embedded
         radius: root.height / settings.radiusDivisor
-        color: Colors.barBackground
-        border.color: Colors.barBorder
+        color: Colors.bgSecondary
+        border.color: Colors.borderFaint
         border.width: settings.borderWidth
     }
 
@@ -43,7 +43,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             text: Qt.formatDate(clockRow.now, "ddd MMM d")
             textFormat: Text.PlainText
-            color: Colors.barForeground
+            color: Colors.fgPrimary
             font.family: Typography.fontFamily
             font.pixelSize: settings.clockPixelSize
             font.weight: Font.DemiBold
@@ -62,7 +62,7 @@ Item {
                 anchors.fill: parent
                 visible: dashboardMouse.containsMouse
                 radius: 8
-                color: Colors.barHoverBackground
+                color: Colors.bgTertiary
             }
 
             // Dashboard icon
@@ -89,7 +89,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             text: Qt.formatTime(clockRow.now, "h:mm AP")
             textFormat: Text.PlainText
-            color: Colors.barForeground
+            color: Colors.fgPrimary
             font.family: Typography.fontFamily
             font.pixelSize: settings.clockPixelSize
             font.weight: Font.DemiBold

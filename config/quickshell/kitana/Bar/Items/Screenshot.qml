@@ -8,7 +8,9 @@ import "../../custom" as Custom
 Item {
     id: root
 
-    Custom.Settings { id: settings }
+    Custom.Settings {
+        id: settings
+    }
 
     property var screenshotPanel: null
     property bool embedded: false
@@ -23,8 +25,8 @@ Item {
         anchors.fill: parent
         visible: !root.embedded || screenshotMouse.containsMouse
         radius: root.height / settings.radiusDivisor
-        color: screenshotMouse.containsMouse ? Colors.barHoverBackground : Colors.barBackground
-        border.color: Colors.barBorder
+        color: Colors.bgSecondary
+        border.color: Colors.borderFaint
         border.width: root.embedded ? 0 : settings.borderWidth
     }
 
@@ -32,7 +34,7 @@ Item {
     Controls.Icon {
         anchors.fill: parent
         name: "screenshot.default"
-        tone: "accent"
+        tone: screenshotMouse.containsMouse ? "primary" : "subtle"
         sizeRole: "bar"
     }
 
@@ -43,6 +45,7 @@ Item {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onClicked: if (root.screenshotPanel) root.screenshotPanel.toggle()
+        onClicked: if (root.screenshotPanel)
+            root.screenshotPanel.toggle()
     }
 }

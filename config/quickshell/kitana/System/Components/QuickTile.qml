@@ -20,7 +20,7 @@ Rectangle {
     width: parent ? parent.width : 0
     height: 64
     radius: 13
-    color: mouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground
+    color: mouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary
 
     // Quick tile icon and labels
     Row {
@@ -34,7 +34,7 @@ Rectangle {
             width: 38
             height: 38
             radius: 12
-            color: root.active ? Colors.accent : Colors.controlSubtleBackground
+            color: root.active ? Colors.fgAccent : Colors.subtleSecondary
 
             // Tile icon glyph
             Controls.Icon {
@@ -54,7 +54,7 @@ Rectangle {
             Text {
                 width: parent.width
                 text: root.title
-                color: Colors.foreground
+                color: Colors.fgPrimary
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
@@ -64,7 +64,7 @@ Rectangle {
             Text {
                 width: parent.width
                 text: root.subtitle
-                color: Colors.foregroundMuted
+                color: Colors.fgSecondary
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize - 1

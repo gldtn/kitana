@@ -55,15 +55,6 @@ ShellRoot {
         id: shortcutsPanel
     }
 
-    // Live theme color update bridge
-    IpcHandler {
-        target: "kitana-theme"
-
-        function colors(payload: string): void {
-            Colors.applyTheme(payload);
-        }
-    }
-
     // OSD command bridge
     IpcHandler {
         target: "kitana-osd"

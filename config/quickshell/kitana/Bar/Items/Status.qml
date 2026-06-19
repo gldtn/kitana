@@ -14,7 +14,9 @@ import "../../Services" as Services
 Item {
     id: root
 
-    Custom.Settings { id: settings }
+    Custom.Settings {
+        id: settings
+    }
 
     property var systemPanel: null
     property var panelWindow: null
@@ -54,21 +56,7 @@ Item {
         if (!item || !item.id)
             return;
 
-        const script = [
-            'ITEMS=$(dbus-send --session --print-reply --dest=org.kde.StatusNotifierWatcher /StatusNotifierWatcher org.freedesktop.DBus.Properties.Get string:org.kde.StatusNotifierWatcher string:RegisteredStatusNotifierItems 2>/dev/null)',
-            'while IFS= read -r line; do',
-            '  line="${line#*\\\"}"',
-            '  line="${line%\\\"*}"',
-            '  [ -z "$line" ] && continue',
-            '  BUS="${line%%/*}"',
-            '  OBJ="/${line#*/}"',
-            '  ID=$(dbus-send --session --print-reply --dest="$BUS" "$OBJ" org.freedesktop.DBus.Properties.Get string:org.kde.StatusNotifierItem string:Id 2>/dev/null | grep -oP "(?<=\\\")(.*?)(?=\\\")" | tail -1)',
-            '  if [ "$ID" = "$1" ]; then',
-            '    dbus-send --session --type=method_call --dest="$BUS" "$OBJ" org.kde.StatusNotifierItem.ContextMenu int32:"$2" int32:"$3"',
-            '    exit 0',
-            '  fi',
-            'done <<< "$ITEMS"'
-        ].join("\n");
+        const script = ['ITEMS=$(dbus-send --session --print-reply --dest=org.kde.StatusNotifierWatcher /StatusNotifierWatcher org.freedesktop.DBus.Properties.Get string:org.kde.StatusNotifierWatcher string:RegisteredStatusNotifierItems 2>/dev/null)', 'while IFS= read -r line; do', '  line="${line#*\\\"}"', '  line="${line%\\\"*}"', '  [ -z "$line" ] && continue', '  BUS="${line%%/*}"', '  OBJ="/${line#*/}"', '  ID=$(dbus-send --session --print-reply --dest="$BUS" "$OBJ" org.freedesktop.DBus.Properties.Get string:org.kde.StatusNotifierItem string:Id 2>/dev/null | grep -oP "(?<=\\\")(.*?)(?=\\\")" | tail -1)', '  if [ "$ID" = "$1" ]; then', '    dbus-send --session --type=method_call --dest="$BUS" "$OBJ" org.kde.StatusNotifierItem.ContextMenu int32:"$2" int32:"$3"', '    exit 0', '  fi', 'done <<< "$ITEMS"'].join("\n");
 
         Quickshell.execDetached(["bash", "-c", script, "_", item.id, String(globalX), String(globalY)]);
     }
@@ -83,8 +71,8 @@ Item {
         anchors.fill: parent
         visible: !root.embedded
         radius: root.height / settings.radiusDivisor
-        color: Colors.barBackground
-        border.color: Colors.barBorder
+        color: Colors.bgSecondary
+        border.color: Colors.borderFaint
         border.width: settings.borderWidth
     }
 
@@ -121,7 +109,7 @@ Item {
                 id: trayToggle
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
-                iconName: root.trayExpanded ? "ui.chevron.left" : "ui.chevron.right"
+                iconName: root.trayExpanded ? "ui.chevron.right" : "ui.chevron.left"
                 iconSize: Icons.size("bar") + 4
                 label: ""
                 onClicked: root.trayExpanded = !root.trayExpanded
@@ -139,11 +127,17 @@ Item {
                 clip: true
 
                 Behavior on width {
-                    NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
+                    NumberAnimation {
+                        duration: 160
+                        easing.type: Easing.OutCubic
+                    }
                 }
 
                 Behavior on anchors.leftMargin {
-                    NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
+                    NumberAnimation {
+                        duration: 160
+                        easing.type: Easing.OutCubic
+                    }
                 }
 
                 // Visible tray icon row
@@ -186,7 +180,7 @@ Item {
                                 anchors.fill: parent
                                 visible: trayMouse.containsMouse
                                 radius: 6
-                                color: Colors.barHoverBackground
+                                color: Colors.bgTertiary
                             }
 
                             // Native tray icon image
@@ -207,7 +201,7 @@ Item {
                                 anchors.centerIn: parent
                                 visible: !trayIcon.visible
                                 name: Icons.defaultIcon
-                                tone: "accent"
+                                tone: "primary"
                                 sizeRole: "bar"
                             }
 
@@ -243,7 +237,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             visible: traySection.visible && root.trayExpanded && trayContainer.width > 0
             text: "|"
-            color: Colors.foregroundMuted
+            color: Colors.fgSecondary
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize
             verticalAlignment: Text.AlignVCenter
@@ -253,7 +247,8 @@ Item {
         StatusButton {
             iconName: Icons.notificationName(Services.NotificationService.count, Services.NotificationService.doNotDisturb)
             label: ""
-            onClicked: if (root.systemPanel) root.systemPanel.toggle("notifications")
+            onClicked: if (root.systemPanel)
+                root.systemPanel.toggle("notifications")
         }
 
         // Audio panel button
@@ -262,7 +257,8 @@ Item {
             alignIconLeft: true
             iconVisualOffset: 2
             label: ""
-            onClicked: if (root.systemPanel) root.systemPanel.toggle("audio")
+            onClicked: if (root.systemPanel)
+                root.systemPanel.toggle("audio")
         }
 
         // Microphone status button
@@ -270,23 +266,25 @@ Item {
             visible: Services.SystemStatus.micAvailable
             iconName: Services.SystemStatus.micIconName
             label: ""
-            onClicked: if (root.systemPanel) root.systemPanel.toggle("audio")
+            onClicked: if (root.systemPanel)
+                root.systemPanel.toggle("audio")
         }
 
         // Bluetooth panel button
         StatusButton {
             iconName: Services.SystemStatus.bluetoothIconName
             label: ""
-            onClicked: if (root.systemPanel) root.systemPanel.toggle("bluetooth")
+            onClicked: if (root.systemPanel)
+                root.systemPanel.toggle("bluetooth")
         }
 
         // Network panel button
         StatusButton {
             iconName: Services.SystemStatus.networkIconName
             label: ""
-            onClicked: if (root.systemPanel) root.systemPanel.toggle("network")
+            onClicked: if (root.systemPanel)
+                root.systemPanel.toggle("network")
         }
-
     }
 
     // Reusable status icon button
@@ -315,7 +313,7 @@ Item {
                 width: settings.iconPixelSize + 4
                 height: button.height
                 name: button.iconName
-                tone: mouse.containsMouse ? "primary" : "accent"
+                tone: mouse.containsMouse ? "primary" : "subtle"
                 sizeRole: "bar"
                 size: button.iconSize
                 horizontalAlignment: button.alignIconLeft ? Text.AlignLeft : Text.AlignHCenter
@@ -327,7 +325,7 @@ Item {
                 height: button.height
                 text: button.label
                 visible: text.length > 0
-                color: Colors.barForeground
+                color: Colors.fgPrimary
                 verticalAlignment: Text.AlignVCenter
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize

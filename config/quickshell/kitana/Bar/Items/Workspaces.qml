@@ -45,8 +45,8 @@ Item {
         anchors.fill: parent
         visible: !root.embedded
         radius: root.height / settings.radiusDivisor
-        color: Colors.barBackground
-        border.color: Colors.barBorder
+        color: Colors.bgSecondary
+        border.color: Colors.borderFaint
         border.width: settings.borderWidth
     }
 
@@ -111,13 +111,13 @@ Item {
                 width: active ? settings.workspaceActiveWidth : settings.workspaceInactiveWidth
                 height: settings.workspacePillHeight
                 radius: height / settings.radiusDivisor
-                color: active ? Colors.workspaceActiveBackground : (occupied ? Colors.workspaceOccupiedBackground : Colors.workspaceInactiveBackground)
+                color: active ? Colors.bgAccent : (occupied ? Colors.bgTertiary : Colors.subtleSecondary)
 
                 // Workspace number label
                 Text {
                     anchors.centerIn: parent
                     text: workspacePill.workspaceId
-                    color: workspacePill.active ? Colors.workspaceActiveForeground : (workspacePill.occupied ? Colors.workspaceOccupiedForeground : Colors.workspaceInactiveForeground)
+                    color: workspacePill.active ? Colors.fgOnPrimary : (workspacePill.occupied ? Colors.fgPrimary : Colors.fgTertiary)
                     font.family: Typography.fontFamily
                     font.pixelSize: settings.textPixelSize
                     font.weight: Font.DemiBold

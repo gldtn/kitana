@@ -1,0 +1,53 @@
+{
+  // Static theme sources are JSONC. Live Theme/current.json stays strict JSON.
+  "slug": "example",
+  "name": "Example",
+  "mode": "dark",
+  "colors": {
+    "bg": "#111111",
+    "bg_alt": { "ref": "bg", "lighten": 0.05 },
+    "bg_highlight": { "ref": "bg", "mix": "fg", "ratio": 0.16 },
+    "fg": "#eeeeee",
+    "accent": "#89b4fa",
+    "accent_soft": { "ref": "accent", "darken": 0.15 }
+  },
+  "palette": {
+    "fgPrimary": "fg",
+    "fgSecondary": "fg",
+    "fgTertiary": "fg",
+    "fgOnPrimary": "bg",
+    "fgAccent": "accent",
+    "bgPrimary": "bg",
+    "bgSecondary": "bg_alt",
+    "bgTertiary": "bg_highlight",
+    "bgOnPrimary": "bg",
+    "bgAccent": "accent",
+    "borderDark": "bg",
+    "borderLight": "bg_highlight",
+    "borderFaint": "bg_alt",
+    "borderHeavy": "fg",
+    "borderAccent": "accent",
+    "info": "accent",
+    "success": "accent",
+    "warning": "accent",
+    "error": "accent",
+    "scrimPrimary": { "ref": "bg", "alpha": 0.52 },
+    "scrimSecondary": { "ref": "bg", "alpha": 0.32 },
+    "scrimTertiary": { "ref": "bg", "alpha": 0.60 },
+    "subtlePrimary": { "ref": "accent_soft", "alpha": 0.16 },
+    "subtleSecondary": { "ref": "bg_highlight", "alpha": 0.65 },
+    "subtleTertiary": { "ref": "fg", "alpha": 0.50 }
+  },
+  "icons": {
+    "primary": "fgPrimary",
+    "secondary": "fgSecondary",
+    "muted": "fgTertiary",
+    "subtle": "fgTertiary",
+    "accent": "fgAccent",
+    "onAccent": "fgOnPrimary",
+    "inverse": "bgOnPrimary",
+    "brand": "fgAccent",
+    "disabled": { "ref": "fgTertiary", "alpha": 0.5 },
+    "danger": "error"
+  }
+}

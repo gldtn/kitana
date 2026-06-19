@@ -15,8 +15,8 @@ Rectangle {
 
     Layout.preferredHeight: 34
     radius: 10
-    color: Colors.cardBackground
-    border.color: volumeMouse.containsMouse ? Colors.controlActiveBorder : Colors.panelBorder
+    color: Colors.bgTertiary
+    border.color: volumeMouse.containsMouse ? Colors.borderAccent : Colors.borderFaint
     border.width: 1
     clip: true
 
@@ -27,14 +27,14 @@ Rectangle {
         anchors.bottom: parent.bottom
         width: parent.width * Math.max(0, Math.min(100, root.value)) / 100
         radius: parent.radius
-        color: Colors.controlActiveBackground
+        color: Colors.subtlePrimary
     }
 
     // Volume value label
     Text {
         anchors.centerIn: parent
         text: "Volume " + root.value + "%"
-        color: Colors.foreground
+        color: Colors.fgPrimary
         font.family: Typography.fontFamily
         font.pixelSize: settings.textPixelSize
         font.weight: Font.DemiBold

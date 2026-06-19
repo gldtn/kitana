@@ -34,7 +34,7 @@ Item {
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: Services.NotificationService.doNotDisturb ? "Notifications silenced" : "No notifications"
-                color: Colors.foregroundMuted
+                color: Colors.fgSecondary
                 horizontalAlignment: Text.AlignHCenter
                 font.family: Typography.fontFamily
                 font.pixelSize: 18
@@ -77,7 +77,7 @@ Item {
             anchors.bottom: footer.top
             anchors.bottomMargin: 10
             height: 1
-            color: Colors.cardBorder
+            color: Colors.borderFaint
         }
 
         // Notification footer actions
@@ -95,7 +95,7 @@ Item {
                 width: parent.width - silentAction.width - clearAction.width - parent.spacing * 2
                 anchors.verticalCenter: parent.verticalCenter
                 text: Services.NotificationService.count + " notification" + (Services.NotificationService.count === 1 ? "" : "s")
-                color: Colors.foreground
+                color: Colors.fgPrimary
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize + 2
@@ -152,7 +152,7 @@ Item {
             Text {
                 anchors.verticalCenter: parent.verticalCenter
                 text: action.text
-                color: action.active || actionMouse.containsMouse ? Colors.foreground : Colors.foregroundMuted
+                color: action.active || actionMouse.containsMouse ? Colors.fgPrimary : Colors.fgSecondary
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize + 1
                 font.weight: Font.DemiBold

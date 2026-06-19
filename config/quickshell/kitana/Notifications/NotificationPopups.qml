@@ -58,8 +58,8 @@ PanelWindow {
                 width: popupColumn.width
                 height: Math.max(84, contentColumn.implicitHeight + verticalPadding * 2)
                 radius: 20
-                color: Colors.popupBackground
-                border.color: Colors.popupBorder
+                color: Colors.bgSecondary
+                border.color: Colors.borderFaint
                 border.width: 1
 
                 // Notification tone icon badge
@@ -97,7 +97,7 @@ PanelWindow {
                     Text {
                         width: parent.width
                         text: notificationPopup.modelData.summary
-                        color: Colors.foreground
+                        color: Colors.fgPrimary
                         elide: Text.ElideRight
                         clip: true
                         font.family: Typography.fontFamily
@@ -108,7 +108,7 @@ PanelWindow {
                     Text {
                         width: parent.width
                         text: notificationPopup.modelData.appName
-                        color: Colors.foregroundMuted
+                        color: Colors.fgSecondary
                         elide: Text.ElideRight
                         clip: true
                         font.family: Typography.fontFamily
@@ -120,7 +120,7 @@ PanelWindow {
                         width: parent.width
                         visible: text.length > 0
                         text: notificationPopup.modelData.bodyMarkup
-                        color: Colors.popupForegroundMuted
+                        color: Colors.fgSecondary
                         elide: Text.ElideRight
                         wrapMode: Text.WrapAnywhere
                         maximumLineCount: 2

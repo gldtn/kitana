@@ -24,7 +24,7 @@ ColumnLayout {
     Text {
         Layout.fillWidth: true
         text: "Dashboard Settings"
-        color: Colors.controlForeground
+        color: Colors.fgPrimary
         font.family: Typography.fontFamily
         font.pixelSize: 16
         font.weight: Font.Bold
@@ -35,8 +35,8 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.preferredHeight: 128
         radius: 16
-        color: Colors.containerBackground
-        border.color: Colors.containerBorder
+        color: Colors.bgSecondary
+        border.color: Colors.borderFaint
         border.width: 0.8
 
         // Weather settings form
@@ -48,7 +48,7 @@ ColumnLayout {
             Text {
                 Layout.fillWidth: true
                 text: "Weather"
-                color: Colors.controlForeground
+                color: Colors.fgPrimary
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
                 font.weight: Font.DemiBold
@@ -94,8 +94,8 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.preferredHeight: 184
         radius: 16
-        color: Colors.containerBackground
-        border.color: Colors.containerBorder
+        color: Colors.bgSecondary
+        border.color: Colors.borderFaint
         border.width: 0.8
 
         // World clock settings form
@@ -107,7 +107,7 @@ ColumnLayout {
             Text {
                 Layout.fillWidth: true
                 text: "World Clocks"
-                color: Colors.controlForeground
+                color: Colors.fgPrimary
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
                 font.weight: Font.DemiBold

@@ -340,7 +340,7 @@ fi
 
 cp "$KITANA_DIR/config/quickshell/kitana/qmldir" "$QUICKSHELL_CONFIG_DIR/qmldir"
 
-for quickshell_dir in Assets Bar Components Config Dashboard Launcher Notifications OSD Screenshot Services Settings Session Shortcuts System Wallpaper; do
+for quickshell_dir in Assets Bar Components Config Dashboard Launcher Notifications OSD Screenshot Services Settings Session Shortcuts System Theme Wallpaper; do
   source_dir="$KITANA_DIR/config/quickshell/kitana/$quickshell_dir"
   [ -d "$source_dir" ] || continue
 

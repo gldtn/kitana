@@ -2,12 +2,15 @@
 
 set -euo pipefail
 
-kitana_dir="${KITANA_DIR:-$HOME/.local/share/kitana}"
 source_value="${1:-$HOME/.config/kitana/current-wallpaper}"
-template="$kitana_dir/config/quickshell/kitana/Config/Colors.qml"
-target="$HOME/.config/quickshell/kitana/Config/Colors.qml"
+kitana_dir="${KITANA_DIR:-$HOME/.local/share/kitana}"
+lua_path="$kitana_dir/lib/?.lua;$kitana_dir/lib/?/init.lua;;"
+target="$HOME/.config/quickshell/kitana/Theme/current.json"
+state_dir="$HOME/.config/kitana"
+state_file="$state_dir/theme"
 legacy_target="$HOME/.config/quickshell/kitana/Colors.qml"
-mkdir -p "$(dirname "$target")"
+
+mkdir -p "$(dirname "$target")" "$state_dir"
 
 remove_legacy_target() {
   if [ -f "$legacy_target" ] && grep -q "Kitana managed Quickshell colors" "$legacy_target"; then
@@ -15,195 +18,238 @@ remove_legacy_target() {
   fi
 }
 
-reload_quickshell() {
-  if [ "${KITANA_NO_RELOAD:-}" = 1 ]; then
-    return 0
-  fi
+write_theme() {
+  local mode="$1"
+  local source="$2"
+  local tmp
 
-  "$kitana_dir/bin/kitana-quickshell" >/dev/null 2>&1 || true
+  tmp="$(mktemp "$target.tmp.XXXXXX")"
+  LUA_PATH="$lua_path" lua - "$mode" "$source" >"$tmp" <<'LUA'
+local json = require("kitana-json")
+
+local mode, source = arg[1], arg[2]
+
+local function read_file(path)
+  local file = assert(io.open(path, "rb"))
+  local data = file:read("*a")
+  file:close()
+  return data
+end
+
+local function normalize(color)
+  color = tostring(color or ""):match("^%s*(.-)%s*$")
+  if #color == 8 and not color:match("^#") then
+    color = color:sub(3)
+  elseif #color == 9 and color:match("^#") then
+    color = "#" .. color:sub(4)
+  end
+  return "#" .. color:gsub("^#", "")
+end
+
+local function extract(candidate)
+  if type(candidate) == "string" then
+    return candidate
+  end
+  if type(candidate) ~= "table" then
+    return nil
+  end
+  if type(candidate.color) == "string" then
+    return candidate.color
+  end
+  if type(candidate.hex) == "string" then
+    return candidate.hex
+  end
+  for _, mode_name in ipairs({ "dark", "default", "light" }) do
+    local extracted = extract(candidate[mode_name])
+    if extracted then
+      return extracted
+    end
+  end
+  return nil
+end
+
+local function material_theme(path)
+  local data = json.decode(read_file(path))
+  local colors = data.colors or data
+
+  local function get(name, fallback)
+    local value = colors[name]
+    if value == nil and type(colors.dark) == "table" then
+      value = colors.dark[name]
+    end
+    return normalize(extract(value) or fallback)
+  end
+
+  return {
+    source_color = get("source_color", "#89b4fa"),
+    primary = get("primary", "#89b4fa"),
+    on_primary = get("on_primary", "#11111b"),
+    primary_container = get("primary_container", "#313244"),
+    on_primary_container = get("on_primary_container", "#cdd6f4"),
+    secondary = get("secondary", "#a6e3a1"),
+    on_secondary = get("on_secondary", "#11111b"),
+    tertiary = get("tertiary", "#f9e2af"),
+    on_tertiary = get("on_tertiary", "#11111b"),
+    surface = get("surface", "#1e1e2e"),
+    surface_container_low = get("surface_container_low", "#181825"),
+    surface_container = get("surface_container", "#313244"),
+    surface_container_high = get("surface_container_high", "#45475a"),
+    surface_container_highest = get("surface_container_highest", "#585b70"),
+    on_surface = get("on_surface", "#cdd6f4"),
+    on_surface_variant = get("on_surface_variant", "#9399b2"),
+    outline = get("outline", "#6c7086"),
+    outline_variant = get("outline_variant", "#313244"),
+    inverse_surface = get("inverse_surface", "#cdd6f4"),
+    inverse_on_surface = get("inverse_on_surface", "#11111b"),
+    error = get("error", "#f38ba8"),
+    on_error = get("on_error", "#11111b"),
+  }
+end
+
+local function hue_to_rgb(p, q, t)
+  if t < 0 then
+    t = t + 1
+  elseif t > 1 then
+    t = t - 1
+  end
+  if t < 1 / 6 then
+    return p + (q - p) * 6 * t
+  elseif t < 1 / 2 then
+    return q
+  elseif t < 2 / 3 then
+    return p + (q - p) * (2 / 3 - t) * 6
+  end
+  return p
+end
+
+local function rgb_to_hsl(r, g, b)
+  local max_value = math.max(r, g, b)
+  local min_value = math.min(r, g, b)
+  local lightness = (max_value + min_value) / 2
+
+  if max_value == min_value then
+    return 0, lightness, 0
+  end
+
+  local delta = max_value - min_value
+  local saturation = lightness > 0.5 and delta / (2 - max_value - min_value) or delta / (max_value + min_value)
+  local hue
+  if max_value == r then
+    hue = (g - b) / delta + (g < b and 6 or 0)
+  elseif max_value == g then
+    hue = (b - r) / delta + 2
+  else
+    hue = (r - g) / delta + 4
+  end
+
+  return hue / 6, lightness, saturation
+end
+
+local function hsl_to_rgb(hue, lightness, saturation)
+  if saturation == 0 then
+    return lightness, lightness, lightness
+  end
+
+  local q = lightness < 0.5 and lightness * (1 + saturation) or lightness + saturation - lightness * saturation
+  local p = 2 * lightness - q
+  return hue_to_rgb(p, q, hue + 1 / 3), hue_to_rgb(p, q, hue), hue_to_rgb(p, q, hue - 1 / 3)
+end
+
+local function hsl_theme(color)
+  color = normalize(color)
+  local r = tonumber(color:sub(2, 3), 16) / 255
+  local g = tonumber(color:sub(4, 5), 16) / 255
+  local b = tonumber(color:sub(6, 7), 16) / 255
+  local hue, _, saturation = rgb_to_hsl(r, g, b)
+
+  local function hex_color(lightness, saturation_override)
+    local rr, gg, bb = hsl_to_rgb(hue, lightness, saturation_override or saturation)
+    return string.format("#%02x%02x%02x", math.floor(rr * 255 + 0.5), math.floor(gg * 255 + 0.5), math.floor(bb * 255 + 0.5))
+  end
+
+  local background = hex_color(0.10, math.max(saturation * 0.45, 0.12))
+  local surface = hex_color(0.16, math.max(saturation * 0.40, 0.10))
+  local surface_high = hex_color(0.24, math.max(saturation * 0.40, 0.10))
+
+  return {
+    source_color = color,
+    primary = color,
+    on_primary = background,
+    primary_container = surface_high,
+    on_primary_container = "#f4f4f5",
+    secondary = "#a6e3a1",
+    on_secondary = background,
+    tertiary = "#f9e2af",
+    on_tertiary = background,
+    surface = background,
+    surface_container_low = background,
+    surface_container = surface,
+    surface_container_high = surface_high,
+    surface_container_highest = surface_high,
+    on_surface = "#f4f4f5",
+    on_surface_variant = "#a1a1aa",
+    outline = "#a1a1aa",
+    outline_variant = surface_high,
+    inverse_surface = "#f4f4f5",
+    inverse_on_surface = background,
+    error = "#f38ba8",
+    on_error = background,
+  }
+end
+
+local colors = mode == "hex" and hsl_theme(source) or material_theme(source)
+
+local theme = {
+  slug = "matugen",
+  name = "Matugen",
+  mode = "dark",
+  colors = colors,
+  palette = {
+    fgPrimary = "on_surface",
+    fgSecondary = "on_surface_variant",
+    fgTertiary = "outline",
+    fgOnPrimary = "on_primary",
+    fgAccent = "primary",
+    bgPrimary = "surface",
+    bgSecondary = "surface_container",
+    bgTertiary = "surface_container_high",
+    bgOnPrimary = "on_primary",
+    bgAccent = "primary",
+    borderDark = "outline",
+    borderLight = "outline_variant",
+    borderFaint = "outline_variant",
+    borderHeavy = "on_surface_variant",
+    borderAccent = "primary",
+    info = "primary",
+    success = "secondary",
+    warning = "tertiary",
+    error = "error",
+    scrimPrimary = { ref = "surface", alpha = 0.52 },
+    scrimSecondary = { ref = "surface", alpha = 0.32 },
+    scrimTertiary = { ref = "surface", alpha = 0.60 },
+    subtlePrimary = { ref = "primary", alpha = 0.16 },
+    subtleSecondary = { ref = "surface_container_highest", alpha = 0.65 },
+    subtleTertiary = { ref = "outline", alpha = 0.50 },
+  },
+  icons = {
+    primary = "fgPrimary",
+    secondary = "fgSecondary",
+    muted = "fgTertiary",
+    subtle = "fgTertiary",
+    accent = "fgAccent",
+    onAccent = "fgOnPrimary",
+    inverse = "bgOnPrimary",
+    brand = "fgAccent",
+    disabled = { ref = "fgTertiary", alpha = 0.5 },
+    danger = "error",
+  },
 }
 
-finish() {
+io.write(json.encode(theme, { indent = "  " }), "\n")
+LUA
+  mv "$tmp" "$target"
+  printf 'matugen\n' >"$state_file"
   remove_legacy_target
-  echo "$1"
-  reload_quickshell
-  exit 0
-}
-
-render_colors() {
-  local color_env="$1"
-
-  set -a
-  eval "$color_env"
-  set +a
-
-  lua "$kitana_dir/lib/kitana-quickshell-colors.lua" "$template" "$target"
-}
-
-generate_color_env() {
-  python - "$1" "$2" <<'PY'
-import colorsys
-import json
-import pathlib
-import sys
-
-mode, source = sys.argv[1], sys.argv[2]
-
-def normalize(color):
-    color = str(color).strip()
-    if len(color) == 8 and not color.startswith("#"):
-        color = color[2:]
-    if color.startswith("#") and len(color) == 9:
-        color = "#" + color[3:]
-    return "#" + color.lstrip("#")
-
-def shell_quote(value):
-    return "'" + normalize(value).replace("'", "'\\''") + "'"
-
-def emit_env(sources):
-    for role, value in sources.items():
-        print(f"{role}={shell_quote(value)}")
-
-def sources_from_hex(color):
-    color = normalize(color)
-    r, g, b = (int(color[i:i + 2], 16) / 255 for i in (1, 3, 5))
-    h, lightness, saturation = colorsys.rgb_to_hls(r, g, b)
-
-    def hex_color(lightness, saturation_override=None):
-        rr, gg, bb = colorsys.hls_to_rgb(h, lightness, saturation if saturation_override is None else saturation_override)
-        return "#{:02x}{:02x}{:02x}".format(round(rr * 255), round(gg * 255), round(bb * 255))
-
-    background = hex_color(0.10, max(saturation * 0.45, 0.12))
-    surface = hex_color(0.16, max(saturation * 0.40, 0.10))
-    surface_alt = hex_color(0.24, max(saturation * 0.40, 0.10))
-    foreground = "#f4f4f5"
-    muted = "#a1a1aa"
-
-    return {
-        "foreground": foreground,
-        "foregroundStrong": "#ffffff",
-        "foregroundMuted": muted,
-        "foregroundSubtle": muted,
-        "foregroundInverted": background,
-        "accent": color,
-        "accentStrong": color,
-        "onAccent": background,
-        "background": background,
-        "surface": background,
-        "surfaceContainer": background,
-        "surfaceCard": surface,
-        "surfaceControl": surface,
-        "surfaceSubtle": surface_alt,
-        "surfaceHover": surface_alt,
-        "surfacePressed": surface_alt,
-        "surfaceActive": color,
-        "surfaceSelected": color,
-        "surfaceFloating": background,
-        "surfaceFloatingStrong": surface,
-        "border": surface,
-        "borderSubtle": surface,
-        "borderMuted": surface,
-        "borderStrong": surface_alt,
-        "borderFocus": color,
-        "info": color,
-        "success": "#a6e3a1",
-        "warning": "#f9e2af",
-        "danger": "#f38ba8",
-        "iconPrimary": foreground,
-        "iconSecondary": "#ffffff",
-        "iconMuted": muted,
-        "iconSubtle": muted,
-        "iconAccent": color,
-        "iconOnAccent": background,
-        "iconInverse": background,
-        "iconBrand": color,
-        "iconDisabled": muted,
-        "iconDanger": "#f38ba8",
-    }
-
-def sources_from_json(path):
-    data = json.loads(pathlib.Path(path).read_text())
-    colors = data.get("colors", data)
-
-    def extract(candidate):
-        if isinstance(candidate, str):
-            return candidate
-        if not isinstance(candidate, dict):
-            return None
-        for key in ("color", "hex"):
-            if isinstance(candidate.get(key), str):
-                return candidate[key]
-        for mode_name in ("dark", "default", "light"):
-            extracted = extract(candidate.get(mode_name))
-            if extracted:
-                return extracted
-        return None
-
-    def get(name, fallback):
-        value = colors.get(name)
-        if value is None and isinstance(colors.get("dark"), dict):
-            value = colors["dark"].get(name)
-        return normalize(extract(value) or fallback)
-
-    background = get("background", "#1e1e2e")
-    surface = get("surface_container", "#313244")
-    surface_alt = get("surface_container_high", "#45475a")
-    surface_hover = get("surface_container_highest", surface_alt)
-    accent = get("primary", "#89b4fa")
-    accent_strong = get("primary_container", accent)
-    foreground = get("on_background", "#cdd6f4")
-    muted = get("on_surface_variant", "#9399b2")
-    on_accent = get("on_primary", background)
-    warning = get("tertiary", "#f9e2af")
-    danger = get("error", "#f38ba8")
-    success = get("secondary", "#a6e3a1")
-    outline = get("outline", muted)
-    outline_variant = get("outline_variant", surface_alt)
-
-    return {
-        "foreground": foreground,
-        "foregroundStrong": foreground,
-        "foregroundMuted": muted,
-        "foregroundSubtle": outline,
-        "foregroundInverted": on_accent,
-        "accent": accent,
-        "accentStrong": accent_strong,
-        "onAccent": on_accent,
-        "background": background,
-        "surface": background,
-        "surfaceContainer": on_accent,
-        "surfaceCard": surface,
-        "surfaceControl": surface,
-        "surfaceSubtle": surface_alt,
-        "surfaceHover": surface_hover,
-        "surfacePressed": surface_hover,
-        "surfaceActive": accent,
-        "surfaceSelected": accent,
-        "surfaceFloating": background,
-        "surfaceFloatingStrong": surface,
-        "border": outline_variant,
-        "borderSubtle": outline_variant,
-        "borderMuted": outline_variant,
-        "borderStrong": outline,
-        "borderFocus": accent,
-        "info": accent,
-        "success": success,
-        "warning": warning,
-        "danger": danger,
-        "iconPrimary": foreground,
-        "iconSecondary": foreground,
-        "iconMuted": muted,
-        "iconSubtle": outline,
-        "iconAccent": accent,
-        "iconOnAccent": on_accent,
-        "iconInverse": on_accent,
-        "iconBrand": accent,
-        "iconDisabled": muted,
-        "iconDanger": danger,
-    }
-
-emit_env(sources_from_hex(source) if mode == "hex" else sources_from_json(source))
-PY
 }
 
 average_color() {
@@ -217,8 +263,9 @@ average_color() {
 }
 
 if [[ "$source_value" =~ ^#?[0-9a-fA-F]{6}$ ]]; then
-  render_colors "$(generate_color_env hex "#${source_value#\#}")"
-  finish "Generated $target from #${source_value#\#}"
+  write_theme hex "#${source_value#\#}"
+  echo "Generated $target from #${source_value#\#}"
+  exit 0
 fi
 
 if [ ! -f "$source_value" ]; then
@@ -230,13 +277,15 @@ tmpdir="$(mktemp -d)"
 trap 'rm -rf "$tmpdir"' EXIT
 
 if command -v matugen >/dev/null 2>&1 && matugen image "$source_value" --dry-run --source-color-index 0 --json hex >"$tmpdir/colors.json" 2>"$tmpdir/matugen.err"; then
-  render_colors "$(generate_color_env json "$tmpdir/colors.json")"
-  finish "Generated $target from $source_value"
+  write_theme json "$tmpdir/colors.json"
+  echo "Generated $target from $source_value"
+  exit 0
 fi
 
 if color="$(average_color)"; then
-  render_colors "$(generate_color_env hex "$color")"
-  finish "Generated $target from average wallpaper color $color"
+  write_theme hex "$color"
+  echo "Generated $target from average wallpaper color $color"
+  exit 0
 fi
 
 echo "Could not extract colors from wallpaper: $source_value"

@@ -113,8 +113,8 @@ PanelWindow {
         anchors.centerIn: parent
         opacity: root.revealProgress
         radius: 18
-        color: Colors.panelBackground
-        border.color: Colors.panelBorder
+        color: Colors.bgPrimary
+        border.color: Colors.borderFaint
         border.width: 1
         clip: true
 
@@ -155,7 +155,7 @@ PanelWindow {
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 1
-                color: Colors.panelBorder
+                color: Colors.borderFaint
             }
 
             // Active settings tab loader
@@ -189,8 +189,8 @@ PanelWindow {
         Layout.preferredWidth: tabContent.implicitWidth + 22
         Layout.preferredHeight: 34
         radius: 10
-        color: selected ? Colors.controlActiveBackground : (tabMouse.containsMouse ? Colors.controlHoverBackground : "transparent")
-        border.color: selected ? Colors.controlActiveBorder : "transparent"
+        color: selected ? Colors.subtlePrimary : (tabMouse.containsMouse ? Colors.bgTertiary : "transparent")
+        border.color: selected ? Colors.borderAccent : "transparent"
         border.width: 1
 
         // Tab icon and label row
@@ -209,7 +209,7 @@ PanelWindow {
             Text {
                 height: tabRoot.height
                 text: tabRoot.label
-                color: Colors.foreground
+                color: Colors.fgPrimary
                 verticalAlignment: Text.AlignVCenter
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
@@ -241,8 +241,8 @@ PanelWindow {
         Layout.fillWidth: true
         Layout.preferredHeight: 52
         radius: 12
-        color: rowMouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground
-        border.color: active ? Colors.controlActiveBorder : Colors.panelBorder
+        color: rowMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary
+        border.color: active ? Colors.borderAccent : Colors.borderFaint
         border.width: 1
 
         // Setting icon and labels
@@ -266,7 +266,7 @@ PanelWindow {
                 Text {
                     Layout.fillWidth: true
                     text: rowRoot.title
-                    color: Colors.foreground
+                    color: Colors.fgPrimary
                     elide: Text.ElideRight
                     font.family: Typography.fontFamily
                     font.pixelSize: settings.textPixelSize
@@ -276,7 +276,7 @@ PanelWindow {
                 Text {
                     Layout.fillWidth: true
                     text: rowRoot.subtitle
-                    color: Colors.foregroundMuted
+                    color: Colors.fgSecondary
                     elide: Text.ElideRight
                     font.family: Typography.fontFamily
                     font.pixelSize: settings.textPixelSize - 1
@@ -304,8 +304,8 @@ PanelWindow {
         Layout.fillWidth: true
         Layout.preferredHeight: 88
         radius: 13
-        color: selected ? Colors.controlActiveBackground : (optionMouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground)
-        border.color: selected ? Colors.controlActiveBorder : Colors.panelBorder
+        color: selected ? Colors.subtlePrimary : (optionMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary)
+        border.color: selected ? Colors.borderAccent : Colors.borderFaint
         border.width: 1
 
         // Option icon and description
@@ -324,7 +324,7 @@ PanelWindow {
             Text {
                 width: parent.width
                 text: root.modeTitle(optionRoot.mode)
-                color: Colors.foreground
+                color: Colors.fgPrimary
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 elide: Text.ElideRight
@@ -336,7 +336,7 @@ PanelWindow {
             Text {
                 width: parent.width
                 text: root.modeSubtitle(optionRoot.mode)
-                color: Colors.foregroundMuted
+                color: Colors.fgSecondary
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 elide: Text.ElideRight
@@ -366,7 +366,7 @@ PanelWindow {
             Text {
                 Layout.fillWidth: true
                 text: "Bar"
-                color: Colors.foreground
+                color: Colors.fgPrimary
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize + 4
                 font.weight: Font.Bold
@@ -377,8 +377,8 @@ PanelWindow {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 176
                 radius: 14
-                color: Colors.containerBackground
-                border.color: Colors.containerBorder
+                color: Colors.bgSecondary
+                border.color: Colors.borderFaint
                 border.width: 1
 
                 // Workspace layout options content
@@ -390,7 +390,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: "Workspace layout control"
-                        color: Colors.foreground
+                        color: Colors.fgPrimary
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize
                         font.weight: Font.Bold
@@ -410,7 +410,7 @@ PanelWindow {
             Text {
                 Layout.fillWidth: true
                 text: "The control toggles the focused workspace between dwindle and scrolling without changing your Hyprland default layout."
-                color: Colors.foregroundMuted
+                color: Colors.fgSecondary
                 wrapMode: Text.WordWrap
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
@@ -431,7 +431,7 @@ PanelWindow {
             Text {
                 Layout.fillWidth: true
                 text: "System"
-                color: Colors.foreground
+                color: Colors.fgPrimary
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize + 4
                 font.weight: Font.Bold
@@ -458,7 +458,7 @@ PanelWindow {
             Text {
                 Layout.fillWidth: true
                 text: "Network, Bluetooth, and audio routing stay in the quick system panel."
-                color: Colors.foregroundMuted
+                color: Colors.fgSecondary
                 wrapMode: Text.WordWrap
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize

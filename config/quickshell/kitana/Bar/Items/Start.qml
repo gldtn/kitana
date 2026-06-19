@@ -23,8 +23,8 @@ Item {
         anchors.fill: parent
         visible: !root.embedded || startMouse.containsMouse
         radius: root.height / settings.radiusDivisor
-        color: startMouse.containsMouse ? Colors.barHoverBackground : Colors.barBackground
-        border.color: Colors.barBorder
+        color: startMouse.containsMouse ? Colors.bgTertiary : Colors.bgSecondary
+        border.color: Colors.borderFaint
         border.width: root.embedded ? 0 : settings.borderWidth
     }
 

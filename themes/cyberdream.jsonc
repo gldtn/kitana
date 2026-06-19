@@ -1,0 +1,110 @@
+{
+  "slug": "cyberdream",
+  "name": "Cyberdream",
+  "mode": "dark",
+  "colors": {
+    "bg": "#16181a",
+    "bg_alt": "#1e2124",
+    "bg_highlight": "#3c4048",
+    "fg": "#ffffff",
+    "grey": "#7b8496",
+    "blue": "#5ea1ff",
+    "green": "#5eff6c",
+    "cyan": "#5ef1ff",
+    "red": "#ff6e5e",
+    "yellow": "#f1ff5e",
+    "magenta": "#ff5ef1",
+    "pink": "#ff5ea0",
+    "orange": "#ffbd5e",
+    "purple": "#bd5eff",
+    // custom colors
+    "fg_subtle": {
+      "ref": "fg",
+      "darken": 0.5
+    },
+    "surface_control": "#363a41",
+    "surface_hover": "#3b3f47",
+    "surface_pressed": "#3e424a",
+    "surface_floating": "#2d3036",
+    "border": "#3a3e46",
+    "border_subtle": "#505662",
+    "border_muted": "#303336",
+    "border_strong": "#6f7787",
+    "icon_subtle": "#bdc2cb"
+  },
+  "palette": {
+    "fgPrimary": "fg",
+    "fgSecondary": "grey",
+    "fgTertiary": "fg_subtle",
+    "fgOnPrimary": "bg",
+    "fgAccent": "orange",
+    "bgPrimary": "bg",
+    "bgSecondary": "bg_alt",
+    "bgTertiary": "bg_highlight",
+    "bgOnPrimary": "bg",
+    "bgAccent": "orange",
+    "borderDark": "bg",
+    "borderLight": "border_subtle",
+    "borderFaint": "border_muted",
+    "borderHeavy": "border_strong",
+    "borderAccent": "orange",
+    "info": "blue",
+    "success": "green",
+    "warning": "yellow",
+    "error": "red",
+    "scrimPrimary": {
+      "ref": "bg",
+      "alpha": 0.52
+    },
+    "scrimSecondary": {
+      "ref": "bg",
+      "alpha": 0.32
+    },
+    "scrimTertiary": {
+      "ref": "bg",
+      "alpha": 0.6
+    },
+    "subtlePrimary": {
+      "ref": "orange",
+      "alpha": 0.16
+    },
+    "subtleSecondary": {
+      "ref": "bg_highlight",
+      "alpha": 0.65
+    },
+    "subtleTertiary": {
+      "ref": "grey",
+      "alpha": 0.5
+    }
+  },
+  "icons": {
+    "primary": "fg",
+    "secondary": "fg",
+    "muted": "grey",
+    "subtle": "icon_subtle",
+    "accent": "orange",
+    "onAccent": "bg",
+    "inverse": "bg",
+    "brand": "orange",
+    "disabled": {
+      "ref": "grey",
+      "alpha": 0.5
+    },
+    "danger": "red"
+  },
+  "hypr": {
+    "border_active": "borderAccent",
+    "border_inactive": "borderHeavy"
+  },
+  "ghostty": {
+    "source_file": "vendor/ghostty/cyberdream"
+  },
+  "zed": {
+    "source_url": "https://raw.githubusercontent.com/scottmckendry/cyberdream.nvim/main/extras/zed/cyberdream.json",
+    "source_file": "vendor/zed/cyberdream.json",
+    "theme_name": "Cyberdream dark"
+  },
+  "neovim": {
+    "colorscheme": "cyberdream"
+  }
+}

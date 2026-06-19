@@ -1,0 +1,87 @@
+{
+  "slug": "catppuccin-mocha",
+  "name": "Catppuccin Mocha",
+  "mode": "dark",
+  "colors": {
+    "rosewater": "#f5e0dc",
+    "flamingo": "#f2cdcd",
+    "pink": "#f5c2e7",
+    "mauve": "#cba6f7",
+    "red": "#f38ba8",
+    "maroon": "#eba0ac",
+    "peach": "#fab387",
+    "yellow": "#f9e2af",
+    "green": "#a6e3a1",
+    "teal": "#94e2d5",
+    "sky": "#89dceb",
+    "sapphire": "#74c7ec",
+    "blue": "#89b4fa",
+    "lavender": "#b4befe",
+    "text": "#cdd6f4",
+    "subtext1": "#bac2de",
+    "subtext0": "#a6adc8",
+    "overlay2": "#9399b2",
+    "overlay1": "#7f849c",
+    "overlay0": "#6c7086",
+    "surface2": "#585b70",
+    "surface1": "#45475a",
+    "surface0": "#313244",
+    "base": "#1e1e2e",
+    "mantle": "#181825",
+    "crust": "#11111b"
+  },
+  "palette": {
+    "fgPrimary": "text",
+    "fgSecondary": "overlay2",
+    "fgTertiary": "overlay2",
+    "fgOnPrimary": "mantle",
+    "fgAccent": "mauve",
+    "bgPrimary": "base",
+    "bgSecondary": "mantle",
+    "bgTertiary": "surface0",
+    "bgOnPrimary": "mantle",
+    "bgAccent": "mauve",
+    "borderDark": "crust",
+    "borderLight": "surface1",
+    "borderFaint": "surface0",
+    "borderHeavy": "surface1",
+    "borderAccent": "mauve",
+    "info": "blue",
+    "success": "green",
+    "warning": "yellow",
+    "error": "red",
+    "scrimPrimary": { "ref": "base", "alpha": 0.52 },
+    "scrimSecondary": { "ref": "base", "alpha": 0.32 },
+    "scrimTertiary": { "ref": "base", "alpha": 0.60 },
+    "subtlePrimary": { "ref": "mauve", "alpha": 0.16 },
+    "subtleSecondary": { "ref": "surface1", "alpha": 0.65 },
+    "subtleTertiary": { "ref": "overlay2", "alpha": 0.50 }
+  },
+  "icons": {
+    "primary": "text",
+    "secondary": "rosewater",
+    "muted": "overlay2",
+    "subtle": "overlay2",
+    "accent": "mauve",
+    "onAccent": "mantle",
+    "inverse": "mantle",
+    "brand": "mauve",
+    "disabled": { "ref": "overlay2", "alpha": 0.5 },
+    "danger": "red"
+  },
+  "hypr": {
+    "border_active": "borderAccent",
+    "border_inactive": "borderHeavy"
+  },
+  "ghostty": {
+    "theme": "Catppuccin Mocha"
+  },
+  "zed": {
+    "source_url": "https://raw.githubusercontent.com/catppuccin/zed/main/themes/catppuccin-mauve.json",
+    "source_file": "vendor/zed/catppuccin-mocha.json",
+    "theme_name": "Catppuccin Mocha"
+  },
+  "neovim": {
+    "colorscheme": "catppuccin"
+  }
+}

@@ -48,8 +48,8 @@ PanelWindow {
         height: root.implicitHeight
         anchors.horizontalCenter: parent.horizontalCenter
         radius: 20
-        color: Colors.popupBackground
-        border.color: Colors.popupBorder
+        color: Colors.bgSecondary
+        border.color: Colors.borderFaint
         border.width: 1
         opacity: Services.OsdService.visible ? 1 : 0
 
@@ -98,14 +98,14 @@ PanelWindow {
                 Layout.preferredHeight: 7
                 Layout.alignment: Qt.AlignVCenter
                 radius: 4
-                color: Colors.popupSurface
+                color: Colors.bgTertiary
 
                 // OSD filled value bar
                 Rectangle {
                     width: parent.width * Services.OsdService.value / 100
                     height: parent.height
                     radius: parent.radius
-                    color: Services.OsdService.muted ? Colors.popupForegroundMuted : Colors.accent
+                    color: Services.OsdService.muted ? Colors.fgSecondary : Colors.fgAccent
 
                     Behavior on width {
                         NumberAnimation { duration: 90; easing.type: Easing.OutCubic }
@@ -118,7 +118,7 @@ PanelWindow {
                 Layout.preferredWidth: 42
                 Layout.alignment: Qt.AlignVCenter
                 text: Services.OsdService.muted ? "--" : Services.OsdService.value
-                color: Services.OsdService.muted ? Colors.popupForegroundMuted : Colors.popupForeground
+                color: Services.OsdService.muted ? Colors.fgSecondary : Colors.fgPrimary
                 horizontalAlignment: Text.AlignRight
                 font.family: Typography.fontFamily
                 font.pixelSize: 24

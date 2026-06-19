@@ -3,13 +3,11 @@
 set -euo pipefail
 
 kitana_dir="${KITANA_DIR:-$HOME/.local/share/kitana}"
-template="$kitana_dir/config/quickshell/kitana/Config/Colors.qml"
-target="$HOME/.config/quickshell/kitana/Config/Colors.qml"
+lua_path="$kitana_dir/lib/?.lua;$kitana_dir/lib/?/init.lua;;"
+target="$HOME/.config/quickshell/kitana/Theme/current.json"
 legacy_target="$HOME/.config/quickshell/kitana/Colors.qml"
 render_only=0
 theme="${1:-}"
-theme_env=""
-theme_payload=""
 
 if [ "$theme" = "--render-only" ]; then
   render_only=1
@@ -22,25 +20,9 @@ if [ -z "$theme" ]; then
   exit 2
 fi
 
-is_quickshell_running() {
-  command -v quickshell >/dev/null 2>&1 && quickshell ipc -c kitana show >/dev/null 2>&1
-}
+mkdir -p "$(dirname "$target")"
+LUA_PATH="$lua_path" lua "$kitana_dir/lib/kitana-theme.lua" apply "$theme" || exit 1
 
-theme_env="$(lua "$kitana_dir/lib/kitana-theme.lua" quickshell-env "$theme")" || exit 1
-theme_payload="$(lua "$kitana_dir/lib/kitana-theme.lua" quickshell-json "$theme")" || exit 1
-set -a
-eval "$theme_env"
-set +a
-
-if [ "$render_only" -eq 1 ] || ! is_quickshell_running; then
-  mkdir -p "$(dirname "$target")"
-  lua "$kitana_dir/lib/kitana-quickshell-colors.lua" "$template" "$target"
-
-  if [ -f "$legacy_target" ] && grep -q "Kitana managed Quickshell colors" "$legacy_target"; then
-    rm "$legacy_target"
-  fi
-fi
-
-if [ "$render_only" -eq 0 ] && is_quickshell_running; then
-  quickshell ipc -c kitana call kitana-theme colors "$theme_payload" >/dev/null 2>&1 || true
+if [ -f "$legacy_target" ] && grep -q "Kitana managed Quickshell colors" "$legacy_target"; then
+  rm "$legacy_target"
 fi

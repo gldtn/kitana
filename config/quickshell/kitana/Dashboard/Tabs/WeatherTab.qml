@@ -30,8 +30,8 @@ ColumnLayout {
             Layout.fillWidth: true
             Layout.preferredHeight: 34
             radius: 10
-            color: Colors.controlBackground
-            border.color: locationInput.activeFocus ? Colors.controlActiveBorder : Colors.controlBorder
+            color: Colors.bgTertiary
+            border.color: locationInput.activeFocus ? Colors.borderAccent : Colors.borderFaint
             border.width: 1
 
             TextInput {
@@ -42,9 +42,9 @@ ColumnLayout {
                 verticalAlignment: TextInput.AlignVCenter
                 text: tabRoot.panel.weatherLocation
                 echoMode: tabRoot.weatherPrefs.hideLocation ? TextInput.Password : TextInput.Normal
-                color: Colors.controlForeground
-                selectionColor: Colors.controlActiveBackground
-                selectedTextColor: Colors.controlForeground
+                color: Colors.fgPrimary
+                selectionColor: Colors.subtlePrimary
+                selectedTextColor: Colors.fgPrimary
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
                 onEditingFinished: {
@@ -76,8 +76,8 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.preferredHeight: 122
         radius: 16
-        color: Colors.containerBackground
-        border.color: Colors.containerBorder
+        color: Colors.bgSecondary
+        border.color: Colors.borderFaint
         border.width: 0.8
 
         // Weather condition and metric content
@@ -102,7 +102,7 @@ ColumnLayout {
 
                 Text {
                     text: tabRoot.weatherData.current_condition ? tabRoot.panel.tempValue(tabRoot.weatherData.current_condition[0], "temp_C", "temp_F") : "--°"
-                    color: Colors.foreground
+                    color: Colors.fgPrimary
                     font.family: Typography.fontFamily
                     font.pixelSize: 28
                     font.weight: Font.Bold
@@ -110,14 +110,14 @@ ColumnLayout {
 
                 Text {
                     text: tabRoot.weatherData.current_condition ? tabRoot.weatherData.current_condition[0].weatherDesc[0].value : tabRoot.panel.weatherStatus
-                    color: Colors.foregroundMuted
+                    color: Colors.fgSecondary
                     font.family: Typography.fontFamily
                     font.pixelSize: settings.textPixelSize + 1
                 }
 
                 Text {
                     text: tabRoot.weatherData.nearest_area ? tabRoot.weatherData.nearest_area[0].areaName[0].value : tabRoot.panel.weatherLocation
-                    color: Colors.foregroundMuted
+                    color: Colors.fgSecondary
                     font.family: Typography.fontFamily
                     font.pixelSize: settings.textPixelSize
                 }
@@ -153,8 +153,8 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.preferredHeight: 74
         radius: 14
-        color: Colors.containerBackground
-        border.color: Colors.containerBorder
+        color: Colors.bgSecondary
+        border.color: Colors.borderFaint
         border.width: 0.8
 
         // Sunrise, sunset, and moon metrics
@@ -191,8 +191,8 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 96
                 radius: 14
-                color: Colors.containerBackground
-                border.color: Colors.containerBorder
+                color: Colors.bgSecondary
+                border.color: Colors.borderFaint
                 border.width: 0.8
 
                 // Forecast day details
@@ -206,7 +206,7 @@ ColumnLayout {
                     Text {
                         width: parent.width
                         text: Qt.formatDate(new Date(forecastCard.modelData.date), "ddd")
-                        color: Colors.foreground
+                        color: Colors.fgPrimary
                         horizontalAlignment: Text.AlignHCenter
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize
@@ -216,7 +216,7 @@ ColumnLayout {
                     Text {
                         width: parent.width
                         text: forecastCard.forecastHour ? forecastCard.forecastHour.weatherDesc[0].value : ""
-                        color: Colors.foregroundMuted
+                        color: Colors.fgSecondary
                         elide: Text.ElideRight
                         horizontalAlignment: Text.AlignHCenter
                         font.family: Typography.fontFamily
@@ -242,7 +242,7 @@ ColumnLayout {
 
                             visible: forecastCard.forecastHour && forecastCard.forecastHour.chanceofrain > 0
                             text: visible ? forecastCard.forecastHour.chanceofrain + "%" : ""
-                            color: Colors.accent
+                            color: Colors.fgAccent
                             font.family: Typography.fontFamily
                             font.pixelSize: settings.textPixelSize
                         }
@@ -251,7 +251,7 @@ ColumnLayout {
                     Text {
                         width: parent.width
                         text: tabRoot.panel.weatherUnits === "F" ? forecastCard.modelData.mintempF + "°/" + forecastCard.modelData.maxtempF + "°" : forecastCard.modelData.mintempC + "°/" + forecastCard.modelData.maxtempC + "°"
-                        color: Colors.foregroundMuted
+                        color: Colors.fgSecondary
                         horizontalAlignment: Text.AlignHCenter
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize
@@ -268,7 +268,7 @@ ColumnLayout {
     Text {
         Layout.fillWidth: true
         text: "Weather data from wttr.in"
-        color: Colors.foregroundMuted
+        color: Colors.fgSecondary
         horizontalAlignment: Text.AlignRight
         font.family: Typography.fontFamily
         font.pixelSize: settings.textPixelSize - 1

@@ -17,7 +17,7 @@ Rectangle {
 
     height: 64
     radius: 13
-    color: mouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground
+    color: mouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary
 
     // Compact tile icon badge
     Rectangle {
@@ -25,7 +25,7 @@ Rectangle {
         width: 38
         height: 38
         radius: 12
-        color: root.active ? Colors.accent : Colors.controlSubtleBackground
+        color: root.active ? Colors.fgAccent : Colors.subtleSecondary
 
         // Compact tile icon glyph
         Controls.Icon {

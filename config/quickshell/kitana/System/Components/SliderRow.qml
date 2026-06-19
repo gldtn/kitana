@@ -62,14 +62,14 @@ Row {
             width: control.availableWidth
             height: 6
             radius: 3
-            color: Colors.controlSubtleBackground
+            color: Colors.subtleSecondary
 
             // Filled slider track
             Rectangle {
                 width: control.visualPosition * parent.width
                 height: parent.height
                 radius: parent.radius
-                color: Colors.accent
+                color: Colors.fgAccent
             }
         }
 
@@ -80,8 +80,8 @@ Row {
             width: 16
             height: 16
             radius: 8
-            color: Colors.accent
-            border.color: Colors.controlActiveBorder
+            color: Colors.fgAccent
+            border.color: Colors.borderAccent
             border.width: 1
         }
     }
@@ -93,7 +93,7 @@ Row {
         anchors.verticalCenter: parent.verticalCenter
         width: 34
         text: root.label
-        color: Colors.foreground
+        color: Colors.fgPrimary
         horizontalAlignment: Text.AlignRight
         font.family: Typography.fontFamily
         font.pixelSize: settings.textPixelSize

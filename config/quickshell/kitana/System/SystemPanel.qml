@@ -85,8 +85,8 @@ PanelWindow {
         anchors.bottomMargin: root.outerGap
         opacity: root.revealProgress
         radius: 18
-        color: Colors.panelBackground
-        border.color: Colors.panelBorder
+        color: Colors.bgPrimary
+        border.color: Colors.borderFaint
         border.width: 1
 
         transform: Translate {
@@ -118,8 +118,8 @@ PanelWindow {
                 width: parent.width
                 height: Math.max(0, content.height - panelHeader.height - quickGrid.height - sliders.height - content.spacing * 3)
                 radius: 14
-                color: Colors.containerBackground
-                border.color: Colors.containerBorder
+                color: Colors.bgSecondary
+                border.color: Colors.borderFaint
                 border.width: 0.6
                 clip: true
 

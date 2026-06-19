@@ -26,7 +26,7 @@ Item {
             x: index * (width + 6)
             y: root.height - height
             radius: width / 2
-            color: root.playing ? Colors.accent : Colors.controlActiveBackground
+            color: root.playing ? Colors.fgAccent : Colors.subtlePrimary
             opacity: root.playing ? 0.9 : 0.45
 
             Behavior on height { NumberAnimation { duration: 90 } }

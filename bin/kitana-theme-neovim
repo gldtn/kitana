@@ -3,6 +3,7 @@
 set -euo pipefail
 
 kitana_dir="${KITANA_DIR:-$HOME/.local/share/kitana}"
+lua_path="$kitana_dir/lib/?.lua;$kitana_dir/lib/?/init.lua;;"
 theme="${1:-}"
 theme_env=""
 
@@ -11,7 +12,7 @@ if [ -z "$theme" ]; then
   exit 2
 fi
 
-theme_env="$(lua "$kitana_dir/lib/kitana-theme.lua" env "$theme")" || exit 1
+theme_env="$(LUA_PATH="$lua_path" lua "$kitana_dir/lib/kitana-theme.lua" env "$theme")" || exit 1
 eval "$theme_env"
 
 if [ -z "$neovim_colorscheme" ]; then

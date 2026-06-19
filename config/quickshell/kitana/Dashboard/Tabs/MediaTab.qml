@@ -28,8 +28,8 @@ Item {
 
         anchors.fill: parent
         radius: 18
-        color: Colors.containerBackground
-        border.color: Colors.containerBorder
+        color: Colors.bgSecondary
+        border.color: Colors.borderFaint
         border.width: 1
         clip: true
 
@@ -65,8 +65,8 @@ Item {
                     Layout.preferredHeight: 132
                     Layout.alignment: Qt.AlignTop
                     radius: 14
-                    color: Colors.background
-                    border.color: Colors.background
+                    color: Colors.bgPrimary
+                    border.color: Colors.bgPrimary
                     border.width: 1
                     clip: true
 
@@ -163,7 +163,7 @@ Item {
                         Text {
                             Layout.fillWidth: true
                             text: Services.MediaService.playerName
-                            color: Colors.accent
+                            color: Colors.fgAccent
                             elide: Text.ElideRight
                             font.family: Typography.fontFamily
                             font.pixelSize: settings.textPixelSize
@@ -174,14 +174,14 @@ Item {
                             Layout.preferredWidth: 84
                             Layout.preferredHeight: 30
                             radius: 10
-                            color: tabRoot.panel.mediaPlaying ? Colors.controlActiveBackground : Colors.cardBackground
-                            border.color: Colors.panelBorder
+                            color: tabRoot.panel.mediaPlaying ? Colors.subtlePrimary : Colors.bgTertiary
+                            border.color: Colors.borderFaint
                             border.width: 1
 
                             Text {
                                 anchors.centerIn: parent
                                 text: Services.MediaService.status
-                                color: tabRoot.panel.mediaPlaying ? Colors.foreground : Colors.foregroundMuted
+                                color: tabRoot.panel.mediaPlaying ? Colors.fgPrimary : Colors.fgSecondary
                                 font.family: Typography.fontFamily
                                 font.pixelSize: settings.textPixelSize
                                 font.weight: Font.DemiBold
@@ -211,7 +211,7 @@ Item {
 
                             x: 0
                             text: Services.MediaService.title
-                            color: Colors.foreground
+                            color: Colors.fgPrimary
                             font.family: Typography.fontFamily
                             font.pixelSize: 28
                             font.weight: Font.Bold
@@ -250,7 +250,7 @@ Item {
                     Text {
                         Layout.fillWidth: true
                         text: Services.MediaService.artist + (Services.MediaService.album ? "  -  " + Services.MediaService.album : "")
-                        color: Colors.foregroundMuted
+                        color: Colors.fgSecondary
                         elide: Text.ElideRight
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize + 1
@@ -286,7 +286,7 @@ Item {
         Rectangle {
             anchors.fill: parent
             visible: tabRoot.panel.mediaAudioOverlayOpen
-            color: Colors.scrimSoft
+            color: Colors.scrimSecondary
         }
 
         // Audio output overlay card
@@ -300,8 +300,8 @@ Item {
             anchors.margins: 18
             visible: tabRoot.panel.mediaAudioOverlayOpen
             radius: 16
-            color: Colors.background
-            border.color: Colors.controlActiveBorder
+            color: Colors.bgPrimary
+            border.color: Colors.borderAccent
             border.width: 2
             opacity: visible ? 1 : 0
 
@@ -319,7 +319,7 @@ Item {
                     Text {
                         Layout.fillWidth: true
                         text: "Audio Output"
-                        color: Colors.foreground
+                        color: Colors.fgPrimary
                         font.family: Typography.fontFamily
                         font.pixelSize: 15
                         font.weight: Font.Bold
@@ -336,7 +336,7 @@ Item {
                 Text {
                     Layout.fillWidth: true
                     text: Services.SystemStatus.audioSink
-                    color: Colors.foregroundMuted
+                    color: Colors.fgSecondary
                     elide: Text.ElideRight
                     font.family: Typography.fontFamily
                     font.pixelSize: settings.textPixelSize
@@ -389,7 +389,7 @@ Item {
                             Layout.fillWidth: true
                             visible: Services.SystemStatus.audioSinks.length === 0
                             text: "No output devices found"
-                            color: Colors.foregroundMuted
+                            color: Colors.fgSecondary
                             horizontalAlignment: Text.AlignHCenter
                             font.family: Typography.fontFamily
                             font.pixelSize: settings.textPixelSize

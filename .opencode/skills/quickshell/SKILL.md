@@ -62,7 +62,8 @@ When adding a Quickshell singleton service:
 
 ## Theme Colors
 
-Keep Quickshell color role shape in `Config/Colors.qml` and `lib/kitana-quickshell-colors.lua`. `kitana-theme-quickshell` and `kitana-matugen` should render through the shared renderer instead of copying component-role formulas. If a role is theme-sourced, update `lib/kitana-theme.lua` and `themes/*.lua` as needed.
+Keep Quickshell color role shape in `Config/Colors.qml` and `themes/*.jsonc`. Static themes and `kitana-matugen` should write the same strict `Theme/current.json` schema instead of generating `Colors.qml`. Reusable QML should use semantic `Colors` roles, not native theme source names.
+When adding color transforms, update both `Config/Colors.qml` and the Lua theme resolver so live Quickshell colors and generated app themes resolve the same JSON.
 
 Do not use `validate.sh` as the normal color-role regression check during active UI iteration. Run targeted generation checks for the changed roles.
 

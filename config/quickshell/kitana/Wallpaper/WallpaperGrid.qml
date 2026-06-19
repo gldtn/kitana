@@ -217,8 +217,8 @@ PanelWindow {
             height: root.cardHeight
             anchors.centerIn: parent
             radius: 18
-            color: Colors.panelBackground
-            border.color: Colors.panelBorder
+            color: Colors.bgPrimary
+            border.color: Colors.borderFaint
             border.width: 1
 
             // Wallpaper picker content stack
@@ -232,7 +232,7 @@ PanelWindow {
                     Layout.fillWidth: true
                     visible: root.statusText.length > 0
                     text: root.statusText
-                    color: Colors.foregroundMuted
+                    color: Colors.fgSecondary
                     font.family: Typography.fontFamily
                     font.pixelSize: settings.textPixelSize
                 }
@@ -266,8 +266,8 @@ PanelWindow {
                         width: grid.cellWidth - 12
                         height: grid.cellHeight - 12
                         radius: 14
-                        color: Colors.cardBackground
-                        border.color: selected || mouse.containsMouse ? Colors.controlActiveBorder : Colors.panelBorder
+                        color: Colors.bgTertiary
+                        border.color: selected || mouse.containsMouse ? Colors.borderAccent : Colors.borderFaint
                         border.width: 1
                         clip: true
                         antialiasing: true
@@ -306,8 +306,8 @@ PanelWindow {
                         Rectangle {
                             anchors.fill: parent
                             visible: card.selected
-                            color: Colors.controlActiveBackground
-                            border.color: Colors.accent
+                            color: Colors.subtlePrimary
+                            border.color: Colors.fgAccent
                             border.width: 1
                             radius: parent.radius
                             antialiasing: true
@@ -325,7 +325,7 @@ PanelWindow {
                             Rectangle {
                                 anchors.fill: parent
                                 radius: card.radius
-                                color: Colors.imageOverlay
+                                color: Colors.scrimTertiary
                                 antialiasing: true
 
                                 Rectangle {
@@ -345,7 +345,7 @@ PanelWindow {
                                 verticalAlignment: Text.AlignVCenter
                                 text: root.basename(card.modelData)
                                 elide: Text.ElideRight
-                                color: "white"
+                                color: Colors.fgPrimary
                                 font.family: Typography.fontFamily
                                 font.pixelSize: settings.textPixelSize
                             }
@@ -372,8 +372,8 @@ PanelWindow {
                     Layout.fillWidth: true
                     Layout.preferredHeight: root.searchActive ? 38 : (root.helpVisible ? 56 : 24)
                     radius: 10
-                    color: root.searchActive ? Colors.cardBackground : "transparent"
-                    border.color: root.searchActive ? Colors.panelBorder : "transparent"
+                    color: root.searchActive ? Colors.bgTertiary : "transparent"
+                    border.color: root.searchActive ? Colors.borderFaint : "transparent"
                     border.width: root.searchActive ? 1 : 0
 
                     // Wallpaper search input
@@ -387,9 +387,9 @@ PanelWindow {
                         visible: root.searchActive
                         text: root.query
                         clip: true
-                        color: Colors.foreground
-                        selectionColor: Colors.accent
-                        selectedTextColor: Colors.foregroundOnAccent
+                        color: Colors.fgPrimary
+                        selectionColor: Colors.fgAccent
+                        selectedTextColor: Colors.fgOnPrimary
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize
 
@@ -415,7 +415,7 @@ PanelWindow {
                         visible: !root.searchActive
                         verticalAlignment: Text.AlignVCenter
                         text: root.helpVisible ? "arrows/hjkl move  ·  enter/space apply  ·  / search  ·  ? hide help  ·  esc close" : "? help  ·  arrows/hjkl move  ·  / search  ·  enter/space apply  ·  esc close"
-                        color: Colors.foregroundMuted
+                        color: Colors.fgSecondary
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize
                         horizontalAlignment: Text.AlignHCenter

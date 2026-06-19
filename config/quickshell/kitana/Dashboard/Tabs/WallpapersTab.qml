@@ -59,7 +59,7 @@ ColumnLayout {
                 width: wallpaperGrid.cardWidth
                 height: wallpaperGrid.cardHeight
                 radius: 12
-                color: Colors.cardBackground
+                color: Colors.bgTertiary
                 clip: true
                 scale: selected || wallpaperMouse.containsMouse ? 1.015 : 1
 
@@ -99,7 +99,7 @@ ColumnLayout {
                     anchors.fill: parent
                     radius: parent.radius
                     color: "transparent"
-                    border.color: wallpaperCard.selected || wallpaperMouse.containsMouse ? Colors.accent : Colors.panelBorder
+                    border.color: wallpaperCard.selected || wallpaperMouse.containsMouse ? Colors.fgAccent : Colors.borderFaint
                     border.width: wallpaperCard.selected || wallpaperMouse.containsMouse ? 2 : 1
                 }
 
@@ -133,7 +133,7 @@ ColumnLayout {
                 height: 28
                 text: (tabRoot.panel.wallpaperPage + 1) + " / " + tabRoot.panel.wallpaperPageCount()
                 verticalAlignment: Text.AlignVCenter
-                color: Colors.foregroundMuted
+                color: Colors.fgSecondary
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
                 font.weight: Font.DemiBold
@@ -149,7 +149,7 @@ ColumnLayout {
             anchors.verticalCenter: parent.verticalCenter
             width: 110
             text: tabRoot.panel.filteredWallpapers().length + " wallpapers"
-            color: Colors.foregroundMuted
+            color: Colors.fgSecondary
             horizontalAlignment: Text.AlignRight
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize

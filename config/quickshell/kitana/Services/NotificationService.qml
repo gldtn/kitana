@@ -161,7 +161,7 @@ Singleton {
     function toneForeground(item): color {
         const nextTone = tone(item);
         if (nextTone === "critical")
-            return Colors.danger;
+            return Colors.error;
         if (nextTone === "warning")
             return Colors.warning;
         if (nextTone === "success")
@@ -172,12 +172,12 @@ Singleton {
     function toneBackground(item): color {
         const nextTone = tone(item);
         if (nextTone === "critical")
-            return Colors.dangerBackground;
+            return Colors.alpha(Colors.error, 0.2);
         if (nextTone === "warning")
-            return Colors.warningBackground;
+            return Colors.alpha(Colors.warning, 0.2);
         if (nextTone === "success")
-            return Colors.successBackground;
-        return Colors.infoBackground;
+            return Colors.alpha(Colors.success, 0.2);
+        return Colors.alpha(Colors.info, 0.2);
     }
 
     NotificationServer {

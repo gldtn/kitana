@@ -49,6 +49,10 @@ prepare_theme() {
   [ -x "$kitana_dir/bin/kitana-theme-quickshell" ] || return 0
   [ -f "$theme_file" ] || return 0
 
+  if [ "$(<"$theme_file")" = "matugen" ]; then
+    return 0
+  fi
+
   "$kitana_dir/bin/kitana-theme-quickshell" --render-only "$(<"$theme_file")" >/dev/null 2>&1 || true
 }
 

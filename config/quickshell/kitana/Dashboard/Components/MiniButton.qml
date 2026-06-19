@@ -23,8 +23,8 @@ Rectangle {
     width: widthOverride
     height: heightOverride
     radius: 9
-    color: miniMouse.containsMouse ? Colors.controlHoverBackground : Colors.controlBackground
-    border.color: Colors.controlSubtleBorder
+    color: miniMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary
+    border.color: Colors.borderFaint
     border.width: 0.8
 
     // Text button label
@@ -32,7 +32,7 @@ Rectangle {
         visible: root.iconName.length === 0
         anchors.centerIn: parent
         text: root.text
-        color: Colors.controlForeground
+        color: Colors.fgPrimary
         font.family: Typography.fontFamily
         font.pixelSize: settings.textPixelSize
     }

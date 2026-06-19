@@ -21,8 +21,8 @@ Rectangle {
     Layout.fillWidth: true
     Layout.preferredHeight: 46
     radius: 12
-    color: active ? Colors.controlActiveBackground : (mediaDeviceMouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground)
-    border.color: active ? Colors.controlActiveBorder : Colors.panelBorder
+    color: active ? Colors.subtlePrimary : (mediaDeviceMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary)
+    border.color: active ? Colors.borderAccent : Colors.borderFaint
     border.width: 1
 
     // Audio device icon and labels
@@ -45,7 +45,7 @@ Rectangle {
             Text {
                 Layout.fillWidth: true
                 text: root.name
-                color: Colors.foreground
+                color: Colors.fgPrimary
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
@@ -55,7 +55,7 @@ Rectangle {
             Text {
                 Layout.fillWidth: true
                 text: root.active ? "Current output" : root.subtitle
-                color: Colors.foregroundMuted
+                color: Colors.fgSecondary
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize - 1

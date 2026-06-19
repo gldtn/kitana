@@ -25,7 +25,7 @@ RowLayout {
         Text {
             Layout.fillWidth: true
             text: root.name
-            color: Colors.foreground
+            color: Colors.fgPrimary
             elide: Text.ElideRight
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize
@@ -35,7 +35,7 @@ RowLayout {
         Text {
             Layout.fillWidth: true
             text: root.clockDateText
-            color: Colors.foregroundMuted
+            color: Colors.fgSecondary
             elide: Text.ElideRight
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize - 1
@@ -45,7 +45,7 @@ RowLayout {
     // Clock time value
     Text {
         text: root.clockTimeText
-        color: Colors.accent
+        color: Colors.fgAccent
         font.family: Typography.fontFamily
         font.pixelSize: settings.textPixelSize + 1
         font.weight: Font.Bold

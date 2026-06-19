@@ -32,8 +32,8 @@ Item {
         anchors.fill: parent
         visible: !root.embedded
         radius: root.height / settings.radiusDivisor
-        color: Colors.barBackground
-        border.color: Colors.barBorder
+        color: Colors.bgSecondary
+        border.color: Colors.borderFaint
         border.width: settings.borderWidth
     }
 
@@ -100,7 +100,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             visible: root.visibleLabel(root.currentLayout).length > 0
             text: root.visibleLabel(root.currentLayout)
-            color: Colors.barForeground
+            color: Colors.fgPrimary
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize
             font.weight: Font.DemiBold

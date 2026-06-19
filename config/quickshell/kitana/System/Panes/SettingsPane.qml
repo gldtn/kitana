@@ -21,7 +21,7 @@ Column {
     Text {
         width: parent.width
         text: "Settings"
-        color: Colors.foreground
+        color: Colors.fgPrimary
         font.family: Typography.fontFamily
         font.pixelSize: 14
         font.weight: Font.Bold

@@ -189,15 +189,15 @@ PanelWindow {
         return {
             slug: parts[0] || "",
             name: parts[1] || parts[0] || "Theme",
-            previewBackground: parts[2] || "#1e1e2e",
-            previewSurface: parts[3] || "#313244",
-            previewBorder: parts[4] || "#45475a",
-            previewForeground: parts[5] || "#cdd6f4",
-            previewMuted: parts[6] || "#9399b2",
-            previewAccent: parts[7] || "#89b4fa",
-            previewOnAccentForeground: parts[8] || "#11111b",
-            previewWarning: parts[9] || "#f9e2af",
-            previewDanger: parts[10] || "#f38ba8"
+            previewBackground: parts[2] || Colors.bgPrimary,
+            previewSurface: parts[3] || Colors.bgSecondary,
+            previewBorder: parts[4] || Colors.borderFaint,
+            previewForeground: parts[5] || Colors.fgPrimary,
+            previewMuted: parts[6] || Colors.fgSecondary,
+            previewAccent: parts[7] || Colors.bgAccent,
+            previewOnAccentForeground: parts[8] || Colors.fgOnPrimary,
+            previewWarning: parts[9] || Colors.warning,
+            previewDanger: parts[10] || Colors.error
         };
     }
 
@@ -639,8 +639,8 @@ PanelWindow {
         anchors.topMargin: settings.panelHeight + settings.topMargin + 10
         opacity: root.revealProgress
         radius: 18
-        color: Colors.panelBackground
-        border.color: Colors.panelBorder
+        color: Colors.bgPrimary
+        border.color: Colors.borderFaint
         border.width: 1
         clip: true
 
@@ -713,7 +713,7 @@ PanelWindow {
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 1
-                color: Colors.containerBorder
+                color: Colors.borderFaint
             }
 
             // Active dashboard tab loader

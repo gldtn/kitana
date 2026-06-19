@@ -228,8 +228,8 @@ PanelWindow {
         height: Math.min(620, parent.height - 120)
         anchors.centerIn: parent
         radius: 18
-        color: Colors.panelBackground
-        border.color: Colors.panelBorder
+        color: Colors.bgPrimary
+        border.color: Colors.borderFaint
         border.width: 1
         clip: true
 
@@ -263,7 +263,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: "Shortcuts"
-                        color: Colors.foreground
+                        color: Colors.fgPrimary
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize + 4
                         font.weight: Font.Bold
@@ -272,7 +272,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: "Hyprland keybinds"
-                        color: Colors.foregroundMuted
+                        color: Colors.fgSecondary
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize - 1
                     }
@@ -284,8 +284,8 @@ PanelWindow {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 36
                 radius: 11
-                color: Colors.cardBackground
-                border.color: searchInput.activeFocus ? Colors.controlActiveBorder : Colors.panelBorder
+                color: Colors.bgTertiary
+                border.color: searchInput.activeFocus ? Colors.borderAccent : Colors.borderFaint
                 border.width: 1
 
                 // Search icon and input row
@@ -306,9 +306,9 @@ PanelWindow {
 
                         Layout.fillWidth: true
                         text: root.query
-                        color: Colors.foreground
-                        selectionColor: Colors.controlActiveBackground
-                        selectedTextColor: Colors.foreground
+                        color: Colors.fgPrimary
+                        selectionColor: Colors.subtlePrimary
+                        selectedTextColor: Colors.fgPrimary
                         verticalAlignment: TextInput.AlignVCenter
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize
@@ -328,7 +328,7 @@ PanelWindow {
                 Layout.fillWidth: true
                 visible: root.statusText.length > 0
                 text: root.statusText
-                color: Colors.foregroundMuted
+                color: Colors.fgSecondary
                 horizontalAlignment: Text.AlignHCenter
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
@@ -355,8 +355,8 @@ PanelWindow {
                     width: shortcutList.width
                     height: 54
                     radius: 12
-                    color: shortcutDelegate.index === root.selectedIndex ? Colors.controlActiveBackground : (shortcutMouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground)
-                    border.color: shortcutDelegate.index === root.selectedIndex ? Colors.controlActiveBorder : Colors.panelBorder
+                    color: shortcutDelegate.index === root.selectedIndex ? Colors.subtlePrimary : (shortcutMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary)
+                    border.color: shortcutDelegate.index === root.selectedIndex ? Colors.borderAccent : Colors.borderFaint
                     border.width: 1
 
                     // Shortcut key and description row
@@ -371,8 +371,8 @@ PanelWindow {
                             Layout.preferredWidth: Math.max(150, keyText.implicitWidth + 18)
                             Layout.preferredHeight: 30
                             radius: 9
-                            color: Colors.controlActiveBackground
-                            border.color: Colors.controlActiveBorder
+                            color: Colors.subtlePrimary
+                            border.color: Colors.borderAccent
                             border.width: 1
 
                             // Shortcut key label
@@ -380,7 +380,7 @@ PanelWindow {
                                 id: keyText
                                 anchors.centerIn: parent
                                 text: shortcutDelegate.modelData.keys
-                                color: Colors.foreground
+                                color: Colors.fgPrimary
                                 font.family: Typography.fontFamily
                                 font.pixelSize: settings.textPixelSize
                                 font.weight: Font.Bold
@@ -395,7 +395,7 @@ PanelWindow {
                             Text {
                                 Layout.fillWidth: true
                                 text: shortcutDelegate.modelData.description
-                                color: Colors.foreground
+                                color: Colors.fgPrimary
                                 elide: Text.ElideRight
                                 font.family: Typography.fontFamily
                                 font.pixelSize: settings.textPixelSize
@@ -405,7 +405,7 @@ PanelWindow {
                             Text {
                                 Layout.fillWidth: true
                                 text: shortcutDelegate.modelData.category
-                                color: Colors.foregroundMuted
+                                color: Colors.fgSecondary
                                 elide: Text.ElideRight
                                 font.family: Typography.fontFamily
                                 font.pixelSize: settings.textPixelSize - 1
@@ -427,7 +427,7 @@ PanelWindow {
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 1
-                color: Colors.panelBorder
+                color: Colors.borderFaint
                 opacity: 0.55
             }
 

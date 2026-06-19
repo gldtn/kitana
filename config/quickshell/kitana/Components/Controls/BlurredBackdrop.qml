@@ -5,5 +5,5 @@ import "../.."
 
 // Soft modal backdrop scrim
 Rectangle {
-    color: Colors.scrimSoft
+    color: Colors.scrimSecondary
 }

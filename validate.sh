@@ -495,22 +495,23 @@ else
   fail "Kitana theme library missing: lib/kitana-theme.lua"
 fi
 
-if [ -f "$KITANA_DIR/themes/helpers/color.lua" ]; then
-  pass "Kitana theme helper library: themes/helpers/color.lua"
-  if LUA_PATH="$KITANA_DIR/?.lua;$KITANA_DIR/?/init.lua;;" lua -e 'local color = require("themes.helpers.color"); assert(color.mix("#000000", "#ffffff", 0.5) == "#808080"); assert(color.lighten("#000000", 0.25) == "#404040"); assert(color.darken("#ffffff", 0.25) == "#bfbfbf"); assert(color.alpha("#7aa2f7", "cc") == "#cc7aa2f7"); assert(color.strip("#7aa2f7") == "7aa2f7")'; then
-    pass "Kitana color helper functions"
-  else
-    fail "Kitana color helper functions"
-  fi
+if [ -f "$KITANA_DIR/lib/kitana-json.lua" ]; then
+  pass "Kitana JSON library: lib/kitana-json.lua"
 else
-  fail "Kitana theme helper library missing: themes/helpers/color.lua"
+  fail "Kitana JSON library missing: lib/kitana-json.lua"
+fi
+
+if LUA_PATH="$KITANA_DIR/lib/?.lua;$KITANA_DIR/lib/?/init.lua;;" lua "$KITANA_DIR/lib/kitana-theme.lua" validate; then
+  pass "Kitana JSON theme palettes"
+else
+  fail "Kitana JSON theme palettes"
 fi
 
 for theme in catppuccin-mocha rose-pine tokyo-night dracula kanagawa-dragon cyberdream; do
-  if [ -f "$KITANA_DIR/themes/$theme.lua" ]; then
-    pass "Kitana theme palette: themes/$theme.lua"
+  if [ -f "$KITANA_DIR/themes/$theme.jsonc" ]; then
+    pass "Kitana theme palette: themes/$theme.jsonc"
   else
-    fail "Kitana theme palette missing: themes/$theme.lua"
+    fail "Kitana theme palette missing: themes/$theme.jsonc"
   fi
 done
 
@@ -683,6 +684,12 @@ if [ -f "$HOME/.config/quickshell/kitana/Config/Colors.qml" ] && [ -f "$HOME/.co
   pass "Quickshell config tokens"
 else
   fail "Quickshell config tokens missing"
+fi
+
+if [ -f "$HOME/.config/quickshell/kitana/Theme/current.json" ]; then
+  pass "Quickshell runtime theme: Theme/current.json"
+else
+  fail "Quickshell runtime theme missing: Theme/current.json"
 fi
 
 if grep -q '^singleton Colors 1.0 Config/Colors.qml$' "$HOME/.config/quickshell/kitana/qmldir" && grep -q '^singleton Icons 1.0 Config/Icons.qml$' "$HOME/.config/quickshell/kitana/qmldir" && grep -q '^singleton Typography 1.0 Config/Typography.qml$' "$HOME/.config/quickshell/kitana/qmldir"; then

@@ -91,17 +91,18 @@ Use targeted refresh commands when possible instead of rerunning the full instal
 
 # Themes
 
-Theme definitions live in `themes/*.lua`; shared theme loading and color resolution lives in `lib/kitana-theme.lua`.
+Theme definitions live in `themes/*.jsonc`; shared theme loading and color resolution lives in `lib/kitana-theme.lua`.
 
 Theme application flow:
 
 - `kitana-theme THEME` applies the selected theme and writes `~/.config/kitana/theme`.
-- `kitana-theme-quickshell` generates Quickshell colors.
+- `kitana-theme-quickshell` writes the selected JSON theme to `~/.config/quickshell/kitana/Theme/current.json`.
 - `kitana-theme-ghostty` updates Ghostty theme state.
 - `kitana-theme-zed` writes `~/.config/zed/themes/kitana-dynamic.json`, often from `vendor/zed/*.json`.
 - `kitana-theme-hypr` writes `~/.config/hypr/kitana-theme.lua`; Hyprland picks up the change through live config reload.
 
-When adding or editing themes, update `lib/kitana-theme.lua` ordering/mappings as needed and validate generated consumers with the smallest relevant command.
+When adding or editing themes, keep native source colors under `colors`, map semantic roles under `palette`, and validate with `LUA_PATH="$PWD/lib/?.lua;$PWD/lib/?/init.lua;;" lua lib/kitana-theme.lua validate` plus the smallest relevant generated consumer command.
+Color references may be hex values, source tokens, semantic roles, or objects with `ref`, `mix`, `ratio`, `lighten`, `darken`, and `alpha`; keep `lib/kitana-theme.lua` and `config/quickshell/kitana/Config/Colors.qml` resolution behavior aligned.
 
 # Quickshell
 
@@ -124,10 +125,10 @@ For QML UI files, add brief navigation comments above meaningful containers, car
 Quickshell color role shape lives in:
 
 - `config/quickshell/kitana/Config/Colors.qml`
-- `lib/kitana-quickshell-colors.lua` for source-role rendering
-- `lib/kitana-theme.lua` and `themes/*.lua` when the role is theme-sourced
+- `themes/*.jsonc` for native source colors and semantic mappings
+- `~/.config/quickshell/kitana/Theme/current.json` as the live watched runtime theme
 
-`kitana-theme-quickshell` and `kitana-matugen` both render through the shared Quickshell color renderer. Keep derived/component treatment roles in `Colors.qml`; do not duplicate them in `kitana-matugen`.
+`kitana-theme-quickshell` and `kitana-matugen` both write the same runtime JSON schema. Keep reusable QML components on semantic `Colors` roles instead of native theme source names.
 
 Do not add broad Quickshell color-role audits to `validate.sh` while the shell is still evolving. Use targeted generation checks for the roles touched.
 

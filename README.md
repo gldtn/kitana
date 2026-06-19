@@ -144,7 +144,7 @@ Zsh is intentionally not part of the default install path yet. The helper instal
 - `config/` contains user-facing config files copied into `~/.config` or `$HOME`.
 - `default/` contains Kitana defaults and assets copied elsewhere by install helpers.
 - `install/` contains install stages and shared install libraries.
-- `themes/` contains Kitana theme definitions used by theme helpers.
+- `themes/` contains Kitana JSONC theme definitions used by theme helpers.
 
 ## User Notes
 

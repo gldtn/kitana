@@ -27,8 +27,8 @@ RowLayout {
         Layout.preferredWidth: 250
         Layout.fillHeight: true
         radius: 16
-        color: Colors.containerBackground
-        border.color: Colors.containerBorder
+        color: Colors.bgSecondary
+        border.color: Colors.borderFaint
         border.width: 0.8
 
         // Sidebar content stack
@@ -40,7 +40,7 @@ RowLayout {
             Text {
                 Layout.fillWidth: true
                 text: Qt.formatDate(tabRoot.panel.currentTime, "dddd")
-                color: Colors.foregroundMuted
+                color: Colors.fgSecondary
                 horizontalAlignment: Text.AlignHCenter
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize + 1
@@ -50,7 +50,7 @@ RowLayout {
             Text {
                 Layout.fillWidth: true
                 text: Qt.formatDate(tabRoot.panel.currentTime, "d")
-                color: Colors.containerForeground
+                color: Colors.fgPrimary
                 horizontalAlignment: Text.AlignHCenter
                 font.family: Typography.fontFamily
                 font.pixelSize: 58
@@ -60,7 +60,7 @@ RowLayout {
             Text {
                 Layout.fillWidth: true
                 text: Qt.formatDate(tabRoot.panel.currentTime, "MMMM yyyy")
-                color: Colors.foregroundMuted
+                color: Colors.fgSecondary
                 horizontalAlignment: Text.AlignHCenter
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize + 1
@@ -69,7 +69,7 @@ RowLayout {
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 1
-                color: Colors.containerBorder
+                color: Colors.borderFaint
             }
 
             // Today fact rows
@@ -105,13 +105,13 @@ RowLayout {
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 1
-                color: Colors.containerBorder
+                color: Colors.borderFaint
             }
 
             Text {
                 Layout.fillWidth: true
                 text: "World Clock"
-                color: Colors.foreground
+                color: Colors.fgPrimary
                 horizontalAlignment: Text.AlignHCenter
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
@@ -143,8 +143,8 @@ RowLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
         radius: 16
-        color: Colors.containerBackground
-        border.color: Colors.containerBorder
+        color: Colors.bgSecondary
+        border.color: Colors.borderFaint
         border.width: 0.8
 
         // Calendar header and day grid
@@ -160,7 +160,7 @@ RowLayout {
                 Text {
                     Layout.fillWidth: true
                     text: Qt.formatDate(tabRoot.panel.calendarMonth, "MMMM yyyy")
-                    color: Colors.foreground
+                    color: Colors.fgPrimary
                     font.family: Typography.fontFamily
                     font.pixelSize: 15
                     font.weight: Font.Bold
@@ -196,7 +196,7 @@ RowLayout {
 
                         Layout.fillWidth: true
                         text: modelData
-                        color: Colors.accent
+                        color: Colors.fgAccent
                         horizontalAlignment: Text.AlignHCenter
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize
@@ -217,14 +217,14 @@ RowLayout {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 34
                         radius: 10
-                        color: tabRoot.panel.isToday(dayCell.day) ? Colors.controlActiveBackground : (dayCell.day > 0 ? Colors.controlBackground : "transparent")
-                        // border.color: tabRoot.panel.isToday(dayCell.day) ? Colors.controlSubtleBorder : "transparent"
+                        color: tabRoot.panel.isToday(dayCell.day) ? Colors.subtlePrimary : (dayCell.day > 0 ? Colors.bgTertiary : "transparent")
+                        // border.color: tabRoot.panel.isToday(dayCell.day) ? Colors.borderFaint : "transparent"
                         // border.width: .5
 
                         Text {
                             anchors.centerIn: parent
                             text: dayCell.day > 0 ? dayCell.day : ""
-                            color: tabRoot.panel.isToday(dayCell.day) ? Colors.accent : Colors.controlForeground
+                            color: tabRoot.panel.isToday(dayCell.day) ? Colors.fgAccent : Colors.fgPrimary
                             font.family: Typography.fontFamily
                             font.pixelSize: settings.textPixelSize
                             font.weight: tabRoot.panel.isToday(dayCell.day) ? Font.Bold : Font.Normal

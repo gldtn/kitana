@@ -21,8 +21,8 @@ Rectangle {
     width: parent ? parent.width : 0
     height: 48
     radius: 11
-    color: rowMouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground
-    border.color: modelData.connected ? Colors.controlActiveBorder : "transparent"
+    color: rowMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary
+    border.color: modelData.connected ? Colors.borderAccent : "transparent"
     border.width: modelData.connected ? 1 : 0
 
     // Bluetooth device icon
@@ -48,7 +48,7 @@ Rectangle {
         Text {
             width: parent.width
             text: root.title
-            color: Colors.foreground
+            color: Colors.fgPrimary
             elide: Text.ElideRight
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize
@@ -58,7 +58,7 @@ Rectangle {
         Text {
             width: parent.width
             text: root.subtitle
-            color: Colors.foregroundMuted
+            color: Colors.fgSecondary
             elide: Text.ElideRight
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize - 1
@@ -75,7 +75,7 @@ Rectangle {
         width: visible ? 30 : 0
         height: 30
         radius: 9
-        color: disconnectMouse.containsMouse ? Colors.controlActiveBackground : Colors.controlSubtleBackground
+        color: disconnectMouse.containsMouse ? Colors.subtlePrimary : Colors.subtleSecondary
 
         // Disconnect icon
         Controls.Icon {
@@ -105,7 +105,7 @@ Rectangle {
         width: visible ? 30 : 0
         height: 30
         radius: 9
-        color: forgetMouse.containsMouse ? Colors.controlActiveBackground : Colors.controlSubtleBackground
+        color: forgetMouse.containsMouse ? Colors.subtlePrimary : Colors.subtleSecondary
 
         // Forget icon
         Controls.Icon {
@@ -135,8 +135,8 @@ Rectangle {
         width: actionTooltipLabel.implicitWidth + 14
         height: 22
         radius: 8
-        color: Colors.panelBackground
-        border.color: Colors.panelBorder
+        color: Colors.bgPrimary
+        border.color: Colors.borderFaint
         border.width: 1
 
         // Tooltip label
@@ -144,7 +144,7 @@ Rectangle {
             id: actionTooltipLabel
             anchors.centerIn: parent
             text: disconnectMouse.containsMouse ? "Disconnect" : "Forget"
-            color: Colors.foreground
+            color: Colors.fgPrimary
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize - 2
             font.weight: Font.DemiBold

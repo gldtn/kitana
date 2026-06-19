@@ -1,0 +1,75 @@
+{
+  "slug": "rose-pine",
+  "name": "Rose Pine",
+  "mode": "dark",
+  "colors": {
+    "base": "#191724",
+    "surface": "#1f1d2e",
+    "overlay": "#26233a",
+    "muted": "#6e6a86",
+    "subtle": "#908caa",
+    "text": "#e0def4",
+    "love": "#eb6f92",
+    "gold": "#f6c177",
+    "rose": "#ebbcba",
+    "pine": "#31748f",
+    "foam": "#9ccfd8",
+    "iris": "#c4a7e7",
+    "highlight_low": "#21202e",
+    "highlight_med": "#403d52",
+    "highlight_high": "#524f67",
+    "border0": "#1f1e2b",
+    "border1": "#2e2d3b"
+  },
+  "palette": {
+    "fgPrimary": "text",
+    "fgSecondary": "subtle",
+    "fgTertiary": "subtle",
+    "fgOnPrimary": "surface",
+    "fgAccent": "rose",
+    "bgPrimary": "base",
+    "bgSecondary": "surface",
+    "bgTertiary": "overlay",
+    "bgOnPrimary": "surface",
+    "bgAccent": "rose",
+    "borderDark": "border0",
+    "borderLight": "highlight_high",
+    "borderFaint": "border1",
+    "borderHeavy": "highlight_med",
+    "borderAccent": "rose",
+    "info": "foam",
+    "success": "pine",
+    "warning": "gold",
+    "error": "love",
+    "scrimPrimary": { "ref": "base", "alpha": 0.52 },
+    "scrimSecondary": { "ref": "base", "alpha": 0.32 },
+    "scrimTertiary": { "ref": "base", "alpha": 0.60 },
+    "subtlePrimary": { "ref": "rose", "alpha": 0.16 },
+    "subtleSecondary": { "ref": "highlight_med", "alpha": 0.65 },
+    "subtleTertiary": { "ref": "subtle", "alpha": 0.50 }
+  },
+  "icons": {
+    "primary": "text",
+    "secondary": "subtle",
+    "muted": "subtle",
+    "subtle": "subtle",
+    "accent": "rose",
+    "onAccent": "surface",
+    "inverse": "surface",
+    "brand": "rose",
+    "disabled": { "ref": "subtle", "alpha": 0.5 },
+    "danger": "love"
+  },
+  "hypr": {
+    "border_active": "borderAccent",
+    "border_inactive": "borderHeavy"
+  },
+  "ghostty": {
+    "theme": "Rose Pine"
+  },
+  "zed": {
+    "source_url": "https://raw.githubusercontent.com/rose-pine/zed/main/themes/rose-pine.json",
+    "source_file": "vendor/zed/rose-pine.json",
+    "theme_name": "Rosé Pine"
+  }
+}

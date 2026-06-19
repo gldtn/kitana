@@ -3,6 +3,7 @@
 set -euo pipefail
 
 kitana_dir="${KITANA_DIR:-$HOME/.local/share/kitana}"
+lua_path="$kitana_dir/lib/?.lua;$kitana_dir/lib/?/init.lua;;"
 ghostty_config_dir="$HOME/.config/ghostty"
 ghostty_theme_file="$ghostty_config_dir/kitana-theme.conf"
 ghostty_dynamic_theme_file="$ghostty_config_dir/themes/kitana-dynamic"
@@ -14,7 +15,7 @@ if [ -z "$theme" ]; then
   exit 2
 fi
 
-theme_env="$(lua "$kitana_dir/lib/kitana-theme.lua" env "$theme")" || exit 1
+theme_env="$(LUA_PATH="$lua_path" lua "$kitana_dir/lib/kitana-theme.lua" env "$theme")" || exit 1
 eval "$theme_env"
 
 if [ -z "$ghostty_theme" ] && [ -z "$ghostty_source_file" ]; then

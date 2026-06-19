@@ -71,8 +71,8 @@ PanelWindow {
         Layout.fillWidth: true
         Layout.preferredHeight: 48
         radius: 12
-        color: actionMouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground
-        border.color: Colors.panelBorder
+        color: actionMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary
+        border.color: Colors.borderFaint
         border.width: 1
 
         // Action icon and labels
@@ -95,7 +95,7 @@ PanelWindow {
                 Text {
                     Layout.fillWidth: true
                     text: actionRoot.title
-                    color: Colors.foreground
+                    color: Colors.fgPrimary
                     elide: Text.ElideRight
                     font.family: Typography.fontFamily
                     font.pixelSize: settings.textPixelSize
@@ -105,7 +105,7 @@ PanelWindow {
                 Text {
                     Layout.fillWidth: true
                     text: actionRoot.subtitle
-                    color: Colors.foregroundMuted
+                    color: Colors.fgSecondary
                     elide: Text.ElideRight
                     font.family: Typography.fontFamily
                     font.pixelSize: settings.textPixelSize - 1
@@ -159,8 +159,8 @@ PanelWindow {
         anchors.leftMargin: settings.sideMargin
         opacity: root.revealProgress
         radius: 18
-        color: Colors.panelBackground
-        border.color: Colors.panelBorder
+        color: Colors.bgPrimary
+        border.color: Colors.borderFaint
         border.width: 1
 
         transform: Translate {
@@ -201,7 +201,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: "Kitana"
-                        color: Colors.foreground
+                        color: Colors.fgPrimary
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize + 2
                         font.weight: Font.Bold
@@ -210,7 +210,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: "System menu"
-                        color: Colors.foregroundMuted
+                        color: Colors.fgSecondary
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize - 1
                     }
@@ -221,7 +221,7 @@ PanelWindow {
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 1
-                color: Colors.panelBorder
+                color: Colors.borderFaint
             }
 
             // App launcher entry

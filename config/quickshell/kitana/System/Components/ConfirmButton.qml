@@ -17,15 +17,15 @@ Rectangle {
     width: 110
     height: 36
     radius: 10
-    color: mouse.containsMouse ? (danger ? Colors.controlActiveBackground : Colors.controlHoverBackground) : Colors.cardBackground
-    border.color: danger ? Colors.danger : Colors.panelBorder
+    color: mouse.containsMouse ? (danger ? Colors.subtlePrimary : Colors.bgTertiary) : Colors.bgTertiary
+    border.color: danger ? Colors.error : Colors.borderFaint
     border.width: 1
 
     // Confirm button label
     Text {
         anchors.centerIn: parent
         text: root.label
-        color: root.danger ? Colors.danger : Colors.foreground
+        color: root.danger ? Colors.error : Colors.fgPrimary
         font.family: Typography.fontFamily
         font.pixelSize: settings.textPixelSize
         font.weight: Font.Bold

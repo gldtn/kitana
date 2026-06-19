@@ -103,8 +103,8 @@ PanelWindow {
         height: 188
         anchors.centerIn: parent
         radius: 18
-        color: Colors.panelBackground
-        border.color: Colors.panelBorder
+        color: Colors.bgPrimary
+        border.color: Colors.borderFaint
         border.width: 1
 
         // Prevent clicks inside card from closing panel
@@ -137,7 +137,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: "Screenshot"
-                        color: Colors.foreground
+                        color: Colors.fgPrimary
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize + 4
                         font.weight: Font.Bold
@@ -146,7 +146,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: "Choose what to capture"
-                        color: Colors.foregroundMuted
+                        color: Colors.fgSecondary
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize - 1
                     }
@@ -210,8 +210,8 @@ PanelWindow {
         Layout.fillWidth: true
         Layout.fillHeight: true
         radius: 14
-        color: actionMouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground
-        border.color: actionMouse.containsMouse ? Colors.controlActiveBorder : Colors.panelBorder
+        color: actionMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary
+        border.color: actionMouse.containsMouse ? Colors.borderAccent : Colors.borderFaint
         border.width: 1
 
         // Shortcut badge
@@ -223,8 +223,8 @@ PanelWindow {
             width: shortcutLabel.implicitWidth + 10
             height: 18
             radius: 6
-            color: Colors.controlBackground
-            border.color: Colors.panelBorder
+            color: Colors.bgTertiary
+            border.color: Colors.borderFaint
             border.width: 1
 
             // Shortcut letter label
@@ -232,7 +232,7 @@ PanelWindow {
                 id: shortcutLabel
                 anchors.centerIn: parent
                 text: action.shortcut
-                color: Colors.foregroundMuted
+                color: Colors.fgSecondary
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize - 2
                 font.weight: Font.Bold
@@ -255,7 +255,7 @@ PanelWindow {
             Text {
                 Layout.fillWidth: true
                 text: action.title
-                color: Colors.foreground
+                color: Colors.fgPrimary
                 horizontalAlignment: Text.AlignHCenter
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
@@ -266,7 +266,7 @@ PanelWindow {
             Text {
                 Layout.fillWidth: true
                 text: action.subtitle
-                color: Colors.foregroundMuted
+                color: Colors.fgSecondary
                 horizontalAlignment: Text.AlignHCenter
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily

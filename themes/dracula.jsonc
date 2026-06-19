@@ -1,0 +1,74 @@
+{
+  "slug": "dracula",
+  "name": "Dracula",
+  "mode": "dark",
+  "colors": {
+    "background": "#282a36",
+    "background1": "#2e303c",
+    "current_line": "#44475a",
+    "foreground": "#f8f8f2",
+    "comment": "#6272a4",
+    "cyan": "#8be9fd",
+    "green": "#50fa7b",
+    "orange": "#ffb86c",
+    "pink": "#ff79c6",
+    "purple": "#bd93f9",
+    "red": "#ff5555",
+    "yellow": "#f1fa8c",
+    "selection": "#44475a",
+    "surface": "#343746",
+    "muted": "#b6b6c8",
+    "border1": "#404355"
+  },
+  "palette": {
+    "fgPrimary": "foreground",
+    "fgSecondary": "muted",
+    "fgTertiary": "muted",
+    "fgOnPrimary": "background",
+    "fgAccent": "purple",
+    "bgPrimary": "background1",
+    "bgSecondary": "background",
+    "bgTertiary": "surface",
+    "bgOnPrimary": "background",
+    "bgAccent": "purple",
+    "borderDark": "background",
+    "borderLight": "current_line",
+    "borderFaint": "border1",
+    "borderHeavy": "current_line",
+    "borderAccent": "purple",
+    "info": "cyan",
+    "success": "green",
+    "warning": "yellow",
+    "error": "red",
+    "scrimPrimary": { "ref": "background1", "alpha": 0.52 },
+    "scrimSecondary": { "ref": "background1", "alpha": 0.32 },
+    "scrimTertiary": { "ref": "background1", "alpha": 0.60 },
+    "subtlePrimary": { "ref": "purple", "alpha": 0.16 },
+    "subtleSecondary": { "ref": "current_line", "alpha": 0.65 },
+    "subtleTertiary": { "ref": "muted", "alpha": 0.50 }
+  },
+  "icons": {
+    "primary": "foreground",
+    "secondary": "foreground",
+    "muted": "muted",
+    "subtle": "muted",
+    "accent": "purple",
+    "onAccent": "background",
+    "inverse": "background",
+    "brand": "purple",
+    "disabled": { "ref": "muted", "alpha": 0.5 },
+    "danger": "red"
+  },
+  "hypr": {
+    "border_active": "borderAccent",
+    "border_inactive": "borderHeavy"
+  },
+  "ghostty": {
+    "theme": "Dracula"
+  },
+  "zed": {
+    "source_url": "https://raw.githubusercontent.com/dracula/zed/main/themes/dracula.json",
+    "source_file": "vendor/zed/dracula.json",
+    "theme_name": "Dracula Solid"
+  }
+}

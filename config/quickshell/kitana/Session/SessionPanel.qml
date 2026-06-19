@@ -142,8 +142,8 @@ PanelWindow {
         height: 208
         anchors.centerIn: parent
         radius: 18
-        color: Colors.panelBackground
-        border.color: Colors.panelBorder
+        color: Colors.bgPrimary
+        border.color: Colors.borderFaint
         border.width: 1
 
         // Prevent clicks inside card from closing panel
@@ -176,7 +176,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: "Session"
-                        color: Colors.foreground
+                        color: Colors.fgPrimary
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize + 4
                         font.weight: Font.Bold
@@ -185,7 +185,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: "Choose a session action"
-                        color: Colors.foregroundMuted
+                        color: Colors.fgSecondary
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize - 1
                     }
@@ -237,7 +237,7 @@ PanelWindow {
             anchors.fill: parent
             visible: root.confirmAction.length > 0
             radius: parent.radius
-            color: Colors.scrim
+            color: Colors.scrimPrimary
 
             // Confirmation cancel click target
             MouseArea {
@@ -254,8 +254,8 @@ PanelWindow {
                 height: 136
                 anchors.centerIn: parent
                 radius: 16
-                color: Colors.panelBackground
-                border.color: Colors.panelBorder
+                color: Colors.bgPrimary
+                border.color: Colors.borderFaint
                 border.width: 1
 
                 // Confirmation text and actions
@@ -267,7 +267,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: root.confirmTitle
-                        color: Colors.foreground
+                        color: Colors.fgPrimary
                         horizontalAlignment: Text.AlignHCenter
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize + 4
@@ -277,7 +277,7 @@ PanelWindow {
                     Text {
                         Layout.fillWidth: true
                         text: "Press Enter to confirm or Escape to cancel"
-                        color: Colors.foregroundMuted
+                        color: Colors.fgSecondary
                         horizontalAlignment: Text.AlignHCenter
                         wrapMode: Text.WordWrap
                         font.family: Typography.fontFamily
@@ -325,8 +325,8 @@ PanelWindow {
         Layout.fillWidth: true
         Layout.fillHeight: true
         radius: 14
-        color: actionMouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground
-        border.color: actionMouse.containsMouse ? Colors.controlActiveBorder : Colors.panelBorder
+        color: actionMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary
+        border.color: actionMouse.containsMouse ? Colors.borderAccent : Colors.borderFaint
         border.width: 1
 
         // Shortcut badge
@@ -338,8 +338,8 @@ PanelWindow {
             width: shortcutLabel.implicitWidth + 10
             height: 18
             radius: 6
-            color: Colors.controlBackground
-            border.color: Colors.panelBorder
+            color: Colors.bgTertiary
+            border.color: Colors.borderFaint
             border.width: 1
 
             // Shortcut letter label
@@ -347,7 +347,7 @@ PanelWindow {
                 id: shortcutLabel
                 anchors.centerIn: parent
                 text: action.shortcut
-                color: Colors.foregroundMuted
+                color: Colors.fgSecondary
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize - 2
                 font.weight: Font.Bold
@@ -370,7 +370,7 @@ PanelWindow {
             Text {
                 Layout.fillWidth: true
                 text: action.title
-                color: Colors.foreground
+                color: Colors.fgPrimary
                 horizontalAlignment: Text.AlignHCenter
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
@@ -381,7 +381,7 @@ PanelWindow {
             Text {
                 Layout.fillWidth: true
                 text: action.subtitle
-                color: Colors.foregroundMuted
+                color: Colors.fgSecondary
                 horizontalAlignment: Text.AlignHCenter
                 elide: Text.ElideRight
                 font.family: Typography.fontFamily
@@ -411,15 +411,15 @@ PanelWindow {
         Layout.fillWidth: true
         Layout.preferredHeight: 34
         radius: 10
-        color: accent ? Colors.controlActiveBackground : (buttonMouse.containsMouse ? Colors.controlHoverBackground : Colors.cardBackground)
-        border.color: accent ? Colors.controlActiveBorder : Colors.panelBorder
+        color: accent ? Colors.subtlePrimary : (buttonMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary)
+        border.color: accent ? Colors.borderAccent : Colors.borderFaint
         border.width: 1
 
         // Confirmation button label
         Text {
             anchors.centerIn: parent
             text: button.label
-            color: Colors.foreground
+            color: Colors.fgPrimary
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize
             font.weight: Font.Bold

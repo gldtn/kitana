@@ -15,7 +15,7 @@ Rectangle {
 
     anchors.fill: parent
     radius: parent ? parent.radius : 0
-    color: Colors.scrim
+    color: Colors.scrimPrimary
     visible: confirming
     z: 20
 
@@ -25,8 +25,8 @@ Rectangle {
         height: 150
         anchors.centerIn: parent
         radius: 16
-        color: Colors.cardBackground
-        border.color: Colors.panelBorder
+        color: Colors.bgTertiary
+        border.color: Colors.borderFaint
         border.width: 1
 
         // Confirmation text and buttons
@@ -39,7 +39,7 @@ Rectangle {
             Text {
                 width: parent.width
                 text: root.panel ? root.panel.confirmTitle : ""
-                color: Colors.foreground
+                color: Colors.fgPrimary
                 horizontalAlignment: Text.AlignHCenter
                 font.family: Typography.fontFamily
                 font.pixelSize: 16
@@ -50,7 +50,7 @@ Rectangle {
             Text {
                 width: parent.width
                 text: "Confirm this session action."
-                color: Colors.foregroundMuted
+                color: Colors.fgSecondary
                 horizontalAlignment: Text.AlignHCenter
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
