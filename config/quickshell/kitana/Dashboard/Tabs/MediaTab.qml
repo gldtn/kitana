@@ -14,7 +14,9 @@ import "../../Services" as Services
 Item {
     id: tabRoot
 
-    Custom.Settings { id: settings }
+    Custom.Settings {
+        id: settings
+    }
 
     property var dashboard: null
     readonly property var panel: dashboard
@@ -30,7 +32,7 @@ Item {
         radius: 18
         color: Colors.bgSecondary
         border.color: Colors.borderFaint
-        border.width: 1
+        border.width: 0.8
         clip: true
 
         // Background audio visualizer bars
@@ -121,9 +123,18 @@ Item {
                         anchors.fill: parent
                         radius: albumCover.radius
                         gradient: Gradient {
-                            GradientStop { position: 0.0; color: "#38ffffff" }
-                            GradientStop { position: 0.38; color: "#00ffffff" }
-                            GradientStop { position: 1.0; color: "#00000000" }
+                            GradientStop {
+                                position: 0.0
+                                color: "#38ffffff"
+                            }
+                            GradientStop {
+                                position: 0.38
+                                color: "#00ffffff"
+                            }
+                            GradientStop {
+                                position: 1.0
+                                color: "#00000000"
+                            }
                         }
                     }
 
@@ -132,9 +143,18 @@ Item {
                         anchors.fill: parent
                         radius: albumCover.radius
                         gradient: Gradient {
-                            GradientStop { position: 0.0; color: "#00000000" }
-                            GradientStop { position: 0.55; color: "#00000000" }
-                            GradientStop { position: 1.0; color: "#66000000" }
+                            GradientStop {
+                                position: 0.0
+                                color: "#00000000"
+                            }
+                            GradientStop {
+                                position: 0.55
+                                color: "#00000000"
+                            }
+                            GradientStop {
+                                position: 1.0
+                                color: "#66000000"
+                            }
                         }
                     }
 
@@ -225,9 +245,12 @@ Item {
 
                             loops: Animation.Infinite
                             running: tabRoot.panel.visible && tabRoot.panel.activeTab === "media" && mediaTitleText.implicitWidth > mediaTitleClip.width
-                            onRunningChanged: if (!running) mediaTitleText.x = 0
+                            onRunningChanged: if (!running)
+                                mediaTitleText.x = 0
 
-                            PauseAnimation { duration: 900 }
+                            PauseAnimation {
+                                duration: 900
+                            }
                             NumberAnimation {
                                 target: mediaTitleText
                                 property: "x"
@@ -236,7 +259,9 @@ Item {
                                 duration: Math.max(3500, (mediaTitleText.implicitWidth - mediaTitleClip.width) * 28)
                                 easing.type: Easing.InOutQuad
                             }
-                            PauseAnimation { duration: 1200 }
+                            PauseAnimation {
+                                duration: 1200
+                            }
                             NumberAnimation {
                                 target: mediaTitleText
                                 property: "x"
@@ -257,19 +282,39 @@ Item {
                     }
 
                     // Push transport controls to the bottom
-                    Item { Layout.fillHeight: true }
+                    Item {
+                        Layout.fillHeight: true
+                    }
 
                     // Playback transport controls
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: 10
 
-                        MediaButton { iconName: "media.previous"; onClicked: Services.MediaService.previous() }
-                        MediaButton { iconName: tabRoot.panel.mediaPlaying ? "media.pause" : "media.play"; prominent: true; onClicked: Services.MediaService.playPause() }
-                        MediaButton { iconName: "media.stop"; onClicked: Services.MediaService.stop() }
-                        MediaButton { iconName: "media.next"; onClicked: Services.MediaService.next() }
-                        Item { Layout.fillWidth: true }
-                        MediaButton { iconName: "media.refresh"; onClicked: tabRoot.panel.refreshMedia() }
+                        MediaButton {
+                            iconName: "media.previous"
+                            onClicked: Services.MediaService.previous()
+                        }
+                        MediaButton {
+                            iconName: tabRoot.panel.mediaPlaying ? "media.pause" : "media.play"
+                            prominent: true
+                            onClicked: Services.MediaService.playPause()
+                        }
+                        MediaButton {
+                            iconName: "media.stop"
+                            onClicked: Services.MediaService.stop()
+                        }
+                        MediaButton {
+                            iconName: "media.next"
+                            onClicked: Services.MediaService.next()
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        MediaButton {
+                            iconName: "media.refresh"
+                            onClicked: tabRoot.panel.refreshMedia()
+                        }
                     }
                 }
             }

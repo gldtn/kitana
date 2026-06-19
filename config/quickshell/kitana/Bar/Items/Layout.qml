@@ -12,7 +12,9 @@ import "../../custom" as Custom
 Item {
     id: root
 
-    Custom.Settings { id: settings }
+    Custom.Settings {
+        id: settings
+    }
 
     readonly property string kitanaDir: Quickshell.env("KITANA_DIR") || Quickshell.env("HOME") + "/.local/share/kitana"
     readonly property string helper: kitanaDir + "/bin/kitana-hyprland-workspace-layout-toggle"
@@ -69,7 +71,8 @@ Item {
             onStreamFinished: root.refreshWorkspaces()
         }
 
-        onRunningChanged: if (!running) refreshDelay.restart()
+        onRunningChanged: if (!running)
+            refreshDelay.restart()
     }
 
     // Delayed workspace state refresh
@@ -91,7 +94,7 @@ Item {
         Controls.Icon {
             anchors.verticalCenter: parent.verticalCenter
             name: Icons.workspaceLayoutName(root.currentLayout)
-            tone: "accent"
+            tone: "subtle"
             sizeRole: "bar"
         }
 
@@ -113,6 +116,7 @@ Item {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onClicked: if (!layoutToggle.running) layoutToggle.exec([root.helper])
+        onClicked: if (!layoutToggle.running)
+            layoutToggle.exec([root.helper])
     }
 }

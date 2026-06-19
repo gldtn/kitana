@@ -643,7 +643,7 @@ PanelWindow {
         opacity: root.revealProgress
         radius: 18
         color: Colors.bgPrimary
-        border.color: Colors.borderFaint
+        border.color: Colors.borderLight
         border.width: 1
         clip: true
 

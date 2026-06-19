@@ -8,7 +8,9 @@ import "../../custom" as Custom
 Item {
     id: root
 
-    Custom.Settings { id: settings }
+    Custom.Settings {
+        id: settings
+    }
 
     property var startMenu: null
     property bool embedded: false
@@ -23,7 +25,7 @@ Item {
         anchors.fill: parent
         visible: !root.embedded || startMouse.containsMouse
         radius: root.height / settings.radiusDivisor
-        color: startMouse.containsMouse ? Colors.bgTertiary : Colors.bgSecondary
+        color: Colors.bgSecondary
         border.color: Colors.borderFaint
         border.width: root.embedded ? 0 : settings.borderWidth
     }
@@ -32,7 +34,7 @@ Item {
     Controls.Icon {
         anchors.fill: parent
         name: "brand.arch"
-        tone: "brand"
+        tone: startMouse.containsMouse ? "brand" : "subtle"
         sizeRole: "bar"
     }
 
@@ -43,6 +45,7 @@ Item {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onClicked: if (root.startMenu) root.startMenu.toggle()
+        onClicked: if (root.startMenu)
+            root.startMenu.toggle()
     }
 }

@@ -91,7 +91,7 @@
     "accent": "orange",
     "onAccent": "bg",
     "inverse": "bg",
-    "brand": "orange",
+    "brand": "blue",
     "disabled": {
       "ref": "grey",
       "alpha": 0.5

@@ -38,25 +38,55 @@
     "fgAccent": "mauve",
     "bgPrimary": "base",
     "bgSecondary": "mantle",
-    "bgTertiary": "surface0",
+    "bgTertiary": {
+      "ref": "base",
+      "lighten": 0.04
+    },
     "bgOnPrimary": "mantle",
     "bgAccent": "mauve",
     "borderDark": "crust",
-    "borderLight": "surface1",
-    "borderFaint": "surface0",
-    "borderHeavy": "surface1",
+    "borderLight": {
+      "ref": "surface0",
+      "lighten": 0.01
+    },
+    "borderFaint": {
+      "ref": "surface0",
+      "darken": 0.2
+    },
+    "borderHeavy": "overlay0",
     "borderAccent": "mauve",
     "info": "blue",
     "success": "green",
     "warning": "yellow",
     "error": "red",
-    "scrimPrimary": { "ref": "base", "alpha": 0.52 },
-    "scrimSecondary": { "ref": "base", "alpha": 0.32 },
-    "scrimTertiary": { "ref": "base", "alpha": 0.60 },
-    "subtleAccent": { "ref": "mauve", "alpha": 0.16 },
-    "subtlePrimary": { "ref": "base", "alpha": 0.16 },
-    "subtleSecondary": { "ref": "surface1", "alpha": 0.65 },
-    "subtleTertiary": { "ref": "overlay2", "alpha": 0.50 }
+    "scrimPrimary": {
+      "ref": "crust",
+      "lighten": 0.09
+    },
+    "scrimSecondary": {
+      "ref": "mantle",
+      "lighten": 0.03
+    },
+    "scrimTertiary": {
+      "ref": "base",
+      "lighten": 0.05
+    },
+    "subtleAccent": {
+      "ref": "mauve",
+      "alpha": 0.16
+    },
+    "subtlePrimary": {
+      "ref": "base",
+      "alpha": 0.16
+    },
+    "subtleSecondary": {
+      "ref": "surface1",
+      "alpha": 0.65
+    },
+    "subtleTertiary": {
+      "ref": "overlay2",
+      "alpha": 0.50
+    }
   },
   "icons": {
     "primary": "text",
@@ -67,7 +97,10 @@
     "onAccent": "mantle",
     "inverse": "mantle",
     "brand": "mauve",
-    "disabled": { "ref": "overlay2", "alpha": 0.5 },
+    "disabled": {
+      "ref": "overlay2",
+      "alpha": 0.5
+    },
     "danger": "red"
   },
   "hypr": {
