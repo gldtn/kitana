@@ -258,14 +258,24 @@ PanelWindow {
                 anchors.margins: 18
                 spacing: 12
 
-                // Launcher title
-                Text {
+                // Launcher title row
+                RowLayout {
                     Layout.fillWidth: true
-                    text: "Launch"
-                    color: Colors.fgPrimary
-                    font.family: Typography.fontFamily
-                    font.pixelSize: 22
-                    font.weight: Font.DemiBold
+                    spacing: 10
+
+                    Text {
+                        Layout.fillWidth: true
+                        text: "Launch"
+                        color: Colors.fgPrimary
+                        font.family: Typography.fontFamily
+                        font.pixelSize: 22
+                        font.weight: Font.DemiBold
+                    }
+
+                    Controls.CloseButton {
+                        Layout.alignment: Qt.AlignVCenter
+                        onClicked: root.close()
+                    }
                 }
 
                 // Search input frame
@@ -401,7 +411,7 @@ PanelWindow {
                                         color: Colors.bgTertiary
 
                                         Controls.Icon {
-                                            visible: resultDelegate.modelData.fallbackIconName && resultDelegate.modelData.fallbackIconName.length > 0
+                                            visible: !!resultDelegate.modelData.fallbackIconName && resultDelegate.modelData.fallbackIconName.length > 0
                                             anchors.centerIn: parent
                                             name: resultDelegate.modelData.fallbackIconName || Icons.defaultIcon
                                             tone: "accent"

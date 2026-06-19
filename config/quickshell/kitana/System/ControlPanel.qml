@@ -83,7 +83,7 @@ PanelWindow {
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        anchors.topMargin: settings.panelHeight + settings.topMargin + root.outerGap
+        anchors.topMargin: Services.UiPreferences.panelHeight + Services.UiPreferences.topMargin + root.outerGap
         anchors.rightMargin: root.outerGap
         anchors.bottomMargin: root.outerGap
         opacity: root.revealProgress

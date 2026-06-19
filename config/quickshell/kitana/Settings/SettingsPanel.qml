@@ -146,10 +146,9 @@ PanelWindow {
 
                 Item { Layout.fillWidth: true }
 
-                Controls.Icon {
-                    name: "settings"
-                    tone: "accent"
-                    size: settings.iconPixelSize + 1
+                Controls.CloseButton {
+                    Layout.alignment: Qt.AlignVCenter
+                    onClicked: root.close()
                 }
             }
 
@@ -357,68 +356,284 @@ PanelWindow {
         }
     }
 
-    // Bar settings tab content
-    Component {
-        id: barTab
+    // Compact button used by geometry controls
+    component GeometryActionButton: Rectangle {
+        id: actionRoot
 
-        // Bar settings stack
-        ColumnLayout {
-            spacing: 12
+        property string label: ""
 
-            Text {
+        signal clicked
+
+        Layout.preferredWidth: labelText.implicitWidth + 18
+        Layout.preferredHeight: 30
+        radius: 9
+        opacity: enabled ? 1 : 0.45
+        color: actionMouse.containsMouse && enabled ? Colors.subtleAccent : Colors.bgTertiary
+        border.color: actionMouse.containsMouse && enabled ? Colors.borderAccent : Colors.borderFaint
+        border.width: 1
+
+        Text {
+            id: labelText
+
+            anchors.centerIn: parent
+            text: actionRoot.label
+            color: Colors.fgPrimary
+            font.family: Typography.fontFamily
+            font.pixelSize: settings.textPixelSize
+            font.weight: Font.Bold
+        }
+
+        MouseArea {
+            id: actionMouse
+
+            anchors.fill: parent
+            enabled: actionRoot.enabled
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: actionRoot.clicked()
+        }
+    }
+
+    // Numeric geometry preference row
+    component GeometryStepper: Rectangle {
+        id: stepRoot
+
+        property string title: ""
+        property string subtitle: ""
+        property int value: 0
+        property int minimum: 0
+        property int maximum: 100
+        property int step: 1
+
+        signal valueRequested(int requestedValue)
+
+        Layout.fillWidth: true
+        Layout.preferredHeight: 48
+        radius: 12
+        color: Colors.bgTertiary
+        border.color: Colors.borderFaint
+        border.width: 1
+
+        // Label, value, and increment controls
+        RowLayout {
+            anchors.fill: parent
+            anchors.leftMargin: 12
+            anchors.rightMargin: 12
+            spacing: 8
+
+            ColumnLayout {
                 Layout.fillWidth: true
-                text: "Bar"
-                color: Colors.fgPrimary
-                font.family: Typography.fontFamily
-                font.pixelSize: settings.textPixelSize + 4
-                font.weight: Font.Bold
+                spacing: 1
+
+                Text {
+                    Layout.fillWidth: true
+                    text: stepRoot.title
+                    color: Colors.fgPrimary
+                    elide: Text.ElideRight
+                    font.family: Typography.fontFamily
+                    font.pixelSize: settings.textPixelSize
+                    font.weight: Font.Bold
+                }
+
+                Text {
+                    Layout.fillWidth: true
+                    text: stepRoot.subtitle
+                    color: Colors.fgSecondary
+                    elide: Text.ElideRight
+                    font.family: Typography.fontFamily
+                    font.pixelSize: settings.textPixelSize - 1
+                }
             }
 
-            // Workspace layout options card
+            GeometryActionButton {
+                label: "-"
+                enabled: stepRoot.value > stepRoot.minimum
+                onClicked: stepRoot.valueRequested(Math.max(stepRoot.minimum, stepRoot.value - stepRoot.step))
+            }
+
             Rectangle {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 176
-                radius: 14
+                Layout.preferredWidth: 60
+                Layout.preferredHeight: 30
+                radius: 9
                 color: Colors.bgSecondary
                 border.color: Colors.borderFaint
                 border.width: 1
 
-                // Workspace layout options content
-                ColumnLayout {
-                    anchors.fill: parent
-                    anchors.margins: 12
-                    spacing: 12
-
-                    Text {
-                        Layout.fillWidth: true
-                        text: "Workspace layout control"
-                        color: Colors.fgPrimary
-                        font.family: Typography.fontFamily
-                        font.pixelSize: settings.textPixelSize
-                        font.weight: Font.Bold
-                    }
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 10
-
-                        OptionButton { mode: "icons" }
-                        OptionButton { mode: "compact" }
-                        OptionButton { mode: "full" }
-                    }
+                Text {
+                    anchors.centerIn: parent
+                    text: stepRoot.value + " px"
+                    color: Colors.fgPrimary
+                    font.family: Typography.fontFamily
+                    font.pixelSize: settings.textPixelSize
+                    font.weight: Font.DemiBold
                 }
             }
 
-            Text {
-                Layout.fillWidth: true
-                text: "The control toggles the focused workspace between dwindle and scrolling without changing your Hyprland default layout."
-                color: Colors.fgSecondary
-                wrapMode: Text.WordWrap
-                font.family: Typography.fontFamily
-                font.pixelSize: settings.textPixelSize
+            GeometryActionButton {
+                label: "+"
+                enabled: stepRoot.value < stepRoot.maximum
+                onClicked: stepRoot.valueRequested(Math.min(stepRoot.maximum, stepRoot.value + stepRoot.step))
             }
+        }
+    }
 
-            Item { Layout.fillHeight: true }
+    // Bar settings tab content
+    Component {
+        id: barTab
+
+        // Scrollable bar settings stack
+        Flickable {
+            clip: true
+            contentWidth: width
+            contentHeight: barStack.implicitHeight
+            boundsBehavior: Flickable.StopAtBounds
+
+            ColumnLayout {
+                id: barStack
+
+                width: parent.width
+                spacing: 12
+
+                Text {
+                    Layout.fillWidth: true
+                    text: "Bar"
+                    color: Colors.fgPrimary
+                    font.family: Typography.fontFamily
+                    font.pixelSize: settings.textPixelSize + 4
+                    font.weight: Font.Bold
+                }
+
+                // Workspace layout options card
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 176
+                    radius: 14
+                    color: Colors.bgSecondary
+                    border.color: Colors.borderFaint
+                    border.width: 1
+
+                    // Workspace layout options content
+                    ColumnLayout {
+                        anchors.fill: parent
+                        anchors.margins: 12
+                        spacing: 12
+
+                        Text {
+                            Layout.fillWidth: true
+                            text: "Workspace layout control"
+                            color: Colors.fgPrimary
+                            font.family: Typography.fontFamily
+                            font.pixelSize: settings.textPixelSize
+                            font.weight: Font.Bold
+                        }
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 10
+
+                            OptionButton { mode: "icons" }
+                            OptionButton { mode: "compact" }
+                            OptionButton { mode: "full" }
+                        }
+                    }
+                }
+
+                // Persistent bar geometry controls card
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 276
+                    radius: 14
+                    color: Colors.bgSecondary
+                    border.color: Colors.borderFaint
+                    border.width: 1
+
+                    ColumnLayout {
+                        anchors.fill: parent
+                        anchors.margins: 12
+                        spacing: 10
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 8
+
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                spacing: 1
+
+                                Text {
+                                    Layout.fillWidth: true
+                                    text: "Bar geometry"
+                                    color: Colors.fgPrimary
+                                    font.family: Typography.fontFamily
+                                    font.pixelSize: settings.textPixelSize
+                                    font.weight: Font.Bold
+                                }
+
+                                Text {
+                                    Layout.fillWidth: true
+                                    text: "Stored live; defaults still come from custom settings."
+                                    color: Colors.fgSecondary
+                                    elide: Text.ElideRight
+                                    font.family: Typography.fontFamily
+                                    font.pixelSize: settings.textPixelSize - 1
+                                }
+                            }
+
+                            GeometryActionButton {
+                                label: "Reset"
+                                onClicked: Services.UiPreferences.resetBarGeometry()
+                            }
+                        }
+
+                        GeometryStepper {
+                            title: "Bar height"
+                            subtitle: "Default " + Services.UiPreferences.defaultPanelHeight + " px, reserved edge height"
+                            value: Services.UiPreferences.panelHeight
+                            minimum: 24
+                            maximum: 72
+                            onValueRequested: requestedValue => Services.UiPreferences.setPanelHeight(requestedValue)
+                        }
+
+                        GeometryStepper {
+                            title: "Pill height"
+                            subtitle: "Default " + Services.UiPreferences.defaultPillHeight + " px, capped by bar height"
+                            value: Services.UiPreferences.pillHeight
+                            minimum: 18
+                            maximum: Services.UiPreferences.panelHeight
+                            onValueRequested: requestedValue => Services.UiPreferences.setPillHeight(requestedValue)
+                        }
+
+                        GeometryStepper {
+                            title: "Top margin"
+                            subtitle: "Default " + Services.UiPreferences.defaultTopMargin + " px, distance from screen edge"
+                            value: Services.UiPreferences.topMargin
+                            minimum: 0
+                            maximum: 32
+                            onValueRequested: requestedValue => Services.UiPreferences.setTopMargin(requestedValue)
+                        }
+
+                        GeometryStepper {
+                            title: "Pill radius"
+                            subtitle: "Default " + Services.UiPreferences.defaultPillRadius + " px, capped at half pill height"
+                            value: Services.UiPreferences.pillRadius
+                            minimum: 0
+                            maximum: Math.round(Services.UiPreferences.pillHeight / 2)
+                            onValueRequested: requestedValue => Services.UiPreferences.setPillRadius(requestedValue)
+                        }
+                    }
+                }
+
+                Text {
+                    Layout.fillWidth: true
+                    text: "The control toggles the focused workspace between dwindle and scrolling without changing your Hyprland default layout."
+                    color: Colors.fgSecondary
+                    wrapMode: Text.WordWrap
+                    font.family: Typography.fontFamily
+                    font.pixelSize: settings.textPixelSize
+                }
+
+                Item { Layout.fillHeight: true }
+            }
         }
     }
 

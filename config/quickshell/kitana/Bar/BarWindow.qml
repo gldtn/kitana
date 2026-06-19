@@ -19,13 +19,12 @@ PanelWindow {
 
     property var panelScreen: null
     property bool barVisible: true
-    property var dashboardPanel: null
     property var screenshotPanel: null
     property var settingsPanel: null
     property var shortcutsPanel: null
     screen: panelScreen
-    implicitHeight: root.barVisible ? settings.panelHeight : 1
-    exclusiveZone: root.barVisible ? settings.exclusiveZone : 0
+    implicitHeight: root.barVisible ? Services.UiPreferences.panelHeight : 1
+    exclusiveZone: root.barVisible ? Services.UiPreferences.exclusiveZone : 0
     WlrLayershell.namespace: "qs-panel"
 
     anchors {
@@ -35,7 +34,7 @@ PanelWindow {
     }
 
     // qmllint disable unqualified unresolved-type
-    margins.top: settings.topMargin
+    margins.top: Services.UiPreferences.topMargin
     margins.left: settings.sideMargin
     margins.right: settings.sideMargin
     // qmllint enable unqualified unresolved-type
@@ -77,8 +76,6 @@ PanelWindow {
     Item {
         id: barContent
 
-        readonly property real normalCenterX: (width - centerSection.width) / 2
-
         anchors.fill: parent
         visible: root.barVisible
 
@@ -91,16 +88,6 @@ PanelWindow {
             embedded: false
             panelScreen: root.panelScreen
             startMenu: startMenu
-        }
-
-        // Clock and dashboard entry point
-        Sections.Center {
-            id: centerSection
-
-            x: barContent.normalCenterX
-            y: (parent.height - height) / 2
-            embedded: false
-            dashboardPanel: root.dashboardPanel
         }
 
         // Screenshot, tray, control, and power controls

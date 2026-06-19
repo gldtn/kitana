@@ -192,6 +192,11 @@ PanelWindow {
                         font.pixelSize: settings.textPixelSize - 1
                     }
                 }
+
+                Controls.CloseButton {
+                    Layout.alignment: Qt.AlignVCenter
+                    onClicked: root.close()
+                }
             }
 
             // Session action buttons row

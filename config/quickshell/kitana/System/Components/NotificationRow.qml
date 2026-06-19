@@ -133,29 +133,8 @@ Rectangle {
             }
 
             // Notification dismiss button
-            Rectangle {
-                Layout.preferredWidth: 22
-                Layout.preferredHeight: 22
-                radius: 11
-                color: dismissMouse.containsMouse ? Colors.scrimSecondary : "transparent"
-
-                // Dismiss icon
-                Controls.Icon {
-                    anchors.centerIn: parent
-                    name: "ui.close"
-                    tone: dismissMouse.containsMouse ? "primary" : "muted"
-                    size: 13
-                }
-
-                // Dismiss click target
-                MouseArea {
-                    id: dismissMouse
-
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: Services.NotificationService.dismiss(root.item)
-                }
+            Controls.CloseButton {
+                onClicked: Services.NotificationService.dismiss(root.item)
             }
         }
 

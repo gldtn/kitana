@@ -370,10 +370,8 @@ Item {
                         font.weight: Font.Bold
                     }
 
-                    MiniButton {
-                        iconName: "ui.close"
-                        widthOverride: 32
-                        heightOverride: 30
+                    Controls.CloseButton {
+                        buttonSize: 30
                         onClicked: tabRoot.panel.mediaAudioOverlayOpen = false
                     }
                 }

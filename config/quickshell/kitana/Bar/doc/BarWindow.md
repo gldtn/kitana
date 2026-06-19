@@ -18,7 +18,7 @@ Referenced or instantiated by: `shell.qml`.
 
 ## Component Hierarchy and Role
 
-The root type is `PanelWindow`. The component composes child QML items, Kitana design tokens, and Quickshell services to provide its role in the shell.
+The root type is `PanelWindow`. The component owns the per-monitor left and right bar controls; the center dashboard island is owned by `Dashboard/DashboardPanel.qml`.
 
 ## Properties
 
@@ -26,14 +26,12 @@ The root type is `PanelWindow`. The component composes child QML items, Kitana d
 |----------|------|---------|----------|-------------|
 | `panelScreen` | `var` | `null` | No | Selects the Quickshell screen or monitor that owns this window or bar instance. |
 | `barVisible` | `bool` | `true` | No | Controls whether the top bar is shown and reserves exclusive screen space. |
-| `dashboardPanel` | `var` | `null` | No | Receives the shared dashboard panel instance used by bar controls to open dashboard tabs. |
 | `screenshotPanel` | `var` | `null` | No | Receives the shared screenshot panel instance used to open or toggle capture controls. |
 | `settingsPanel` | `var` | `null` | No | Receives the shared settings panel instance used by menu actions. |
 | `shortcutsPanel` | `var` | `null` | No | Receives the shared shortcuts panel instance used by menu actions. |
-| `sectionGap` | `readonly int` | `settings.rowSpacing` | No | Read-only. Controls the numeric value for `sectionGap`. |
 
 ## Inter-Component Interactions
 
 External components bind this component through its declared properties and call its public functions where exposed.
 
-Reads from or calls service singletons: `Services.CaffeineService`.
+Reads from or calls service singletons: `Services.CaffeineService`, `Services.UiPreferences`.

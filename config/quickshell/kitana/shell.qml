@@ -21,7 +21,6 @@ ShellRoot {
     id: root
 
     property bool barVisible: true
-    readonly property var sharedDashboardPanel: dashboardPanel
     readonly property var sharedScreenshotPanel: screenshotPanel
     readonly property var sharedSettingsPanel: settingsPanel
     readonly property var sharedShortcutsPanel: shortcutsPanel
@@ -35,6 +34,8 @@ ShellRoot {
     // Shared dashboard panel opened from the clock
     Dashboard.DashboardPanel {
         id: dashboardPanel
+
+        fallbackScreen: Quickshell.screens.length > 0 ? Quickshell.screens[0] : null
     }
 
     // Shared screenshot panel opened from bar and IPC
@@ -121,6 +122,19 @@ ShellRoot {
         }
     }
 
+    // Per-monitor dashboard islands
+    Variants {
+        model: Quickshell.screens
+
+        // Collapsed dashboard island for one output
+        Dashboard.IslandWindow {
+            required property var modelData
+            panelScreen: modelData
+            barVisible: root.barVisible
+            dashboardPanel: dashboardPanel
+        }
+    }
+
     // Per-monitor bar windows
     Variants {
         model: Quickshell.screens
@@ -130,7 +144,6 @@ ShellRoot {
             required property var modelData
             panelScreen: modelData
             barVisible: root.barVisible
-            dashboardPanel: root.sharedDashboardPanel
             screenshotPanel: root.sharedScreenshotPanel
             settingsPanel: root.sharedSettingsPanel
             shortcutsPanel: root.sharedShortcutsPanel

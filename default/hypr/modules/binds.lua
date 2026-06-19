@@ -53,6 +53,7 @@ bind(mod .. " + CTRL + Z", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2
 -- Quickshell control
 bind(mod .. " + K", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-shortcuts open"), { description = "Shortcuts" })
 bind(mod .. " + CTRL + B", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-bar toggle"), { description = "Toggle Quickshell bar" })
+bind(mod .. " + CTRL + D", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-dashboard toggle datetime"), { description = "Dashboard" })
 bind(mod .. " + PRINT", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-screenshot toggle"), { description = "Screenshot menu" })
 bind(mod .. " + CTRL + P", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-screenshot toggle"), { description = "Screenshot menu" })
 bind(mod .. " + CTRL + T", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-theme-grid"), { description = "Theme chooser" })

@@ -10,9 +10,9 @@ DateTime is an interactive control embedded in the top bar.
 
 Source file: `Bar/Items/DateTime.qml`.
 
-Qt and Quickshell imports: `import QtQuick`, `import QtQuick.Layouts`.
+Qt and Quickshell imports: `import QtQuick`.
 
-Project imports: `import "../.."`, `import "../../Components/Controls" as Controls`, `import "../../custom" as Custom`.
+Project imports: `import "../.."`, `import "../../custom" as Custom`.
 
 Referenced or instantiated by: `Bar/Sections/Center.qml`.
 
@@ -24,8 +24,7 @@ The root type is `Item`. The component composes child QML items, Kitana design t
 
 | Property | Type | Default | Required | Description |
 |----------|------|---------|----------|-------------|
-| `dashboardPanel` | `var` | `null` | No | Receives the shared dashboard panel instance used by bar controls to open dashboard tabs. |
-| `embedded` | `bool` | `false` | No | Switches the component into shared-pill mode so its own background is suppressed by a parent container. |
+| None | - | - | No | This component declares no root-level custom properties. |
 
 ## Inter-Component Interactions
 

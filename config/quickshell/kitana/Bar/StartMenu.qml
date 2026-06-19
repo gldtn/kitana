@@ -8,6 +8,7 @@ import Quickshell
 import Quickshell.Wayland
 import ".."
 import "../Components/Controls" as Controls
+import "../Services" as Services
 import "../custom" as Custom
 
 // qmllint disable uncreatable-type
@@ -158,7 +159,7 @@ PanelWindow {
         height: menuColumn.implicitHeight + 28
         anchors.top: parent.top
         anchors.left: parent.left
-        anchors.topMargin: settings.panelHeight + settings.topMargin + 10
+        anchors.topMargin: Services.UiPreferences.panelHeight + Services.UiPreferences.topMargin + 10
         anchors.leftMargin: settings.sideMargin
         opacity: root.revealProgress
         radius: 18

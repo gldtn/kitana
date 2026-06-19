@@ -279,6 +279,11 @@ PanelWindow {
                         font.pixelSize: settings.textPixelSize - 1
                     }
                 }
+
+                Controls.CloseButton {
+                    Layout.alignment: Qt.AlignVCenter
+                    onClicked: root.close()
+                }
             }
 
             // Shortcut search input frame

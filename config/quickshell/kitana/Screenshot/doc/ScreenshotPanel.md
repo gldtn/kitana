@@ -20,6 +20,8 @@ Referenced or instantiated by: `shell.qml`.
 
 The root type is `PanelWindow`. The component composes child QML items, Kitana design tokens, and Quickshell services to provide its role in the shell.
 
+The screenshot header uses `Controls.CloseButton` for explicit dismissal.
+
 ## Properties
 
 | Property | Type | Default | Required | Description |

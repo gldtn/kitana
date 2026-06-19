@@ -24,7 +24,7 @@ Item {
     readonly property string displayMode: Services.UiPreferences.layoutPillDisplayMode
     property bool embedded: false
 
-    implicitHeight: settings.pillHeight
+    implicitHeight: Services.UiPreferences.pillHeight
     implicitWidth: content.implicitWidth + 18
     width: implicitWidth
     height: implicitHeight
@@ -33,7 +33,7 @@ Item {
     Rectangle {
         anchors.fill: parent
         visible: !root.embedded
-        radius: root.height / settings.radiusDivisor
+        radius: Services.UiPreferences.pillRadius
         color: Colors.bgSecondary
         border.color: Colors.borderFaint
         border.width: settings.borderWidth

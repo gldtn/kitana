@@ -4,21 +4,21 @@
 
 Kitana is a Quickshell desktop shell for Hyprland. This component belongs to the dashboard panel shell and dashboard-wide state area.
 
-DashboardPanel is a layer-shell panel window in the Dashboard module.
+DashboardPanel is the shared layer-shell panel window that expands from the active monitor's per-monitor island.
 
 ## Project Structure and Dependencies
 
 Source file: `Dashboard/DashboardPanel.qml`.
 
-Qt and Quickshell imports: `import QtQuick`, `import QtQuick.Layouts`, `import Qt.labs.folderlistmodel`, `import Quickshell`, `import Quickshell.Io`, `import Quickshell.Wayland`.
+Qt and Quickshell imports: `import QtQuick`, `import QtQuick.Layouts`, `import Qt.labs.folderlistmodel`, `import Quickshell`, `import Quickshell.Hyprland`, `import Quickshell.Io`, `import Quickshell.Wayland`.
 
-Project imports: `import ".."`, `import "../custom" as Custom`, `import "../Services" as Services`, `import "./Components" as Dashboard`, `import "./Tabs" as Tabs`.
+Project imports: `import ".."`, `import "../Bar/Sections" as BarSections`, `import "../Components/Controls" as Controls`, `import "../custom" as Custom`, `import "../Services" as Services`, `import "./Components" as Dashboard`, `import "./Tabs" as Tabs`.
 
 Referenced or instantiated by: `shell.qml`.
 
 ## Component Hierarchy and Role
 
-The root type is `PanelWindow`. The component composes child QML items, Kitana design tokens, and Quickshell services to provide its role in the shell.
+The root type is `PanelWindow`. It owns the expanded dashboard and morph animation, while `Dashboard/IslandWindow.qml` owns the always-visible collapsed islands on each monitor.
 
 ## Properties
 
@@ -26,7 +26,14 @@ The root type is `PanelWindow`. The component composes child QML items, Kitana d
 |----------|------|---------|----------|-------------|
 | `panelSelf` | `readonly var` | `root` | No | Read-only. Provides component state or configuration for `panelSelf`. |
 | `panelVisible` | `bool` | `false` | No | Tracks whether the panel window should be visible. |
-| `revealProgress` | `real` | `0` | No | Controls the numeric value for `revealProgress`. |
+| `closing` | `bool` | `false` | No | Tracks whether the island is reversing back into the center pill. |
+| `morphProgress` | `real` | `0` | No | Controls the numeric value for the island morph animation. |
+| `fallbackScreen` | `var` | `null` | No | First-screen fallback used before Hyprland focused monitor data is available. |
+| `panelScreen` | `var` | `null` | No | Selects the Quickshell screen or monitor that owns this window or bar instance. |
+| `sourceX` | `real` | `0` | No | Screen-local x coordinate passed by a collapsed island. |
+| `sourceY` | `real` | `Services.UiPreferences.topMargin + (...)` | No | Screen-local y coordinate passed by a collapsed island. |
+| `sourceWidth` | `real` | `240` | No | Width of the center island pill used as the collapsed dashboard size. |
+| `sourceHeight` | `real` | `Services.UiPreferences.pillHeight` | No | Height of the center island pill used as the collapsed dashboard size. |
 | `activeTab` | `string` | `"datetime"` | No | Tracks which tab is currently selected. |
 | `wallpapers` | `var` | `[]` | No | Provides component state or configuration for `wallpapers`. |
 | `themes` | `var` | `[]` | No | Provides component state or configuration for `themes`. |
@@ -43,6 +50,7 @@ The root type is `PanelWindow`. The component composes child QML items, Kitana d
 | `pickerQuery` | `string` | `""` | No | Stores the string value for `pickerQuery`. |
 | `pickerSearchActive` | `bool` | `false` | No | Enables or disables the `pickerSearchActive` state. |
 | `pickerHelpVisible` | `bool` | `false` | No | Enables or disables the `pickerHelpVisible` state. |
+| `compactHoverLatched` | `bool` | `false` | No | Keeps compact island hover visuals stable while the dashboard closes under a stationary pointer. |
 | `kitanaDir` | `string` | `Quickshell.env("KITANA_DIR") \|\| Quickshell.env("HOME") + "/.local/share/kitana"` | No | Stores the Kitana repository path used to call helper commands. |
 | `wallpaperDir` | `string` | `Quickshell.env("KITANA_WALLPAPER_DIR") \|\| Quickshell.env("HOME") + "/.config/kitana/wal...` | No | Stores the wallpaper directory used by wallpaper pickers. |
 | `currentTime` | `date` | `new Date()` | No | Provides component state or configuration for `currentTime`. |
@@ -55,18 +63,68 @@ The root type is `PanelWindow`. The component composes child QML items, Kitana d
 | `mediaVisualStep` | `int` | `0` | No | Controls the numeric value for `mediaVisualStep`. |
 | `mediaAudioOverlayOpen` | `bool` | `false` | No | Enables or disables the `mediaAudioOverlayOpen` state. |
 | `mediaPlaying` | `readonly bool` | `Services.MediaService.playing` | No | Read-only. Enables or disables the `mediaPlaying` state. |
+| `islandActive` | `readonly bool` | `panelVisible` | No | Read-only. Indicates that the dashboard island is expanded or morphing open. |
+| `expandedSurface` | `readonly bool` | computed | No | Switches the island window between compact and full-screen input modes. |
+| `focusedScreen` | `readonly var` | computed | No | Maps Hyprland's focused monitor to a Quickshell screen. |
+| `activeScreen` | `readonly var` | computed | No | Screen currently used by the collapsed or expanded island. |
+| `activeScreenWidth` | `readonly int` | computed | No | Width of `activeScreen`, with a fallback for early startup. |
+| `activeScreenHeight` | `readonly int` | computed | No | Height of `activeScreen`, with a fallback for early startup. |
+| `collapsedWidth` | `readonly real` | computed | No | Width of the collapsed dashboard island. |
+| `collapsedHeight` | `readonly real` | computed | No | Height of the collapsed dashboard island. |
+| `collapsedX` | `readonly real` | computed | No | Screen-local x coordinate for the collapsed island. |
+| `collapsedY` | `readonly real` | computed | No | Screen-local y coordinate for the collapsed island. |
+| `compactX` | `readonly int` | computed | No | Rounded x coordinate used by both the closing card and compact layer-shell margin. |
+| `compactY` | `readonly int` | computed | No | Rounded y coordinate used by both the closing card and compact layer-shell margin. |
+| `compactWidth` | `readonly int` | computed | No | Rounded width used by both the closing card and compact layer-shell surface. |
+| `compactHeight` | `readonly int` | computed | No | Rounded height used by both the closing card and compact layer-shell surface. |
+| `expandedWidth` | `readonly real` | computed | No | Width of the expanded dashboard card. |
+| `expandedHeight` | `readonly real` | computed | No | Height of the expanded dashboard card. |
+| `expandedX` | `readonly real` | computed | No | Screen-local x coordinate for the expanded dashboard card. |
+| `expandedTopMargin` | `readonly real` | computed | No | Screen-local top coordinate for the expanded dashboard card. |
+| `collapsedRadius` | `readonly real` | computed | No | Radius used by the collapsed island. |
+| `expandedRadius` | `readonly real` | `18` | No | Radius used by the expanded dashboard card. |
+| `contentOpacity` | `readonly real` | computed | No | Read-only. Fades the expanded dashboard content in after the island grows. |
+| `previewOpacity` | `readonly real` | computed | No | Read-only. Fades the collapsed island clock preview out during the morph. |
 
 ## Methods
 
-#### open(tab: string) : void
+#### lerp(from: real, to: real, progress: real) : real
 
-Opens the component or switches it to the requested section/tab. Side effects usually include focus changes, state reset, or data refresh.
+Interpolates between two numeric values for dashboard island morph geometry.
+
+#### animateTo(progress: real) : void
+
+Starts the island morph animation toward the requested progress value.
+
+#### compactContains(x: real, y: real) : bool
+
+Returns whether a full-screen click landed inside the compact island bounds.
+
+#### setCompactHoverLatched(value: bool) : void
+
+Stores whether compact island hover visuals should stay active during dashboard close handoff.
+
+#### updateCompactHover(x: real, y: real) : void
+
+Updates `compactHoverLatched` from full-screen dashboard pointer coordinates.
+
+#### reopenFromCompact() : void
+
+Reopens the dashboard from its compact island geometry while a close animation is still running.
+
+#### screenForMonitor(monitor: var) : var
+
+Returns the Quickshell screen whose name matches the focused Hyprland monitor.
+
+#### open(tab: string, sourceScreen: var, x: var, y: var, width: var, height: var) : void
+
+Opens the dashboard on the requested screen, or the current focused screen when called through IPC. Width and height are used to match the active collapsed island.
 
 #### close() : void
 
 Closes the component and resets transient state used while visible.
 
-#### toggle(tab: string) : void
+#### toggle(tab: string, sourceScreen: var, x: var, y: var, width: var, height: var) : void
 
 Toggles the component between open and closed states, often preserving or selecting a requested section.
 

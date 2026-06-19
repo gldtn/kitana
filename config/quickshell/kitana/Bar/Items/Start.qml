@@ -3,6 +3,7 @@
 import QtQuick
 import "../.."
 import "../../Components/Controls" as Controls
+import "../../Services" as Services
 import "../../custom" as Custom
 
 Item {
@@ -15,8 +16,8 @@ Item {
     property var startMenu: null
     property bool embedded: false
 
-    implicitHeight: settings.pillHeight
-    implicitWidth: settings.pillHeight
+    implicitHeight: Services.UiPreferences.pillHeight
+    implicitWidth: Services.UiPreferences.pillHeight
     width: implicitWidth
     height: implicitHeight
 
@@ -24,7 +25,7 @@ Item {
     Rectangle {
         anchors.fill: parent
         visible: !root.embedded || startMouse.containsMouse
-        radius: root.height / settings.radiusDivisor
+        radius: Services.UiPreferences.pillRadius
         color: Colors.bgSecondary
         border.color: Colors.borderFaint
         border.width: root.embedded ? 0 : settings.borderWidth

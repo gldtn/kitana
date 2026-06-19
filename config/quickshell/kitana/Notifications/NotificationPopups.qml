@@ -35,7 +35,7 @@ PanelWindow {
     }
 
     // qmllint disable unqualified unresolved-type
-    margins.top: settings.panelHeight + settings.topMargin + 10
+    margins.top: Services.UiPreferences.panelHeight + Services.UiPreferences.topMargin + 10
     margins.right: settings.sideMargin
     // qmllint enable unqualified unresolved-type
 
@@ -143,33 +143,18 @@ PanelWindow {
                 }
 
                 // Notification dismiss button
-                Item {
+                Controls.CloseButton {
                     id: closeButton
 
                     anchors.right: parent.right
                     anchors.rightMargin: 8
                     anchors.top: parent.top
                     anchors.topMargin: 10
+                    buttonSize: 32
+                    iconSize: 14
                     width: 32
                     height: 32
-
-                    // Dismiss icon
-                    Controls.Icon {
-                        anchors.centerIn: parent
-                        name: "ui.close"
-                        tone: closeMouse.containsMouse ? "primary" : "muted"
-                        size: 14
-                    }
-
-                    // Dismiss click target
-                    MouseArea {
-                        id: closeMouse
-
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: Services.NotificationService.dismiss(notificationPopup.modelData)
-                    }
+                    onClicked: Services.NotificationService.dismiss(notificationPopup.modelData)
                 }
             }
         }

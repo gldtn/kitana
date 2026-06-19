@@ -61,8 +61,8 @@ Item {
         Quickshell.execDetached(["bash", "-c", script, "_", item.id, String(globalX), String(globalY)]);
     }
 
-    implicitHeight: settings.pillHeight
-    implicitWidth: controlRow.implicitWidth + settings.statusHorizontalPadding
+    implicitHeight: Services.UiPreferences.pillHeight
+    implicitWidth: controlRow.implicitWidth + Services.UiPreferences.statusHorizontalPadding
     width: implicitWidth
     height: implicitHeight
 
@@ -70,7 +70,7 @@ Item {
     Rectangle {
         anchors.fill: parent
         visible: !root.embedded
-        radius: root.height / settings.radiusDivisor
+        radius: Services.UiPreferences.pillRadius
         color: Colors.bgSecondary
         border.color: Colors.borderFaint
         border.width: settings.borderWidth
@@ -81,7 +81,7 @@ Item {
         id: controlRow
 
         anchors.left: parent.left
-        anchors.leftMargin: settings.statusHorizontalPadding / 2
+        anchors.leftMargin: Services.UiPreferences.statusHorizontalPadding / 2
         anchors.verticalCenter: parent.verticalCenter
         spacing: settings.statusSpacing
 
@@ -89,9 +89,11 @@ Item {
         QsMenuAnchor {
             id: trayMenuAnchor
 
+            // qmllint disable missing-type
             anchor.edges: Edges.Bottom | Edges.Left
             anchor.gravity: Edges.Bottom | Edges.Left
             anchor.adjustment: PopupAdjustment.None
+            // qmllint enable missing-type
         }
 
         // Expandable tray icon section

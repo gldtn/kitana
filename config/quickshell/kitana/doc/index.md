@@ -17,6 +17,7 @@ Generated reference for the QML components that make up the Kitana Quickshell de
 | `Right` | Bar | `Bar/Sections/Right.qml` | [Right](../Bar/Sections/doc/Right.md) |
 | `StartMenu` | Bar | `Bar/StartMenu.qml` | [StartMenu](../Bar/doc/StartMenu.md) |
 | `BlurredBackdrop` | Components | `Components/Controls/BlurredBackdrop.qml` | [BlurredBackdrop](../Components/Controls/doc/BlurredBackdrop.md) |
+| `CloseButton` | Components | `Components/Controls/CloseButton.qml` | [CloseButton](../Components/Controls/doc/CloseButton.md) |
 | `Icon` | Components | `Components/Controls/Icon.qml` | [Icon](../Components/Controls/doc/Icon.md) |
 | `KeyHintBar` | Components | `Components/Controls/KeyHintBar.qml` | [KeyHintBar](../Components/Controls/doc/KeyHintBar.md) |
 | `PanelRow` | Components | `Components/Controls/PanelRow.qml` | [PanelRow](../Components/Controls/doc/PanelRow.md) |
@@ -37,6 +38,7 @@ Generated reference for the QML components that make up the Kitana Quickshell de
 | `WeatherMetric` | Dashboard | `Dashboard/Components/WeatherMetric.qml` | [WeatherMetric](../Dashboard/Components/doc/WeatherMetric.md) |
 | `WorldClockRow` | Dashboard | `Dashboard/Components/WorldClockRow.qml` | [WorldClockRow](../Dashboard/Components/doc/WorldClockRow.md) |
 | `DashboardPanel` | Dashboard | `Dashboard/DashboardPanel.qml` | [DashboardPanel](../Dashboard/doc/DashboardPanel.md) |
+| `IslandWindow` | Dashboard | `Dashboard/IslandWindow.qml` | [IslandWindow](../Dashboard/doc/IslandWindow.md) |
 | `DateTimeTab` | Dashboard | `Dashboard/Tabs/DateTimeTab.qml` | [DateTimeTab](../Dashboard/Tabs/doc/DateTimeTab.md) |
 | `MediaTab` | Dashboard | `Dashboard/Tabs/MediaTab.qml` | [MediaTab](../Dashboard/Tabs/doc/MediaTab.md) |
 | `SettingsTab` | Dashboard | `Dashboard/Tabs/SettingsTab.qml` | [SettingsTab](../Dashboard/Tabs/doc/SettingsTab.md) |

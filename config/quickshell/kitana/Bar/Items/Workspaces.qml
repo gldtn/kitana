@@ -7,6 +7,7 @@ import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Io
 import "../.."
+import "../../Services" as Services
 import "../../custom" as Custom
 
 Item {
@@ -35,7 +36,7 @@ Item {
     property var workspaceSets: [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]]
     property bool embedded: false
 
-    implicitHeight: settings.pillHeight
+    implicitHeight: Services.UiPreferences.pillHeight
     implicitWidth: workspaceRow.implicitWidth + settings.workspaceSpacing * 2
     width: implicitWidth
     height: implicitHeight
@@ -44,7 +45,7 @@ Item {
     Rectangle {
         anchors.fill: parent
         visible: !root.embedded
-        radius: root.height / settings.radiusDivisor
+        radius: Services.UiPreferences.pillRadius
         color: Colors.bgSecondary
         border.color: Colors.borderFaint
         border.width: settings.borderWidth

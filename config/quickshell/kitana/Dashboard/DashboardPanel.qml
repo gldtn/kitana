@@ -6,9 +6,12 @@ import QtQuick
 import QtQuick.Layouts
 import Qt.labs.folderlistmodel
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Io
 import Quickshell.Wayland
 import ".."
+import "../Bar/Sections" as BarSections
+import "../Components/Controls" as Controls
 import "../custom" as Custom
 import "../Services" as Services
 import "./Components" as Dashboard
@@ -25,7 +28,14 @@ PanelWindow {
 
     readonly property var panelSelf: root
     property bool panelVisible: false
-    property real revealProgress: 0
+    property bool closing: false
+    property real morphProgress: 0
+    property var fallbackScreen: null
+    property var panelScreen: null
+    property real sourceX: 0
+    property real sourceY: Services.UiPreferences.topMargin + (Services.UiPreferences.panelHeight - Services.UiPreferences.pillHeight) / 2
+    property real sourceWidth: 240
+    property real sourceHeight: Services.UiPreferences.pillHeight
     property string activeTab: "datetime"
     property var wallpapers: []
     property var themes: []
@@ -42,6 +52,7 @@ PanelWindow {
     property string pickerQuery: ""
     property bool pickerSearchActive: false
     property bool pickerHelpVisible: false
+    property bool compactHoverLatched: false
     property string kitanaDir: Quickshell.env("KITANA_DIR") || Quickshell.env("HOME") + "/.local/share/kitana"
     property string wallpaperDir: Quickshell.env("KITANA_WALLPAPER_DIR") || Quickshell.env("HOME") + "/.config/kitana/wallpapers"
     property date currentTime: new Date()
@@ -76,30 +87,101 @@ PanelWindow {
         property string secondTimeZone: "America/Sao_Paulo"
     }
 
-    function open(tab: string): void {
-        const wasVisible = panelVisible;
+    readonly property bool islandActive: panelVisible
+    readonly property bool expandedSurface: panelVisible || closing
+    readonly property var focusedScreen: screenForMonitor(Hyprland.focusedMonitor)
+    readonly property var activeScreen: expandedSurface ? (panelScreen || focusedScreen || fallbackScreen) : (focusedScreen || panelScreen || fallbackScreen)
+    readonly property int activeScreenWidth: activeScreen ? activeScreen.width : 1920
+    readonly property int activeScreenHeight: activeScreen ? activeScreen.height : 1080
+    readonly property real collapsedWidth: Math.max(sourceWidth, Services.UiPreferences.pillHeight * 4)
+    readonly property real collapsedHeight: Math.max(sourceHeight, Services.UiPreferences.pillHeight)
+    readonly property real collapsedX: Math.max(0, (activeScreenWidth - collapsedWidth) / 2)
+    readonly property real collapsedY: Services.UiPreferences.topMargin + (Services.UiPreferences.panelHeight - collapsedHeight) / 2
+    readonly property int compactX: Math.round(collapsedX)
+    readonly property int compactY: Math.round(collapsedY)
+    readonly property int compactWidth: Math.round(collapsedWidth)
+    readonly property int compactHeight: Math.round(collapsedHeight)
+    readonly property real expandedWidth: Math.min(700, Math.max(collapsedWidth, activeScreenWidth - 32))
+    readonly property real expandedHeight: Math.min(500, Math.max(collapsedHeight, activeScreenHeight - Services.UiPreferences.panelHeight - 34))
+    readonly property real expandedX: (activeScreenWidth - expandedWidth) / 2
+    readonly property real expandedTopMargin: Services.UiPreferences.topMargin + 6
+    readonly property real collapsedRadius: Math.min(collapsedHeight / 2, Services.UiPreferences.pillRadius)
+    readonly property real expandedRadius: 18
+    readonly property real contentOpacity: Math.max(0, Math.min(1, (morphProgress - 0.36) / 0.64))
+    readonly property real previewOpacity: Math.max(0, Math.min(1, 1 - morphProgress * 2.6))
+
+    function lerp(from: real, to: real, progress: real): real {
+        return from + (to - from) * progress;
+    }
+
+    function animateTo(progress: real): void {
+        morphAnimation.stop();
+        morphAnimation.from = morphProgress;
+        morphAnimation.to = progress;
+        morphAnimation.restart();
+    }
+
+    function compactContains(x: real, y: real): bool {
+        return x >= compactX && x <= compactX + compactWidth && y >= compactY && y <= compactY + compactHeight;
+    }
+
+    function setCompactHoverLatched(value: bool): void {
+        compactHoverLatched = value;
+    }
+
+    function updateCompactHover(x: real, y: real): void {
+        compactHoverLatched = compactContains(x, y);
+    }
+
+    function reopenFromCompact(): void {
+        compactHoverLatched = true;
+        open(activeTab || "datetime", panelScreen, compactX, compactY, compactWidth, compactHeight);
+    }
+
+    function screenForMonitor(monitor: var): var {
+        if (!monitor || !monitor.name)
+            return null;
+        for (let i = 0; i < Quickshell.screens.length; i++) {
+            if (Quickshell.screens[i].name === monitor.name)
+                return Quickshell.screens[i];
+        }
+        return null;
+    }
+
+    function open(tab: string, sourceScreen: var, x: var, y: var, width: var, height: var): void {
+        if (sourceScreen)
+            panelScreen = sourceScreen;
+        else if (activeScreen)
+            panelScreen = activeScreen;
+        else if (!panelScreen && fallbackScreen)
+            panelScreen = fallbackScreen;
+        if (typeof width === "number" && width > 0)
+            sourceWidth = width;
+        if (typeof height === "number" && height > 0)
+            sourceHeight = height;
         activeTab = tab || "datetime";
         resetPickerState();
+        closing = false;
         panelVisible = true;
-        if (!wasVisible) {
-            revealProgress = 0;
-            revealAnimation.restart();
-        }
+        animateTo(1);
         focusPanel();
         refreshTab();
     }
 
     function close(): void {
-        panelVisible = false;
-        revealProgress = 0;
+        if (!panelVisible)
+            return;
+        closing = true;
         mediaAudioOverlayOpen = false;
+        animateTo(0);
     }
 
-    function toggle(tab: string): void {
-        if (panelVisible && activeTab === tab)
+    function toggle(tab: string, sourceScreen: var, x: var, y: var, width: var, height: var): void {
+        const targetTab = tab || activeTab;
+        if (panelVisible && !closing && activeTab === targetTab)
             close();
         else
-            open(tab || activeTab);
+            open(targetTab, sourceScreen, x, y, width, height);
     }
 
     function focusPanel(): void {
@@ -468,22 +550,32 @@ PanelWindow {
         secondClockProcess.exec(["env", "TZ=" + worldClockPreferences.secondTimeZone, "date", "+%l:%M %p|%a, %b %-d"]);
     }
 
-    visible: panelVisible
-    focusable: true
+    visible: expandedSurface
+    focusable: expandedSurface
+    screen: activeScreen
+    implicitWidth: expandedSurface ? activeScreenWidth : compactWidth
+    implicitHeight: expandedSurface ? activeScreenHeight : compactHeight
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
 
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "qs-panel"
     WlrLayershell.exclusiveZone: -1
-    WlrLayershell.keyboardFocus: visible ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+    WlrLayershell.keyboardFocus: expandedSurface ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 
     anchors {
         top: true
         left: true
-        right: true
-        bottom: true
+        right: root.expandedSurface
+        bottom: root.expandedSurface
     }
+
+    // qmllint disable unqualified unresolved-type
+    margins.top: root.expandedSurface ? 0 : root.compactY
+    margins.left: root.expandedSurface ? 0 : root.compactX
+    margins.right: 0
+    margins.bottom: 0
+    // qmllint enable unqualified unresolved-type
 
     // Clock and tab refresh timer
     Timer {
@@ -492,9 +584,9 @@ PanelWindow {
         repeat: true
         onTriggered: {
             root.currentTime = new Date();
-            if (root.visible && root.activeTab === "datetime" && root.currentTime.getSeconds() === 0)
+            if (root.panelVisible && root.activeTab === "datetime" && root.currentTime.getSeconds() === 0)
                 root.refreshWorldClocks();
-            if (root.visible && root.activeTab === "media")
+            if (root.panelVisible && root.activeTab === "media")
                 root.refreshMedia();
         }
     }
@@ -502,7 +594,7 @@ PanelWindow {
     // Media visualizer animation timer
     Timer {
         interval: 140
-        running: root.visible && root.activeTab === "media" && root.mediaPlaying
+        running: root.panelVisible && root.activeTab === "media" && root.mediaPlaying
         repeat: true
         onTriggered: root.updateMediaVisual()
     }
@@ -625,36 +717,71 @@ PanelWindow {
     MouseArea {
         id: closeArea
         anchors.fill: parent
+        enabled: root.expandedSurface
+        visible: root.expandedSurface
+        hoverEnabled: true
         focus: true
         Keys.priority: Keys.BeforeItem
         Keys.onPressed: event => root.handleKey(event)
-        onClicked: root.close()
+        onPositionChanged: mouse => root.updateCompactHover(mouse.x, mouse.y)
+        onClicked: mouse => {
+            if (root.closing && root.compactContains(mouse.x, mouse.y)) {
+                root.reopenFromCompact();
+                return;
+            }
+            root.close();
+        }
     }
 
     // Main dashboard card
     Rectangle {
         id: card
 
-        width: Math.min(700, parent.width - 32)
-        height: Math.min(500, parent.height - settings.panelHeight - 34)
-        anchors.top: parent.top
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: settings.panelHeight + settings.topMargin + 10
-        opacity: root.revealProgress
-        radius: 18
-        color: Colors.bgPrimary
+        x: root.expandedSurface ? root.lerp(root.compactX, root.expandedX, root.morphProgress) : 0
+        y: root.expandedSurface ? root.lerp(root.compactY, root.expandedTopMargin, root.morphProgress) : 0
+        width: root.lerp(root.compactWidth, root.expandedWidth, root.morphProgress)
+        height: root.lerp(root.compactHeight, root.expandedHeight, root.morphProgress)
+        opacity: root.visible ? 1 : 0
+        radius: root.lerp(root.collapsedRadius, root.expandedRadius, root.morphProgress)
+        color: Colors.mixColor(Colors.bgSecondary, Colors.bgPrimary, root.morphProgress)
         border.color: Colors.borderLight
         border.width: 1
         clip: true
 
-        transform: Translate {
-            y: (1 - root.revealProgress) * -14
-        }
-
         // Prevent clicks inside card from closing dashboard
         MouseArea {
+            id: cardMouse
+
             anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: root.expandedSurface ? Qt.ArrowCursor : Qt.PointingHandCursor
             onPressed: mouse => mouse.accepted = true
+            onPositionChanged: mouse => root.updateCompactHover(card.x + mouse.x, card.y + mouse.y)
+            onClicked: {
+                if (root.closing) {
+                    root.reopenFromCompact();
+                    return;
+                }
+                if (!root.expandedSurface)
+                    root.open("datetime", root.activeScreen);
+            }
+        }
+
+        // Collapsed island preview that replaces the old bar center pill.
+        BarSections.Center {
+            id: islandPreview
+
+            anchors.centerIn: parent
+            embedded: true
+            interactive: false
+            forceDashboardIcon: root.compactHoverLatched
+            hideWhenDashboardActive: false
+            dashboardPanel: root.panelSelf
+            panelScreen: root.activeScreen
+            sourceX: root.collapsedX
+            sourceY: root.collapsedY
+            opacity: root.previewOpacity
+            visible: opacity > 0
         }
 
         // Dashboard tab chrome and content area
@@ -662,6 +789,8 @@ PanelWindow {
             anchors.fill: parent
             anchors.margins: 14
             spacing: 10
+            opacity: root.contentOpacity
+            visible: opacity > 0
 
             // Dashboard tab selector row
             RowLayout {
@@ -710,6 +839,14 @@ PanelWindow {
                     tab: "settings"
                     compact: true
                 }
+
+                Controls.CloseButton {
+                    Layout.alignment: Qt.AlignVCenter
+                    onClicked: {
+                        root.setCompactHoverLatched(false);
+                        root.close();
+                    }
+                }
             }
 
             // Tab header divider
@@ -728,14 +865,18 @@ PanelWindow {
         }
     }
 
-    // Dashboard reveal animation
+    // Dashboard island morph animation
     NumberAnimation {
-        id: revealAnimation
+        id: morphAnimation
         target: root
-        property: "revealProgress"
-        to: 1
-        duration: 140
-        easing.type: Easing.OutCubic
+        property: "morphProgress"
+        duration: root.closing ? 220 : 260
+        easing.type: root.closing ? Easing.InOutCubic : Easing.OutCubic
+        onStopped: if (root.closing && root.morphProgress <= 0.01) {
+            root.panelVisible = false;
+            root.closing = false;
+            root.morphProgress = 0;
+        }
     }
 
     // Date and calendar tab component

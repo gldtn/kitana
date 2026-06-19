@@ -4,7 +4,7 @@
 
 Kitana is a Quickshell desktop shell for Hyprland. This component belongs to the shell entrypoint and top-level application wiring area.
 
-Shell is the root Quickshell entrypoint that creates shared panels, exposes IPC handlers, and instantiates one bar window per screen.
+Shell is the root Quickshell entrypoint that creates shared panels, exposes IPC handlers, and instantiates one bar window plus one collapsed dashboard island per screen.
 
 ## Project Structure and Dependencies
 
@@ -25,7 +25,6 @@ The root type is `ShellRoot`. The component composes child QML items, Kitana des
 | Property | Type | Default | Required | Description |
 |----------|------|---------|----------|-------------|
 | `barVisible` | `bool` | `true` | No | Controls whether the top bar is shown and reserves exclusive screen space. |
-| `sharedDashboardPanel` | `readonly var` | `dashboardPanel` | No | Read-only. Receives a panel instance used for cross-panel coordination. |
 | `sharedScreenshotPanel` | `readonly var` | `screenshotPanel` | No | Read-only. Receives a panel instance used for cross-panel coordination. |
 | `sharedSettingsPanel` | `readonly var` | `settingsPanel` | No | Read-only. Receives a panel instance used for cross-panel coordination. |
 | `sharedShortcutsPanel` | `readonly var` | `shortcutsPanel` | No | Read-only. Receives a panel instance used for cross-panel coordination. |

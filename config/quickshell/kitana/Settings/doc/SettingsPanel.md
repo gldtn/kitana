@@ -20,6 +20,8 @@ Referenced or instantiated by: `shell.qml`.
 
 The root type is `PanelWindow`. The component composes child QML items, Kitana design tokens, and Quickshell services to provide its role in the shell.
 
+The settings header uses `Controls.CloseButton` for explicit dismissal.
+
 ## Properties
 
 | Property | Type | Default | Required | Description |
@@ -65,11 +67,15 @@ Performs component-specific behavior used internally or by parent components.
 | `TabButton` | `Rectangle` | Inline helper component local to this file. |
 | `SettingRow` | `Rectangle` | Inline helper component local to this file. |
 | `OptionButton` | `Rectangle` | Inline helper component local to this file. |
+| `GeometryActionButton` | `Rectangle` | Compact button used by bar geometry controls. |
+| `GeometryStepper` | `Rectangle` | Numeric row used to adjust persisted bar geometry preferences. |
 
 ## Inter-Component Interactions
 
 External components bind this component through its declared properties and call its public functions where exposed.
 
 Reads from or calls service singletons: `Services.CaffeineService`, `Services.NotificationService`, `Services.UiPreferences`.
+
+The Bar tab exposes persistent controls for bar height, pill height, top margin, and pill radius through `Services.UiPreferences`.
 
 Exposes IPC targets: `kitana-settings`.
