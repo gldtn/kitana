@@ -25,7 +25,7 @@ The root type is `PanelWindow`. The component composes child QML items, Kitana d
 | Property | Type | Default | Required | Description |
 |----------|------|---------|----------|-------------|
 | `panelScreen` | `var` | `null` | No | Selects the Quickshell screen or monitor that owns this window or bar instance. |
-| `systemPanel` | `var` | `null` | No | Receives the system panel instance used to open quick-settings detail sections. |
+| `controlPanel` | `var` | `null` | No | Receives the control panel instance used to open quick-settings detail sections. |
 | `settingsPanel` | `var` | `null` | No | Receives the shared settings panel instance used by menu actions. |
 | `shortcutsPanel` | `var` | `null` | No | Receives the shared shortcuts panel instance used by menu actions. |
 | `panelVisible` | `bool` | `false` | No | Tracks whether the panel window should be visible. |

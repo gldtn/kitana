@@ -14,7 +14,7 @@ Qt and Quickshell imports: `import QtQuick`.
 
 Project imports: `import "../.."`, `import "../../custom" as Custom`.
 
-Referenced or instantiated by: `Bar/Items/DateTime.qml`, `Bar/Items/Layout.qml`, `Bar/Items/Screenshot.qml`, `Bar/Items/Session.qml`, `Bar/Items/Start.qml`, `Bar/Items/Status.qml`, `Bar/StartMenu.qml`, `Components/Controls/PanelRow.qml`, `Dashboard/Components/MediaButton.qml`, `Dashboard/Components/MediaDeviceRow.qml`, `Dashboard/Components/MiniButton.qml`, `Dashboard/Components/TabButton.qml`.
+Referenced or instantiated by: `Bar/Items/ControlCluster.qml`, `Bar/Items/DateTime.qml`, `Bar/Items/Layout.qml`, `Bar/Items/Screenshot.qml`, `Bar/Items/Session.qml`, `Bar/Items/Start.qml`, `Bar/StartMenu.qml`, `Components/Controls/PanelRow.qml`, `Dashboard/Components/MediaButton.qml`, `Dashboard/Components/MediaDeviceRow.qml`, `Dashboard/Components/MiniButton.qml`, `Dashboard/Components/TabButton.qml`.
 
 ## Component Hierarchy and Role
 

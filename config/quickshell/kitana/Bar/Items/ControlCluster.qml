@@ -18,7 +18,7 @@ Item {
         id: settings
     }
 
-    property var systemPanel: null
+    property var controlPanel: null
     property var panelWindow: null
     property bool trayExpanded: false
     property bool embedded: false
@@ -62,11 +62,11 @@ Item {
     }
 
     implicitHeight: settings.pillHeight
-    implicitWidth: statusRow.implicitWidth + settings.statusHorizontalPadding
+    implicitWidth: controlRow.implicitWidth + settings.statusHorizontalPadding
     width: implicitWidth
     height: implicitHeight
 
-    // Status cluster pill background
+    // Control cluster pill background
     Rectangle {
         anchors.fill: parent
         visible: !root.embedded
@@ -76,9 +76,9 @@ Item {
         border.width: settings.borderWidth
     }
 
-    // Tray, notifications, and system status row
+    // Tray, notifications, and system control row
     Row {
-        id: statusRow
+        id: controlRow
 
         anchors.left: parent.left
         anchors.leftMargin: settings.statusHorizontalPadding / 2
@@ -105,7 +105,7 @@ Item {
             height: settings.iconPixelSize + 8
 
             // Tray expand/collapse button
-            StatusButton {
+            ControlButton {
                 id: trayToggle
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
@@ -232,7 +232,7 @@ Item {
             }
         }
 
-        // Tray/status separator
+        // Tray/control separator
         Text {
             anchors.verticalCenter: parent.verticalCenter
             visible: traySection.visible && root.trayExpanded && trayContainer.width > 0
@@ -243,52 +243,52 @@ Item {
             verticalAlignment: Text.AlignVCenter
         }
 
-        // Notifications panel button
-        StatusButton {
+        // Notifications control button
+        ControlButton {
             iconName: Icons.notificationName(Services.NotificationService.count, Services.NotificationService.doNotDisturb)
             label: ""
-            onClicked: if (root.systemPanel)
-                root.systemPanel.toggle("notifications")
+            onClicked: if (root.controlPanel)
+                root.controlPanel.toggle("notifications")
         }
 
-        // Audio panel button
-        StatusButton {
+        // Audio control button
+        ControlButton {
             iconName: Services.SystemStatus.audioIconName
             alignIconLeft: true
             iconVisualOffset: 2
             label: ""
-            onClicked: if (root.systemPanel)
-                root.systemPanel.toggle("audio")
+            onClicked: if (root.controlPanel)
+                root.controlPanel.toggle("audio")
         }
 
-        // Microphone status button
-        StatusButton {
+        // Microphone control button
+        ControlButton {
             visible: Services.SystemStatus.micAvailable
             iconName: Services.SystemStatus.micIconName
             label: ""
-            onClicked: if (root.systemPanel)
-                root.systemPanel.toggle("audio")
+            onClicked: if (root.controlPanel)
+                root.controlPanel.toggle("audio")
         }
 
-        // Bluetooth panel button
-        StatusButton {
+        // Bluetooth control button
+        ControlButton {
             iconName: Services.SystemStatus.bluetoothIconName
             label: ""
-            onClicked: if (root.systemPanel)
-                root.systemPanel.toggle("bluetooth")
+            onClicked: if (root.controlPanel)
+                root.controlPanel.toggle("bluetooth")
         }
 
-        // Network panel button
-        StatusButton {
+        // Network control button
+        ControlButton {
             iconName: Services.SystemStatus.networkIconName
             label: ""
-            onClicked: if (root.systemPanel)
-                root.systemPanel.toggle("network")
+            onClicked: if (root.controlPanel)
+                root.controlPanel.toggle("network")
         }
     }
 
-    // Reusable status icon button
-    component StatusButton: Item {
+    // Reusable control icon button
+    component ControlButton: Item {
         id: button
 
         property string iconName: Icons.defaultIcon
@@ -308,7 +308,7 @@ Item {
             anchors.centerIn: parent
             spacing: settings.statusItemSpacing
 
-            // Button status icon
+            // Button control icon
             Controls.Icon {
                 width: settings.iconPixelSize + 4
                 height: button.height
@@ -333,7 +333,7 @@ Item {
             }
         }
 
-        // Status button click target
+        // Control button click target
         MouseArea {
             id: mouse
             anchors.fill: parent

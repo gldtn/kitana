@@ -2,9 +2,9 @@
 
 ## Component Overview
 
-Kitana is a Quickshell desktop shell for Hyprland. This component belongs to the system panel detail panes for audio, Bluetooth, network, notifications, settings, and session actions area.
+Kitana is a Quickshell desktop shell for Hyprland. This component belongs to the control panel detail panes for audio, Bluetooth, network, notifications, settings, and session actions area.
 
-AudioPane is a detail pane in the System panel.
+AudioPane is a detail pane in the control panel.
 
 ## Project Structure and Dependencies
 
@@ -14,7 +14,7 @@ Qt and Quickshell imports: `import QtQuick`.
 
 Project imports: `import "../.."`, `import "../Components"`, `import "../../custom" as Custom`, `import "../../Services" as Services`.
 
-Referenced or instantiated by: `System/SystemPanel.qml`.
+Referenced or instantiated by: `System/ControlPanel.qml`.
 
 ## Component Hierarchy and Role
 

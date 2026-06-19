@@ -14,7 +14,7 @@ Qt and Quickshell imports: `import QtQuick`, `import Quickshell`, `import Quicks
 
 Project imports: `import ".."`.
 
-Referenced or instantiated by: `Bar/Items/Status.qml`, `Dashboard/Components/VolumeSlider.qml`, `Dashboard/DashboardPanel.qml`, `Dashboard/Tabs/MediaTab.qml`, `System/Components/BluetoothDeviceRow.qml`, `System/Components/ControlSliders.qml`, `System/Components/QuickSettingsGrid.qml`, `System/Panes/AudioPane.qml`, `System/Panes/BluetoothPane.qml`, `System/Panes/NetworkPane.qml`, `System/Panes/SettingsPane.qml`, `System/SystemPanel.qml`.
+Referenced or instantiated by: `Bar/Items/ControlCluster.qml`, `Dashboard/Components/VolumeSlider.qml`, `Dashboard/DashboardPanel.qml`, `Dashboard/Tabs/MediaTab.qml`, `System/Components/BluetoothDeviceRow.qml`, `System/Components/ControlSliders.qml`, `System/Components/QuickSettingsGrid.qml`, `System/Panes/AudioPane.qml`, `System/Panes/BluetoothPane.qml`, `System/Panes/NetworkPane.qml`, `System/Panes/SettingsPane.qml`, `System/ControlPanel.qml`.
 
 ## Component Hierarchy and Role
 

@@ -12,7 +12,7 @@ Source file: `Config/Colors.qml`.
 
 Qt and Quickshell imports: `import QtQuick`.
 
-Referenced or instantiated by: `Bar/BarWindow.qml`, `Bar/Items/DateTime.qml`, `Bar/Items/Layout.qml`, `Bar/Items/Screenshot.qml`, `Bar/Items/Session.qml`, `Bar/Items/Start.qml`, `Bar/Items/Status.qml`, `Bar/Items/Workspaces.qml`, `Bar/StartMenu.qml`, `Components/Controls/BlurredBackdrop.qml`, `Components/Controls/KeyHintBar.qml`, `Components/Controls/PanelRow.qml`.
+Referenced or instantiated by: `Bar/BarWindow.qml`, `Bar/Items/ControlCluster.qml`, `Bar/Items/DateTime.qml`, `Bar/Items/Layout.qml`, `Bar/Items/Screenshot.qml`, `Bar/Items/Session.qml`, `Bar/Items/Start.qml`, `Bar/Items/Workspaces.qml`, `Bar/StartMenu.qml`, `Components/Controls/BlurredBackdrop.qml`, `Components/Controls/KeyHintBar.qml`, `Components/Controls/PanelRow.qml`.
 
 ## Component Hierarchy and Role
 

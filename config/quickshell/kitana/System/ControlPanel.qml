@@ -72,7 +72,7 @@ PanelWindow {
         onClicked: root.close()
     }
 
-    // Sliding system panel card
+    // Sliding control panel card
     Rectangle {
         id: card
 
@@ -99,7 +99,7 @@ PanelWindow {
             onPressed: mouse => mouse.accepted = true
         }
 
-        // System panel content stack
+        // Control panel content stack
         Column {
             id: content
 
@@ -137,7 +137,7 @@ PanelWindow {
 
     }
 
-    // System panel reveal animation
+    // Control panel reveal animation
     NumberAnimation {
         id: revealAnimation
         target: root

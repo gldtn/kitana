@@ -2,7 +2,7 @@
 
 ## Component Overview
 
-Kitana is a Quickshell desktop shell for Hyprland. This component belongs to the reusable system panel controls and rows area.
+Kitana is a Quickshell desktop shell for Hyprland. This component belongs to the reusable control panel controls and rows area.
 
 HeaderIcon is a reusable System component used to compose panel content consistently.
 

@@ -1,14 +1,14 @@
-# System Panel
+# Control Panel
 
 ## Component Overview
 
 Kitana is a Quickshell desktop shell for Hyprland. This component belongs to the system quick-settings panel shell area.
 
-SystemPanel is a layer-shell panel window in the System module.
+ControlPanel is a layer-shell panel window in the System module.
 
 ## Project Structure and Dependencies
 
-Source file: `System/SystemPanel.qml`.
+Source file: `System/ControlPanel.qml`.
 
 Qt and Quickshell imports: `import QtQuick`, `import Quickshell`, `import Quickshell.Io`, `import Quickshell.Wayland`.
 

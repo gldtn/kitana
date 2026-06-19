@@ -26,7 +26,7 @@ The root type is `Item`. The component composes child QML items, Kitana design t
 |----------|------|---------|----------|-------------|
 | `panelWindow` | `var` | `null` | No | Provides component state or configuration for `panelWindow`. |
 | `screenshotPanel` | `var` | `null` | No | Receives the shared screenshot panel instance used to open or toggle capture controls. |
-| `systemPanel` | `var` | `null` | No | Receives the system panel instance used to open quick-settings detail sections. |
+| `controlPanel` | `var` | `null` | No | Receives the control panel instance used to open quick-settings detail sections. |
 | `embedded` | `bool` | `false` | No | Switches the component into shared-pill mode so its own background is suppressed by a parent container. |
 
 ## Inter-Component Interactions

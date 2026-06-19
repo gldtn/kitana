@@ -14,7 +14,7 @@ Qt and Quickshell imports: `import QtQuick`, `import Quickshell`, `import Quicks
 
 Project imports: `import ".."`.
 
-Referenced or instantiated by: `Bar/Items/Status.qml`, `Notifications/NotificationPopups.qml`, `Settings/SettingsPanel.qml`, `System/Components/NotificationRow.qml`, `System/Components/PanelHeader.qml`, `System/Components/QuickSettingsGrid.qml`, `System/Panes/NotificationsPane.qml`, `System/Panes/SettingsPane.qml`, `shell.qml`.
+Referenced or instantiated by: `Bar/Items/ControlCluster.qml`, `Notifications/NotificationPopups.qml`, `Settings/SettingsPanel.qml`, `System/Components/NotificationRow.qml`, `System/Components/PanelHeader.qml`, `System/Components/QuickSettingsGrid.qml`, `System/Panes/NotificationsPane.qml`, `System/Panes/SettingsPane.qml`, `shell.qml`.
 
 ## Component Hierarchy and Role
 

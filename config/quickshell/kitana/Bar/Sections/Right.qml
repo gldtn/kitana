@@ -8,7 +8,7 @@ Item {
 
     property var panelWindow: null
     property var screenshotPanel: null
-    property var systemPanel: null
+    property var controlPanel: null
     property bool embedded: false
 
     implicitWidth: rightRow.implicitWidth
@@ -29,12 +29,12 @@ Item {
             screenshotPanel: root.screenshotPanel
         }
 
-        // Tray and system status cluster
-        Items.Status {
-            id: status
+        // Tray and control cluster
+        Items.ControlCluster {
+            id: controlCluster
             embedded: root.embedded
             panelWindow: root.panelWindow
-            systemPanel: root.systemPanel
+            controlPanel: root.controlPanel
         }
 
         // Power/session button

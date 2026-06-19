@@ -457,7 +457,7 @@ PanelWindow {
 
             Text {
                 Layout.fillWidth: true
-                text: "Network, Bluetooth, and audio routing stay in the quick system panel."
+                text: "Network, Bluetooth, and audio routing stay in the control panel."
                 color: Colors.fgSecondary
                 wrapMode: Text.WordWrap
                 font.family: Typography.fontFamily

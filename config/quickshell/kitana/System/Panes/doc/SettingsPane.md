@@ -2,9 +2,9 @@
 
 ## Component Overview
 
-Kitana is a Quickshell desktop shell for Hyprland. This component belongs to the system panel detail panes for audio, Bluetooth, network, notifications, settings, and session actions area.
+Kitana is a Quickshell desktop shell for Hyprland. This component belongs to the control panel detail panes for audio, Bluetooth, network, notifications, settings, and session actions area.
 
-SettingsPane is a detail pane in the System panel.
+SettingsPane is a detail pane in the control panel.
 
 ## Project Structure and Dependencies
 

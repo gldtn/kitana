@@ -12,7 +12,7 @@ Source file: `Config/Typography.qml`.
 
 Qt and Quickshell imports: `import QtQuick`, `import Quickshell`.
 
-Referenced or instantiated by: `Bar/Items/DateTime.qml`, `Bar/Items/Layout.qml`, `Bar/Items/Status.qml`, `Bar/Items/Workspaces.qml`, `Bar/StartMenu.qml`, `Components/Controls/Icon.qml`, `Components/Controls/KeyHintBar.qml`, `Components/Controls/PanelRow.qml`, `Dashboard/Components/DashboardField.qml`, `Dashboard/Components/MediaDeviceRow.qml`, `Dashboard/Components/MiniButton.qml`, `Dashboard/Components/PickerFooter.qml`.
+Referenced or instantiated by: `Bar/Items/ControlCluster.qml`, `Bar/Items/DateTime.qml`, `Bar/Items/Layout.qml`, `Bar/Items/Workspaces.qml`, `Bar/StartMenu.qml`, `Components/Controls/Icon.qml`, `Components/Controls/KeyHintBar.qml`, `Components/Controls/PanelRow.qml`, `Dashboard/Components/DashboardField.qml`, `Dashboard/Components/MediaDeviceRow.qml`, `Dashboard/Components/MiniButton.qml`, `Dashboard/Components/PickerFooter.qml`.
 
 ## Component Hierarchy and Role
 

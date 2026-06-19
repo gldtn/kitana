@@ -45,9 +45,9 @@ PanelWindow {
         enabled: Services.CaffeineService.enabled
     }
 
-    // Right-side quick system panel
-    System.SystemPanel {
-        id: systemPanel
+    // Right-side control panel
+    System.ControlPanel {
+        id: controlPanel
         panelScreen: root.panelScreen
     }
 
@@ -55,7 +55,7 @@ PanelWindow {
     StartMenu {
         id: startMenu
         panelScreen: root.panelScreen
-        systemPanel: systemPanel
+        controlPanel: controlPanel
         settingsPanel: root.settingsPanel
         shortcutsPanel: root.shortcutsPanel
     }
@@ -100,7 +100,7 @@ PanelWindow {
             dashboardPanel: root.dashboardPanel
         }
 
-        // Screenshot, tray, status, and power controls
+        // Screenshot, tray, control, and power controls
         Sections.Right {
             id: rightSection
 
@@ -109,7 +109,7 @@ PanelWindow {
             embedded: false
             panelWindow: root
             screenshotPanel: root.screenshotPanel
-            systemPanel: systemPanel
+            controlPanel: controlPanel
         }
     }
 }

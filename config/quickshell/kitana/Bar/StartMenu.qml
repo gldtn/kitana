@@ -16,7 +16,7 @@ PanelWindow {
     Custom.Settings { id: settings }
 
     property var panelScreen: null
-    property var systemPanel: null
+    property var controlPanel: null
     property var settingsPanel: null
     property var shortcutsPanel: null
     property bool panelVisible: false

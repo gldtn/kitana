@@ -10,7 +10,7 @@ Generated reference for the QML components that make up the Kitana Quickshell de
 | `Screenshot` | Bar | `Bar/Items/Screenshot.qml` | [Screenshot](../Bar/Items/doc/Screenshot.md) |
 | `Session` | Bar | `Bar/Items/Session.qml` | [Session](../Bar/Items/doc/Session.md) |
 | `Start` | Bar | `Bar/Items/Start.qml` | [Start](../Bar/Items/doc/Start.md) |
-| `Status` | Bar | `Bar/Items/Status.qml` | [Status](../Bar/Items/doc/Status.md) |
+| `ControlCluster` | Bar | `Bar/Items/ControlCluster.qml` | [ControlCluster](../Bar/Items/doc/ControlCluster.md) |
 | `Workspaces` | Bar | `Bar/Items/Workspaces.qml` | [Workspaces](../Bar/Items/doc/Workspaces.md) |
 | `Center` | Bar | `Bar/Sections/Center.qml` | [Center](../Bar/Sections/doc/Center.md) |
 | `Left` | Bar | `Bar/Sections/Left.qml` | [Left](../Bar/Sections/doc/Left.md) |
@@ -76,7 +76,7 @@ Generated reference for the QML components that make up the Kitana Quickshell de
 | `NotificationsPane` | System | `System/Panes/NotificationsPane.qml` | [NotificationsPane](../System/Panes/doc/NotificationsPane.md) |
 | `SessionPane` | System | `System/Panes/SessionPane.qml` | [SessionPane](../System/Panes/doc/SessionPane.md) |
 | `SettingsPane` | System | `System/Panes/SettingsPane.qml` | [SettingsPane](../System/Panes/doc/SettingsPane.md) |
-| `SystemPanel` | System | `System/SystemPanel.qml` | [SystemPanel](../System/doc/SystemPanel.md) |
+| `ControlPanel` | System | `System/ControlPanel.qml` | [ControlPanel](../System/doc/ControlPanel.md) |
 | `WallpaperGrid` | Wallpaper | `Wallpaper/WallpaperGrid.qml` | [WallpaperGrid](../Wallpaper/doc/WallpaperGrid.md) |
 | `Settings` | Custom Settings | `custom/Settings.qml` | [Settings](../custom/doc/Settings.md) |
 | `shell` | Shell | `shell.qml` | [shell](shell.md) |

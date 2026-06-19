@@ -2,7 +2,7 @@
 
 ## Component Overview
 
-Kitana is a Quickshell desktop shell for Hyprland. This component belongs to the reusable system panel controls and rows area.
+Kitana is a Quickshell desktop shell for Hyprland. This component belongs to the reusable control panel controls and rows area.
 
 ControlSliders is a reusable System component used to compose panel content consistently.
 
@@ -14,7 +14,7 @@ Qt and Quickshell imports: `import QtQuick`.
 
 Project imports: `import "../.."`, `import "../../Services" as Services`.
 
-Referenced or instantiated by: `System/SystemPanel.qml`.
+Referenced or instantiated by: `System/ControlPanel.qml`.
 
 ## Component Hierarchy and Role
 

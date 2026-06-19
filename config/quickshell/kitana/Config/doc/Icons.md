@@ -14,7 +14,7 @@ Qt and Quickshell imports: `import QtQuick`.
 
 Project imports: `import ".." as Kitana`.
 
-Referenced or instantiated by: `Bar/Items/Layout.qml`, `Bar/Items/Status.qml`, `Bar/StartMenu.qml`, `Components/Controls/Icon.qml`, `Components/Controls/PanelRow.qml`, `Config/Colors.qml`, `Dashboard/Components/MediaButton.qml`, `Dashboard/Components/MiniButton.qml`, `Dashboard/Components/TabButton.qml`, `Dashboard/Components/TodayFact.qml`, `Dashboard/Components/WeatherMetric.qml`, `Launcher/AppLauncher.qml`.
+Referenced or instantiated by: `Bar/Items/ControlCluster.qml`, `Bar/Items/Layout.qml`, `Bar/StartMenu.qml`, `Components/Controls/Icon.qml`, `Components/Controls/PanelRow.qml`, `Config/Colors.qml`, `Dashboard/Components/MediaButton.qml`, `Dashboard/Components/MiniButton.qml`, `Dashboard/Components/TabButton.qml`, `Dashboard/Components/TodayFact.qml`, `Dashboard/Components/WeatherMetric.qml`, `Launcher/AppLauncher.qml`.
 
 ## Component Hierarchy and Role
 
