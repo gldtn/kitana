@@ -19,7 +19,7 @@ Rectangle {
     Layout.preferredWidth: prominent ? 48 : 40
     Layout.preferredHeight: prominent ? 40 : 36
     radius: 12
-    color: prominent ? Colors.subtlePrimary : (mediaButtonMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary)
+    color: prominent ? Colors.subtleAccent : (mediaButtonMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary)
     border.color: prominent ? Colors.borderAccent : Colors.borderFaint
     border.width: 1
 

@@ -32,7 +32,7 @@ Rectangle {
         clip: true
         text: root.dashboard ? root.dashboard.pickerQuery : ""
         color: Colors.fgPrimary
-        selectionColor: Colors.subtlePrimary
+        selectionColor: Colors.subtleAccent
         selectedTextColor: Colors.fgPrimary
         font.family: Typography.fontFamily
         font.pixelSize: settings.textPixelSize

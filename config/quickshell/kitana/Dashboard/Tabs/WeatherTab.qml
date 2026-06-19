@@ -43,7 +43,7 @@ ColumnLayout {
                 text: tabRoot.panel.weatherLocation
                 echoMode: tabRoot.weatherPrefs.hideLocation ? TextInput.Password : TextInput.Normal
                 color: Colors.fgPrimary
-                selectionColor: Colors.subtlePrimary
+                selectionColor: Colors.subtleAccent
                 selectedTextColor: Colors.fgPrimary
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize

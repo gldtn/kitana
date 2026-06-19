@@ -20,7 +20,7 @@ Rectangle {
     width: parent ? parent.width : 320
     height: 48
     radius: 10
-    color: highlighted ? Colors.subtlePrimary : (mouse.containsMouse && clickable ? Colors.bgTertiary : Colors.bgTertiary)
+    color: highlighted ? Colors.subtleAccent : (mouse.containsMouse && clickable ? Colors.bgTertiary : Colors.bgTertiary)
     border.color: highlighted ? Colors.borderAccent : Colors.borderFaint
     border.width: 1
 

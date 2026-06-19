@@ -174,7 +174,7 @@ Item {
                             Layout.preferredWidth: 84
                             Layout.preferredHeight: 30
                             radius: 10
-                            color: tabRoot.panel.mediaPlaying ? Colors.subtlePrimary : Colors.bgTertiary
+                            color: tabRoot.panel.mediaPlaying ? Colors.subtleAccent : Colors.bgTertiary
                             border.color: Colors.borderFaint
                             border.width: 1
 

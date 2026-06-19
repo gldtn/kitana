@@ -411,7 +411,7 @@ PanelWindow {
         Layout.fillWidth: true
         Layout.preferredHeight: 34
         radius: 10
-        color: accent ? Colors.subtlePrimary : (buttonMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary)
+        color: accent ? Colors.subtleAccent : (buttonMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary)
         border.color: accent ? Colors.borderAccent : Colors.borderFaint
         border.width: 1
 

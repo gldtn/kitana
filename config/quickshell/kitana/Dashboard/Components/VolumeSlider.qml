@@ -27,7 +27,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         width: parent.width * Math.max(0, Math.min(100, root.value)) / 100
         radius: parent.radius
-        color: Colors.subtlePrimary
+        color: Colors.subtleAccent
     }
 
     // Volume value label

@@ -306,7 +306,7 @@ PanelWindow {
                         Rectangle {
                             anchors.fill: parent
                             visible: card.selected
-                            color: Colors.subtlePrimary
+                            color: Colors.subtleAccent
                             border.color: Colors.fgAccent
                             border.width: 1
                             radius: parent.radius

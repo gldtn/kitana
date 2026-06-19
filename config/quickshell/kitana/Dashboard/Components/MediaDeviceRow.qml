@@ -21,7 +21,7 @@ Rectangle {
     Layout.fillWidth: true
     Layout.preferredHeight: 46
     radius: 12
-    color: active ? Colors.subtlePrimary : (mediaDeviceMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary)
+    color: active ? Colors.subtleAccent : (mediaDeviceMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary)
     border.color: active ? Colors.borderAccent : Colors.borderFaint
     border.width: 1
 

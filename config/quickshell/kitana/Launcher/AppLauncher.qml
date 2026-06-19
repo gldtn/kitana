@@ -296,7 +296,7 @@ PanelWindow {
                             text: root.query
                             focus: true
                             color: Colors.fgPrimary
-                            selectionColor: Colors.subtlePrimary
+                            selectionColor: Colors.subtleAccent
                             selectedTextColor: Colors.fgPrimary
                             font.family: Typography.fontFamily
                             font.pixelSize: 18
@@ -353,7 +353,7 @@ PanelWindow {
                             width: listView.width
                             height: 58
                             radius: 12
-                            color: resultDelegate.index === root.selectedIndex ? Colors.subtlePrimary : (mouse.containsMouse ? Colors.bgTertiary : "transparent")
+                            color: resultDelegate.index === root.selectedIndex ? Colors.subtleAccent : (mouse.containsMouse ? Colors.bgTertiary : "transparent")
                             border.color: resultDelegate.index === root.selectedIndex ? Colors.borderAccent : "transparent"
                             border.width: 1
 

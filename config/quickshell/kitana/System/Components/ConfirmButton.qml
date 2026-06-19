@@ -17,7 +17,7 @@ Rectangle {
     width: 110
     height: 36
     radius: 10
-    color: mouse.containsMouse ? (danger ? Colors.subtlePrimary : Colors.bgTertiary) : Colors.bgTertiary
+    color: mouse.containsMouse ? (danger ? Colors.subtleAccent : Colors.bgTertiary) : Colors.bgTertiary
     border.color: danger ? Colors.error : Colors.borderFaint
     border.width: 1
 

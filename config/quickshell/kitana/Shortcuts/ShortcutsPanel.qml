@@ -307,7 +307,7 @@ PanelWindow {
                         Layout.fillWidth: true
                         text: root.query
                         color: Colors.fgPrimary
-                        selectionColor: Colors.subtlePrimary
+                        selectionColor: Colors.subtleAccent
                         selectedTextColor: Colors.fgPrimary
                         verticalAlignment: TextInput.AlignVCenter
                         font.family: Typography.fontFamily
@@ -355,7 +355,7 @@ PanelWindow {
                     width: shortcutList.width
                     height: 54
                     radius: 12
-                    color: shortcutDelegate.index === root.selectedIndex ? Colors.subtlePrimary : (shortcutMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary)
+                    color: shortcutDelegate.index === root.selectedIndex ? Colors.subtleAccent : (shortcutMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary)
                     border.color: shortcutDelegate.index === root.selectedIndex ? Colors.borderAccent : Colors.borderFaint
                     border.width: 1
 
@@ -371,7 +371,7 @@ PanelWindow {
                             Layout.preferredWidth: Math.max(150, keyText.implicitWidth + 18)
                             Layout.preferredHeight: 30
                             radius: 9
-                            color: Colors.subtlePrimary
+                            color: Colors.subtleAccent
                             border.color: Colors.borderAccent
                             border.width: 1
 

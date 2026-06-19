@@ -43,7 +43,8 @@
     "scrimPrimary": { "ref": "background1", "alpha": 0.52 },
     "scrimSecondary": { "ref": "background1", "alpha": 0.32 },
     "scrimTertiary": { "ref": "background1", "alpha": 0.60 },
-    "subtlePrimary": { "ref": "purple", "alpha": 0.16 },
+    "subtleAccent": { "ref": "purple", "alpha": 0.16 },
+    "subtlePrimary": { "ref": "background1", "alpha": 0.16 },
     "subtleSecondary": { "ref": "current_line", "alpha": 0.65 },
     "subtleTertiary": { "ref": "muted", "alpha": 0.50 }
   },

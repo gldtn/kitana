@@ -28,7 +28,6 @@
     "surface_floating": "#2d3036",
     "border": "#3a3e46",
     "border_subtle": "#505662",
-    "border_muted": "#303336",
     "border_strong": "#6f7787",
     "icon_subtle": "#bdc2cb"
   },
@@ -45,7 +44,10 @@
     "bgAccent": "orange",
     "borderDark": "bg",
     "borderLight": "border_subtle",
-    "borderFaint": "border_muted",
+    "borderFaint": {
+      "ref": "bg",
+      "lighten": 0.08
+    },
     "borderHeavy": "border_strong",
     "borderAccent": "orange",
     "info": "blue",
@@ -54,18 +56,22 @@
     "error": "red",
     "scrimPrimary": {
       "ref": "bg",
-      "alpha": 0.52
+      "lighten": 0.09
     },
     "scrimSecondary": {
-      "ref": "bg",
-      "alpha": 0.32
+      "ref": "bg_alt",
+      "lighten": 0.07
     },
     "scrimTertiary": {
-      "ref": "bg",
-      "alpha": 0.6
+      "ref": "bg_highlight",
+      "lighten": 0.01
+    },
+    "subtleAccent": {
+      "ref": "orange",
+      "alpha": 0.16
     },
     "subtlePrimary": {
-      "ref": "orange",
+      "ref": "bg",
       "alpha": 0.16
     },
     "subtleSecondary": {

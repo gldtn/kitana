@@ -32,6 +32,7 @@ keybind = ctrl+shift+j=unbind
 keybind = ctrl+shift+k=unbind
 keybind = ctrl+shift+l=unbind
 keybind = ctrl+shift+o=unbind
+keybind = ctrl+shift+w=unbind
 
 keybind = ctrl+h=unbind
 keybind = ctrl+k=unbind
@@ -39,16 +40,24 @@ keybind = ctrl+j=unbind
 keybind = ctrl+l=unbind
 
 # -- window management
-keybind = ctrl+w=close_surface
-keybind = alt+shift+h=new_split:left
-keybind = alt+shift+k=new_split:up
-keybind = alt+shift+j=new_split:down
-keybind = alt+shift+l=new_split:right
+keybind = ctrl+w>w=close_surface
+keybind = ctrl+w>h=new_split:left
+keybind = ctrl+w>k=new_split:up
+keybind = ctrl+w>j=new_split:down
+keybind = ctrl+w>l=new_split:right
 
-keybind = alt+h=goto_split:left
-keybind = alt+k=goto_split:up
-keybind = alt+j=goto_split:down
-keybind = alt+l=goto_split:right
+keybind = ctrl+w>x=close_surface
+keybind = ctrl+w>left=new_split:left
+keybind = ctrl+w>up=new_split:up
+keybind = ctrl+w>down=new_split:down
+keybind = ctrl+w>right=new_split:right
+
+keybind = ctrl+shift+w=close_surface
+keybind = ctrl+shift+h=goto_split:left
+keybind = ctrl+shift+k=goto_split:up
+keybind = ctrl+shift+j=goto_split:down
+keybind = ctrl+shift+l=goto_split:right
+
 
 # -- define "resize" key table
 keybind = resize/

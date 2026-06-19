@@ -46,7 +46,7 @@ ColumnLayout {
             text: root.value
             echoMode: root.secret ? TextInput.Password : TextInput.Normal
             color: Colors.fgPrimary
-            selectionColor: Colors.subtlePrimary
+            selectionColor: Colors.subtleAccent
             selectedTextColor: Colors.fgPrimary
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize

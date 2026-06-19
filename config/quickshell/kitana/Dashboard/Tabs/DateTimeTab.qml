@@ -217,7 +217,7 @@ RowLayout {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 34
                         radius: 10
-                        color: tabRoot.panel.isToday(dayCell.day) ? Colors.subtlePrimary : (dayCell.day > 0 ? Colors.bgTertiary : "transparent")
+                        color: tabRoot.panel.isToday(dayCell.day) ? Colors.subtleAccent : (dayCell.day > 0 ? Colors.bgTertiary : "transparent")
                         // border.color: tabRoot.panel.isToday(dayCell.day) ? Colors.borderFaint : "transparent"
                         // border.width: .5
 

@@ -75,7 +75,7 @@ Rectangle {
         width: visible ? 30 : 0
         height: 30
         radius: 9
-        color: disconnectMouse.containsMouse ? Colors.subtlePrimary : Colors.subtleSecondary
+        color: disconnectMouse.containsMouse ? Colors.subtleAccent : Colors.subtleSecondary
 
         // Disconnect icon
         Controls.Icon {
@@ -105,7 +105,7 @@ Rectangle {
         width: visible ? 30 : 0
         height: 30
         radius: 9
-        color: forgetMouse.containsMouse ? Colors.subtlePrimary : Colors.subtleSecondary
+        color: forgetMouse.containsMouse ? Colors.subtleAccent : Colors.subtleSecondary
 
         // Forget icon
         Controls.Icon {

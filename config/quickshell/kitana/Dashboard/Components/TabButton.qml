@@ -23,7 +23,7 @@ Rectangle {
     Layout.preferredWidth: compact ? 34 : tabContent.implicitWidth + 22
     Layout.preferredHeight: 34
     radius: 10
-    color: selected ? Colors.subtlePrimary : (tabMouse.containsMouse ? Colors.bgTertiary : "transparent")
+    color: selected ? Colors.subtleAccent : (tabMouse.containsMouse ? Colors.bgTertiary : "transparent")
     // border.color: selected ? Colors.borderAccent : "transparent"
     // border.width: 1
 

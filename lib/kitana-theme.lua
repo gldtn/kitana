@@ -34,6 +34,7 @@ local ROLES = {
   "scrimPrimary",
   "scrimSecondary",
   "scrimTertiary",
+  "subtleAccent",
   "subtlePrimary",
   "subtleSecondary",
   "subtleTertiary",

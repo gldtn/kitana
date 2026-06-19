@@ -11,7 +11,9 @@ import "../../Services" as Services
 Rectangle {
     id: root
 
-    Custom.Settings { id: settings }
+    Custom.Settings {
+        id: settings
+    }
 
     property var item: null
     property int groupCount: 1
@@ -25,11 +27,13 @@ Rectangle {
     width: parent ? parent.width : 0
     height: Math.max(84, contentColumn.implicitHeight + verticalPadding * 2)
     radius: 14
-    color: hoverHandler.hovered ? Colors.bgTertiary : Colors.bgTertiary
-    border.color: Colors.borderFaint
+    color: hoverHandler.hovered ? Colors.scrimTertiary : Colors.bgTertiary
+    border.color: Colors.borderLight // outter border
     border.width: 0.8
 
-    HoverHandler { id: hoverHandler }
+    HoverHandler {
+        id: hoverHandler
+    }
 
     // Notification app tone icon
     Rectangle {
@@ -92,7 +96,7 @@ Rectangle {
                 Layout.preferredWidth: countRow.implicitWidth + 14
                 Layout.preferredHeight: 22
                 radius: 11
-                color: countMouse.containsMouse ? Colors.subtleSecondary : "transparent"
+                color: countMouse.containsMouse ? Colors.scrimSecondary : "transparent"
 
                 // Group count and chevron
                 Row {
@@ -133,7 +137,7 @@ Rectangle {
                 Layout.preferredWidth: 22
                 Layout.preferredHeight: 22
                 radius: 11
-                color: dismissMouse.containsMouse ? Colors.subtleSecondary : "transparent"
+                color: dismissMouse.containsMouse ? Colors.scrimSecondary : "transparent"
 
                 // Dismiss icon
                 Controls.Icon {
@@ -159,7 +163,7 @@ Rectangle {
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 1
-            color: Colors.borderFaint
+            color: Colors.borderLight
         }
 
         // Notification summary

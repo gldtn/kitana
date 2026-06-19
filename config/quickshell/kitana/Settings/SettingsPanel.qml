@@ -189,7 +189,7 @@ PanelWindow {
         Layout.preferredWidth: tabContent.implicitWidth + 22
         Layout.preferredHeight: 34
         radius: 10
-        color: selected ? Colors.subtlePrimary : (tabMouse.containsMouse ? Colors.bgTertiary : "transparent")
+        color: selected ? Colors.subtleAccent : (tabMouse.containsMouse ? Colors.bgTertiary : "transparent")
         border.color: selected ? Colors.borderAccent : "transparent"
         border.width: 1
 
@@ -304,7 +304,7 @@ PanelWindow {
         Layout.fillWidth: true
         Layout.preferredHeight: 88
         radius: 13
-        color: selected ? Colors.subtlePrimary : (optionMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary)
+        color: selected ? Colors.subtleAccent : (optionMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary)
         border.color: selected ? Colors.borderAccent : Colors.borderFaint
         border.width: 1
 

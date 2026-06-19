@@ -53,7 +53,8 @@ QtObject {
         scrimPrimary: { ref: "bg", alpha: 0.52 },
         scrimSecondary: { ref: "bg", alpha: 0.32 },
         scrimTertiary: { ref: "bg", alpha: 0.60 },
-        subtlePrimary: { ref: "orange", alpha: 0.16 },
+        subtleAccent: { ref: "orange", alpha: 0.16 },
+        subtlePrimary: { ref: "bg", alpha: 0.16 },
         subtleSecondary: { ref: "bg_highlight", alpha: 0.65 },
         subtleTertiary: { ref: "grey", alpha: 0.50 }
     })
@@ -224,7 +225,8 @@ QtObject {
     readonly property color scrimPrimary: resolve("scrimPrimary", alpha(bgPrimary, 0.52))
     readonly property color scrimSecondary: resolve("scrimSecondary", alpha(bgPrimary, 0.32))
     readonly property color scrimTertiary: resolve("scrimTertiary", alpha(bgPrimary, 0.60))
-    readonly property color subtlePrimary: resolve("subtlePrimary", alpha(bgAccent, 0.16))
+    readonly property color subtleAccent: resolve("subtleAccent", alpha(bgAccent, 0.16))
+    readonly property color subtlePrimary: resolve("subtlePrimary", alpha(bgPrimary, 0.16))
     readonly property color subtleSecondary: resolve("subtleSecondary", alpha(bgTertiary, 0.65))
     readonly property color subtleTertiary: resolve("subtleTertiary", alpha(fgTertiary, 0.50))
 
