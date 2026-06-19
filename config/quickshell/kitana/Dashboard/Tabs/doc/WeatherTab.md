@@ -20,6 +20,8 @@ Referenced or instantiated by: `Dashboard/DashboardPanel.qml`.
 
 The root type is `ColumnLayout`. The component composes child QML items, Kitana design tokens, and Quickshell services to provide its role in the shell.
 
+The location search field uses `Controls.InputField`.
+
 ## Properties
 
 | Property | Type | Default | Required | Description |

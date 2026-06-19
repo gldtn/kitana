@@ -56,7 +56,14 @@ QtObject {
         subtleAccent: { ref: "orange", alpha: 0.16 },
         subtlePrimary: { ref: "bg", alpha: 0.16 },
         subtleSecondary: { ref: "bg_highlight", alpha: 0.65 },
-        subtleTertiary: { ref: "grey", alpha: 0.50 }
+        subtleTertiary: { ref: "grey", alpha: 0.50 },
+        inputBg: "bg_highlight",
+        inputFg: "fg",
+        inputPlaceholderFg: "grey",
+        inputBorder: "bg_alt",
+        inputBorderFocus: "orange",
+        inputSelection: { ref: "orange", alpha: 0.16 },
+        inputSelectedFg: "fg"
     })
 
     function hasKeys(value: var): bool {
@@ -191,7 +198,9 @@ QtObject {
         watchChanges: true
         printErrors: false
         onFileChanged: this.reload()
+        // qmllint disable missing-type
         adapter: root.theme
+        // qmllint enable missing-type
     }
 
     // Core semantic foreground roles
@@ -229,6 +238,15 @@ QtObject {
     readonly property color subtlePrimary: resolve("subtlePrimary", alpha(bgPrimary, 0.16))
     readonly property color subtleSecondary: resolve("subtleSecondary", alpha(bgTertiary, 0.65))
     readonly property color subtleTertiary: resolve("subtleTertiary", alpha(fgTertiary, 0.50))
+
+    // Shared input roles
+    readonly property color inputBg: resolve("inputBg", bgTertiary)
+    readonly property color inputFg: resolve("inputFg", fgPrimary)
+    readonly property color inputPlaceholderFg: resolve("inputPlaceholderFg", fgSecondary)
+    readonly property color inputBorder: resolve("inputBorder", borderFaint)
+    readonly property color inputBorderFocus: resolve("inputBorderFocus", borderAccent)
+    readonly property color inputSelection: resolve("inputSelection", subtleAccent)
+    readonly property color inputSelectedFg: resolve("inputSelectedFg", fgPrimary)
 
     // Icon tone roles used by Config/Icons.qml
     readonly property color iconPrimary: iconTone("primary", fgPrimary)

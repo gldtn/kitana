@@ -22,6 +22,10 @@ The root type is `PanelWindow`. The component composes child QML items, Kitana d
 
 The launcher header uses `Controls.CloseButton` for explicit dismissal.
 
+Launcher results use borderless zebra rows with subtle hover and keyboard-selection tinting.
+
+The search field uses `Controls.InputField`.
+
 ## Properties
 
 | Property | Type | Default | Required | Description |

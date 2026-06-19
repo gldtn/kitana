@@ -370,42 +370,30 @@ PanelWindow {
                 }
 
                 // Search field or help footer
-                Rectangle {
+                Item {
                     Layout.fillWidth: true
                     Layout.preferredHeight: root.searchActive ? 38 : (root.helpVisible ? 56 : 24)
-                    radius: 10
-                    color: root.searchActive ? Colors.bgTertiary : "transparent"
-                    border.color: root.searchActive ? Colors.borderFaint : "transparent"
-                    border.width: root.searchActive ? 1 : 0
 
                     // Wallpaper search input
-                    TextInput {
+                    Controls.InputField {
                         id: search
 
                         anchors.fill: parent
-                        anchors.leftMargin: 12
-                        anchors.rightMargin: 12
-                        verticalAlignment: TextInput.AlignVCenter
                         visible: root.searchActive
+                        fieldHeight: 38
                         text: root.query
-                        clip: true
-                        color: Colors.fgPrimary
-                        selectionColor: Colors.fgAccent
-                        selectedTextColor: Colors.fgOnPrimary
-                        font.family: Typography.fontFamily
-                        font.pixelSize: settings.textPixelSize
 
                         onTextChanged: {
                             root.query = text;
                             root.refreshFilter();
                         }
 
-                        Keys.onEscapePressed: {
+                        onEscaped: {
                             root.searchActive = false;
                             grid.forceActiveFocus();
                         }
 
-                        Keys.onReturnPressed: {
+                        onAccepted: {
                             root.searchActive = false;
                             grid.forceActiveFocus();
                         }

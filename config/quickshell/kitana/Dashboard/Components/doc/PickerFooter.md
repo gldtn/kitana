@@ -12,13 +12,15 @@ Source file: `Dashboard/Components/PickerFooter.qml`.
 
 Qt and Quickshell imports: `import QtQuick`, `import QtQuick.Layouts`.
 
-Project imports: `import "../.."`, `import "../../custom" as Custom`.
+Project imports: `import "../.."`, `import "../../Components/Controls" as Controls`, `import "../../custom" as Custom`.
 
 Referenced or instantiated by: `Dashboard/Components/PickerHelp.qml`.
 
 ## Component Hierarchy and Role
 
-The root type is `Rectangle`. The component composes child QML items, Kitana design tokens, and Quickshell services to provide its role in the shell.
+The root type is `Item`. The component composes child QML items, Kitana design tokens, and Quickshell services to provide its role in the shell.
+
+Search mode is rendered through `Controls.InputField`.
 
 ## Properties
 

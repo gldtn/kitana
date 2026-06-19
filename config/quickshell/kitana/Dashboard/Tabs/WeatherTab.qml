@@ -26,31 +26,18 @@ ColumnLayout {
         Layout.fillWidth: true
         spacing: 10
 
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 34
-            radius: 10
-            color: Colors.bgTertiary
-            border.color: locationInput.activeFocus ? Colors.borderAccent : Colors.borderFaint
-            border.width: 1
+        Controls.InputField {
+            id: locationInput
 
-            TextInput {
-                id: locationInput
-                anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                verticalAlignment: TextInput.AlignVCenter
-                text: tabRoot.panel.weatherLocation
-                echoMode: tabRoot.weatherPrefs.hideLocation ? TextInput.Password : TextInput.Normal
-                color: Colors.fgPrimary
-                selectionColor: Colors.subtleAccent
-                selectedTextColor: Colors.fgPrimary
-                font.family: Typography.fontFamily
-                font.pixelSize: settings.textPixelSize
-                onEditingFinished: {
-                    tabRoot.panel.weatherLocation = text;
-                    tabRoot.panel.refreshWeather();
-                }
+            Layout.fillWidth: true
+            fieldHeight: 34
+            radius: 10
+            text: tabRoot.panel.weatherLocation
+            echoMode: tabRoot.weatherPrefs.hideLocation ? TextInput.Password : TextInput.Normal
+            onEscaped: tabRoot.panel.close()
+            onEditingFinished: {
+                tabRoot.panel.weatherLocation = locationInput.text;
+                tabRoot.panel.refreshWeather();
             }
         }
 

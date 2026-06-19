@@ -10,7 +10,7 @@ Colors is a singleton configuration object that provides shared design tokens or
 
 Source file: `Config/Colors.qml`.
 
-Qt and Quickshell imports: `import QtQuick`.
+Qt and Quickshell imports: `import QtQuick`, `import Quickshell`, `import Quickshell.Io`.
 
 Referenced or instantiated by: `Bar/BarWindow.qml`, `Bar/Items/ControlCluster.qml`, `Bar/Items/DateTime.qml`, `Bar/Items/Layout.qml`, `Bar/Items/Screenshot.qml`, `Bar/Items/Session.qml`, `Bar/Items/Start.qml`, `Bar/Items/Workspaces.qml`, `Bar/StartMenu.qml`, `Components/Controls/BlurredBackdrop.qml`, `Components/Controls/KeyHintBar.qml`, `Components/Controls/PanelRow.qml`.
 
@@ -98,11 +98,13 @@ The root type is `QtObject`. The component composes child QML items, Kitana desi
 | `popupForegroundMuted` | `readonly color` | `foregroundMuted` | No | Read-only. Provides the color value used by `popupForegroundMuted` styling. |
 | `popupSurface` | `readonly color` | `surfaceControl` | No | Read-only. Provides the color value used by `popupSurface` styling. |
 | `popupBorder` | `readonly color` | `borderMuted` | No | Read-only. Provides the color value used by `popupBorder` styling. |
-| `inputBackground` | `readonly color` | `withAlpha(surfaceControl, 80)` | No | Read-only. Provides the color value used by `inputBackground` styling. |
-| `inputForeground` | `readonly color` | `foreground` | No | Read-only. Provides the color value used by `inputForeground` styling. |
-| `inputPlaceholderForeground` | `readonly color` | `foregroundMuted` | No | Read-only. Provides the color value used by `inputPlaceholderForeground` styling. |
-| `inputBorder` | `readonly color` | `borderMuted` | No | Read-only. Provides the color value used by `inputBorder` styling. |
-| `inputActiveBorder` | `readonly color` | `borderFocus` | No | Read-only. Provides the color value used by `inputActiveBorder` styling. |
+| `inputBg` | `readonly color` | `bgTertiary` | No | Shared text input background. |
+| `inputFg` | `readonly color` | `fgPrimary` | No | Shared text input foreground. |
+| `inputPlaceholderFg` | `readonly color` | `fgSecondary` | No | Shared placeholder foreground. |
+| `inputBorder` | `readonly color` | `borderFaint` | No | Shared idle text input border. |
+| `inputBorderFocus` | `readonly color` | `borderAccent` | No | Shared focused text input border. |
+| `inputSelection` | `readonly color` | `subtleAccent` | No | Shared text selection background. |
+| `inputSelectedFg` | `readonly color` | `fgPrimary` | No | Shared selected text foreground. |
 | `workspaceInactiveBackground` | `readonly color` | `withAlpha(surfaceSubtle, 45)` | No | Read-only. Provides the color value used by `workspaceInactiveBackground` styling. |
 | `workspaceInactiveForeground` | `readonly color` | `withAlpha(foregroundMuted, 55)` | No | Read-only. Provides the color value used by `workspaceInactiveForeground` styling. |
 | `workspaceOccupiedBackground` | `readonly color` | `withAlpha(surfaceSubtle, 90)` | No | Read-only. Provides the color value used by `workspaceOccupiedBackground` styling. |

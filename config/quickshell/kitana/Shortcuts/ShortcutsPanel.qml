@@ -287,47 +287,23 @@ PanelWindow {
             }
 
             // Shortcut search input frame
-            Rectangle {
+            Controls.InputField {
+                id: searchInput
+
                 Layout.fillWidth: true
-                Layout.preferredHeight: 36
-                radius: 11
-                color: Colors.bgTertiary
-                border.color: searchInput.activeFocus ? Colors.borderAccent : Colors.borderFaint
-                border.width: 1
-
-                // Search icon and input row
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.leftMargin: 10
-                    anchors.rightMargin: 10
-                    spacing: 8
-
-                    Controls.Icon {
-                        name: "search"
-                        tone: "muted"
-                        sizeRole: "bar"
-                    }
-
-                    TextInput {
-                        id: searchInput
-
-                        Layout.fillWidth: true
-                        text: root.query
-                        color: Colors.fgPrimary
-                        selectionColor: Colors.subtleAccent
-                        selectedTextColor: Colors.fgPrimary
-                        verticalAlignment: TextInput.AlignVCenter
-                        font.family: Typography.fontFamily
-                        font.pixelSize: settings.textPixelSize
-                        clip: true
-                        onTextChanged: {
-                            root.query = text;
-                            root.filterShortcuts();
-                        }
-
-                        Keys.onPressed: event => root.handleKey(event)
-                    }
+                fieldHeight: 52
+                radius: 12
+                iconName: "search"
+                iconSize: 18
+                horizontalPadding: 16
+                textPixelSize: 18
+                text: root.query
+                onEscaped: root.close()
+                onTextChanged: {
+                    root.query = text;
+                    root.filterShortcuts();
                 }
+                onKeyPressed: event => root.handleKey(event)
             }
 
             // Shortcut loading or empty status
@@ -348,7 +324,7 @@ PanelWindow {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 clip: true
-                spacing: 8
+                spacing: 2
                 model: root.filteredShortcuts
                 currentIndex: root.selectedIndex
 
@@ -358,65 +334,64 @@ PanelWindow {
 
                     required property int index
                     required property var modelData
+                    readonly property bool hovered: shortcutMouse.containsMouse
+                    readonly property bool selected: shortcutDelegate.index === root.selectedIndex
+                    readonly property color zebraColor: shortcutDelegate.index % 2 === 0 ? Colors.alpha(Colors.bgTertiary, Colors.dark ? 0.14 : 0.20) : "transparent"
+                    readonly property color selectedColor: Colors.alpha(Colors.bgAccent, Colors.dark ? 0.11 : 0.16)
 
                     width: shortcutList.width
-                    height: 54
-                    radius: 12
-                    color: shortcutDelegate.index === root.selectedIndex ? Colors.subtleAccent : (shortcutMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary)
-                    border.color: shortcutDelegate.index === root.selectedIndex ? Colors.borderAccent : Colors.borderFaint
-                    border.width: 1
+                    height: 42
+                    radius: 5
+                    color: hovered || selected ? selectedColor : zebraColor
+                    border.width: 0
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 90
+                            easing.type: Easing.OutCubic
+                        }
+                    }
 
                     // Shortcut key and description row
                     RowLayout {
                         anchors.fill: parent
-                        anchors.leftMargin: 10
-                        anchors.rightMargin: 10
-                        spacing: 10
+                        anchors.leftMargin: 14
+                        anchors.rightMargin: 14
+                        spacing: 16
 
-                        // Shortcut key badge
-                        Rectangle {
-                            Layout.preferredWidth: Math.max(150, keyText.implicitWidth + 18)
-                            Layout.preferredHeight: 30
-                            radius: 9
-                            color: Colors.subtleAccent
-                            border.color: Colors.borderAccent
-                            border.width: 1
+                        // Shortcut key column
+                        Text {
+                            id: keyText
 
-                            // Shortcut key label
-                            Text {
-                                id: keyText
-                                anchors.centerIn: parent
-                                text: shortcutDelegate.modelData.keys
-                                color: Colors.fgPrimary
-                                font.family: Typography.fontFamily
-                                font.pixelSize: settings.textPixelSize
-                                font.weight: Font.Bold
-                            }
+                            Layout.preferredWidth: 170
+                            text: shortcutDelegate.modelData.keys
+                            color: shortcutDelegate.selected ? Colors.fgAccent : Colors.fgPrimary
+                            elide: Text.ElideRight
+                            font.family: Typography.fontFamily
+                            font.pixelSize: settings.textPixelSize
+                            font.weight: Font.DemiBold
                         }
 
-                        // Shortcut description and category
-                        ColumnLayout {
+                        // Shortcut description column
+                        Text {
                             Layout.fillWidth: true
-                            spacing: 1
+                            text: shortcutDelegate.modelData.description
+                            color: Colors.fgPrimary
+                            elide: Text.ElideRight
+                            font.family: Typography.fontFamily
+                            font.pixelSize: settings.textPixelSize
+                            font.weight: Font.DemiBold
+                        }
 
-                            Text {
-                                Layout.fillWidth: true
-                                text: shortcutDelegate.modelData.description
-                                color: Colors.fgPrimary
-                                elide: Text.ElideRight
-                                font.family: Typography.fontFamily
-                                font.pixelSize: settings.textPixelSize
-                                font.weight: Font.Bold
-                            }
-
-                            Text {
-                                Layout.fillWidth: true
-                                text: shortcutDelegate.modelData.category
-                                color: Colors.fgSecondary
-                                elide: Text.ElideRight
-                                font.family: Typography.fontFamily
-                                font.pixelSize: settings.textPixelSize - 1
-                            }
+                        // Shortcut category column
+                        Text {
+                            Layout.preferredWidth: 132
+                            text: shortcutDelegate.modelData.category
+                            color: Colors.fgSecondary
+                            horizontalAlignment: Text.AlignRight
+                            elide: Text.ElideRight
+                            font.family: Typography.fontFamily
+                            font.pixelSize: settings.textPixelSize - 1
                         }
                     }
 

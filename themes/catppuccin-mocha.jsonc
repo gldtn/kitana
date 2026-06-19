@@ -86,7 +86,14 @@
     "subtleTertiary": {
       "ref": "overlay2",
       "alpha": 0.50
-    }
+    },
+    "inputBg": "bgTertiary",
+    "inputFg": "fgPrimary",
+    "inputPlaceholderFg": "fgSecondary",
+    "inputBorder": "borderFaint",
+    "inputBorderFocus": "borderAccent",
+    "inputSelection": "subtleAccent",
+    "inputSelectedFg": "fgPrimary"
   },
   "icons": {
     "primary": "text",

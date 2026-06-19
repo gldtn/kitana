@@ -279,64 +279,42 @@ PanelWindow {
                 }
 
                 // Search input frame
-                Rectangle {
+                Controls.InputField {
+                    id: search
+
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 52
+                    fieldHeight: 52
                     radius: 12
-                    color: Colors.bgTertiary
-                    border.color: search.activeFocus ? Colors.borderAccent : Colors.borderFaint
-                    border.width: 1
+                    iconName: "search"
+                    iconSize: 18
+                    horizontalPadding: 16
+                    textPixelSize: 18
+                    text: root.query
+                    inputFocus: true
+                    activeFocusOnTab: true
 
-                    // Search icon and input row
-                    RowLayout {
-                        anchors.fill: parent
-                        anchors.leftMargin: 16
-                        anchors.rightMargin: 16
-                        spacing: 10
+                    onEscaped: root.close()
+                    onAccepted: root.launchCurrent()
 
-                        // Search icon
-                        Controls.Icon {
-                            name: "search"
-                            tone: "muted"
-                            size: 18
-                        }
+                    onTextChanged: {
+                        root.query = text;
+                        root.selectedIndex = 0;
+                        root.refreshResults();
+                    }
 
-                        // Launcher search input
-                        TextInput {
-                            id: search
-                            Layout.fillWidth: true
-                            text: root.query
-                            focus: true
-                            color: Colors.fgPrimary
-                            selectionColor: Colors.subtleAccent
-                            selectedTextColor: Colors.fgPrimary
-                            font.family: Typography.fontFamily
-                            font.pixelSize: 18
-                            clip: true
-                            verticalAlignment: TextInput.AlignVCenter
-                            activeFocusOnTab: true
-
-                            onTextChanged: {
-                                root.query = text;
-                                root.selectedIndex = 0;
-                                root.refreshResults();
-                            }
-
-                            Keys.onPressed: event => {
-                                if (event.key === Qt.Key_Escape) {
-                                    root.close();
-                                    event.accepted = true;
-                                } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                                    root.launchCurrent();
-                                    event.accepted = true;
-                                } else if (event.key === Qt.Key_Down) {
-                                    root.moveSelection(1);
-                                    event.accepted = true;
-                                } else if (event.key === Qt.Key_Up) {
-                                    root.moveSelection(-1);
-                                    event.accepted = true;
-                                }
-                            }
+                    onKeyPressed: event => {
+                        if (event.key === Qt.Key_Escape) {
+                            root.close();
+                            event.accepted = true;
+                        } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                            root.launchCurrent();
+                            event.accepted = true;
+                        } else if (event.key === Qt.Key_Down) {
+                            root.moveSelection(1);
+                            event.accepted = true;
+                        } else if (event.key === Qt.Key_Up) {
+                            root.moveSelection(-1);
+                            event.accepted = true;
                         }
                     }
                 }
@@ -351,7 +329,7 @@ PanelWindow {
                         id: listView
                         anchors.fill: parent
                         clip: true
-                        spacing: 8
+                        spacing: 2
                         model: root.results
                         currentIndex: root.selectedIndex
 
@@ -361,13 +339,23 @@ PanelWindow {
 
                             required property int index
                             required property var modelData
+                            readonly property bool hovered: mouse.containsMouse
+                            readonly property bool selected: resultDelegate.index === root.selectedIndex
+                            readonly property color zebraColor: resultDelegate.index % 2 === 0 ? Colors.alpha(Colors.bgTertiary, Colors.dark ? 0.14 : 0.20) : "transparent"
+                            readonly property color selectedColor: Colors.alpha(Colors.bgAccent, Colors.dark ? 0.11 : 0.16)
 
                             width: listView.width
-                            height: 58
-                            radius: 12
-                            color: resultDelegate.index === root.selectedIndex ? Colors.subtleAccent : (mouse.containsMouse ? Colors.bgTertiary : "transparent")
-                            border.color: resultDelegate.index === root.selectedIndex ? Colors.borderAccent : "transparent"
-                            border.width: 1
+                            height: 52
+                            radius: 5
+                            color: hovered || selected ? selectedColor : zebraColor
+                            border.width: 0
+
+                            Behavior on color {
+                                ColorAnimation {
+                                    duration: 90
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
 
                             // Result row click target
                             MouseArea {
@@ -381,8 +369,8 @@ PanelWindow {
                             // Result row content
                             RowLayout {
                                 anchors.fill: parent
-                                anchors.leftMargin: 12
-                                anchors.rightMargin: 12
+                                anchors.leftMargin: 14
+                                anchors.rightMargin: 14
                                 spacing: 12
 
                                 // App icon slot
@@ -408,7 +396,7 @@ PanelWindow {
                                         anchors.fill: parent
                                         visible: parent.resolvedIcon.length === 0 || !appIcon.visible
                                         radius: 9
-                                        color: Colors.bgTertiary
+                                        color: Colors.alpha(Colors.bgTertiary, Colors.dark ? 0.28 : 0.36)
 
                                         Controls.Icon {
                                             visible: !!resultDelegate.modelData.fallbackIconName && resultDelegate.modelData.fallbackIconName.length > 0
@@ -457,7 +445,7 @@ PanelWindow {
 
                                 // Selected result action hint
                                 Text {
-                                    visible: resultDelegate.index === root.selectedIndex
+                                    visible: resultDelegate.selected
                                     text: resultDelegate.modelData.hint || "Enter"
                                     color: Colors.fgAccent
                                     font.family: Typography.fontFamily

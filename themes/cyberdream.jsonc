@@ -81,7 +81,20 @@
     "subtleTertiary": {
       "ref": "grey",
       "alpha": 0.5
-    }
+    },
+    "inputBg": {
+      "ref": "bgSecondary",
+      "lighten": 0.03
+    },
+    "inputFg": "fgPrimary",
+    "inputPlaceholderFg": "fgSecondary",
+    "inputBorder": "borderFaint",
+    "inputBorderFocus": {
+      "ref": "orange",
+      "alpha": 0.16
+    },
+    "inputSelection": "subtleAccent",
+    "inputSelectedFg": "fgPrimary"
   },
   "icons": {
     "primary": "fg",

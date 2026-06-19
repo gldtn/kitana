@@ -19,6 +19,7 @@ Generated reference for the QML components that make up the Kitana Quickshell de
 | `BlurredBackdrop` | Components | `Components/Controls/BlurredBackdrop.qml` | [BlurredBackdrop](../Components/Controls/doc/BlurredBackdrop.md) |
 | `CloseButton` | Components | `Components/Controls/CloseButton.qml` | [CloseButton](../Components/Controls/doc/CloseButton.md) |
 | `Icon` | Components | `Components/Controls/Icon.qml` | [Icon](../Components/Controls/doc/Icon.md) |
+| `InputField` | Components | `Components/Controls/InputField.qml` | [InputField](../Components/Controls/doc/InputField.md) |
 | `KeyHintBar` | Components | `Components/Controls/KeyHintBar.qml` | [KeyHintBar](../Components/Controls/doc/KeyHintBar.md) |
 | `PanelRow` | Components | `Components/Controls/PanelRow.qml` | [PanelRow](../Components/Controls/doc/PanelRow.md) |
 | `Colors` | Config | `Config/Colors.qml` | [Colors](../Config/doc/Colors.md) |

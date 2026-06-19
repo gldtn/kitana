@@ -64,6 +64,7 @@ ColumnLayout {
                     label: "Location"
                     value: tabRoot.panel.weatherLocation
                     secret: tabRoot.weatherPrefs.hideLocation
+                    onEscaped: tabRoot.panel.close()
                     onCommitted: value => {
                         tabRoot.panel.weatherLocation = value;
                         tabRoot.panel.refreshWeather();
@@ -124,6 +125,7 @@ ColumnLayout {
                     Layout.fillWidth: true
                     label: "Clock 1 Name"
                     value: tabRoot.worldClockPrefs.firstName
+                    onEscaped: tabRoot.panel.close()
                     onCommitted: value => tabRoot.worldClockPrefs.firstName = value
                 }
 
@@ -131,6 +133,7 @@ ColumnLayout {
                     Layout.fillWidth: true
                     label: "Clock 1 Timezone"
                     value: tabRoot.worldClockPrefs.firstTimeZone
+                    onEscaped: tabRoot.panel.close()
                     onCommitted: value => {
                         tabRoot.worldClockPrefs.firstTimeZone = value;
                         tabRoot.panel.refreshWorldClocks();
@@ -141,6 +144,7 @@ ColumnLayout {
                     Layout.fillWidth: true
                     label: "Clock 2 Name"
                     value: tabRoot.worldClockPrefs.secondName
+                    onEscaped: tabRoot.panel.close()
                     onCommitted: value => tabRoot.worldClockPrefs.secondName = value
                 }
 
@@ -148,6 +152,7 @@ ColumnLayout {
                     Layout.fillWidth: true
                     label: "Clock 2 Timezone"
                     value: tabRoot.worldClockPrefs.secondTimeZone
+                    onEscaped: tabRoot.panel.close()
                     onCommitted: value => {
                         tabRoot.worldClockPrefs.secondTimeZone = value;
                         tabRoot.panel.refreshWorldClocks();

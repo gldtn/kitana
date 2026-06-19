@@ -3,9 +3,10 @@
 import QtQuick
 import QtQuick.Layouts
 import "../.."
+import "../../Components/Controls" as Controls
 import "../../custom" as Custom
 
-Rectangle {
+Item {
     id: root
 
     Custom.Settings { id: settings }
@@ -17,25 +18,15 @@ Rectangle {
 
     Layout.fillWidth: true
     Layout.preferredHeight: searchActive ? 36 : (helpVisible ? 52 : 24)
-    radius: 10
-    color: searchActive ? Colors.bgTertiary : "transparent"
-    border.color: searchActive ? Colors.borderFaint : "transparent"
-    border.width: searchActive ? 1 : 0
 
     // Picker search input
-    TextInput {
+    Controls.InputField {
+        id: pickerInput
+
         anchors.fill: parent
-        anchors.leftMargin: 12
-        anchors.rightMargin: 12
-        verticalAlignment: TextInput.AlignVCenter
         visible: root.searchActive
-        clip: true
+        fieldHeight: 36
         text: root.dashboard ? root.dashboard.pickerQuery : ""
-        color: Colors.fgPrimary
-        selectionColor: Colors.subtleAccent
-        selectedTextColor: Colors.fgPrimary
-        font.family: Typography.fontFamily
-        font.pixelSize: settings.textPixelSize
         onVisibleChanged: if (visible) forceActiveFocus()
         onTextChanged: {
             if (!root.dashboard)
@@ -43,13 +34,13 @@ Rectangle {
             root.dashboard.pickerQuery = text;
             root.dashboard.refreshPickerFilter();
         }
-        Keys.onEscapePressed: {
+        onEscaped: {
             if (!root.dashboard)
                 return;
             root.dashboard.pickerSearchActive = false;
             root.dashboard.focusPanel();
         }
-        Keys.onReturnPressed: {
+        onAccepted: {
             if (!root.dashboard)
                 return;
             root.dashboard.pickerSearchActive = false;

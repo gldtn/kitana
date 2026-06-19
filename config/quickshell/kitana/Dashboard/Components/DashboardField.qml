@@ -3,6 +3,7 @@
 import QtQuick
 import QtQuick.Layouts
 import "../.."
+import "../../Components/Controls" as Controls
 import "../../custom" as Custom
 
 ColumnLayout {
@@ -15,6 +16,7 @@ ColumnLayout {
     property bool secret: false
 
     signal committed(string value)
+    signal escaped
     spacing: 5
 
     // Field label
@@ -28,29 +30,15 @@ ColumnLayout {
     }
 
     // Text input frame
-    Rectangle {
-        Layout.fillWidth: true
-        Layout.preferredHeight: 34
-        radius: 10
-        color: Colors.bgTertiary
-        border.color: fieldInput.activeFocus ? Colors.borderAccent : Colors.borderFaint
-        border.width: 1
+    Controls.InputField {
+        id: fieldInput
 
-        // Editable field value
-        TextInput {
-            id: fieldInput
-            anchors.fill: parent
-            anchors.leftMargin: 12
-            anchors.rightMargin: 12
-            verticalAlignment: TextInput.AlignVCenter
-            text: root.value
-            echoMode: root.secret ? TextInput.Password : TextInput.Normal
-            color: Colors.fgPrimary
-            selectionColor: Colors.subtleAccent
-            selectedTextColor: Colors.fgPrimary
-            font.family: Typography.fontFamily
-            font.pixelSize: settings.textPixelSize
-            onEditingFinished: root.committed(text)
-        }
+        Layout.fillWidth: true
+        fieldHeight: 34
+        radius: 10
+        text: root.value
+        echoMode: root.secret ? TextInput.Password : TextInput.Normal
+        onEscaped: root.escaped()
+        onEditingFinished: root.committed(fieldInput.text)
     }
 }
