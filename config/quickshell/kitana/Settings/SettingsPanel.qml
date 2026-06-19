@@ -12,8 +12,10 @@ import "../Components/Controls" as Controls
 import "../Services" as Services
 import "../custom" as Custom
 
+// qmllint disable uncreatable-type
 PanelWindow {
     id: root
+    // qmllint enable uncreatable-type
 
     Custom.Settings { id: settings }
 
@@ -76,10 +78,10 @@ PanelWindow {
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
 
-    WlrLayershell.layer: WlrLayershell.Overlay
+    WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.namespace: "qs-blurred-panel"
     WlrLayershell.exclusiveZone: -1
     WlrLayershell.keyboardFocus: visible ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
-    BackgroundEffect.blurRegion: Region { item: root.backdropItem }
 
     anchors {
         top: true

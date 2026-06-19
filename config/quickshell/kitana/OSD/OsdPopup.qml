@@ -9,8 +9,10 @@ import "../Components/Controls" as Controls
 import "../custom" as Custom
 import "../Services" as Services
 
+// qmllint disable uncreatable-type
 PanelWindow {
     id: root
+    // qmllint enable uncreatable-type
 
     Custom.Settings { id: settings }
 
@@ -21,7 +23,8 @@ PanelWindow {
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
 
-    WlrLayershell.layer: WlrLayershell.Overlay
+    WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.namespace: "qs-panel"
     WlrLayershell.exclusiveZone: -1
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
 
@@ -31,11 +34,11 @@ PanelWindow {
         right: true
     }
 
-    margins {
-        bottom: 76
-        left: settings.sideMargin
-        right: settings.sideMargin
-    }
+    // qmllint disable unqualified unresolved-type
+    margins.bottom: 76
+    margins.left: settings.sideMargin
+    margins.right: settings.sideMargin
+    // qmllint enable unqualified unresolved-type
 
     implicitWidth: 330
     implicitHeight: 70

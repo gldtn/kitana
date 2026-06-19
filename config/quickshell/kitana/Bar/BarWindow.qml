@@ -10,8 +10,10 @@ import "../Services" as Services
 import "../System" as System
 import "./Sections" as Sections
 
+// qmllint disable uncreatable-type
 PanelWindow {
     id: root
+    // qmllint enable uncreatable-type
 
     Custom.Settings { id: settings }
 
@@ -24,6 +26,7 @@ PanelWindow {
     screen: panelScreen
     implicitHeight: root.barVisible ? settings.panelHeight : 1
     exclusiveZone: root.barVisible ? settings.exclusiveZone : 0
+    WlrLayershell.namespace: "qs-panel"
 
     anchors {
         top: true
@@ -31,11 +34,11 @@ PanelWindow {
         right: true
     }
 
-    margins {
-        top: settings.topMargin
-        left: settings.sideMargin
-        right: settings.sideMargin
-    }
+    // qmllint disable unqualified unresolved-type
+    margins.top: settings.topMargin
+    margins.left: settings.sideMargin
+    margins.right: settings.sideMargin
+    // qmllint enable unqualified unresolved-type
 
     color: "transparent"
 

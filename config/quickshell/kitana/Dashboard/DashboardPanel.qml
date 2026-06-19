@@ -14,8 +14,10 @@ import "../Services" as Services
 import "./Components" as Dashboard
 import "./Tabs" as Tabs
 
+// qmllint disable uncreatable-type
 PanelWindow {
     id: root
+    // qmllint enable uncreatable-type
 
     Custom.Settings {
         id: settings
@@ -471,7 +473,8 @@ PanelWindow {
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
 
-    WlrLayershell.layer: WlrLayershell.Overlay
+    WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.namespace: "qs-panel"
     WlrLayershell.exclusiveZone: -1
     WlrLayershell.keyboardFocus: visible ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 

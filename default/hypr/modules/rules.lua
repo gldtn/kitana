@@ -38,10 +38,10 @@ hl.layer_rule({
 })
 
 hl.layer_rule({
-  -- Blur transparent Kitana Quickshell surfaces through Hyprland.
+  -- Blur only Kitana Quickshell overlay surfaces that opt into it.
   name         = "kitana-quickshell-blur",
-  match        = { namespace = ".*quickshell.*" },
+  match        = { namespace = "^qs-blurred-panel$" },
 
   blur         = true,
-  ignore_alpha = 0,
+  ignore_alpha = 0.18,
 })
