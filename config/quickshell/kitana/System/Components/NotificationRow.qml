@@ -20,16 +20,28 @@ Rectangle {
     property bool groupExpandable: false
     property bool groupCollapsed: false
     property bool groupHeader: false
+    property bool bodyExpanded: false
+    property bool embedded: false
+    property int embeddedIndex: 0
+    property int embeddedCount: 1
     readonly property int verticalPadding: 16
+    readonly property bool embeddedFirst: embeddedIndex === 0
+    readonly property bool embeddedLast: embeddedIndex === embeddedCount - 1
 
     signal toggleGroup
 
     width: parent ? parent.width : 0
     height: Math.max(84, contentColumn.implicitHeight + verticalPadding * 2)
-    radius: 14
+    radius: embedded ? 0 : 14
+    topLeftRadius: embedded ? (embeddedFirst ? 14 : 5) : radius
+    topRightRadius: embedded ? (embeddedFirst ? 14 : 5) : radius
+    bottomLeftRadius: embedded ? (embeddedLast ? 14 : 5) : radius
+    bottomRightRadius: embedded ? (embeddedLast ? 14 : 5) : radius
     color: hoverHandler.hovered ? Colors.scrimTertiary : Colors.bgTertiary
     border.color: Colors.borderLight // outter border
     border.width: 0.8
+
+    onItemChanged: bodyExpanded = false
 
     HoverHandler {
         id: hoverHandler
@@ -80,6 +92,7 @@ Rectangle {
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize - 1
                 font.weight: Font.Bold
+                textFormat: Text.PlainText
             }
 
             Text {
@@ -148,35 +161,69 @@ Rectangle {
         // Notification summary
         Text {
             Layout.fillWidth: true
-            text: root.item ? Services.NotificationService.escapeMarkup(root.item.summary) : "Notification"
+            text: root.item ? root.item.summary : "Notification"
             color: Colors.fgPrimary
             elide: Text.ElideRight
             clip: true
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize + 1
             font.weight: Font.Bold
-            textFormat: Text.RichText
+            textFormat: Text.PlainText
         }
 
         // Notification body markup
-        Text {
+        TextEdit {
             id: bodyText
+
+            readonly property real expandedHeightLimit: (settings.textPixelSize - 1) * 13.5
+
             Layout.fillWidth: true
+            Layout.preferredHeight: root.bodyExpanded ? Math.min(contentHeight, expandedHeightLimit) : contentHeight
             visible: text.length > 0
-            text: root.item ? root.item.bodyMarkup : ""
+            text: root.item ? (root.bodyExpanded ? root.item.bodyMarkup : (root.item.bodyPreviewMarkup || root.item.bodyMarkup)) : ""
             color: Colors.fgSecondary
-            elide: Text.ElideRight
-            wrapMode: Text.WrapAnywhere
-            maximumLineCount: 2
+            selectionColor: Colors.inputSelection
+            selectedTextColor: Colors.inputSelectedFg
+            readOnly: true
+            selectByMouse: true
+            selectByKeyboard: true
+            persistentSelection: true
+            activeFocusOnPress: true
+            cursorVisible: false
+            textMargin: 0
+            wrapMode: TextEdit.WrapAnywhere
             clip: true
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize - 1
-            textFormat: Text.RichText
+            textFormat: TextEdit.RichText
             onLinkActivated: link => Quickshell.execDetached(["xdg-open", link])
 
             // Link hover cursor handler
             HoverHandler {
                 cursorShape: bodyText.hoveredLink.length > 0 ? Qt.PointingHandCursor : Qt.ArrowCursor
+            }
+        }
+
+        // Notification body expansion toggle
+        Text {
+            id: bodyToggle
+
+            Layout.alignment: Qt.AlignRight
+            visible: root.item && root.item.bodyExpandable
+            text: root.bodyExpanded ? "less" : "more..."
+            color: Colors.fgAccent
+            font.family: Typography.fontFamily
+            font.pixelSize: settings.textPixelSize - 1
+            font.weight: Font.DemiBold
+            font.underline: bodyToggleMouse.containsMouse
+
+            MouseArea {
+                id: bodyToggleMouse
+
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: root.bodyExpanded = !root.bodyExpanded
             }
         }
     }

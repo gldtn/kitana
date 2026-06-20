@@ -58,6 +58,7 @@ PanelWindow {
                 id: notificationPopup
 
                 required property var modelData
+                property bool bodyExpanded: false
                 readonly property int verticalPadding: 16
 
                 width: popupColumn.width
@@ -108,6 +109,7 @@ PanelWindow {
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize
                         font.weight: Font.Bold
+                        textFormat: Text.PlainText
                     }
 
                     Text {
@@ -118,26 +120,66 @@ PanelWindow {
                         clip: true
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize - 1
+                        textFormat: Text.PlainText
                     }
 
-                    Text {
+                    TextEdit {
                         id: bodyText
+
+                        readonly property real expandedHeightLimit: (settings.textPixelSize - 1) * 8.1
+
                         width: parent.width
+                        height: notificationPopup.bodyExpanded ? Math.min(contentHeight, expandedHeightLimit) : contentHeight
                         visible: text.length > 0
-                        text: notificationPopup.modelData.bodyMarkup
+                        text: notificationPopup.bodyExpanded ? notificationPopup.modelData.bodyMarkup : (notificationPopup.modelData.bodyPreviewMarkup || notificationPopup.modelData.bodyMarkup)
                         color: Colors.fgSecondary
-                        elide: Text.ElideRight
-                        wrapMode: Text.WrapAnywhere
-                        maximumLineCount: 2
+                        selectionColor: Colors.inputSelection
+                        selectedTextColor: Colors.inputSelectedFg
+                        readOnly: true
+                        selectByMouse: true
+                        selectByKeyboard: true
+                        persistentSelection: true
+                        activeFocusOnPress: true
+                        cursorVisible: false
+                        textMargin: 0
+                        wrapMode: TextEdit.WrapAnywhere
                         clip: true
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize - 1
-                        textFormat: Text.RichText
+                        textFormat: TextEdit.RichText
                         onLinkActivated: link => Quickshell.execDetached(["xdg-open", link])
 
                         // Link hover cursor handler
                         HoverHandler {
                             cursorShape: bodyText.hoveredLink.length > 0 ? Qt.PointingHandCursor : Qt.ArrowCursor
+                        }
+                    }
+
+                    // Body expansion toggle
+                    Item {
+                        width: parent.width
+                        height: bodyToggle.implicitHeight
+                        visible: notificationPopup.modelData.bodyExpandable
+
+                        Text {
+                            id: bodyToggle
+
+                            anchors.right: parent.right
+                            text: notificationPopup.bodyExpanded ? "less" : "more..."
+                            color: Colors.fgAccent
+                            font.family: Typography.fontFamily
+                            font.pixelSize: settings.textPixelSize - 1
+                            font.weight: Font.DemiBold
+                            font.underline: toggleMouse.containsMouse
+
+                            MouseArea {
+                                id: toggleMouse
+
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: notificationPopup.bodyExpanded = !notificationPopup.bodyExpanded
+                            }
                         }
                     }
                 }

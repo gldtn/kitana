@@ -116,6 +116,41 @@ Singleton {
         return visible;
     }
 
+    function visibleNotificationGroups(): var {
+        const groups = [];
+        const byKey = {};
+
+        for (const item of notifications) {
+            if (!item)
+                continue;
+
+            const key = groupKey(item.appName);
+            if (!byKey[key]) {
+                byKey[key] = {
+                    appName: item.appName,
+                    item: item,
+                    items: [],
+                };
+                groups.push(byKey[key]);
+            }
+
+            byKey[key].items.push(item);
+        }
+
+        return groups.map(group => {
+            const count = group.items.length;
+            const collapsed = count > 1 && isGroupCollapsed(group.appName);
+            return {
+                appName: group.appName,
+                item: group.item,
+                items: collapsed ? [group.item] : group.items,
+                count: count,
+                expandable: count > 1,
+                collapsed: collapsed,
+            };
+        });
+    }
+
     function timeAgo(time): string {
         if (!time)
             return "now";
@@ -140,8 +175,112 @@ Singleton {
             .replace(/"/g, "&quot;");
     }
 
-    function linkify(value): string {
-        return escapeMarkup(value).replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1">$1</a>');
+    function decodeEntities(value): string {
+        return (value || "")
+            .replace(/&nbsp;/gi, " ")
+            .replace(/&amp;/gi, "&")
+            .replace(/&lt;/gi, "<")
+            .replace(/&gt;/gi, ">")
+            .replace(/&quot;/gi, "\"")
+            .replace(/&apos;/gi, "'")
+            .replace(/&#39;/g, "'")
+            .replace(/&#(\d+);/g, function(match, code) {
+                const character = parseInt(code, 10);
+                return isNaN(character) ? match : String.fromCharCode(character);
+            })
+            .replace(/&#x([0-9a-f]+);/gi, function(match, code) {
+                const character = parseInt(code, 16);
+                return isNaN(character) ? match : String.fromCharCode(character);
+            });
+    }
+
+    function cleanText(value): string {
+        let text = (value || "").toString();
+        text = text.replace(/<\s*br\s*\/?\s*>/gi, "\n");
+        text = text.replace(/<\s*\/\s*(p|div|li|h[1-6])\s*>/gi, "\n");
+        text = text.replace(/<\s*a\b[^>]*>([\s\S]*?)<\s*\/\s*a\s*>/gi, function(match, label) {
+            return root.cleanText(label);
+        });
+        text = text.replace(/<[^>]+>/g, "");
+        text = decodeEntities(text).replace(/\r/g, "");
+        text = text.replace(/[ \t]+\n/g, "\n").replace(/\n[ \t]+/g, "\n");
+        text = text.replace(/[ \t]{2,}/g, " ").replace(/\n{3,}/g, "\n\n");
+        return text.trim();
+    }
+
+    function anchorHref(attributes): string {
+        const match = (attributes || "").match(/\bhref\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i);
+        return match ? (match[1] || match[2] || match[3] || "") : "";
+    }
+
+    function safeLinkTarget(value): string {
+        const link = decodeEntities(value || "").trim();
+        return /^(https?:\/\/|mailto:)/i.test(link) ? link : "";
+    }
+
+    function linkifyEscapedText(value): string {
+        return (value || "").replace(/\bhttps?:\/\/[^\s<]+/g, function(url) {
+            let link = url;
+            let suffix = "";
+
+            while (/[),.!?;:]$/.test(link)) {
+                suffix = link.charAt(link.length - 1) + suffix;
+                link = link.slice(0, -1);
+            }
+
+            if (link.length === 0)
+                return url;
+
+            return '<a href="' + escapeMarkup(link) + '">' + link + '</a>' + suffix;
+        });
+    }
+
+    function bodyMarkup(value): string {
+        const anchors = [];
+        let text = (value || "").toString();
+
+        text = text.replace(/<\s*a\b([^>]*)>([\s\S]*?)<\s*\/\s*a\s*>/gi, function(match, attributes, label) {
+            const href = safeLinkTarget(anchorHref(attributes));
+            const labelText = cleanText(label) || href;
+
+            if (href.length === 0)
+                return labelText;
+
+            const token = "\ue000" + anchors.length + "\ue001";
+            anchors.push({ href: href, label: labelText });
+            return token;
+        });
+
+        let richText = linkifyEscapedText(escapeMarkup(cleanText(text))).replace(/\n/g, "<br/>");
+
+        for (let index = 0; index < anchors.length; index++) {
+            const token = "\ue000" + index + "\ue001";
+            const anchor = '<a href="' + escapeMarkup(anchors[index].href) + '">' + escapeMarkup(anchors[index].label) + '</a>';
+            richText = richText.split(token).join(anchor);
+        }
+
+        return richText;
+    }
+
+    function bodyShouldCollapse(value): bool {
+        return bodyExcerpt(value) !== (value || "");
+    }
+
+    function bodyExcerpt(value): string {
+        const text = value || "";
+        const limit = 180;
+        const lines = text.split("\n");
+        let excerpt = lines.slice(0, 2).join("\n");
+
+        if (excerpt.length > limit) {
+            excerpt = excerpt.slice(0, limit);
+            const lastSpace = excerpt.lastIndexOf(" ");
+            if (lastSpace > 80)
+                excerpt = excerpt.slice(0, lastSpace);
+        }
+
+        excerpt = excerpt.trim();
+        return excerpt === text ? text : excerpt + "...";
     }
 
     function tone(item): string {
@@ -195,13 +334,17 @@ Singleton {
 
         onNotification: notification => {
             notification.tracked = true;
+            const bodyText = root.cleanText(notification.body || "");
+            const summaryText = root.cleanText(notification.summary || "Notification") || "Notification";
 
             const item = {
                 id: root.nextId++,
                 notification: notification,
-                summary: notification.summary || "Notification",
-                body: notification.body || "",
-                bodyMarkup: root.linkify(notification.body || ""),
+                summary: summaryText,
+                body: bodyText,
+                bodyMarkup: root.bodyMarkup(notification.body || ""),
+                bodyPreviewMarkup: root.bodyMarkup(root.bodyExcerpt(bodyText)),
+                bodyExpandable: root.bodyShouldCollapse(bodyText),
                 appName: notification.appName || notification.desktopEntry || "app",
                 appIcon: notification.appIcon || "",
                 category: "",

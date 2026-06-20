@@ -12,7 +12,9 @@ import "../../Services" as Services
 Item {
     id: root
 
-    Custom.Settings { id: settings }
+    Custom.Settings {
+        id: settings
+    }
 
     // Notification list and footer container
     Item {
@@ -54,17 +56,76 @@ Item {
             visible: Services.NotificationService.count > 0
             clip: true
             spacing: 8
-            model: Services.NotificationService.visibleNotifications().slice(0, 20)
+            model: Services.NotificationService.visibleNotificationGroups().slice(0, 20)
 
-            // One notification row delegate
-            delegate: NotificationRow {
+            // One notification group delegate
+            delegate: Item {
+                id: groupDelegate
+
                 required property var modelData
-                item: modelData.item
-                groupCount: modelData.count
-                groupExpandable: modelData.expandable
-                groupCollapsed: modelData.collapsed
-                groupHeader: modelData.header
-                onToggleGroup: Services.NotificationService.toggleGroup(modelData.item.appName)
+                readonly property bool expandedGroup: modelData.items.length > 1 && !modelData.collapsed
+
+                width: notificationList.width
+                height: expandedGroup ? groupCard.height : singleRow.height
+
+                NotificationRow {
+                    id: singleRow
+
+                    visible: !groupDelegate.expandedGroup
+                    item: groupDelegate.modelData.item
+                    groupCount: groupDelegate.modelData.count
+                    groupExpandable: groupDelegate.modelData.expandable
+                    groupCollapsed: groupDelegate.modelData.collapsed
+                    groupHeader: true
+                    onToggleGroup: Services.NotificationService.toggleGroup(groupDelegate.modelData.appName)
+                }
+
+                // Expanded app notification group
+                Rectangle {
+                    id: groupCard
+
+                    visible: groupDelegate.expandedGroup
+                    width: parent.width
+                    height: visible ? groupColumn.implicitHeight : 0
+                    radius: 14
+                    color: Colors.bgSecondary
+                    border.color: Colors.borderLight
+                    border.width: 0
+
+                    // Grouped notification rows
+                    Column {
+                        id: groupColumn
+
+                        width: parent.width
+                        spacing: 3
+
+                        Repeater {
+                            model: groupDelegate.modelData.items
+
+                            // One row inside an expanded notification group
+                            delegate: Column {
+                                id: groupedRow
+
+                                required property int index
+                                required property var modelData
+
+                                width: groupColumn.width
+
+                                NotificationRow {
+                                    embedded: true
+                                    embeddedIndex: groupedRow.index
+                                    embeddedCount: groupDelegate.modelData.items.length
+                                    item: groupedRow.modelData
+                                    groupCount: groupDelegate.modelData.count
+                                    groupExpandable: groupDelegate.modelData.expandable
+                                    groupCollapsed: false
+                                    groupHeader: groupedRow.index === 0
+                                    onToggleGroup: Services.NotificationService.toggleGroup(groupDelegate.modelData.appName)
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
