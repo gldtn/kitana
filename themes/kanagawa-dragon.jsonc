@@ -88,14 +88,7 @@
     "subtleAccent": { "ref": "dragonGreen", "alpha": 0.16 },
     "subtlePrimary": { "ref": "sumiInk1", "alpha": 0.16 },
     "subtleSecondary": { "ref": "dragonBlack5", "alpha": 0.65 },
-    "subtleTertiary": { "ref": "dragonGray", "alpha": 0.50 },
-    "inputBg": "bgTertiary",
-    "inputFg": "fgPrimary",
-    "inputPlaceholderFg": "fgSecondary",
-    "inputBorder": "borderFaint",
-    "inputBorderFocus": "borderAccent",
-    "inputSelection": "subtleAccent",
-    "inputSelectedFg": "fgPrimary"
+    "subtleTertiary": { "ref": "dragonGray", "alpha": 0.50 }
   },
   "icons": {
     "primary": "dragonWhite",

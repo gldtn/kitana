@@ -98,13 +98,16 @@ The root type is `QtObject`. The component composes child QML items, Kitana desi
 | `popupForegroundMuted` | `readonly color` | `foregroundMuted` | No | Read-only. Provides the color value used by `popupForegroundMuted` styling. |
 | `popupSurface` | `readonly color` | `surfaceControl` | No | Read-only. Provides the color value used by `popupSurface` styling. |
 | `popupBorder` | `readonly color` | `borderMuted` | No | Read-only. Provides the color value used by `popupBorder` styling. |
-| `inputBg` | `readonly color` | `bgTertiary` | No | Shared text input background. |
-| `inputFg` | `readonly color` | `fgPrimary` | No | Shared text input foreground. |
-| `inputPlaceholderFg` | `readonly color` | `fgSecondary` | No | Shared placeholder foreground. |
-| `inputBorder` | `readonly color` | `borderFaint` | No | Shared idle text input border. |
-| `inputBorderFocus` | `readonly color` | `borderAccent` | No | Shared focused text input border. |
-| `inputSelection` | `readonly color` | `subtleAccent` | No | Shared text selection background. |
-| `inputSelectedFg` | `readonly color` | `fgPrimary` | No | Shared selected text foreground. |
+| `inputBg` | `readonly color` | `{ ref: "bgSecondary", lighten: 0.03 }` | No | QML-only shared text input background composition role. |
+| `inputFg` | `readonly color` | `fgPrimary` | No | QML-only shared text input foreground composition role. |
+| `inputPlaceholderFg` | `readonly color` | `fgSecondary` | No | QML-only shared placeholder foreground composition role. |
+| `inputBorder` | `readonly color` | `borderFaint` | No | QML-only shared idle text input border composition role. |
+| `inputBorderFocus` | `readonly color` | `{ ref: "borderAccent", alpha: 0.16 }` | No | QML-only shared focused text input border composition role. |
+| `inputSelection` | `readonly color` | `subtleAccent` | No | QML-only shared text selection background composition role. |
+| `inputSelectedFg` | `readonly color` | `fgPrimary` | No | QML-only shared selected text foreground composition role. |
+| `barItemBg` | `readonly color` | `bgPrimary` | No | QML-only top-bar item background composition role. |
+| `barItemBorder` | `readonly color` | `borderFaint` | No | QML-only top-bar item border composition role. |
+| `barItemFg` | `readonly color` | `fgPrimary` | No | QML-only top-bar item text foreground composition role. |
 | `workspaceInactiveBackground` | `readonly color` | `withAlpha(surfaceSubtle, 45)` | No | Read-only. Provides the color value used by `workspaceInactiveBackground` styling. |
 | `workspaceInactiveForeground` | `readonly color` | `withAlpha(foregroundMuted, 55)` | No | Read-only. Provides the color value used by `workspaceInactiveForeground` styling. |
 | `workspaceOccupiedBackground` | `readonly color` | `withAlpha(surfaceSubtle, 90)` | No | Read-only. Provides the color value used by `workspaceOccupiedBackground` styling. |
@@ -135,6 +138,14 @@ Performs component-specific behavior used internally or by parent components.
 #### alphaColor(rgb: string, percent: real) : string
 
 Performs component-specific behavior used internally or by parent components.
+
+#### composeColor(value: var, fallback: var) : string
+
+Resolves a QML composition color using the same ref, mix, lighten, darken, and alpha object syntax as theme palettes.
+
+#### themedColor(variants: var, fallback: var) : string
+
+Resolves a QML composition color from a `theme.slug`, `mode`, or `default` entry for local per-theme tuning without adding palette roles.
 
 ## Inter-Component Interactions
 

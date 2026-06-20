@@ -46,14 +46,7 @@
     "subtleAccent": { "ref": "purple", "alpha": 0.16 },
     "subtlePrimary": { "ref": "background1", "alpha": 0.16 },
     "subtleSecondary": { "ref": "current_line", "alpha": 0.65 },
-    "subtleTertiary": { "ref": "muted", "alpha": 0.50 },
-    "inputBg": "bgTertiary",
-    "inputFg": "fgPrimary",
-    "inputPlaceholderFg": "fgSecondary",
-    "inputBorder": "borderFaint",
-    "inputBorderFocus": "borderAccent",
-    "inputSelection": "subtleAccent",
-    "inputSelectedFg": "fgPrimary"
+    "subtleTertiary": { "ref": "muted", "alpha": 0.50 }
   },
   "icons": {
     "primary": "foreground",

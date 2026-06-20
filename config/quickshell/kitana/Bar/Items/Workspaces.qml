@@ -46,8 +46,8 @@ Item {
         anchors.fill: parent
         visible: !root.embedded
         radius: Services.UiPreferences.pillRadius
-        color: Colors.bgSecondary
-        border.color: Colors.borderFaint
+        color: Colors.barItemBg
+        border.color: Colors.barItemBorder
         border.width: settings.borderWidth
     }
 

@@ -56,14 +56,7 @@ QtObject {
         subtleAccent: { ref: "orange", alpha: 0.16 },
         subtlePrimary: { ref: "bg", alpha: 0.16 },
         subtleSecondary: { ref: "bg_highlight", alpha: 0.65 },
-        subtleTertiary: { ref: "grey", alpha: 0.50 },
-        inputBg: "bg_highlight",
-        inputFg: "fg",
-        inputPlaceholderFg: "grey",
-        inputBorder: "bg_alt",
-        inputBorderFocus: "orange",
-        inputSelection: { ref: "orange", alpha: 0.16 },
-        inputSelectedFg: "fg"
+        subtleTertiary: { ref: "grey", alpha: 0.50 }
     })
 
     function hasKeys(value: var): bool {
@@ -160,6 +153,22 @@ QtObject {
         return resolveValue(mapping[role], fallback || "#ff00ff", ({}));
     }
 
+    function composeColor(value: var, fallback: var): string {
+        const fallbackColor = String(fallback || "#ff00ff");
+        return value === undefined || value === null ? fallbackColor : resolveValue(value, fallbackColor, ({}));
+    }
+
+    function themedColor(variants: var, fallback: var): string {
+        const fallbackColor = String(fallback || "#ff00ff");
+        if (hasOwn(variants, root.theme.slug))
+            return composeColor(variants[root.theme.slug], fallbackColor);
+        if (hasOwn(variants, root.mode))
+            return composeColor(variants[root.mode], fallbackColor);
+        if (hasOwn(variants, "default"))
+            return composeColor(variants.default, fallbackColor);
+        return fallbackColor;
+    }
+
     function raw(name: string, fallback: string): string {
         return hasOwn(source, name) ? resolveValue(source[name], fallback || "#ff00ff", ({})) : (fallback || "#ff00ff");
     }
@@ -239,14 +248,19 @@ QtObject {
     readonly property color subtleSecondary: resolve("subtleSecondary", alpha(bgTertiary, 0.65))
     readonly property color subtleTertiary: resolve("subtleTertiary", alpha(fgTertiary, 0.50))
 
-    // Shared input roles
-    readonly property color inputBg: resolve("inputBg", bgTertiary)
-    readonly property color inputFg: resolve("inputFg", fgPrimary)
-    readonly property color inputPlaceholderFg: resolve("inputPlaceholderFg", fgSecondary)
-    readonly property color inputBorder: resolve("inputBorder", borderFaint)
-    readonly property color inputBorderFocus: resolve("inputBorderFocus", borderAccent)
-    readonly property color inputSelection: resolve("inputSelection", subtleAccent)
-    readonly property color inputSelectedFg: resolve("inputSelectedFg", fgPrimary)
+    // QML composition roles for shared inputs
+    readonly property color inputBg: composeColor({ ref: "bgSecondary", lighten: 0.03 }, bgTertiary)
+    readonly property color inputFg: fgPrimary
+    readonly property color inputPlaceholderFg: fgSecondary
+    readonly property color inputBorder: borderFaint
+    readonly property color inputBorderFocus: composeColor({ ref: "borderAccent", alpha: 0.16 }, borderAccent)
+    readonly property color inputSelection: subtleAccent
+    readonly property color inputSelectedFg: fgPrimary
+
+    // QML composition roles for top-bar controls
+    readonly property color barItemBg: bgPrimary
+    readonly property color barItemBorder: borderFaint
+    readonly property color barItemFg: fgPrimary
 
     // Icon tone roles used by Config/Icons.qml
     readonly property color iconPrimary: iconTone("primary", fgPrimary)

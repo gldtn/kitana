@@ -30,7 +30,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             text: Qt.formatDate(clockRow.now, "ddd MMM d")
             textFormat: Text.PlainText
-            color: Colors.fgPrimary
+            color: Colors.barItemFg
             font.family: Typography.fontFamily
             font.pixelSize: settings.clockPixelSize
             font.weight: Font.DemiBold
@@ -41,7 +41,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             text: Qt.formatTime(clockRow.now, "h:mm AP")
             textFormat: Text.PlainText
-            color: Colors.fgPrimary
+            color: Colors.barItemFg
             font.family: Typography.fontFamily
             font.pixelSize: settings.clockPixelSize
             font.weight: Font.DemiBold

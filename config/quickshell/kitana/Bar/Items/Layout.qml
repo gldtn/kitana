@@ -34,8 +34,8 @@ Item {
         anchors.fill: parent
         visible: !root.embedded
         radius: Services.UiPreferences.pillRadius
-        color: Colors.bgSecondary
-        border.color: Colors.borderFaint
+        color: Colors.barItemBg
+        border.color: Colors.barItemBorder
         border.width: settings.borderWidth
     }
 
@@ -103,7 +103,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             visible: root.visibleLabel(root.currentLayout).length > 0
             text: root.visibleLabel(root.currentLayout)
-            color: Colors.fgPrimary
+            color: Colors.barItemFg
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize
             font.weight: Font.DemiBold

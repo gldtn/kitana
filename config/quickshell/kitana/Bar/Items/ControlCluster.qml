@@ -71,8 +71,8 @@ Item {
         anchors.fill: parent
         visible: !root.embedded
         radius: Services.UiPreferences.pillRadius
-        color: Colors.bgSecondary
-        border.color: Colors.borderFaint
+        color: Colors.barItemBg
+        border.color: Colors.barItemBorder
         border.width: settings.borderWidth
     }
 
@@ -327,7 +327,7 @@ Item {
                 height: button.height
                 text: button.label
                 visible: text.length > 0
-                color: Colors.fgPrimary
+                color: Colors.barItemFg
                 verticalAlignment: Text.AlignVCenter
                 font.family: Typography.fontFamily
                 font.pixelSize: settings.textPixelSize
