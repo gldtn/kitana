@@ -2,6 +2,7 @@
 
 import QtQuick
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Wayland
 import "../Bar/Sections" as BarSections
 import "../Services" as Services
@@ -22,6 +23,9 @@ PanelWindow {
     readonly property bool fallbackScreen: focusedScreenName.length === 0 && dashboardPanel && dashboardPanel.fallbackScreen === panelScreen
     readonly property bool activeScreen: dashboardPanel !== null && (focusedScreen || (!dashboardPanel.expandedSurface && lastDashboardScreen) || fallbackScreen)
     readonly property bool hiddenByDashboard: dashboardPanel !== null && dashboardPanel.expandedSurface && dashboardScreenName === screenName
+    readonly property var hyprlandMonitor: panelScreen ? Hyprland.monitorFor(panelScreen) : null
+    readonly property var activeWorkspace: hyprlandMonitor !== null ? hyprlandMonitor.activeWorkspace : null
+    readonly property bool hiddenByFullscreen: activeWorkspace !== null && activeWorkspace.hasFullscreen && hasTrueFullscreen(activeWorkspace)
     readonly property bool latchedHover: activeScreen && dashboardPanel !== null && dashboardPanel.compactHoverLatched && lastDashboardScreen
     readonly property int islandWidth: Math.round(islandContent.implicitWidth)
     readonly property int islandHeight: Math.round(islandContent.implicitHeight)
@@ -40,8 +44,34 @@ PanelWindow {
             dashboardPanel.setCompactHoverLatched(hovered);
     }
 
+    function hasTrueFullscreen(workspace): bool {
+        const toplevels = workspace && workspace.toplevels ? workspace.toplevels.values : [];
+
+        for (const toplevel of toplevels) {
+            const ipc = toplevel && toplevel.lastIpcObject ? toplevel.lastIpcObject : null;
+            if (ipc === null)
+                continue;
+
+            // Hyprland mode 1 is maximized; mode 2 is true fullscreen.
+            const mode = typeof ipc.fullscreen !== "undefined" ? Number(ipc.fullscreen) : Number(ipc.fullscreenClient);
+            if (mode === 2)
+                return true;
+        }
+
+        return false;
+    }
+
+    Connections {
+        target: Hyprland
+
+        function onRawEvent(event): void {
+            if (event.name === "fullscreen" || event.name === "fullscreenmode")
+                Hyprland.refreshToplevels();
+        }
+    }
+
     screen: panelScreen
-    visible: barVisible
+    visible: barVisible && !hiddenByFullscreen
     focusable: false
     implicitWidth: islandWidth
     implicitHeight: islandHeight
