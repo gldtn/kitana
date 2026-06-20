@@ -24,8 +24,6 @@ The shortcuts header uses `Controls.CloseButton` for explicit dismissal.
 
 Shortcut results use borderless zebra rows laid out as key, description, and category columns.
 
-The shortcut search field uses `Controls.InputField`.
-
 ## Properties
 
 | Property | Type | Default | Required | Description |

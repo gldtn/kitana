@@ -20,8 +20,6 @@ Referenced or instantiated by: `Dashboard/Components/PickerHelp.qml`.
 
 The root type is `Item`. The component composes child QML items, Kitana design tokens, and Quickshell services to provide its role in the shell.
 
-Search mode is rendered through `Controls.InputField`.
-
 ## Properties
 
 | Property | Type | Default | Required | Description |

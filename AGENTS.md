@@ -122,6 +122,8 @@ When adding a new Quickshell service singleton, register it in `config/quickshel
 
 For QML UI files, add brief navigation comments above meaningful containers, cards, delegates, overlays, reusable components, and command bridges. Avoid commenting every trivial `Text`, `Rectangle`, or property.
 
+Quickshell Markdown docs are for people or agents editing Kitana, not runtime help or QML LSP metadata. Keep docs for shared/reusable components and major panels; avoid doc churn for tiny internal QML changes unless a component API, signal, property, or intended usage changes.
+
 Quickshell color role shape lives in:
 
 - `config/quickshell/kitana/Config/Colors.qml`

@@ -20,8 +20,6 @@ Referenced or instantiated by: `Dashboard/Tabs/SettingsTab.qml`.
 
 The root type is `ColumnLayout`. The component composes child QML items, Kitana design tokens, and Quickshell services to provide its role in the shell.
 
-The editable value is rendered through `Controls.InputField`.
-
 ## Properties
 
 | Property | Type | Default | Required | Description |
@@ -35,6 +33,10 @@ The editable value is rendered through `Controls.InputField`.
 #### committed(string value)
 
 Emitted by user interaction or component state changes. Connected handlers should respond by updating parent state or invoking the requested action.
+
+#### escaped()
+
+Emitted when the focused field receives Escape.
 
 ## Inter-Component Interactions
 
