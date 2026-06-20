@@ -22,6 +22,7 @@ Generated reference for the QML components that make up the Kitana Quickshell de
 | `InputField` | Components | `Components/Controls/InputField.qml` | [InputField](../Components/Controls/doc/InputField.md) |
 | `KeyHintBar` | Components | `Components/Controls/KeyHintBar.qml` | [KeyHintBar](../Components/Controls/doc/KeyHintBar.md) |
 | `PanelRow` | Components | `Components/Controls/PanelRow.qml` | [PanelRow](../Components/Controls/doc/PanelRow.md) |
+| `ShortcutBadge` | Components | `Components/Controls/ShortcutBadge.qml` | [ShortcutBadge](../Components/Controls/doc/ShortcutBadge.md) |
 | `Colors` | Config | `Config/Colors.qml` | [Colors](../Config/doc/Colors.md) |
 | `Icons` | Config | `Config/Icons.qml` | [Icons](../Config/doc/Icons.md) |
 | `Typography` | Config | `Config/Typography.qml` | [Typography](../Config/doc/Typography.md) |

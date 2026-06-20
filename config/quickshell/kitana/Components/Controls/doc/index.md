@@ -8,3 +8,4 @@
 | [`InputField`](InputField.md) | `InputField.qml` | InputField is a reusable framed text input using shared input color roles. |
 | [`KeyHintBar`](KeyHintBar.md) | `KeyHintBar.qml` | KeyHintBar is a reusable Components component used to compose panel content consistently. |
 | [`PanelRow`](PanelRow.md) | `PanelRow.qml` | PanelRow is a reusable Components component used to compose panel content consistently. |
+| [`ShortcutBadge`](ShortcutBadge.md) | `ShortcutBadge.qml` | ShortcutBadge is a reusable static keyboard shortcut label with subtle background and border roles. |

@@ -337,28 +337,12 @@ PanelWindow {
         border.width: 1
 
         // Shortcut badge
-        Rectangle {
+        Controls.ShortcutBadge {
             anchors.top: parent.top
             anchors.right: parent.right
             anchors.topMargin: 8
             anchors.rightMargin: 8
-            width: shortcutLabel.implicitWidth + 10
-            height: 18
-            radius: 6
-            color: Colors.bgTertiary
-            border.color: Colors.borderFaint
-            border.width: 1
-
-            // Shortcut letter label
-            Text {
-                id: shortcutLabel
-                anchors.centerIn: parent
-                text: action.shortcut
-                color: Colors.fgSecondary
-                font.family: Typography.fontFamily
-                font.pixelSize: settings.textPixelSize - 2
-                font.weight: Font.Bold
-            }
+            text: action.shortcut
         }
 
         // Action icon and labels
