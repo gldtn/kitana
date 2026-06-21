@@ -42,26 +42,62 @@
     "fgOnPrimary": "bg_dark",
     "fgAccent": "blue",
     "bgPrimary": "bg",
-    "bgSecondary": "bg_dark",
-    "bgTertiary": "bg_surface",
-    "bgOnPrimary": "bg_dark",
+    "bgSecondary": {
+      "ref": "bg",
+      "lighten": 0.03
+    },
+    "bgTertiary": {
+      "ref": "bg_highlight",
+      "darken": 0.06
+    },
+    "bgOnPrimary": "terminal_black",
     "bgAccent": "blue",
     "borderDark": "bg_dark",
-    "borderLight": "terminal_black",
-    "borderFaint": "bg_surface",
-    "borderHeavy": "terminal_black",
+    "borderLight": {
+      "ref": "terminal_black",
+      "darken": 0.26
+    },
+    "borderFaint": {
+      "ref": "bg",
+      "lighten": 0.09
+    },
+    "borderHeavy": {
+      "ref": "terminal_black",
+      "darken": 0.09
+    },
     "borderAccent": "blue",
     "info": "blue",
     "success": "green",
     "warning": "yellow",
     "error": "red",
-    "scrimPrimary": { "ref": "bg", "alpha": 0.52 },
-    "scrimSecondary": { "ref": "bg", "alpha": 0.32 },
-    "scrimTertiary": { "ref": "bg", "alpha": 0.60 },
-    "subtleAccent": { "ref": "blue", "alpha": 0.16 },
-    "subtlePrimary": { "ref": "bg", "alpha": 0.16 },
-    "subtleSecondary": { "ref": "terminal_black", "alpha": 0.65 },
-    "subtleTertiary": { "ref": "dark5", "alpha": 0.50 }
+    "scrimPrimary": {
+      "ref": "bg",
+      "alpha": 0.52
+    },
+    "scrimSecondary": {
+      "ref": "bg_dark",
+      "alpha": 0.32
+    },
+    "scrimTertiary": {
+      "ref": "bg_highlight",
+      "darken": 0.04
+    },
+    "subtleAccent": {
+      "ref": "blue",
+      "alpha": 0.16
+    },
+    "subtlePrimary": {
+      "ref": "bg",
+      "alpha": 0.16
+    },
+    "subtleSecondary": {
+      "ref": "terminal_black",
+      "alpha": 0.65
+    },
+    "subtleTertiary": {
+      "ref": "dark5",
+      "alpha": 0.50
+    }
   },
   "icons": {
     "primary": "fg",
@@ -72,7 +108,10 @@
     "onAccent": "bg_dark",
     "inverse": "bg_dark",
     "brand": "blue",
-    "disabled": { "ref": "dark5", "alpha": 0.5 },
+    "disabled": {
+      "ref": "dark5",
+      "alpha": 0.5
+    },
     "danger": "red"
   },
   "hypr": {

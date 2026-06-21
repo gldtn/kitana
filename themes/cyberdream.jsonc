@@ -48,7 +48,10 @@
       "ref": "bg",
       "lighten": 0.08
     },
-    "borderHeavy": "border_strong",
+    "borderHeavy": {
+      "ref": "grey",
+      "darken": 0.3
+    },
     "borderAccent": "orange",
     "info": "blue",
     "success": "green",
@@ -64,7 +67,7 @@
     },
     "scrimTertiary": {
       "ref": "bg_highlight",
-      "lighten": 0.01
+      "lighten": 0.02
     },
     "subtleAccent": {
       "ref": "orange",

@@ -155,7 +155,7 @@ Rectangle {
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 1
-            color: Colors.borderLight
+            color: Colors.borderHeavy
         }
 
         // Notification summary

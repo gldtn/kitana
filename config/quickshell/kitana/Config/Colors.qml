@@ -18,46 +18,67 @@ QtObject {
     readonly property var mapping: hasKeys(root.theme.palette) ? root.theme.palette : fallbackMapping
 
     readonly property var fallbackSource: ({
-        bg: "#16181a",
-        bg_alt: "#1e2124",
-        bg_highlight: "#3c4048",
-        fg: "#ffffff",
-        grey: "#7b8496",
-        blue: "#5ea1ff",
-        green: "#5eff6c",
-        red: "#ff6e5e",
-        yellow: "#f1ff5e",
-        orange: "#ffbd5e"
-    })
+            bg: "#16181a",
+            bg_alt: "#1e2124",
+            bg_highlight: "#3c4048",
+            fg: "#ffffff",
+            grey: "#7b8496",
+            blue: "#5ea1ff",
+            green: "#5eff6c",
+            red: "#ff6e5e",
+            yellow: "#f1ff5e",
+            orange: "#ffbd5e"
+        })
 
     readonly property var fallbackMapping: ({
-        fgPrimary: "fg",
-        fgSecondary: "grey",
-        fgTertiary: "bg_highlight",
-        fgOnPrimary: "bg",
-        fgAccent: "orange",
-        bgPrimary: "bg",
-        bgSecondary: "bg_alt",
-        bgTertiary: "bg_highlight",
-        bgOnPrimary: "bg",
-        bgAccent: "orange",
-        borderDark: "bg",
-        borderLight: "bg_highlight",
-        borderFaint: "bg_alt",
-        borderHeavy: "grey",
-        borderAccent: "orange",
-        info: "blue",
-        success: "green",
-        warning: "yellow",
-        error: "red",
-        scrimPrimary: { ref: "bg", alpha: 0.52 },
-        scrimSecondary: { ref: "bg", alpha: 0.32 },
-        scrimTertiary: { ref: "bg", alpha: 0.60 },
-        subtleAccent: { ref: "orange", alpha: 0.16 },
-        subtlePrimary: { ref: "bg", alpha: 0.16 },
-        subtleSecondary: { ref: "bg_highlight", alpha: 0.65 },
-        subtleTertiary: { ref: "grey", alpha: 0.50 }
-    })
+            fgPrimary: "fg",
+            fgSecondary: "grey",
+            fgTertiary: "bg_highlight",
+            fgOnPrimary: "bg",
+            fgAccent: "orange",
+            bgPrimary: "bg",
+            bgSecondary: "bg_alt",
+            bgTertiary: "bg_highlight",
+            bgOnPrimary: "bg",
+            bgAccent: "orange",
+            borderDark: "bg",
+            borderLight: "bg_highlight",
+            borderFaint: "bg_alt",
+            borderHeavy: "grey",
+            borderAccent: "orange",
+            info: "blue",
+            success: "green",
+            warning: "yellow",
+            error: "red",
+            scrimPrimary: {
+                ref: "bg",
+                alpha: 0.52
+            },
+            scrimSecondary: {
+                ref: "bg",
+                alpha: 0.32
+            },
+            scrimTertiary: {
+                ref: "bg",
+                alpha: 0.60
+            },
+            subtleAccent: {
+                ref: "orange",
+                alpha: 0.16
+            },
+            subtlePrimary: {
+                ref: "bg",
+                alpha: 0.16
+            },
+            subtleSecondary: {
+                ref: "bg_highlight",
+                alpha: 0.65
+            },
+            subtleTertiary: {
+                ref: "grey",
+                alpha: 0.50
+            }
+        })
 
     function hasKeys(value: var): bool {
         return value && typeof value === "object" && Object.keys(value).length > 0;
@@ -91,10 +112,7 @@ QtObject {
     function mixColor(from: string, to: string, ratio: real): string {
         const amount = clampRatio(ratio);
         const inverse = 1 - amount;
-        return "#"
-            + hexPart(colorPart(from, 0) * inverse + colorPart(to, 0) * amount)
-            + hexPart(colorPart(from, 2) * inverse + colorPart(to, 2) * amount)
-            + hexPart(colorPart(from, 4) * inverse + colorPart(to, 4) * amount);
+        return "#" + hexPart(colorPart(from, 0) * inverse + colorPart(to, 0) * amount) + hexPart(colorPart(from, 2) * inverse + colorPart(to, 2) * amount) + hexPart(colorPart(from, 4) * inverse + colorPart(to, 4) * amount);
     }
 
     function lighten(color: string, ratio: real): string {
@@ -184,7 +202,10 @@ QtObject {
             onAccent: "fgOnPrimary",
             inverse: "bgOnPrimary",
             brand: "fgAccent",
-            disabled: { ref: "fgTertiary", alpha: 0.5 },
+            disabled: {
+                ref: "fgTertiary",
+                alpha: 0.5
+            },
             danger: "error"
         };
         return resolveValue(icons[tone] || iconFallbacks[tone], fallback, ({}));
@@ -249,11 +270,17 @@ QtObject {
     readonly property color subtleTertiary: resolve("subtleTertiary", alpha(fgTertiary, 0.50))
 
     // QML composition roles for shared inputs
-    readonly property color inputBg: composeColor({ ref: "bgSecondary", lighten: 0.03 }, bgTertiary)
+    readonly property color inputBg: composeColor({
+        ref: "bgSecondary",
+        lighten: 0.03
+    }, bgTertiary)
     readonly property color inputFg: fgPrimary
     readonly property color inputPlaceholderFg: fgSecondary
     readonly property color inputBorder: borderFaint
-    readonly property color inputBorderFocus: composeColor({ ref: "borderAccent", alpha: 0.16 }, borderAccent)
+    readonly property color inputBorderFocus: composeColor({
+        ref: "borderAccent",
+        alpha: 0.16
+    }, borderAccent)
     readonly property color inputSelection: subtleAccent
     readonly property color inputSelectedFg: fgPrimary
 
