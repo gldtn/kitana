@@ -14,6 +14,7 @@ import "./Screenshot" as Screenshot
 import "./Session" as Session
 import "./Settings" as Settings
 import "./Shortcuts" as Shortcuts
+import "./Theme" as Theme
 import "./Wallpaper" as Wallpaper
 import "./Services" as Services
 
@@ -55,6 +56,9 @@ ShellRoot {
     Shortcuts.ShortcutsPanel {
         id: shortcutsPanel
     }
+
+    // Toggleable live theme preview for palette tuning
+    Theme.ThemePreview {}
 
     // OSD command bridge
     IpcHandler {
