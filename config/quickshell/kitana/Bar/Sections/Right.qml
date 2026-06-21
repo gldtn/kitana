@@ -9,6 +9,7 @@ Item {
     property var panelWindow: null
     property var screenshotPanel: null
     property var controlPanel: null
+    property var themePreview: null
     property bool embedded: false
 
     implicitWidth: rightRow.implicitWidth
@@ -27,6 +28,12 @@ Item {
         Items.Screenshot {
             embedded: root.embedded
             screenshotPanel: root.screenshotPanel
+        }
+
+        // Temporary theme preview launcher button
+        Items.ThemePreview {
+            embedded: root.embedded
+            themePreview: root.themePreview
         }
 
         // Tray and control cluster

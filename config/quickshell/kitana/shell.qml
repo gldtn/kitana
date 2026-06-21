@@ -25,6 +25,7 @@ ShellRoot {
     readonly property var sharedScreenshotPanel: screenshotPanel
     readonly property var sharedSettingsPanel: settingsPanel
     readonly property var sharedShortcutsPanel: shortcutsPanel
+    readonly property var sharedThemePreview: themePreview
 
     // Global wallpaper picker panel
     Wallpaper.WallpaperGrid {}
@@ -58,7 +59,9 @@ ShellRoot {
     }
 
     // Toggleable live theme preview for palette tuning
-    Theme.ThemePreview {}
+    Theme.ThemePreview {
+        id: themePreview
+    }
 
     // OSD command bridge
     IpcHandler {
@@ -151,6 +154,7 @@ ShellRoot {
             screenshotPanel: root.sharedScreenshotPanel
             settingsPanel: root.sharedSettingsPanel
             shortcutsPanel: root.sharedShortcutsPanel
+            themePreview: root.sharedThemePreview
         }
     }
 }
