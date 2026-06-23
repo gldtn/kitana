@@ -270,16 +270,32 @@ QtObject {
     readonly property color subtleTertiary: resolve("subtleTertiary", alpha(fgTertiary, 0.50))
 
     // QML composition roles for shared inputs
-    readonly property color inputBg: composeColor({
-        ref: "bgSecondary",
-        lighten: 0.03
+    readonly property color inputBg: themedColor({
+        "kanagawa-dragon": {
+            ref: "bgSecondary",
+            darken: 0.08
+        },
+        "tokyo-night": {
+            ref: "bgSecondary",
+            darken: 0.03
+        },
+        "default": {
+            ref: "bgSecondary",
+            lighten: 0.03
+        }
     }, bgTertiary)
     readonly property color inputFg: fgPrimary
     readonly property color inputPlaceholderFg: fgSecondary
-    readonly property color inputBorder: borderFaint
-    readonly property color inputBorderFocus: composeColor({
-        ref: "borderAccent",
-        alpha: 0.16
+    readonly property color inputBorder: resolve("inputBorder", alpha(borderLight, 0.5))
+    readonly property color inputBorderFocus: themedColor({
+        "dark": {
+            ref: "borderAccent",
+            alpha: 0.16
+        },
+        "default": {
+            ref: "borderAccent",
+            alpha: 0.16
+        }
     }, borderAccent)
     readonly property color inputSelection: subtleAccent
     readonly property color inputSelectedFg: fgPrimary

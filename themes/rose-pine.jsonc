@@ -32,22 +32,46 @@
     "bgTertiary": "overlay",
     "bgOnPrimary": "surface",
     "bgAccent": "rose",
-    "borderDark": "border0",
-    "borderLight": "highlight_high",
-    "borderFaint": "border1",
-    "borderHeavy": "highlight_med",
+    "borderDark": "base",
+    "borderFaint": {
+      "ref": "borderDark",
+      "mix": "borderLight",
+      "ratio": 0.43
+    },
+    "borderLight": {
+      "ref": "base",
+      "mix": "text",
+      "ratio": 0.11
+    },
+    "borderHeavy": {
+      "ref": "borderLight",
+      "mix": "borderDark",
+      "ratio": 0.26
+    },
     "borderAccent": "rose",
     "info": "foam",
     "success": "pine",
     "warning": "gold",
     "error": "love",
-    "scrimPrimary": { "ref": "base", "alpha": 0.52 },
-    "scrimSecondary": { "ref": "base", "alpha": 0.32 },
-    "scrimTertiary": { "ref": "base", "alpha": 0.60 },
-    "subtleAccent": { "ref": "rose", "alpha": 0.16 },
-    "subtlePrimary": { "ref": "base", "alpha": 0.16 },
-    "subtleSecondary": { "ref": "highlight_med", "alpha": 0.65 },
-    "subtleTertiary": { "ref": "subtle", "alpha": 0.50 }
+    "scrimPrimary": {
+      "ref": "bgPrimary",
+      "lighten": 0.06
+    },
+    "scrimSecondary": {
+      "ref": "bgSecondary",
+      "lighten": 0.04
+    },
+    "scrimTertiary": {
+      "ref": "bgTertiary",
+      "lighten": 0.01
+    },
+    "subtleAccent": {
+      "ref": "rose",
+      "alpha": 0.16
+    },
+    "subtlePrimary": "scrimPrimary",
+    "subtleSecondary": "scrimSecondary",
+    "subtleTertiary": "scrimTertiary"
   },
   "icons": {
     "primary": "text",
@@ -58,7 +82,10 @@
     "onAccent": "surface",
     "inverse": "surface",
     "brand": "rose",
-    "disabled": { "ref": "subtle", "alpha": 0.5 },
+    "disabled": {
+      "ref": "subtle",
+      "alpha": 0.5
+    },
     "danger": "love"
   },
   "hypr": {

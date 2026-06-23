@@ -9,7 +9,9 @@ import "../../custom" as Custom
 Rectangle {
     id: root
 
-    Custom.Settings { id: settings }
+    Custom.Settings {
+        id: settings
+    }
 
     property string text: ""
     property string iconName: ""
@@ -23,9 +25,9 @@ Rectangle {
     width: widthOverride
     height: heightOverride
     radius: 9
-    color: miniMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary
-    border.color: Colors.borderFaint
-    border.width: 0.8
+    color: miniMouse.containsMouse ? Colors.bgTertiary : Colors.scrimTertiary
+    border.color: Colors.borderLight
+    border.width: 0.0
 
     // Text button label
     Text {

@@ -2,6 +2,7 @@
 
 | Component | Source | Summary |
 |-----------|--------|---------|
+| [`ActionTile`](ActionTile.md) | `ActionTile.qml` | ActionTile is a reusable centered action tile with an icon, title, subtitle, and shortcut badge. |
 | [`BlurredBackdrop`](BlurredBackdrop.md) | `BlurredBackdrop.qml` | BlurredBackdrop is a reusable Components component used to compose panel content consistently. |
 | [`CloseButton`](CloseButton.md) | `CloseButton.qml` | CloseButton is a reusable dismiss control for close and clear actions. |
 | [`Icon`](Icon.md) | `Icon.qml` | Icon is a reusable Components component used to compose panel content consistently. |

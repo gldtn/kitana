@@ -138,7 +138,7 @@ Item {
             anchors.bottom: footer.top
             anchors.bottomMargin: 10
             height: 1
-            color: Colors.borderFaint
+            color: Colors.borderLight
         }
 
         // Notification footer actions

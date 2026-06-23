@@ -44,16 +44,21 @@
     },
     "bgOnPrimary": "mantle",
     "bgAccent": "mauve",
-    "borderDark": "crust",
+    "borderDark": "base",
     "borderLight": {
-      "ref": "surface0",
-      "lighten": 0.01
+      "ref": "base",
+      "mix": "text",
+      "ratio": 0.12
     },
     "borderFaint": {
       "ref": "surface0",
       "darken": 0.2
     },
-    "borderHeavy": "overlay0",
+    "borderHeavy": {
+      "ref": "borderLight",
+      "mix": "borderDark",
+      "ratio": 0.26
+    },
     "borderAccent": "mauve",
     "info": "blue",
     "success": "green",
@@ -75,18 +80,9 @@
       "ref": "mauve",
       "alpha": 0.16
     },
-    "subtlePrimary": {
-      "ref": "base",
-      "alpha": 0.16
-    },
-    "subtleSecondary": {
-      "ref": "surface1",
-      "alpha": 0.65
-    },
-    "subtleTertiary": {
-      "ref": "overlay2",
-      "alpha": 0.50
-    }
+    "subtlePrimary": "scrimPrimary",
+    "subtleSecondary": "scrimSecondary",
+    "subtleTertiary": "scrimTertiary"
   },
   "icons": {
     "primary": "text",

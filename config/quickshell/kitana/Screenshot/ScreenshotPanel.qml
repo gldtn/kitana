@@ -16,7 +16,9 @@ PanelWindow {
     id: root
     // qmllint enable uncreatable-type
 
-    Custom.Settings { id: settings }
+    Custom.Settings {
+        id: settings
+    }
 
     property bool panelVisible: false
     property string kitanaDir: Quickshell.env("KITANA_DIR") || Quickshell.env("HOME") + "/.local/share/kitana"
@@ -101,8 +103,8 @@ PanelWindow {
     Rectangle {
         id: card
 
-        width: Math.min(500, parent.width - 96)
-        height: 188
+        width: Math.min(560, parent.width - 96)
+        height: 208
         anchors.centerIn: parent
         radius: 18
         color: Colors.bgPrimary
@@ -166,7 +168,7 @@ PanelWindow {
                 Layout.fillHeight: true
                 spacing: 10
 
-                ScreenshotAction {
+                Controls.ActionTile {
                     iconName: "display.monitor"
                     shortcut: "S"
                     title: "Screen"
@@ -174,7 +176,7 @@ PanelWindow {
                     onClicked: root.capture("output", false)
                 }
 
-                ScreenshotAction {
+                Controls.ActionTile {
                     iconName: "screenshot.window"
                     shortcut: "W"
                     title: "Window"
@@ -182,7 +184,7 @@ PanelWindow {
                     onClicked: root.capture("window", false)
                 }
 
-                ScreenshotAction {
+                Controls.ActionTile {
                     iconName: "screenshot.region"
                     shortcut: "R"
                     title: "Region"
@@ -190,7 +192,7 @@ PanelWindow {
                     onClicked: root.capture("region", false)
                 }
 
-                ScreenshotAction {
+                Controls.ActionTile {
                     iconName: "screenshot.clipboard"
                     shortcut: "C"
                     title: "Clipboard"
@@ -202,77 +204,8 @@ PanelWindow {
     }
 
     // Screenshot command runner
-    Process { id: captureProcess }
-
-    // Reusable screenshot action tile
-    component ScreenshotAction: Rectangle {
-        id: action
-
-        property string iconName: Icons.defaultIcon
-        property string shortcut: ""
-        property string title: ""
-        property string subtitle: ""
-        signal clicked
-
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        radius: 14
-        color: actionMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary
-        border.color: actionMouse.containsMouse ? Colors.borderAccent : Colors.borderFaint
-        border.width: 1
-
-        // Shortcut badge
-        Controls.ShortcutBadge {
-            anchors.top: parent.top
-            anchors.right: parent.right
-            anchors.topMargin: 8
-            anchors.rightMargin: 8
-            text: action.shortcut
-        }
-
-        // Action icon and labels
-        ColumnLayout {
-            anchors.centerIn: parent
-            width: parent.width - 16
-            spacing: 6
-
-            Controls.Icon {
-                Layout.alignment: Qt.AlignHCenter
-                name: action.iconName
-                tone: "accent"
-                size: settings.iconPixelSize + 6
-            }
-
-            Text {
-                Layout.fillWidth: true
-                text: action.title
-                color: Colors.fgPrimary
-                horizontalAlignment: Text.AlignHCenter
-                elide: Text.ElideRight
-                font.family: Typography.fontFamily
-                font.pixelSize: settings.textPixelSize
-                font.weight: Font.Bold
-            }
-
-            Text {
-                Layout.fillWidth: true
-                text: action.subtitle
-                color: Colors.fgSecondary
-                horizontalAlignment: Text.AlignHCenter
-                elide: Text.ElideRight
-                font.family: Typography.fontFamily
-                font.pixelSize: settings.textPixelSize - 2
-            }
-        }
-
-        // Screenshot action click target
-        MouseArea {
-            id: actionMouse
-
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onClicked: action.clicked()
-        }
+    Process {
+        id: captureProcess
     }
+
 }

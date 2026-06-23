@@ -17,9 +17,9 @@ Rectangle {
     property int badgeHeight: 18
     property int horizontalPadding: 10
     property int textPixelSize: settings.textPixelSize - 2
-    property color backgroundColor: Colors.subtleSecondary
-    property color borderColor: Colors.borderFaint
-    property string tone: "secondary"
+    property color backgroundColor: Colors.scrimSecondary
+    property color borderColor: Colors.borderLight
+    property string tone: "subtle"
 
     implicitWidth: shortcutLabel.implicitWidth + horizontalPadding
     implicitHeight: badgeHeight
@@ -28,7 +28,7 @@ Rectangle {
     radius: 6
     color: backgroundColor
     border.color: borderColor
-    border.width: 1
+    border.width: 0.8
 
     Text {
         id: shortcutLabel
@@ -38,6 +38,6 @@ Rectangle {
         color: Icons.toneColor(root.tone)
         font.family: Typography.fontFamily
         font.pixelSize: root.textPixelSize
-        font.weight: Font.Bold
+        font.weight: Font.DemiBold
     }
 }

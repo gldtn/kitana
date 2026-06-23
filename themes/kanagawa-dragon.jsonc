@@ -68,27 +68,58 @@
     "fgTertiary": "dragonGray",
     "fgOnPrimary": "dragonBlack3",
     "fgAccent": "dragonGreen",
-    "bgPrimary": "sumiInk1",
-    "bgSecondary": "dragonBlack3",
-    "bgTertiary": "sumiInk3",
-    "bgOnPrimary": "dragonBlack3",
+    "bgPrimary": "dragonBlack3",
+    "bgSecondary": {
+      "ref": "dragonBlack3",
+      "mix": "dragonAsh",
+      "ratio": 0.16
+    },
+    "bgTertiary": {
+      "ref": "bgPrimary",
+      "mix": "katanaGray",
+      "ratio": 0.26
+    },
+    "bgOnPrimary": "fgSecondary",
     "bgAccent": "dragonGreen",
-    "borderDark": "dragonBlack1",
-    "borderLight": "dragonBlack5",
-    "borderFaint": "sumiInk3",
-    "borderHeavy": "dragonBlack5",
+    "borderDark": "bgPrimary",
+    "borderFaint": {
+      "ref": "bgPrimary",
+      "lighten": 0.12
+    },
+    "borderLight": {
+      "ref": "bgPrimary",
+      "mix": "fgPrimary",
+      "ratio": 0.2
+    },
+    "borderHeavy": {
+      "ref": "borderLight",
+      "mix": "borderDark",
+      "ratio": 0.26
+    },
     "borderAccent": "dragonGreen",
     "info": "crystalBlue",
     "success": "dragonGreen",
     "warning": "dragonYellow",
     "error": "dragonRed",
-    "scrimPrimary": { "ref": "sumiInk1", "alpha": 0.52 },
-    "scrimSecondary": { "ref": "sumiInk1", "alpha": 0.32 },
-    "scrimTertiary": { "ref": "sumiInk1", "alpha": 0.60 },
-    "subtleAccent": { "ref": "dragonGreen", "alpha": 0.16 },
-    "subtlePrimary": { "ref": "sumiInk1", "alpha": 0.16 },
-    "subtleSecondary": { "ref": "dragonBlack5", "alpha": 0.65 },
-    "subtleTertiary": { "ref": "dragonGray", "alpha": 0.50 }
+    "scrimPrimary": {
+      "ref": "bgPrimary",
+      "lighten": 0.12
+    },
+    "scrimSecondary": {
+      "ref": "bgSecondary",
+      "darken": 0.16
+    },
+    "scrimTertiary": {
+      "ref": "bgTertiary",
+      "lighten": 0.01
+    },
+    "subtleAccent": {
+      "ref": "dragonGreen",
+      "alpha": 0.16
+    },
+    "subtlePrimary": "scrimPrimary",
+    "subtleSecondary": "scrimSecondary",
+    "subtleTertiary": "scrimTertiary"
   },
   "icons": {
     "primary": "dragonWhite",
@@ -99,7 +130,10 @@
     "onAccent": "dragonBlack3",
     "inverse": "dragonBlack3",
     "brand": "dragonGreen",
-    "disabled": { "ref": "dragonGray", "alpha": 0.5 },
+    "disabled": {
+      "ref": "dragonGray",
+      "alpha": 0.5
+    },
     "danger": "dragonRed"
   },
   "hypr": {

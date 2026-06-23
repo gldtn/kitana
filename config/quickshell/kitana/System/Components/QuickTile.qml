@@ -8,7 +8,9 @@ import "../../custom" as Custom
 Rectangle {
     id: root
 
-    Custom.Settings { id: settings }
+    Custom.Settings {
+        id: settings
+    }
 
     property string iconName: Icons.defaultIcon
     property string title: ""
@@ -20,7 +22,7 @@ Rectangle {
     width: parent ? parent.width : 0
     height: 64
     radius: 13
-    color: mouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary
+    color: mouse.containsMouse ? Colors.scrimTertiary : Colors.bgTertiary
 
     // Quick tile icon and labels
     Row {
@@ -34,7 +36,7 @@ Rectangle {
             width: 38
             height: 38
             radius: 12
-            color: root.active ? Colors.fgAccent : Colors.subtleSecondary
+            color: root.active ? Colors.fgAccent : Colors.bgSecondary
 
             // Tile icon glyph
             Controls.Icon {

@@ -11,8 +11,8 @@
     "fg": "#c0caf5",
     "fg_dark": "#a9b1d6",
     "fg_gutter": "#3b4261",
-    "dark3": "#545c7e",
     "comment": "#565f89",
+    "dark3": "#545c7e",
     "dark5": "#737aa2",
     "blue0": "#3d59a1",
     "blue": "#7aa2f7",
@@ -47,23 +47,25 @@
       "lighten": 0.03
     },
     "bgTertiary": {
-      "ref": "bg_highlight",
-      "darken": 0.06
+      "ref": "dark5",
+      "darken": 0.6
     },
     "bgOnPrimary": "terminal_black",
     "bgAccent": "blue",
     "borderDark": "bg_dark",
-    "borderLight": {
-      "ref": "terminal_black",
-      "darken": 0.26
-    },
     "borderFaint": {
-      "ref": "bg",
+      "ref": "bgPrimary",
       "lighten": 0.09
     },
+    "borderLight": {
+      "ref": "bg",
+      "mix": "fg",
+      "ratio": 0.21
+    },
     "borderHeavy": {
-      "ref": "terminal_black",
-      "darken": 0.09
+      "ref": "borderLight",
+      "mix": "borderAccent",
+      "ratio": 0.26
     },
     "borderAccent": "blue",
     "info": "blue",
@@ -72,41 +74,33 @@
     "error": "red",
     "scrimPrimary": {
       "ref": "bg",
-      "alpha": 0.52
+      "lighten": 0.06
     },
     "scrimSecondary": {
-      "ref": "bg_dark",
-      "alpha": 0.32
+      "ref": "bg",
+      "mix": "fg",
+      "ratio": 0.09
     },
     "scrimTertiary": {
-      "ref": "bg_highlight",
-      "darken": 0.04
+      "ref": "bgTertiary",
+      "lighten": 0.01
     },
     "subtleAccent": {
       "ref": "blue",
       "alpha": 0.16
     },
-    "subtlePrimary": {
-      "ref": "bg",
-      "alpha": 0.16
-    },
-    "subtleSecondary": {
-      "ref": "terminal_black",
-      "alpha": 0.65
-    },
-    "subtleTertiary": {
-      "ref": "dark5",
-      "alpha": 0.50
-    }
+    "subtlePrimary": "scrimPrimary",
+    "subtleSecondary": "scrimSecondary",
+    "subtleTertiary": "scrimTertiary"
   },
   "icons": {
     "primary": "fg",
-    "secondary": "white",
-    "muted": "dark5",
-    "subtle": "dark5",
+    "secondary": "fg_dark",
+    "muted": "fg_gutter",
+    "subtle": "comment",
     "accent": "blue",
-    "onAccent": "bg_dark",
-    "inverse": "bg_dark",
+    "onAccent": "bg",
+    "inverse": "white",
     "brand": "blue",
     "disabled": {
       "ref": "dark5",

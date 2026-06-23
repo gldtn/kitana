@@ -26,27 +26,54 @@
     "fgTertiary": "muted",
     "fgOnPrimary": "background",
     "fgAccent": "purple",
-    "bgPrimary": "background1",
-    "bgSecondary": "background",
-    "bgTertiary": "surface",
-    "bgOnPrimary": "background",
+    "bgPrimary": "background",
+    "bgSecondary": {
+      "ref": "background",
+      "mix": "surface",
+      "ratio": 0.6
+    },
+    "bgTertiary": {
+      "ref": "surface",
+      "lighten": 0.03
+    },
+    "bgOnPrimary": "foreground",
     "bgAccent": "purple",
     "borderDark": "background",
-    "borderLight": "current_line",
+    "borderLight": {
+      "ref": "background",
+      "mix": "foreground",
+      "ratio": 0.14
+    },
     "borderFaint": "border1",
-    "borderHeavy": "current_line",
+    "borderHeavy": {
+      "ref": "borderLight",
+      "mix": "borderDark",
+      "ratio": 0.06
+    },
     "borderAccent": "purple",
     "info": "cyan",
     "success": "green",
     "warning": "yellow",
     "error": "red",
-    "scrimPrimary": { "ref": "background1", "alpha": 0.52 },
-    "scrimSecondary": { "ref": "background1", "alpha": 0.32 },
-    "scrimTertiary": { "ref": "background1", "alpha": 0.60 },
-    "subtleAccent": { "ref": "purple", "alpha": 0.16 },
-    "subtlePrimary": { "ref": "background1", "alpha": 0.16 },
-    "subtleSecondary": { "ref": "current_line", "alpha": 0.65 },
-    "subtleTertiary": { "ref": "muted", "alpha": 0.50 }
+    "scrimPrimary": {
+      "ref": "bgPrimary",
+      "lighten": 0.06
+    },
+    "scrimSecondary": {
+      "ref": "bgSecondary",
+      "lighten": 0.03
+    },
+    "scrimTertiary": {
+      "ref": "bgTertiary",
+      "lighten": 0.01
+    },
+    "subtleAccent": {
+      "ref": "purple",
+      "alpha": 0.16
+    },
+    "subtlePrimary": "scrimPrimary",
+    "subtleSecondary": "scrimSecondary",
+    "subtleTertiary": "scrimTertiary"
   },
   "icons": {
     "primary": "foreground",
@@ -57,7 +84,10 @@
     "onAccent": "background",
     "inverse": "background",
     "brand": "purple",
-    "disabled": { "ref": "muted", "alpha": 0.5 },
+    "disabled": {
+      "ref": "muted",
+      "alpha": 0.5
+    },
     "danger": "red"
   },
   "hypr": {

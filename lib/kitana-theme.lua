@@ -285,7 +285,9 @@ local function resolve_value(theme, value, fallback, seen)
       error("cyclic color reference in " .. theme.slug .. ": " .. value, 2)
     end
     seen[key] = true
-    return resolve_value(theme, theme.colors[value], fallback, seen)
+    local resolved = resolve_value(theme, theme.colors[value], fallback, seen)
+    seen[key] = nil
+    return resolved
   end
 
   if theme.palette[value] ~= nil then
@@ -294,7 +296,9 @@ local function resolve_value(theme, value, fallback, seen)
       error("cyclic palette reference in " .. theme.slug .. ": " .. value, 2)
     end
     seen[key] = true
-    return resolve_value(theme, theme.palette[value], fallback, seen)
+    local resolved = resolve_value(theme, theme.palette[value], fallback, seen)
+    seen[key] = nil
+    return resolved
   end
 
   if fallback ~= nil then
