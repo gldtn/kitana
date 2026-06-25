@@ -4,7 +4,7 @@
 
 -- Refer to https://wiki.hypr.land/Configuring/Basics/Variables/
 
-local ok, kitana_theme = pcall(require, "hypr.kitana-theme")
+local ok, kitana_theme = pcall(require, "kitana-theme")
 if not ok then
   kitana_theme = {}
 end

@@ -149,7 +149,7 @@ Zsh is intentionally not part of the default install path yet. The helper instal
 ## User Notes
 
 - Kitana-managed config source lives in this repository; use refresh/reinstall commands to deploy changes.
-- Customize Hyprland in `~/.config/hypr/custom/*.lua`; local custom modules load after Kitana defaults.
+- Customize Hyprland in `~/.config/hypr/custom/*.lua`; choose loaded modules in `~/.config/hypr/custom/init.lua`, which runs after Kitana defaults.
 - Kitana user settings live in `~/.config/kitana/config`, including `KITANA_WALLPAPER_DIR`.
 - Browser choice is stored in `~/.config/webapp-install.conf` and reused by Kitana web app helpers.
 - Password manager choice is stored in `~/.config/kitana/password-manager.conf` and reused by the Kitana password-manager hotkey.

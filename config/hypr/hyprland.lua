@@ -4,7 +4,13 @@
 local home = os.getenv("HOME")
 local kitana_dir = os.getenv("KITANA_DIR") or (home .. "/.local/share/kitana")
 
-package.path = home .. "/.config/?.lua;" .. kitana_dir .. "/?.lua;" .. package.path
+package.path = table.concat({
+  home .. "/.config/hypr/?.lua",
+  home .. "/.config/hypr/?/init.lua",
+  kitana_dir .. "/?.lua",
+  kitana_dir .. "/?/init.lua",
+  package.path,
+}, ";")
 
 -- Kitana defaults. Do not edit these directly.
 -- Order matters: base session settings first, then layout/rules, then startup/binds.
@@ -34,9 +40,5 @@ for _, module in ipairs(default_app_modules) do
   require("default.hypr.apps." .. module)
 end
 
--- Local overrides and extensions.
--- To override a default module, require the module on the list below and
--- create the module in ~/.config/hypr/custom/.. See examples;
-require("hypr.custom.monitors")
-require("hypr.custom.input")
-require("hypr.custom.binds")
+-- User-owned local overrides and extensions.
+require("custom")

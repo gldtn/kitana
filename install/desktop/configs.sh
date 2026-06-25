@@ -107,20 +107,7 @@ else
   echo "Keeping existing Hypr Lua language config: $HYPR_LUARC_FILE"
 fi
 
-if [ ! -e "$HYPR_ENTRYPOINT" ] || grep -q "$HYPR_ENTRYPOINT_MARKER" "$HYPR_ENTRYPOINT"; then
-  cp "$KITANA_DIR/config/hypr/hyprland.lua" "$HYPR_ENTRYPOINT"
-else
-  echo "Keeping existing Hypr Lua entrypoint: $HYPR_ENTRYPOINT"
-  echo "Use require(\"default.hypr...\") to load Kitana defaults from $KITANA_DIR/default."
-fi
-
-if [ ! -e "$HYPR_THEME_FILE" ] || grep -q "$HYPR_THEME_MARKER" "$HYPR_THEME_FILE"; then
-  cp "$KITANA_DIR/config/hypr/kitana-theme.lua" "$HYPR_THEME_FILE"
-else
-  echo "Keeping existing Hypr theme config: $HYPR_THEME_FILE"
-fi
-
-for custom_module in monitors input binds; do
+for custom_module in init monitors input binds; do
   custom_file="$HYPR_CONFIG_DIR/custom/$custom_module.lua"
   custom_source="$KITANA_DIR/config/hypr/custom/$custom_module.lua"
 
@@ -135,6 +122,19 @@ EOF
     fi
   fi
 done
+
+if [ ! -e "$HYPR_ENTRYPOINT" ] || grep -q "$HYPR_ENTRYPOINT_MARKER" "$HYPR_ENTRYPOINT"; then
+  cp "$KITANA_DIR/config/hypr/hyprland.lua" "$HYPR_ENTRYPOINT"
+else
+  echo "Keeping existing Hypr Lua entrypoint: $HYPR_ENTRYPOINT"
+  echo "Use require(\"default.hypr...\") to load Kitana defaults from $KITANA_DIR/default."
+fi
+
+if [ ! -e "$HYPR_THEME_FILE" ] || grep -q "$HYPR_THEME_MARKER" "$HYPR_THEME_FILE"; then
+  cp "$KITANA_DIR/config/hypr/kitana-theme.lua" "$HYPR_THEME_FILE"
+else
+  echo "Keeping existing Hypr theme config: $HYPR_THEME_FILE"
+fi
 
 if [ ! -e "$HYPR_CONFIG_DIR/hypridle.conf" ] || grep -q "$HYPRIDLE_MARKER" "$HYPR_CONFIG_DIR/hypridle.conf" || grep -q "timeout = 2700" "$HYPR_CONFIG_DIR/hypridle.conf"; then
   cp "$KITANA_DIR/default/hypr/hypridle.conf" "$HYPR_CONFIG_DIR/hypridle.conf"

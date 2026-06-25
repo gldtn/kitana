@@ -342,7 +342,7 @@ for lua_module in \
   fi
 done
 
-for custom_module in monitors input binds; do
+for custom_module in init monitors input binds; do
   if [ -f "$HOME/.config/hypr/custom/$custom_module.lua" ]; then
     pass "Hypr custom module: $custom_module"
   else
@@ -714,7 +714,7 @@ if [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
 fi
 
 if command -v luac >/dev/null 2>&1; then
-  if luac -p "$KITANA_DIR/config/hypr/hyprland.lua" "$KITANA_DIR/config/hypr/kitana-theme.lua" "$KITANA_DIR/default/sddm/hyprland.lua" "$KITANA_DIR"/default/hypr/modules/*.lua "$KITANA_DIR"/default/hypr/apps/*.lua "$KITANA_DIR"/default/hypr/profiles/*.lua; then
+  if luac -p "$KITANA_DIR/config/hypr/hyprland.lua" "$KITANA_DIR/config/hypr/kitana-theme.lua" "$KITANA_DIR/default/sddm/hyprland.lua" "$KITANA_DIR"/config/hypr/custom/*.lua "$KITANA_DIR"/default/hypr/modules/*.lua "$KITANA_DIR"/default/hypr/apps/*.lua "$KITANA_DIR"/default/hypr/profiles/*.lua; then
     pass "Kitana Hypr Lua syntax"
   else
     fail "Kitana Hypr Lua syntax"
