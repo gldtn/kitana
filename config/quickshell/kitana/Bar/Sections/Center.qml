@@ -54,6 +54,7 @@ Item {
         id: dateTime
 
         anchors.centerIn: parent
+        dashboardPanel: root.dashboardPanel
         opacity: root.dashboardIconVisible ? 0 : 1
         visible: !root.dashboardIconVisible
 

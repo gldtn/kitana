@@ -1,0 +1,131 @@
+#!/bin/bash
+
+set -euo pipefail
+
+kitana_dir="${KITANA_DIR:-$HOME/.local/share/kitana}"
+lua_path="$kitana_dir/lib/?.lua;$kitana_dir/lib/?/init.lua;;"
+cava_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/cava"
+cava_config_file="$cava_config_dir/config"
+cava_theme_dir="$cava_config_dir/themes"
+cava_theme_file="$cava_theme_dir/kitana"
+managed_begin="# BEGIN Kitana managed Cava theme"
+managed_end="# END Kitana managed Cava theme"
+theme="${1:-}"
+theme_env=""
+
+usage() {
+  printf 'Usage: %s THEME\n' "$(basename "$0")" >&2
+}
+
+write_managed_block() {
+  printf '%s\n' "$managed_begin"
+  printf "theme = 'kitana'\n"
+  printf '%s\n' "$managed_end"
+}
+
+patch_cava_config() {
+  local tmp mode line in_color block_written skipping
+
+  mkdir -p "$cava_config_dir"
+  tmp="$(mktemp "$cava_config_file.tmp.XXXXXX")"
+
+  if [ ! -f "$cava_config_file" ]; then
+    {
+      printf '# Kitana managed Cava config\n'
+      printf '[color]\n'
+      write_managed_block
+    } >"$tmp"
+    mv "$tmp" "$cava_config_file"
+    return 0
+  fi
+
+  mode="$(stat -c '%a' "$cava_config_file" 2>/dev/null || printf '600')"
+  in_color=0
+  block_written=0
+  skipping=0
+
+  while IFS= read -r line || [ -n "$line" ]; do
+    if [ "$skipping" -eq 1 ]; then
+      if [ "$line" = "$managed_end" ]; then
+        skipping=0
+      fi
+      continue
+    fi
+
+    if [ "$line" = "$managed_begin" ]; then
+      skipping=1
+      continue
+    fi
+
+    if [[ "$line" =~ ^[[:space:]]*\[.*\][[:space:]]*$ ]]; then
+      if [ "$in_color" -eq 1 ] && [ "$block_written" -eq 0 ]; then
+        printf '\n' >>"$tmp"
+        write_managed_block >>"$tmp"
+        block_written=1
+      fi
+
+      if [[ "$line" =~ ^[[:space:]]*\[color\][[:space:]]*$ ]]; then
+        in_color=1
+      else
+        in_color=0
+      fi
+    fi
+
+    printf '%s\n' "$line" >>"$tmp"
+  done <"$cava_config_file"
+
+  if [ "$block_written" -eq 0 ]; then
+    if [ "$in_color" -eq 1 ]; then
+      printf '\n' >>"$tmp"
+      write_managed_block >>"$tmp"
+    else
+      printf '\n[color]\n' >>"$tmp"
+      write_managed_block >>"$tmp"
+    fi
+  fi
+
+  chmod "$mode" "$tmp" 2>/dev/null || true
+  mv "$tmp" "$cava_config_file"
+}
+
+if [ -z "$theme" ]; then
+  usage
+  exit 2
+fi
+
+if ! command -v cava >/dev/null 2>&1 && [ ! -f "$cava_config_file" ]; then
+  exit 0
+fi
+
+theme_env="$(LUA_PATH="$lua_path" lua "$kitana_dir/lib/kitana-theme.lua" env "$theme")" || exit 1
+eval "$theme_env"
+
+mkdir -p "$cava_theme_dir"
+tmp_theme="$(mktemp "$cava_theme_file.tmp.XXXXXX")"
+{
+  printf '[color]\n'
+  printf "background = '%s'\n" "$base0"
+  printf "foreground = '%s'\n" "$accent0"
+  printf '\n'
+  printf 'gradient = 1\n'
+  printf "gradient_color_1 = '%s'\n" "$accent0"
+  printf "gradient_color_2 = '%s'\n" "$info"
+  printf "gradient_color_3 = '%s'\n" "$accent1"
+  printf "gradient_color_4 = '%s'\n" "$warning0"
+  printf "gradient_color_5 = '%s'\n" "$danger0"
+  printf '\n'
+  printf 'horizontal_gradient = 1\n'
+  printf "horizontal_gradient_color_1 = '%s'\n" "$accent0"
+  printf "horizontal_gradient_color_2 = '%s'\n" "$accent1"
+  printf "horizontal_gradient_color_3 = '%s'\n" "$warning0"
+  printf "horizontal_gradient_color_4 = '%s'\n" "$danger0"
+  printf '\n'
+  printf "blend_direction = 'up'\n"
+} >"$tmp_theme"
+mv "$tmp_theme" "$cava_theme_file"
+
+patch_cava_config
+
+if command -v pkill >/dev/null 2>&1; then
+  pkill -USR2 -x cava >/dev/null 2>&1 || true
+fi

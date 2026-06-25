@@ -95,9 +95,12 @@
   },
   "icons": {
     "primary": "fg",
-    "secondary": "fg_dark",
+    "secondary": "terminal_black",
     "muted": "fg_gutter",
-    "subtle": "comment",
+    "subtle": {
+      "ref": "fg_dark",
+      "darken": 0.2
+    },
     "accent": "blue",
     "onAccent": "bg",
     "inverse": "white",

@@ -229,6 +229,9 @@ PanelWindow {
     }
 
     function refreshWeather(): void {
+        if (weatherProcess.running)
+            return;
+
         const location = weatherLocation.trim();
         const target = location.length > 0 ? encodeURIComponent(location) : "";
         weatherStatus = "Loading weather...";
@@ -286,8 +289,12 @@ PanelWindow {
     }
 
     function applyTheme(theme: var): void {
-        if (theme && theme.slug)
-            themeApplyProcess.exec([kitanaDir + "/bin/kitana-theme", theme.slug]);
+        if (!theme || !theme.slug || themeApplyProcess.running)
+            return;
+
+        const slug = theme.slug;
+        close();
+        Qt.callLater(() => themeApplyProcess.exec([kitanaDir + "/bin/kitana-theme", slug]));
     }
 
     function resetPickerState(): void {
@@ -577,6 +584,8 @@ PanelWindow {
     margins.bottom: 0
     // qmllint enable unqualified unresolved-type
 
+    Component.onCompleted: root.refreshWeather()
+
     // Clock and tab refresh timer
     Timer {
         interval: 1000
@@ -589,6 +598,14 @@ PanelWindow {
             if (root.panelVisible && root.activeTab === "media")
                 root.refreshMedia();
         }
+    }
+
+    // Background weather refresh for the collapsed island.
+    Timer {
+        interval: 30 * 60 * 1000
+        running: true
+        repeat: true
+        onTriggered: root.refreshWeather()
     }
 
     // Media visualizer animation timer
@@ -642,9 +659,6 @@ PanelWindow {
     // Theme apply command runner
     Process {
         id: themeApplyProcess
-
-        onRunningChanged: if (!running)
-            root.close()
     }
 
     // Primary weather fetch process

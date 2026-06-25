@@ -22,6 +22,9 @@ awww_transition="${KITANA_AWWW_TRANSITION:-random}"
 awww_duration="${KITANA_AWWW_DURATION:-3}"
 awww_step="${KITANA_AWWW_STEP:-90}"
 awww_fps="${KITANA_AWWW_FPS:-60}"
+awww_angle="${KITANA_AWWW_TRANSITION_ANGLE:-45}"
+awww_pos="${KITANA_AWWW_TRANSITION_POS:-center}"
+awww_bezier="${KITANA_AWWW_TRANSITION_BEZIER:-.54,0,.34,.99}"
 
 wallpapers=()
 while IFS= read -r wallpaper; do
@@ -115,7 +118,10 @@ apply_awww() {
     --transition-type "$awww_transition" \
     --transition-duration "$awww_duration" \
     --transition-step "$awww_step" \
-    --transition-fps "$awww_fps" >/dev/null 2>&1
+    --transition-fps "$awww_fps" \
+    --transition-angle "$awww_angle" \
+    --transition-pos "$awww_pos" \
+    --transition-bezier "$awww_bezier" >/dev/null 2>&1
 
   pkill -x hyprpaper 2>/dev/null || true
 }

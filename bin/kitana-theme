@@ -3,6 +3,7 @@
 set -euo pipefail
 
 kitana_dir="${KITANA_DIR:-$HOME/.local/share/kitana}"
+wallpaper_extras_dir="${KITANA_WALLPAPER_EXTRAS_DIR:-$HOME/.local/share/kitana-wallpapers-extras}"
 lua_path="$kitana_dir/lib/?.lua;$kitana_dir/lib/?/init.lua;;"
 state_dir="$HOME/.config/kitana"
 state_file="$state_dir/theme"
@@ -27,10 +28,59 @@ find_theme() {
   LUA_PATH="$lua_path" lua "$kitana_dir/lib/kitana-theme.lua" find "$1"
 }
 
+current_wallpaper_name() {
+  local selected=""
+
+  if [ -e "$state_dir/current-wallpaper" ] || [ -L "$state_dir/current-wallpaper" ]; then
+    selected="$(readlink -f "$state_dir/current-wallpaper" 2>/dev/null || true)"
+  fi
+
+  if [ -z "$selected" ] && [ -f "$state_dir/wallpaper" ]; then
+    selected="$(<"$state_dir/wallpaper")"
+  fi
+
+  [ -n "$selected" ] || return 0
+  basename "$selected"
+}
+
+sync_wallpaper_set() {
+  local slug="$1"
+  local wallpaper_name="${2:-}"
+  local switcher="$wallpaper_extras_dir/scripts/use-wallpaper-set"
+  local theme_wallpaper
+
+  [ -x "$switcher" ] || return 0
+  [ -d "$wallpaper_extras_dir/wallpapers/$slug" ] || return 0
+
+  if ! "$switcher" --quiet "$slug"; then
+    printf 'Wallpaper set not updated: %s\n' "$slug" >&2
+    return 0
+  fi
+
+  [ -n "$wallpaper_name" ] || return 0
+  theme_wallpaper="$wallpaper_extras_dir/wallpapers/$slug/$wallpaper_name"
+  [ -f "$theme_wallpaper" ] || return 0
+
+  if ! "$kitana_dir/bin/kitana-wallpaper" "$theme_wallpaper" >/dev/null; then
+    printf 'Wallpaper image not updated: %s\n' "$wallpaper_name" >&2
+  fi
+}
+
+run_background_integrations() {
+  local slug="$1"
+
+  {
+    [ "$(<"$state_file")" = "$slug" ] && "$kitana_dir/bin/kitana-theme-ghostty" "$slug" || true
+    [ "$(<"$state_file")" = "$slug" ] && "$kitana_dir/bin/kitana-theme-zed" "$slug" || true
+    [ "$(<"$state_file")" = "$slug" ] && "$kitana_dir/bin/kitana-theme-neovim" "$slug" || true
+    [ "$(<"$state_file")" = "$slug" ] && "$kitana_dir/bin/kitana-theme-cava" "$slug" || true
+  } >/tmp/kitana-theme-integrations.log 2>&1 &
+}
+
 apply_theme() {
   local requested="$1"
   local notify="${2:-0}"
-  local current_slug slug theme_env name
+  local current_slug current_wallpaper slug theme_env name
 
   slug="$(find_theme "$requested")" || {
     printf 'Unknown theme: %s\n' "$requested" >&2
@@ -42,18 +92,19 @@ apply_theme() {
   else
     current_slug=""
   fi
+  current_wallpaper="$(current_wallpaper_name)"
 
   theme_env="$(LUA_PATH="$lua_path" lua "$kitana_dir/lib/kitana-theme.lua" env "$slug")" || exit 1
   eval "$theme_env"
   mkdir -p "$state_dir"
 
-  "$kitana_dir/bin/kitana-theme-quickshell" "$slug"
-  "$kitana_dir/bin/kitana-theme-ghostty" "$slug"
-  "$kitana_dir/bin/kitana-theme-zed" "$slug"
-  "$kitana_dir/bin/kitana-theme-hypr" "$slug"
-  "$kitana_dir/bin/kitana-theme-neovim" "$slug" || true
-
   printf '%s\n' "$slug" >"$state_file"
+  "$kitana_dir/bin/kitana-theme-quickshell" "$slug"
+  "$kitana_dir/bin/kitana-theme-hypr" "$slug"
+  sync_wallpaper_set "$slug" "$current_wallpaper"
+
+  run_background_integrations "$slug"
+
   if [ "$notify" -eq 1 ] && [ "$current_slug" != "$slug" ]; then
     notify_theme "$name"
   fi

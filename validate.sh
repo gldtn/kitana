@@ -414,6 +414,7 @@ for helper in \
   kitana-show-done \
   kitana-show-logo \
   kitana-theme \
+  kitana-theme-cava \
   kitana-theme-ghostty \
   kitana-theme-grid \
   kitana-theme-hypr \
