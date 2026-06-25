@@ -286,17 +286,8 @@ QtObject {
     }, bgTertiary)
     readonly property color inputFg: fgPrimary
     readonly property color inputPlaceholderFg: fgSecondary
-    readonly property color inputBorder: resolve("inputBorder", alpha(borderLight, 0.5))
-    readonly property color inputBorderFocus: themedColor({
-        "dark": {
-            ref: "borderAccent",
-            alpha: 0.16
-        },
-        "default": {
-            ref: "borderAccent",
-            alpha: 0.16
-        }
-    }, borderAccent)
+    readonly property color inputBorder: resolve("inputBorder", alpha(borderLight, 0.3))
+    readonly property color inputBorderFocus: resolve("inputBorderFocus", alpha(borderLight, 0.4))
     readonly property color inputSelection: subtleAccent
     readonly property color inputSelectedFg: fgPrimary
 
