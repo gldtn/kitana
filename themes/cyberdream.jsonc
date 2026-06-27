@@ -17,50 +17,54 @@
     "pink": "#ff5ea0",
     "orange": "#ffbd5e",
     "purple": "#bd5eff",
-    // custom colors
-    "fg_subtle": {
+    "accentColor": "blue" // set accent color here
+  },
+  "palette": {
+    // accent color palette
+    "fgAccent": "accentColor",
+    "bgAccent": "accentColor",
+    "borderAccent": {
+      "ref": "accentColor",
+      "alpha": 0.12
+    },
+    "subtleAccent": {
+      "ref": "accentColor",
+      "alpha": 0.12
+    },
+    // fg color palette
+    "fgPrimary": "fg",
+    "fgSecondary": "grey",
+    "fgTertiary": {
       "ref": "fg",
       "darken": 0.5
     },
-    "surface_control": "#363a41",
-    "surface_hover": "#3b3f47",
-    "surface_pressed": "#3e424a",
-    "surface_floating": "#2d3036",
-    "border": "#3a3e46",
-    "border_subtle": "#505662",
-    "border_strong": "#6f7787"
-  },
-  "palette": {
-    "fgPrimary": "fg",
-    "fgSecondary": "grey",
-    "fgTertiary": "fg_subtle",
     "fgOnPrimary": "bg",
-    "fgAccent": "orange",
+    // bg color palette
     "bgPrimary": "bg",
     "bgSecondary": "bg_alt",
     "bgTertiary": "bg_highlight",
-    "bgOnPrimary": "bg",
-    "bgAccent": "orange",
+    "bgOnPrimary": "bgTertiary",
+    // border color palette
     "borderDark": "bg",
     "borderFaint": {
       "ref": "grey",
       "darken": 0.6
     },
     "borderLight": {
-      "ref": "bg",
-      "mix": "fg",
-      "ratio": 0.26
+      "ref": "bgPrimary",
+      "mix": "fgPrimary",
+      "ratio": 0.24
     },
     "borderHeavy": {
       "ref": "borderLight",
-      "mix": "borderDark",
-      "ratio": 0.16
+      "lighten": 0.04
     },
-    "borderAccent": "orange",
+    // info color palette
     "info": "blue",
     "success": "green",
     "warning": "yellow",
     "error": "red",
+    // scrim color palette
     "scrimPrimary": {
       "ref": "bg",
       "lighten": 0.09
@@ -73,10 +77,7 @@
       "ref": "bg_highlight",
       "lighten": 0.02
     },
-    "subtleAccent": {
-      "ref": "orange",
-      "alpha": 0.16
-    },
+    // subtle color palette
     "subtlePrimary": "scrimPrimary",
     "subtleSecondary": "scrimSecondary",
     "subtleTertiary": "scrimTertiary"
@@ -90,7 +91,7 @@
       "mix": "grey",
       "ratio": 0.5
     },
-    "accent": "orange",
+    "accent": "accentColor",
     "onAccent": "bg",
     "inverse": "bg",
     "brand": "blue",
@@ -101,7 +102,7 @@
     "danger": "red"
   },
   "hypr": {
-    "border_active": "borderAccent",
+    "border_active": "accentColor",
     "border_inactive": "borderHeavy"
   },
   "ghostty": {

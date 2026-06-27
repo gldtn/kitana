@@ -61,14 +61,26 @@
     "dragonAsh": "#737c73",
     "dragonTeal": "#949fb5",
     "dragonYellow": "#c4b28a",
-    "dragonAccent": "dragonGreen" // links to all accent colors on palette, icons, and hypr
+    "accentColor": "dragonGreen" // set accent color here
   },
   "palette": {
+    // accent color palette
+    "fgAccent": "accentColor",
+    "bgAccent": "accentColor",
+    "borderAccent": {
+      "ref": "accentColor",
+      "alpha": 0.12
+    },
+    "subtleAccent": {
+      "ref": "accentColor",
+      "alpha": 0.12
+    },
+    // fg color palette
     "fgPrimary": "dragonWhite",
     "fgSecondary": "dragonGray",
     "fgTertiary": "dragonGray",
     "fgOnPrimary": "dragonBlack3",
-    "fgAccent": "dragonAccent",
+    // bg color palette
     "bgPrimary": "dragonBlack3",
     "bgSecondary": {
       "ref": "dragonBlack3",
@@ -81,7 +93,7 @@
       "ratio": 0.26
     },
     "bgOnPrimary": "fgSecondary",
-    "bgAccent": "dragonAccent",
+    // border color palette
     "borderDark": "bgPrimary",
     "borderFaint": {
       "ref": "bgPrimary",
@@ -94,14 +106,14 @@
     },
     "borderHeavy": {
       "ref": "borderLight",
-      "mix": "borderDark",
-      "ratio": 0.26
+      "lighten": 0.04
     },
-    "borderAccent": "dragonAccent",
+    // info color palette
     "info": "crystalBlue",
     "success": "dragonGreen",
     "warning": "dragonYellow",
     "error": "dragonRed",
+    // scrim color palette
     "scrimPrimary": {
       "ref": "bgPrimary",
       "lighten": 0.12
@@ -114,10 +126,7 @@
       "ref": "bgTertiary",
       "lighten": 0.01
     },
-    "subtleAccent": {
-      "ref": "dragonAccent",
-      "alpha": 0.16
-    },
+    // subtle color palette
     "subtlePrimary": "scrimPrimary",
     "subtleSecondary": "scrimSecondary",
     "subtleTertiary": "scrimTertiary"
@@ -127,7 +136,7 @@
     "secondary": "dragonGray",
     "muted": "dragonGray",
     "subtle": "dragonGray",
-    "accent": "dragonAccent",
+    "accent": "accentColor",
     "onAccent": "dragonBlack3",
     "inverse": "dragonBlack3",
     "brand": "dragonGreen",
@@ -138,7 +147,7 @@
     "danger": "dragonRed"
   },
   "hypr": {
-    "border_active": "borderAccent",
+    "border_active": "accentColor",
     "border_inactive": "borderHeavy"
   },
   "ghostty": {

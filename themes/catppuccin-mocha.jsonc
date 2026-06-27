@@ -28,14 +28,27 @@
     "surface0": "#313244",
     "base": "#1e1e2e",
     "mantle": "#181825",
-    "crust": "#11111b"
+    "crust": "#11111b",
+    "accentColor": "mauve" // set accent color here
   },
   "palette": {
+    // accent color palette
+    "fgAccent": "accentColor",
+    "bgAccent": "accentColor",
+    "borderAccent": {
+      "ref": "accentColor",
+      "alpha": 0.12
+    },
+    "subtleAccent": {
+      "ref": "accentColor",
+      "alpha": 0.12
+    },
+    // fg color palette
     "fgPrimary": "text",
     "fgSecondary": "overlay2",
     "fgTertiary": "overlay2",
     "fgOnPrimary": "mantle",
-    "fgAccent": "mauve",
+    // bg color palette
     "bgPrimary": "base",
     "bgSecondary": "mantle",
     "bgTertiary": {
@@ -43,11 +56,11 @@
       "lighten": 0.04
     },
     "bgOnPrimary": "mantle",
-    "bgAccent": "mauve",
-    "borderDark": "base",
+    // border color palette
+    "borderDark": "bgPrimary",
     "borderLight": {
-      "ref": "base",
-      "mix": "text",
+      "ref": "bgPrimary",
+      "mix": "fgPrimary",
       "ratio": 0.12
     },
     "borderFaint": {
@@ -56,14 +69,14 @@
     },
     "borderHeavy": {
       "ref": "borderLight",
-      "mix": "borderDark",
-      "ratio": 0.26
+      "lighten": 0.04
     },
-    "borderAccent": "mauve",
+    // info color palette
     "info": "blue",
     "success": "green",
     "warning": "yellow",
     "error": "red",
+    // scrim color palette
     "scrimPrimary": {
       "ref": "crust",
       "lighten": 0.09
@@ -76,10 +89,7 @@
       "ref": "base",
       "lighten": 0.05
     },
-    "subtleAccent": {
-      "ref": "mauve",
-      "alpha": 0.16
-    },
+    // subtle color palette
     "subtlePrimary": "scrimPrimary",
     "subtleSecondary": "scrimSecondary",
     "subtleTertiary": "scrimTertiary"
@@ -89,7 +99,7 @@
     "secondary": "rosewater",
     "muted": "overlay2",
     "subtle": "overlay2",
-    "accent": "mauve",
+    "accent": "accentColor",
     "onAccent": "mantle",
     "inverse": "mantle",
     "brand": "mauve",
@@ -100,7 +110,7 @@
     "danger": "red"
   },
   "hypr": {
-    "border_active": "borderAccent",
+    "border_active": "accentColor",
     "border_inactive": "borderHeavy"
   },
   "ghostty": {

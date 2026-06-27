@@ -19,40 +19,53 @@
     "highlight_med": "#403d52",
     "highlight_high": "#524f67",
     "border0": "#1f1e2b",
-    "border1": "#2e2d3b"
+    "border1": "#2e2d3b",
+    "accentColor": "rose"
   },
   "palette": {
+    // accent color palette
+    "fgAccent": "accentColor",
+    "bgAccent": "accentColor",
+    "borderAccent": {
+      "ref": "accentColor",
+      "alpha": 0.12
+    },
+    "subtleAccent": {
+      "ref": "accentColor",
+      "alpha": 0.12
+    },
+    // fg color palette
     "fgPrimary": "text",
     "fgSecondary": "subtle",
     "fgTertiary": "subtle",
     "fgOnPrimary": "surface",
-    "fgAccent": "rose",
+    // bg color palette
     "bgPrimary": "base",
     "bgSecondary": "surface",
     "bgTertiary": "overlay",
     "bgOnPrimary": "surface",
-    "bgAccent": "rose",
-    "borderDark": "base",
+    // border color palette
+    "borderDark": "bgPrimary",
     "borderFaint": {
       "ref": "borderDark",
       "mix": "borderLight",
       "ratio": 0.43
     },
     "borderLight": {
-      "ref": "base",
-      "mix": "text",
+      "ref": "bgPrimary",
+      "mix": "fgPrimary",
       "ratio": 0.11
     },
     "borderHeavy": {
       "ref": "borderLight",
-      "mix": "borderDark",
-      "ratio": 0.26
+      "lighten": 0.04
     },
-    "borderAccent": "rose",
+    // info color palette
     "info": "foam",
     "success": "pine",
     "warning": "gold",
     "error": "love",
+    // scrim color palette
     "scrimPrimary": {
       "ref": "bgPrimary",
       "lighten": 0.06
@@ -65,10 +78,7 @@
       "ref": "bgTertiary",
       "lighten": 0.01
     },
-    "subtleAccent": {
-      "ref": "rose",
-      "alpha": 0.16
-    },
+    // subtle color palette
     "subtlePrimary": "scrimPrimary",
     "subtleSecondary": "scrimSecondary",
     "subtleTertiary": "scrimTertiary"
@@ -78,7 +88,7 @@
     "secondary": "subtle",
     "muted": "subtle",
     "subtle": "subtle",
-    "accent": "rose",
+    "accent": "accentColor",
     "onAccent": "surface",
     "inverse": "surface",
     "brand": "rose",
@@ -89,7 +99,7 @@
     "danger": "love"
   },
   "hypr": {
-    "border_active": "borderAccent",
+    "border_active": "accentColor",
     "border_inactive": "borderHeavy"
   },
   "ghostty": {

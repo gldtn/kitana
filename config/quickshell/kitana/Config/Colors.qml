@@ -287,7 +287,8 @@ QtObject {
     readonly property color inputFg: fgPrimary
     readonly property color inputPlaceholderFg: fgSecondary
     readonly property color inputBorder: resolve("inputBorder", alpha(borderLight, 0.3))
-    readonly property color inputBorderFocus: resolve("inputBorderFocus", alpha(borderLight, 0.4))
+    // readonly property color inputBorderFocus: resolve("inputBorderFocus", alpha(borderLight, 0.4))
+    readonly property color inputBorderFocus: borderAccent
     readonly property color inputSelection: subtleAccent
     readonly property color inputSelectedFg: fgPrimary
 

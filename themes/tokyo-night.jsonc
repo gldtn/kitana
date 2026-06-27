@@ -33,14 +33,27 @@
     "teal": "#1abc9c",
     "red": "#f7768e",
     "red1": "#db4b4b",
-    "white": "#ffffff"
+    "white": "#ffffff",
+    "accentColor": "blue"
   },
   "palette": {
+    // accent color palette
+    "fgAccent": "accentColor",
+    "bgAccent": "accentColor",
+    "borderAccent": {
+      "ref": "accentColor",
+      "alpha": 0.12
+    },
+    "subtleAccent": {
+      "ref": "accentColor",
+      "alpha": 0.12
+    },
+    // fg color palette
     "fgPrimary": "fg",
-    "fgSecondary": "dark5",
+    "fgSecondary": "dark3",
     "fgTertiary": "dark5",
     "fgOnPrimary": "bg_dark",
-    "fgAccent": "blue",
+    // bg color palette
     "bgPrimary": "bg",
     "bgSecondary": {
       "ref": "bg",
@@ -51,27 +64,27 @@
       "darken": 0.6
     },
     "bgOnPrimary": "terminal_black",
-    "bgAccent": "blue",
-    "borderDark": "bg_dark",
+    // border color palette
+    "borderDark": "bgPrimary",
     "borderFaint": {
       "ref": "bgPrimary",
       "lighten": 0.09
     },
     "borderLight": {
-      "ref": "bg",
-      "mix": "fg",
+      "ref": "bgPrimary",
+      "mix": "fgPrimary",
       "ratio": 0.21
     },
     "borderHeavy": {
       "ref": "borderLight",
-      "mix": "borderAccent",
-      "ratio": 0.26
+      "lighten": 0.04
     },
-    "borderAccent": "blue",
+    // info color palette
     "info": "blue",
     "success": "green",
     "warning": "yellow",
     "error": "red",
+    // scrim color palette
     "scrimPrimary": {
       "ref": "bg",
       "lighten": 0.06
@@ -85,10 +98,7 @@
       "ref": "bgTertiary",
       "lighten": 0.01
     },
-    "subtleAccent": {
-      "ref": "blue",
-      "alpha": 0.16
-    },
+    // subtle color palette
     "subtlePrimary": "scrimPrimary",
     "subtleSecondary": "scrimSecondary",
     "subtleTertiary": "scrimTertiary"
@@ -101,7 +111,7 @@
       "ref": "fg_dark",
       "darken": 0.2
     },
-    "accent": "blue",
+    "accent": "accentColor",
     "onAccent": "bg",
     "inverse": "white",
     "brand": "blue",
@@ -112,7 +122,7 @@
     "danger": "red"
   },
   "hypr": {
-    "border_active": "borderAccent",
+    "border_active": "accentColor",
     "border_inactive": "borderHeavy"
   },
   "ghostty": {

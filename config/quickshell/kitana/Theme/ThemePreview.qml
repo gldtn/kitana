@@ -95,7 +95,7 @@ FloatingWindow {
 
     function refreshCurrentTheme(): void {
         const theme = Colors.theme && Colors.theme.slug ? Colors.theme.slug : Colors.name.toLowerCase().replace(/\s+/g, "-");
-        themeRefreshProcess.exec([kitanaDir + "/bin/kitana-theme-quickshell", theme]);
+        themeRefreshProcess.exec([kitanaDir + "/bin/kitana-theme", theme]);
     }
 
     function roleColor(role: string): color {
