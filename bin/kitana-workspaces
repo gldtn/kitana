@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-if ! command -v hyprctl >/dev/null 2>&1; then
+if ! command -v hyprctl >/dev/null 2>&1 || ! command -v jq >/dev/null 2>&1; then
   exit 0
 fi
 
@@ -27,34 +27,25 @@ done
 refresh_monitors_json || exit 0
 
 apply_workspace_rules() {
-  python - "$monitors_json" <<'PY' | while IFS= read -r rule; do
-import json
-import sys
-
-monitors = json.loads(sys.argv[1])
-monitors = [monitor for monitor in monitors if not monitor.get("disabled")]
-monitors.sort(key=lambda monitor: (monitor.get("x", 0), monitor.get("id", 0)))
-
-if not monitors:
-    sys.exit(0)
-
-def emit(workspace, monitor):
-    print(f'{workspace}\t{monitor["name"]}')
-
-if len(monitors) == 1:
-    for workspace in range(1, 11):
-        emit(workspace, monitors[0])
-else:
-    for workspace in range(1, 6):
-        emit(workspace, monitors[0])
-    for workspace in range(6, 11):
-        emit(workspace, monitors[1])
-PY
-    workspace="${rule%%$'\t'*}"
-    monitor="${rule#*$'\t'}"
+  while IFS=$'\t' read -r workspace monitor; do
+    [ -n "$workspace" ] && [ -n "$monitor" ] || continue
     hyprctl eval "hl.workspace_rule({ workspace = \"$workspace\", monitor = \"$monitor\", persistent = true })" >/dev/null 2>&1 || true
     hyprctl dispatch moveworkspacetomonitor "$workspace $monitor" >/dev/null 2>&1 || true
-  done
+  done < <(jq -r '
+    [ .[]? | select((.disabled // false) | not) | select((.name // "") != "") ]
+    | sort_by((.x // 0), (.id // 0))
+    | if length == 0 then empty
+      elif length == 1 then
+        .[0].name as $monitor
+        | range(1; 11)
+        | "\(.)\t\($monitor)"
+      else
+        .[0].name as $primary
+        | .[1].name as $secondary
+        | (range(1; 6) | "\(.)\t\($primary)"),
+          (range(6; 11) | "\(.)\t\($secondary)")
+      end
+  ' <<<"$monitors_json" 2>/dev/null || true)
 }
 
 apply_workspace_rules
@@ -62,7 +53,7 @@ sleep 1
 refresh_monitors_json || exit 0
 apply_workspace_rules
 
-active_workspace="$(hyprctl activeworkspace -j | python -c 'import json, sys; print(json.load(sys.stdin).get("id", 1))' 2>/dev/null || printf '1')"
+active_workspace="$(hyprctl activeworkspace -j | jq -r '.id // 1' 2>/dev/null || printf '1')"
 
 if [ "$active_workspace" -lt 1 ] || [ "$active_workspace" -gt 10 ]; then
   hyprctl dispatch 'hl.dsp.focus({ workspace = 1 })' >/dev/null 2>&1 || true

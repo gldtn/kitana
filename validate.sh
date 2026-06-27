@@ -215,6 +215,12 @@ else
   fail "SDDM Wayland greeter compositor missing or not Kitana-configured: /etc/sddm.conf.d/10-wayland.conf"
 fi
 
+if [ -f /var/lib/kitana/sddm/focus-monitor ] && [ -r /var/lib/kitana/sddm/focus-monitor ]; then
+  pass "SDDM focus monitor cache readable"
+else
+  warn "SDDM focus monitor cache not deployed: /var/lib/kitana/sddm/focus-monitor"
+fi
+
 if [ -f /usr/share/sddm/hyprland.lua ] && grep -q '^-- Kitana managed SDDM Hyprland greeter compositor config\.$' /usr/share/sddm/hyprland.lua; then
   pass "SDDM Hyprland greeter config: /usr/share/sddm/hyprland.lua"
 else
@@ -411,6 +417,7 @@ for helper in \
   kitana-quickshell \
   kitana-refresh \
   kitana-reinstall \
+  kitana-sddm-monitor \
   kitana-show-done \
   kitana-show-logo \
   kitana-theme \
@@ -697,6 +704,12 @@ if grep -q '^singleton Colors 1.0 Config/Colors.qml$' "$HOME/.config/quickshell/
   pass "Quickshell root singletons"
 else
   fail "Quickshell root singletons missing"
+fi
+
+if [ -f "$HOME/.config/quickshell/kitana/Services/LoginMonitor.qml" ] && grep -q '^singleton LoginMonitor 1.0 LoginMonitor.qml$' "$HOME/.config/quickshell/kitana/Services/qmldir"; then
+  pass "Quickshell login monitor service"
+else
+  fail "Quickshell login monitor service missing"
 fi
 
 if [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then

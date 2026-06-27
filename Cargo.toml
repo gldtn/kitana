@@ -1,3 +1,6 @@
 [workspace]
-members = ["tools/kitana-bluetooth-pair"]
+members = [
+  "tools/kitana-bluetooth-pair",
+  "tools/kitana-sddm-monitor",
+]
 resolver = "2"

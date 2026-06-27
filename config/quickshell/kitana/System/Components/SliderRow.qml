@@ -9,7 +9,9 @@ import "../../custom" as Custom
 Row {
     id: root
 
-    Custom.Settings { id: settings }
+    Custom.Settings {
+        id: settings
+    }
 
     property string iconName: Icons.defaultIcon
     property int value: 0
@@ -81,7 +83,7 @@ Row {
             height: 16
             radius: 8
             color: Colors.fgAccent
-            border.color: Colors.borderAccent
+            border.color: Colors.fgAccent
             border.width: 1
         }
     }

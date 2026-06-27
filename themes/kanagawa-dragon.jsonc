@@ -60,14 +60,15 @@
     "dragonAqua": "#8ea4a2",
     "dragonAsh": "#737c73",
     "dragonTeal": "#949fb5",
-    "dragonYellow": "#c4b28a"
+    "dragonYellow": "#c4b28a",
+    "dragonAccent": "dragonGreen" // links to all accent colors on palette, icons, and hypr
   },
   "palette": {
     "fgPrimary": "dragonWhite",
     "fgSecondary": "dragonGray",
     "fgTertiary": "dragonGray",
     "fgOnPrimary": "dragonBlack3",
-    "fgAccent": "dragonGreen",
+    "fgAccent": "dragonAccent",
     "bgPrimary": "dragonBlack3",
     "bgSecondary": {
       "ref": "dragonBlack3",
@@ -80,7 +81,7 @@
       "ratio": 0.26
     },
     "bgOnPrimary": "fgSecondary",
-    "bgAccent": "dragonGreen",
+    "bgAccent": "dragonAccent",
     "borderDark": "bgPrimary",
     "borderFaint": {
       "ref": "bgPrimary",
@@ -96,7 +97,7 @@
       "mix": "borderDark",
       "ratio": 0.26
     },
-    "borderAccent": "dragonGreen",
+    "borderAccent": "dragonAccent",
     "info": "crystalBlue",
     "success": "dragonGreen",
     "warning": "dragonYellow",
@@ -114,7 +115,7 @@
       "lighten": 0.01
     },
     "subtleAccent": {
-      "ref": "dragonGreen",
+      "ref": "dragonAccent",
       "alpha": 0.16
     },
     "subtlePrimary": "scrimPrimary",
@@ -126,7 +127,7 @@
     "secondary": "dragonGray",
     "muted": "dragonGray",
     "subtle": "dragonGray",
-    "accent": "dragonGreen",
+    "accent": "dragonAccent",
     "onAccent": "dragonBlack3",
     "inverse": "dragonBlack3",
     "brand": "dragonGreen",

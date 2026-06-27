@@ -190,13 +190,60 @@ remove_old_sddm_dropins() {
   fi
 }
 
+valid_sddm_focus_monitor() {
+  local value="$1"
+
+  [ "${#value}" -le 512 ] || return 1
+  [[ "$value" != *$'\n'* ]] || return 1
+  [[ "$value" != *$'\r'* ]] || return 1
+}
+
+write_sddm_focus_monitor() {
+  local focus_file="$1"
+  local focus_monitor="$2"
+  local owner="$3"
+  local group="$4"
+
+  if [ "$sddm_dry_run" -eq 1 ]; then
+    printf '+ write %s\n' "$focus_file"
+  elif [ -n "$focus_monitor" ]; then
+    printf '%s\n' "$focus_monitor" | sudo tee "$focus_file" >/dev/null
+  else
+    sudo install -m 0644 /dev/null "$focus_file"
+  fi
+
+  if [ -n "$owner" ] && [ -n "$group" ]; then
+    run_sddm sudo chown "$owner:$group" "$focus_file"
+  fi
+  run_sddm sudo chmod 0644 "$focus_file"
+}
+
 refresh_sddm() {
   local source_theme="$KITANA_DIR/default/sddm/theme"
   local target_theme="/usr/share/sddm/themes/kitana"
   local target_hyprland="/usr/share/sddm/hyprland.lua"
   local wayland_conf="/etc/sddm.conf.d/10-wayland.conf"
   local theme_conf="/etc/sddm.conf.d/20-theme.conf"
+  local sddm_cache_dir="/var/lib/kitana/sddm"
+  local sddm_background="$sddm_cache_dir/background"
+  local sddm_focus_file="$sddm_cache_dir/focus-monitor"
   local default_background="$KITANA_DIR/default/wallpapers/kitana-wallpaper-001.jpg"
+  local selected_background=""
+  local owner="${SUDO_USER:-${USER:-}}"
+  local group=""
+  local env_sddm_focus_monitor="${KITANA_SDDM_FOCUS_MONITOR:-}"
+  local sddm_focus_monitor=""
+
+  if [ -f "$HOME/.config/kitana/config" ]; then
+    # shellcheck disable=SC1090
+    source "$HOME/.config/kitana/config"
+  fi
+  sddm_focus_monitor="${env_sddm_focus_monitor:-${KITANA_SDDM_FOCUS_MONITOR:-}}"
+
+  if [ -n "$sddm_focus_monitor" ] && ! valid_sddm_focus_monitor "$sddm_focus_monitor"; then
+    echo "Ignoring invalid KITANA_SDDM_FOCUS_MONITOR: $sddm_focus_monitor" >&2
+    sddm_focus_monitor=""
+  fi
 
   if [ ! -f "$KITANA_DIR/default/sddm/hyprland.lua" ]; then
     echo "Missing SDDM Hyprland config: $KITANA_DIR/default/sddm/hyprland.lua" >&2
@@ -208,17 +255,33 @@ refresh_sddm() {
     exit 1
   fi
 
-  run_sddm sudo mkdir -p /usr/share/sddm /usr/share/sddm/themes /etc/sddm.conf.d
+  if [ -n "$owner" ]; then
+    group="$(id -gn "$owner" 2>/dev/null || true)"
+  fi
+
+  if [ -e "$HOME/.config/kitana/current-wallpaper" ]; then
+    selected_background="$HOME/.config/kitana/current-wallpaper"
+  elif [ -f "$default_background" ]; then
+    selected_background="$default_background"
+  fi
+
+  run_sddm sudo mkdir -p /usr/share/sddm /usr/share/sddm/themes /etc/sddm.conf.d /var/lib/kitana "$sddm_cache_dir"
+  run_sddm sudo chmod 755 /var/lib/kitana "$sddm_cache_dir"
+
+  if [ -n "$selected_background" ]; then
+    run_sddm sudo cp --reflink=auto -L "$selected_background" "$sddm_background" || run_sddm sudo cp -L "$selected_background" "$sddm_background"
+    if [ -n "$owner" ] && [ -n "$group" ]; then
+      run_sddm sudo chown "$owner:$group" "$sddm_background"
+    fi
+    run_sddm sudo chmod 0644 "$sddm_background"
+  fi
+
+  write_sddm_focus_monitor "$sddm_focus_file" "$sddm_focus_monitor" "$owner" "$group"
+
   run_sddm sudo cp "$KITANA_DIR/default/sddm/hyprland.lua" "$target_hyprland"
   remove_old_sddm_dropins
   run_sddm sudo rm -rf "$target_theme"
   run_sddm sudo cp -r "$source_theme" "$target_theme"
-
-  if [ -e "$HOME/.config/kitana/current-wallpaper" ]; then
-    run_sddm sudo cp -L "$HOME/.config/kitana/current-wallpaper" "$target_theme/background"
-  elif [ -f "$default_background" ]; then
-    run_sddm sudo cp "$default_background" "$target_theme/background"
-  fi
 
   write_sddm_wayland_conf "$wayland_conf"
   write_sddm_theme_conf "$theme_conf"

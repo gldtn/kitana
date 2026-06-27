@@ -16,6 +16,8 @@ hyprpaper_config="$HOME/.config/hypr/hyprpaper.conf"
 state_dir="$HOME/.config/kitana"
 state_file="$state_dir/wallpaper"
 current_wallpaper="$state_dir/current-wallpaper"
+sddm_background="${KITANA_SDDM_BACKGROUND:-/var/lib/kitana/sddm/background}"
+sddm_wallpaper_state="$state_dir/sddm-wallpaper"
 fit_mode="${KITANA_WALLPAPER_FIT:-cover}"
 awww_resize="${KITANA_AWWW_RESIZE:-crop}"
 awww_transition="${KITANA_AWWW_TRANSITION:-random}"
@@ -104,6 +106,34 @@ wallpaper {
 }
 EOF
 
+sync_sddm_background() {
+  local source="$1"
+  local current=""
+  local current_resolved=""
+  local source_resolved=""
+
+  [ -f "$sddm_background" ] || return 0
+  [ -w "$sddm_background" ] || return 0
+
+  source_resolved="$(readlink -f "$source" 2>/dev/null || printf '%s' "$source")"
+
+  if [ -f "$sddm_wallpaper_state" ] && [ "$(<"$sddm_wallpaper_state")" = "$source_resolved" ]; then
+    return 0
+  fi
+
+  {
+    if [ -f "$state_file" ]; then
+      current="$(<"$state_file")"
+    fi
+    current_resolved="$(readlink -f "$current" 2>/dev/null || printf '%s' "$current")"
+    [ "$current_resolved" = "$source_resolved" ] || exit 0
+
+    cp --reflink=auto -- "$source_resolved" "$sddm_background" 2>/dev/null || cp -- "$source_resolved" "$sddm_background" 2>/dev/null || exit 0
+    chmod 0644 "$sddm_background" 2>/dev/null || true
+    printf '%s\n' "$source_resolved" >"$sddm_wallpaper_state"
+  } >/tmp/kitana-sddm-wallpaper.log 2>&1 &
+}
+
 apply_awww() {
   command -v awww >/dev/null 2>&1 || return 1
   command -v awww-daemon >/dev/null 2>&1 || return 1
@@ -143,6 +173,8 @@ if ! apply_awww; then
   backend="hyprpaper"
   apply_hyprpaper
 fi
+
+sync_sddm_background "$selected"
 
 if [ ! -f "$state_dir/theme" ]; then
   "${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-matugen" "$selected"

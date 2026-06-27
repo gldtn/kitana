@@ -2,3 +2,4 @@
 
 KITANA_WALLPAPER_DIR="$HOME/.config/kitana/wallpapers"
 KITANA_THEME="catppuccin-mocha"
+KITANA_SDDM_FOCUS_MONITOR=""

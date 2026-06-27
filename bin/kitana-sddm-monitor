@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -euo pipefail
+
+KITANA_DIR="${KITANA_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+binary="$KITANA_DIR/target/release/kitana-sddm-monitor"
+
+if [ ! -x "$binary" ]; then
+  if ! command -v cargo >/dev/null 2>&1; then
+    echo "kitana-sddm-monitor: Rust binary missing and cargo is not installed: $binary" >&2
+    exit 1
+  fi
+
+  echo "kitana-sddm-monitor: building Rust helper" >&2
+  cargo build --release --bin kitana-sddm-monitor --manifest-path "$KITANA_DIR/Cargo.toml" >&2
+fi
+
+export KITANA_DIR
+exec "$binary" "$@"

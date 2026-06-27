@@ -477,6 +477,18 @@ PanelWindow {
         }
     }
 
+    // Detected monitor option for SDDM focus
+    component LoginMonitorOption: SettingRow {
+        required property var modelData
+
+        iconName: "display.monitor"
+        title: modelData.displayName || modelData.name || "Monitor"
+        subtitle: Services.LoginMonitor.monitorSubtitle(modelData)
+        active: Services.LoginMonitor.selectorMatches(modelData)
+        enabled: !Services.LoginMonitor.saving
+        onClicked: Services.LoginMonitor.setSelector(modelData.selector || modelData.name || "")
+    }
+
     // Bar settings tab content
     Component {
         id: barTab
@@ -670,6 +682,82 @@ PanelWindow {
                 subtitle: Services.CaffeineService.enabled ? "Idle inhibit on" : "Idle inhibit off"
                 active: Services.CaffeineService.enabled
                 onClicked: Services.CaffeineService.toggle()
+            }
+
+            // SDDM login monitor selector card
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: loginMonitorContent.implicitHeight + 24
+                radius: 14
+                color: Colors.bgSecondary
+                border.color: Colors.borderFaint
+                border.width: 1
+
+                ColumnLayout {
+                    id: loginMonitorContent
+
+                    anchors.fill: parent
+                    anchors.margins: 12
+                    spacing: 10
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 8
+
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: 1
+
+                            Text {
+                                Layout.fillWidth: true
+                                text: "Login monitor"
+                                color: Colors.fgPrimary
+                                font.family: Typography.fontFamily
+                                font.pixelSize: settings.textPixelSize
+                                font.weight: Font.Bold
+                            }
+
+                            Text {
+                                Layout.fillWidth: true
+                                text: "Choose where SDDM places keyboard focus."
+                                color: Colors.fgSecondary
+                                elide: Text.ElideRight
+                                font.family: Typography.fontFamily
+                                font.pixelSize: settings.textPixelSize - 1
+                            }
+                        }
+
+                        GeometryActionButton {
+                            label: Services.LoginMonitor.refreshing ? "Refreshing" : "Refresh"
+                            enabled: !Services.LoginMonitor.refreshing && !Services.LoginMonitor.saving
+                            onClicked: Services.LoginMonitor.refresh()
+                        }
+                    }
+
+                    Text {
+                        Layout.fillWidth: true
+                        visible: Services.LoginMonitor.statusText.length > 0
+                        text: Services.LoginMonitor.statusText
+                        color: Colors.fgSecondary
+                        wrapMode: Text.WordWrap
+                        font.family: Typography.fontFamily
+                        font.pixelSize: settings.textPixelSize - 1
+                    }
+
+                    SettingRow {
+                        iconName: "settings"
+                        title: "Automatic"
+                        subtitle: "Let Hyprland keep its default SDDM focus"
+                        active: Services.LoginMonitor.selector.length === 0
+                        enabled: !Services.LoginMonitor.saving
+                        onClicked: Services.LoginMonitor.setSelector("")
+                    }
+
+                    Repeater {
+                        model: Services.LoginMonitor.monitors
+                        delegate: LoginMonitorOption {}
+                    }
+                }
             }
 
             Text {

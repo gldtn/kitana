@@ -395,6 +395,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "kitana-sddm-monitor"
+version = "0.1.0"
+dependencies = [
+ "serde_json",
+]
+
+[[package]]
 name = "leb128fmt"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"

@@ -23,4 +23,4 @@ PACKAGES=(
 kitana_install_required_packages "desktop/development" "${PACKAGES[@]}" || exit 1
 
 echo "Building Rust helper binaries..."
-cargo build --release --bin kitana-bluetooth-pair --manifest-path "$KITANA_DIR/Cargo.toml"
+cargo build --release --workspace --manifest-path "$KITANA_DIR/Cargo.toml"
