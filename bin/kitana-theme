@@ -74,6 +74,7 @@ run_background_integrations() {
     [ "$(<"$state_file")" = "$slug" ] && "$kitana_dir/bin/kitana-theme-zed" "$slug" || true
     [ "$(<"$state_file")" = "$slug" ] && "$kitana_dir/bin/kitana-theme-neovim" "$slug" || true
     [ "$(<"$state_file")" = "$slug" ] && "$kitana_dir/bin/kitana-theme-cava" "$slug" || true
+    [ "$(<"$state_file")" = "$slug" ] && "$kitana_dir/bin/kitana-theme-opencode" "$slug" || true
   } >/tmp/kitana-theme-integrations.log 2>&1 &
 }
 

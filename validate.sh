@@ -426,6 +426,7 @@ for helper in \
   kitana-theme-grid \
   kitana-theme-hypr \
   kitana-theme-neovim \
+  kitana-theme-opencode \
   kitana-theme-quickshell \
   kitana-theme-zed \
   kitana-theme-zed-update \

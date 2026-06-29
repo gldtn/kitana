@@ -51,16 +51,16 @@ bind(mod .. " + ESCAPE", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-s
 bind(mod .. " + CTRL + Z", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"), { description = "Exit Hyprland" })
 
 -- Quickshell control
-bind(mod .. " + K", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-shortcuts open"), { description = "Shortcuts" })
+bind(mod .. " + CTRL + K", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-shortcuts open"), { description = "Shortcuts" })
 bind(mod .. " + CTRL + B", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-bar toggle"), { description = "Toggle Quickshell bar" })
 bind(mod .. " + CTRL + D", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-dashboard toggle datetime"), { description = "Dashboard" })
-bind(mod .. " + PERIOD", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-settings toggle bar"), { description = "Settings panel" })
+bind(mod .. " + CTRL + PERIOD", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-settings toggle bar"), { description = "Settings panel" })
 bind("PRINT", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-screenshot toggle"), { description = "Screenshot menu" })
 bind(mod .. " + CTRL + T", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-theme-grid"), { description = "Theme chooser" })
 bind(mod .. " + CTRL + W", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-wallpaper-grid"), { description = "Wallpaper chooser" })
 bind(mod .. " + CTRL + R", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-quickshell --restart"), { description = "Restart Quickshell" })
-bind(mod .. " + COMMA", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-control-panel toggle notifications"), { description = "Control panel" })
-bind(mod .. " + SHIFT + COMMA", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-notifications clear"), { description = "Dismiss all notifications" })
+bind(mod .. " + CTRL + COMMA", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-control-panel toggle notifications"), { description = "Control panel" })
+bind(mod .. " + COMMA", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-notifications clear"), { description = "Dismiss all notifications" })
 
 -- hyprland layout manipulation
 bind(mod .. " + TAB", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-hyprland-workspace-layout-toggle"), { description = "Toggle current workspace layout" })

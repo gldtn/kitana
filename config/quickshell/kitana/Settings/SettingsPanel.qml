@@ -335,7 +335,7 @@ PanelWindow {
         property int step: 1
         readonly property bool canDecrease: enabled && value > minimum
         readonly property bool canIncrease: enabled && value < maximum
-        readonly property color pagerAccentColor: Colors.alpha(Colors.scrimTertiary, 0.33)
+        readonly property color pagerAccentColor: Colors.alpha(Colors.bgTertiary, 0.95)
         readonly property real pagerBorderWidth: 0.8
 
         signal valueRequested(int requestedValue)

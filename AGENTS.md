@@ -98,6 +98,7 @@ Theme application flow:
 - `kitana-theme THEME` applies the selected theme and writes `~/.config/kitana/theme`.
 - `kitana-theme-quickshell` writes the selected JSON theme to `~/.config/quickshell/kitana/Theme/current.json`.
 - `kitana-theme-ghostty` updates Ghostty theme state.
+- `kitana-theme-opencode` writes `~/.config/opencode/themes/kitana.json` and sets `~/.config/opencode/tui.json` to the Kitana TUI theme.
 - `kitana-theme-zed` writes `~/.config/zed/themes/kitana-dynamic.json`, often from `vendor/zed/*.json`.
 - `kitana-theme-hypr` writes `~/.config/hypr/kitana-theme.lua`; Hyprland picks up the change through live config reload.
 

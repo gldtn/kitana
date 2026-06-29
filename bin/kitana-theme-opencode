@@ -1,0 +1,103 @@
+#!/bin/bash
+
+set -euo pipefail
+
+kitana_dir="${KITANA_DIR:-$HOME/.local/share/kitana}"
+lua_path="$kitana_dir/lib/?.lua;$kitana_dir/lib/?/init.lua;;"
+opencode_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/opencode"
+opencode_theme_dir="$opencode_config_dir/themes"
+opencode_theme_file="$opencode_theme_dir/kitana.json"
+opencode_tui_file="$opencode_config_dir/tui.json"
+theme="${1:-}"
+theme_env=""
+
+if [ -z "$theme" ]; then
+  printf 'Usage: %s THEME\n' "$(basename "$0")" >&2
+  exit 2
+fi
+
+theme_env="$(LUA_PATH="$lua_path" lua "$kitana_dir/lib/kitana-theme.lua" env "$theme")" || exit 1
+eval "$theme_env"
+
+mkdir -p "$opencode_theme_dir"
+
+cat >"$opencode_theme_file" <<EOF
+{
+  "\$schema": "https://opencode.ai/theme.json",
+  "theme": {
+    "primary": "$accent0",
+    "secondary": "$info",
+    "accent": "$accent0",
+    "error": "$danger0",
+    "warning": "$warning0",
+    "success": "$accent1",
+    "info": "$info",
+    "text": "$text0",
+    "textMuted": "$subtext0",
+    "background": "$base0",
+    "backgroundPanel": "$base1",
+    "backgroundElement": "$surface0",
+    "border": "$surface1",
+    "borderActive": "$accent0",
+    "borderSubtle": "$surface0",
+    "diffAdded": "$accent1",
+    "diffRemoved": "$danger0",
+    "diffContext": "$subtext0",
+    "diffHunkHeader": "$info",
+    "diffHighlightAdded": "$accent1",
+    "diffHighlightRemoved": "$danger0",
+    "diffAddedBg": "$base1",
+    "diffRemovedBg": "$base1",
+    "diffContextBg": "$base0",
+    "diffLineNumber": "$subtext0",
+    "diffAddedLineNumberBg": "$base1",
+    "diffRemovedLineNumberBg": "$base1",
+    "markdownText": "$text0",
+    "markdownHeading": "$accent0",
+    "markdownLink": "$info",
+    "markdownLinkText": "$accent0",
+    "markdownCode": "$accent1",
+    "markdownBlockQuote": "$subtext0",
+    "markdownEmph": "$warning0",
+    "markdownStrong": "$accent0",
+    "markdownHorizontalRule": "$surface1",
+    "markdownListItem": "$accent0",
+    "markdownListEnumeration": "$info",
+    "markdownImage": "$info",
+    "markdownImageText": "$accent0",
+    "markdownCodeBlock": "$text0",
+    "syntaxComment": "$subtext0",
+    "syntaxKeyword": "$accent0",
+    "syntaxFunction": "$info",
+    "syntaxVariable": "$text0",
+    "syntaxString": "$accent1",
+    "syntaxNumber": "$warning0",
+    "syntaxType": "$info",
+    "syntaxOperator": "$accent0",
+    "syntaxPunctuation": "$text1"
+  }
+}
+EOF
+
+tmp_tui="$(mktemp "$opencode_tui_file.tmp.XXXXXX")"
+LUA_PATH="$lua_path" lua - "$opencode_tui_file" >"$tmp_tui" <<'EOF'
+local json = require("kitana-json")
+local path = arg[1]
+local config = {}
+
+local file = io.open(path, "rb")
+if file then
+  local data = file:read("*a")
+  file:close()
+  if data:match("%S") then
+    config = json.decode_jsonc(data)
+  end
+end
+
+config["$schema"] = "https://opencode.ai/tui.json"
+config.theme = "kitana"
+io.write(json.encode(config, { indent = "  " }), "\n")
+EOF
+mv "$tmp_tui" "$opencode_tui_file"
+
+printf 'OpenCode theme applied: %s\n' "$name"
