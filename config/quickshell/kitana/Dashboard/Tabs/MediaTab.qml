@@ -51,15 +51,15 @@ Item {
         onTriggered: Services.MediaService.refreshPosition()
     }
 
-    // Material-style media playback card
+    // Media playback card
     Rectangle {
         id: mediaCard
 
         anchors.fill: parent
-        radius: 24
-        color: Colors.bgSecondary
-        border.color: Colors.borderFaint
-        border.width: 0.8
+        radius: tabRoot.panel.sectionRadius
+        color: tabRoot.panel.sectionContainer
+        border.color: tabRoot.panel.sectionBorder
+        border.width: tabRoot.panel.sectionBorderWidth
         clip: true
 
         // Masked accent pools preserve the edge-circle look without leaking past rounded corners.
@@ -116,9 +116,10 @@ Item {
 
                 Layout.fillWidth: true
                 Layout.preferredHeight: Math.max(174, Math.min(214, mediaCard.height * 0.48))
-                radius: 28
-                color: Colors.alpha(Colors.bgTertiary, 0.96)
-                border.width: 0
+                radius: tabRoot.panel.sectionRadius - 2
+                color: Colors.bgTertiary
+                border.color: Colors.borderLight
+                border.width: 0.8
                 clip: true
 
                 Item {
@@ -149,9 +150,9 @@ Item {
 
                         Layout.preferredWidth: Math.min(214, Math.max(144, mediaHero.width * 0.34))
                         Layout.fillHeight: true
-                        radius: 24
+                        radius: mediaHero.radius - 2
                         color: Colors.bgPrimary
-                        border.width: 0
+                        border.width: 1
                         clip: true
 
                         Image {
@@ -212,7 +213,7 @@ Item {
                         RowLayout {
                             Layout.fillWidth: true
                             spacing: 8
-
+                            // Media player identity chip (Spotify, VLC, etc.)
                             Rectangle {
                                 Layout.preferredWidth: Math.min(190, Math.max(116, playerLabel.implicitWidth + 26))
                                 Layout.preferredHeight: 32
@@ -239,7 +240,7 @@ Item {
                             Item {
                                 Layout.fillWidth: true
                             }
-
+                            // Media status chip (playing, paused, stopped)
                             Rectangle {
                                 Layout.preferredWidth: 88
                                 Layout.preferredHeight: 32
@@ -305,7 +306,7 @@ Item {
                     anchors.margins: 0
                     radius: mediaHero.radius
                     color: "transparent"
-                    border.color: Colors.alpha(Colors.borderLight, 0.72)
+                    border.color: Colors.borderLight
                     border.width: 0.8
                 }
             }

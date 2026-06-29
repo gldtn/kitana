@@ -106,6 +106,11 @@ PanelWindow {
     readonly property real expandedRadius: 18
     readonly property real contentOpacity: Math.max(0, Math.min(1, (morphProgress - 0.36) / 0.64))
     readonly property real previewOpacity: Math.max(0, Math.min(1, 1 - morphProgress * 2.6))
+    // dashboard-wide UI properties
+    readonly property color sectionContainer: Colors.bgSecondary
+    readonly property color sectionBorder: Colors.borderFaint
+    readonly property real sectionBorderWidth: 0.6
+    readonly property real sectionRadius: 16
 
     function lerp(from: real, to: real, progress: real): real {
         return from + (to - from) * progress;

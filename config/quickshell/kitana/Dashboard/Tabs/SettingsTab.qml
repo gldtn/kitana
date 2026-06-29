@@ -11,7 +11,9 @@ import "../../custom" as Custom
 ColumnLayout {
     id: tabRoot
 
-    Custom.Settings { id: settings }
+    Custom.Settings {
+        id: settings
+    }
 
     property var dashboard: null
     property var weatherPrefs: null
@@ -34,10 +36,10 @@ ColumnLayout {
     Rectangle {
         Layout.fillWidth: true
         Layout.preferredHeight: 128
-        radius: 16
-        color: Colors.bgSecondary
-        border.color: Colors.borderFaint
-        border.width: 0.8
+        radius: tabRoot.panel.sectionRadius
+        color: tabRoot.panel.sectionContainer
+        border.color: tabRoot.panel.sectionBorder
+        border.width: tabRoot.panel.sectionBorderWidth
 
         // Weather settings form
         ColumnLayout {
@@ -163,5 +165,7 @@ ColumnLayout {
     }
 
     // Fill remaining tab space
-    Item { Layout.fillHeight: true }
+    Item {
+        Layout.fillHeight: true
+    }
 }

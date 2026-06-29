@@ -26,10 +26,10 @@ RowLayout {
     Rectangle {
         Layout.preferredWidth: 250
         Layout.fillHeight: true
-        radius: 16
-        color: Colors.bgSecondary
-        border.color: Colors.borderFaint
-        border.width: 0.8
+        radius: tabRoot.panel.sectionRadius
+        color: tabRoot.panel.sectionContainer
+        border.color: tabRoot.panel.sectionBorder
+        border.width: tabRoot.panel.sectionBorderWidth
 
         // Sidebar content stack
         ColumnLayout {
@@ -143,9 +143,9 @@ RowLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
         radius: 16
-        color: Colors.bgSecondary
-        border.color: Colors.borderFaint
-        border.width: 0.8
+        color: tabRoot.panel.sectionContainer
+        border.color: tabRoot.panel.sectionBorder
+        border.width: tabRoot.panel.sectionBorderWidth
 
         // Calendar header and day grid
         ColumnLayout {

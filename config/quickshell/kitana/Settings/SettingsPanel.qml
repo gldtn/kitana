@@ -25,7 +25,6 @@ PanelWindow {
     property bool panelVisible: false
     property real revealProgress: 0
     property string activeTab: "bar"
-    property alias backdropItem: backdrop
 
     function open(tab: string): void {
         const wasVisible = panelVisible;
@@ -159,6 +158,10 @@ PanelWindow {
     Rectangle {
         id: card
 
+        readonly property color sectionContainer: Colors.bgSecondary
+        readonly property color sectionBorder: Colors.borderFaint
+        readonly property real sectionBorderWidth: 0.6
+
         width: Math.min(820, parent.width - 72)
         height: Math.min(520, parent.height - 120)
         anchors.centerIn: parent
@@ -287,7 +290,7 @@ PanelWindow {
         }
     }
 
-    // Compact button used by geometry controls
+    // Refresh,Compact button used by geometry controls
     component GeometryActionButton: Rectangle {
         id: actionRoot
 
@@ -301,7 +304,7 @@ PanelWindow {
         opacity: enabled ? 1 : 0.45
         color: actionMouse.containsMouse && enabled ? Colors.subtleAccent : Colors.bgTertiary
         border.color: actionMouse.containsMouse && enabled ? Colors.borderAccent : Colors.borderFaint
-        border.width: 1
+        border.width: 0.8
 
         Text {
             id: labelText
@@ -332,7 +335,6 @@ PanelWindow {
         property int value: 0
         property int minimum: 0
         property int maximum: 100
-        property int step: 1
         readonly property bool canDecrease: enabled && value > minimum
         readonly property bool canIncrease: enabled && value < maximum
         readonly property color pagerAccentColor: Colors.alpha(Colors.bgTertiary, 0.95)
@@ -422,7 +424,7 @@ PanelWindow {
                     enabled: pagerRoot.canDecrease
                     hoverEnabled: true
                     cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-                    onClicked: pagerRoot.valueRequested(Math.max(pagerRoot.minimum, pagerRoot.value - pagerRoot.step))
+                    onClicked: pagerRoot.valueRequested(Math.max(pagerRoot.minimum, pagerRoot.value - 1))
                 }
             }
 
@@ -523,7 +525,7 @@ PanelWindow {
                     enabled: pagerRoot.canIncrease
                     hoverEnabled: true
                     cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-                    onClicked: pagerRoot.valueRequested(Math.min(pagerRoot.maximum, pagerRoot.value + pagerRoot.step))
+                    onClicked: pagerRoot.valueRequested(Math.min(pagerRoot.maximum, pagerRoot.value + 1))
                 }
             }
         }
@@ -538,7 +540,6 @@ PanelWindow {
         property int value: 0
         property int minimum: 0
         property int maximum: 100
-        property int step: 1
         property int rowIndex: 0
 
         signal valueRequested(int requestedValue)
@@ -584,7 +585,6 @@ PanelWindow {
                 value: stepRoot.value
                 minimum: stepRoot.minimum
                 maximum: stepRoot.maximum
-                step: stepRoot.step
                 onValueRequested: requestedValue => stepRoot.valueRequested(requestedValue)
             }
         }
@@ -620,10 +620,10 @@ PanelWindow {
                 Rectangle {
                     Layout.fillWidth: true
                     Layout.preferredHeight: workspaceLayoutContent.implicitHeight + 24
-                    radius: 14
-                    color: Colors.bgSecondary
-                    border.color: Colors.borderFaint
-                    border.width: 0.8
+                    radius: 16
+                    color: card.sectionContainer
+                    border.color: card.sectionBorder
+                    border.width: card.sectionBorderWidth
 
                     // Workspace layout options content
                     GridLayout {
@@ -677,10 +677,10 @@ PanelWindow {
                 Rectangle {
                     Layout.fillWidth: true
                     Layout.preferredHeight: geometryContent.implicitHeight + 24
-                    radius: 14
-                    color: Colors.bgSecondary
-                    border.color: Colors.borderFaint
-                    border.width: 0.8
+                    radius: 16
+                    color: card.sectionContainer
+                    border.color: card.sectionBorder
+                    border.width: card.sectionBorderWidth
 
                     ColumnLayout {
                         id: geometryContent
@@ -793,9 +793,9 @@ PanelWindow {
                 Layout.fillWidth: true
                 Layout.preferredHeight: loginMonitorContent.implicitHeight + 24
                 radius: 14
-                color: Colors.bgSecondary
-                border.color: Colors.borderFaint
-                border.width: 0.8
+                color: card.sectionContainer
+                border.color: card.sectionBorder
+                border.width: card.sectionBorderWidth
 
                 GridLayout {
                     id: loginMonitorContent

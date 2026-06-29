@@ -45,7 +45,7 @@
     "bgTertiary": "bg_highlight",
     "bgOnPrimary": "bgTertiary",
     // border color palette
-    "borderDark": "bg",
+    "borderDark": "bgPrimary",
     "borderFaint": {
       "ref": "grey",
       "darken": 0.6

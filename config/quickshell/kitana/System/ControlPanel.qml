@@ -14,7 +14,9 @@ PanelWindow {
     id: root
     // qmllint enable uncreatable-type
 
-    Custom.Settings { id: settings }
+    Custom.Settings {
+        id: settings
+    }
 
     readonly property var panelSelf: root
     // Mirrors Hyprland general.gaps_out.
@@ -111,10 +113,16 @@ PanelWindow {
             spacing: 12
 
             // Panel title and section icons
-            System.PanelHeader { id: panelHeader; panel: root.panelSelf }
+            System.PanelHeader {
+                id: panelHeader
+                panel: root.panelSelf
+            }
 
             // Quick settings tiles
-            System.QuickSettingsGrid { id: quickGrid; panel: root.panelSelf }
+            System.QuickSettingsGrid {
+                id: quickGrid
+                panel: root.panelSelf
+            }
 
             // Active detail pane container
             Rectangle {
@@ -125,7 +133,6 @@ PanelWindow {
                 border.color: Colors.borderFaint
                 border.width: 0.6
                 clip: true
-
                 // Active detail pane loader
                 Loader {
                     anchors.fill: parent
@@ -135,9 +142,11 @@ PanelWindow {
             }
 
             // Audio, microphone, and brightness sliders
-            System.ControlSliders { id: sliders; height: implicitHeight }
+            System.ControlSliders {
+                id: sliders
+                height: implicitHeight
+            }
         }
-
     }
 
     // Control panel reveal animation
@@ -151,14 +160,26 @@ PanelWindow {
     }
 
     // Notifications detail pane
-    Component { id: notificationsView; Panes.NotificationsPane {} }
+    Component {
+        id: notificationsView
+        Panes.NotificationsPane {}
+    }
 
     // Bluetooth detail pane
-    Component { id: bluetoothDetails; Panes.BluetoothPane {} }
+    Component {
+        id: bluetoothDetails
+        Panes.BluetoothPane {}
+    }
 
     // Network detail pane
-    Component { id: networkDetails; Panes.NetworkPane {} }
+    Component {
+        id: networkDetails
+        Panes.NetworkPane {}
+    }
 
     // Audio detail pane
-    Component { id: audioDetails; Panes.AudioPane {} }
+    Component {
+        id: audioDetails
+        Panes.AudioPane {}
+    }
 }

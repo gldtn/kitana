@@ -12,7 +12,9 @@ import "../../custom" as Custom
 ColumnLayout {
     id: tabRoot
 
-    Custom.Settings { id: settings }
+    Custom.Settings {
+        id: settings
+    }
 
     property var dashboard: null
     property var weatherPrefs: null
@@ -55,17 +57,21 @@ ColumnLayout {
             onClicked: tabRoot.panel.weatherUnits = tabRoot.panel.weatherUnits === "C" ? "F" : "C"
         }
 
-        MiniButton { iconName: "ui.refresh"; heightOverride: 34; onClicked: tabRoot.panel.refreshWeather() }
+        MiniButton {
+            iconName: "ui.refresh"
+            heightOverride: 34
+            onClicked: tabRoot.panel.refreshWeather()
+        }
     }
 
     // Current weather summary card
     Rectangle {
         Layout.fillWidth: true
         Layout.preferredHeight: 122
-        radius: 16
-        color: Colors.bgSecondary
-        border.color: Colors.borderFaint
-        border.width: 0.8
+        radius: tabRoot.panel.sectionRadius
+        color: tabRoot.panel.sectionContainer
+        border.color: tabRoot.panel.sectionBorder
+        border.width: tabRoot.panel.sectionBorderWidth
 
         // Weather condition and metric content
         RowLayout {
@@ -124,12 +130,36 @@ ColumnLayout {
                     columns: 3
                     rowSpacing: 10
                     columnSpacing: 28
-                    WeatherMetric { iconName: "weather.water"; label: "Humidity"; value: tabRoot.weatherData.current_condition ? tabRoot.weatherData.current_condition[0].humidity + "%" : "--" }
-                    WeatherMetric { iconName: "weather.wind"; label: "Wind"; value: tabRoot.panel.windValue(tabRoot.weatherData.current_condition ? tabRoot.weatherData.current_condition[0] : null) }
-                    WeatherMetric { iconName: "weather.thermometer"; label: "Feels"; value: tabRoot.weatherData.current_condition ? tabRoot.panel.tempValue(tabRoot.weatherData.current_condition[0], "FeelsLikeC", "FeelsLikeF") : "--" }
-                    WeatherMetric { iconName: "weather.water"; label: "Precip"; value: tabRoot.weatherData.current_condition ? tabRoot.weatherData.current_condition[0].precipMM + " mm" : "--" }
-                    WeatherMetric { iconName: "weather.pressure"; label: "Pressure"; value: tabRoot.weatherData.current_condition ? tabRoot.weatherData.current_condition[0].pressure + " hPa" : "--" }
-                    WeatherMetric { iconName: "weather.visibility"; label: "Visibility"; value: tabRoot.weatherData.current_condition ? tabRoot.weatherData.current_condition[0].visibility + " km" : "--" }
+                    WeatherMetric {
+                        iconName: "weather.water"
+                        label: "Humidity"
+                        value: tabRoot.weatherData.current_condition ? tabRoot.weatherData.current_condition[0].humidity + "%" : "--"
+                    }
+                    WeatherMetric {
+                        iconName: "weather.wind"
+                        label: "Wind"
+                        value: tabRoot.panel.windValue(tabRoot.weatherData.current_condition ? tabRoot.weatherData.current_condition[0] : null)
+                    }
+                    WeatherMetric {
+                        iconName: "weather.thermometer"
+                        label: "Feels"
+                        value: tabRoot.weatherData.current_condition ? tabRoot.panel.tempValue(tabRoot.weatherData.current_condition[0], "FeelsLikeC", "FeelsLikeF") : "--"
+                    }
+                    WeatherMetric {
+                        iconName: "weather.water"
+                        label: "Precip"
+                        value: tabRoot.weatherData.current_condition ? tabRoot.weatherData.current_condition[0].precipMM + " mm" : "--"
+                    }
+                    WeatherMetric {
+                        iconName: "weather.pressure"
+                        label: "Pressure"
+                        value: tabRoot.weatherData.current_condition ? tabRoot.weatherData.current_condition[0].pressure + " hPa" : "--"
+                    }
+                    WeatherMetric {
+                        iconName: "weather.visibility"
+                        label: "Visibility"
+                        value: tabRoot.weatherData.current_condition ? tabRoot.weatherData.current_condition[0].visibility + " km" : "--"
+                    }
                 }
             }
         }
@@ -139,10 +169,10 @@ ColumnLayout {
     Rectangle {
         Layout.fillWidth: true
         Layout.preferredHeight: 74
-        radius: 14
-        color: Colors.bgSecondary
-        border.color: Colors.borderFaint
-        border.width: 0.8
+        radius: tabRoot.panel.sectionRadius
+        color: tabRoot.panel.sectionContainer
+        border.color: tabRoot.panel.sectionBorder
+        border.width: tabRoot.panel.sectionBorderWidth
 
         // Sunrise, sunset, and moon metrics
         RowLayout {
@@ -150,9 +180,27 @@ ColumnLayout {
             anchors.margins: 14
             spacing: 8
 
-            WeatherMetric { iconName: "weather.sunrise"; label: "Sunrise"; value: tabRoot.weatherData.weather ? tabRoot.weatherData.weather[0].astronomy[0].sunrise : "--"; centerContent: true; Layout.fillWidth: true }
-            WeatherMetric { iconName: "weather.sunset"; label: "Sunset"; value: tabRoot.weatherData.weather ? tabRoot.weatherData.weather[0].astronomy[0].sunset : "--"; centerContent: true; Layout.fillWidth: true }
-            WeatherMetric { iconName: "weather.moon"; label: "Moon"; value: tabRoot.weatherData.weather ? tabRoot.weatherData.weather[0].astronomy[0].moon_phase : "--"; centerContent: true; Layout.fillWidth: true }
+            WeatherMetric {
+                iconName: "weather.sunrise"
+                label: "Sunrise"
+                value: tabRoot.weatherData.weather ? tabRoot.weatherData.weather[0].astronomy[0].sunrise : "--"
+                centerContent: true
+                Layout.fillWidth: true
+            }
+            WeatherMetric {
+                iconName: "weather.sunset"
+                label: "Sunset"
+                value: tabRoot.weatherData.weather ? tabRoot.weatherData.weather[0].astronomy[0].sunset : "--"
+                centerContent: true
+                Layout.fillWidth: true
+            }
+            WeatherMetric {
+                iconName: "weather.moon"
+                label: "Moon"
+                value: tabRoot.weatherData.weather ? tabRoot.weatherData.weather[0].astronomy[0].moon_phase : "--"
+                centerContent: true
+                Layout.fillWidth: true
+            }
         }
     }
 
@@ -177,10 +225,10 @@ ColumnLayout {
 
                 Layout.fillWidth: true
                 Layout.preferredHeight: 96
-                radius: 14
-                color: Colors.bgSecondary
-                border.color: Colors.borderFaint
-                border.width: 0.8
+                radius: tabRoot.panel.sectionRadius
+                color: tabRoot.panel.sectionContainer
+                border.color: tabRoot.panel.sectionBorder
+                border.width: tabRoot.panel.sectionBorderWidth
 
                 // Forecast day details
                 Column {
@@ -249,7 +297,9 @@ ColumnLayout {
     }
 
     // Flexible spacer below forecast
-    Item { Layout.fillHeight: true }
+    Item {
+        Layout.fillHeight: true
+    }
 
     // Weather data attribution
     Text {
