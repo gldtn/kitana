@@ -4,7 +4,7 @@ Temporary notes for clean-install testing and session handoff. Update this befor
 
 ## Current State
 
-- 2026-06-21 handoff: current work is focused on live tuning Quickshell theme colors, especially `themes/*.jsonc` roles as seen through real shell controls.
+- 2026-06-21 handoff: current work is focused on live tuning Quickshell theme colors, especially `themes/static/*.jsonc` roles as seen through real shell controls.
 - A temporary Quickshell theme preview exists at `config/quickshell/kitana/Theme/ThemePreview.qml` and is opened from a temporary top-bar item next to the screenshot button.
 - Theme preview workflow:
   - `kitana-theme-preview open` opens the preview through IPC target `kitana-theme-preview`.
@@ -72,7 +72,7 @@ Temporary notes for clean-install testing and session handoff. Update this befor
 
 ## Open Issues
 
-- None currently tracked.
+- Cava `SIGUSR2` color reload appears to have regressed for theme-file `background` updates; `SIGUSR1` is the temporary Kitana workaround until https://github.com/karlstav/cava/issues/784 is resolved.
 
 ## Fresh Machine Test Focus
 

@@ -72,11 +72,14 @@
     "border_inactive": "borderHeavy"
   },
   "ghostty": {
-    "source_file": "vendor/ghostty/cyberdream"
+    "source_file": "themes/integrations/ghostty/vendor/cyberdream"
+  },
+  "cava": {
+    "source_file": "themes/integrations/cava/kitana/cyberdream.cava"
   },
   "zed": {
     "source_url": "https://raw.githubusercontent.com/scottmckendry/cyberdream.nvim/main/extras/zed/cyberdream.json",
-    "source_file": "vendor/zed/cyberdream.json",
+    "source_file": "themes/integrations/zed/vendor/cyberdream.json",
     "theme_name": "Cyberdream dark"
   },
   "neovim": {

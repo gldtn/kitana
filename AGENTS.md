@@ -53,9 +53,8 @@ Install guidance:
 - `install/` - install stages and shared install libraries.
 - `lib/` - shared non-install libraries.
 - `NOTES.md` - temporary clean-install testing notes and session handoff context.
-- `themes/` - Kitana theme palettes and theme helpers.
+- `themes/` - Kitana static themes, dynamic Matugen templates, and app integration theme sources.
 - `TODO.md` - tracked follow-up work and deferred improvements.
-- `vendor/` - bundled upstream data used by generators.
 
 Do not edit live user config as the source of truth. Update repository files first, then use the relevant refresh command or install script to deploy.
 
@@ -91,7 +90,7 @@ Use targeted refresh commands when possible instead of rerunning the full instal
 
 # Themes
 
-Theme definitions live in `themes/*.jsonc`; shared theme loading and color resolution lives in `lib/kitana-theme.lua`.
+Theme definitions live in `themes/static/*.jsonc`; shared theme loading and color resolution lives in `lib/kitana-theme.lua`.
 
 Theme application flow:
 
@@ -99,7 +98,7 @@ Theme application flow:
 - `kitana-theme-quickshell` writes the selected JSON theme to `~/.config/quickshell/kitana/Theme/current.json`.
 - `kitana-theme-ghostty` updates Ghostty theme state.
 - `kitana-theme-opencode` writes `~/.config/opencode/themes/kitana.json` and sets `~/.config/opencode/tui.json` to the Kitana TUI theme.
-- `kitana-theme-zed` writes `~/.config/zed/themes/kitana-dynamic.json`, often from `vendor/zed/*.json`.
+- `kitana-theme-zed` writes `~/.config/zed/themes/kitana-dynamic.json`, often from `themes/integrations/zed/vendor/*.json`.
 - `kitana-theme-hypr` writes `~/.config/hypr/kitana-theme.lua`; Hyprland picks up the change through live config reload.
 
 When adding or editing themes, keep native source colors under `colors`, map semantic roles under `palette`, and validate with `LUA_PATH="$PWD/lib/?.lua;$PWD/lib/?/init.lua;;" lua lib/kitana-theme.lua validate` plus the smallest relevant generated consumer command.
@@ -128,7 +127,7 @@ Quickshell Markdown docs are for people or agents editing Kitana, not runtime he
 Quickshell color role shape lives in:
 
 - `config/quickshell/kitana/Config/Colors.qml`
-- `themes/*.jsonc` for native source colors and semantic mappings
+- `themes/static/*.jsonc` for native source colors and semantic mappings
 - `~/.config/quickshell/kitana/Theme/current.json` as the live watched runtime theme
 
 `kitana-theme-quickshell` and `kitana-matugen` both write the same runtime JSON schema. Keep reusable QML components on semantic `Colors` roles instead of native theme source names.

@@ -517,25 +517,55 @@ else
 fi
 
 for theme in catppuccin-mocha rose-pine tokyo-night dracula kanagawa-dragon cyberdream; do
-  if [ -f "$KITANA_DIR/themes/$theme.jsonc" ]; then
-    pass "Kitana theme palette: themes/$theme.jsonc"
+  if [ -f "$KITANA_DIR/themes/static/$theme.jsonc" ]; then
+    pass "Kitana theme palette: themes/static/$theme.jsonc"
   else
-    fail "Kitana theme palette missing: themes/$theme.jsonc"
+    fail "Kitana theme palette missing: themes/static/$theme.jsonc"
   fi
 done
 
 for theme in catppuccin-mocha rose-pine tokyo-night dracula kanagawa-dragon cyberdream; do
-  if [ -f "$KITANA_DIR/vendor/zed/$theme.json" ]; then
-    pass "Kitana Zed upstream theme: vendor/zed/$theme.json"
+  if [ -f "$KITANA_DIR/themes/integrations/zed/vendor/$theme.json" ]; then
+    pass "Kitana Zed upstream theme: themes/integrations/zed/vendor/$theme.json"
   else
-    fail "Kitana Zed upstream theme missing: vendor/zed/$theme.json"
+    fail "Kitana Zed upstream theme missing: themes/integrations/zed/vendor/$theme.json"
   fi
 done
 
-if [ -f "$KITANA_DIR/vendor/ghostty/cyberdream" ]; then
-  pass "Kitana Ghostty vendored theme: vendor/ghostty/cyberdream"
+for theme in catppuccin-mocha rose-pine tokyo-night dracula; do
+  if [ -f "$KITANA_DIR/themes/integrations/cava/vendor/$theme.cava" ]; then
+    pass "Kitana Cava upstream theme: themes/integrations/cava/vendor/$theme.cava"
+  else
+    fail "Kitana Cava upstream theme missing: themes/integrations/cava/vendor/$theme.cava"
+  fi
+done
+
+for theme in kanagawa-dragon cyberdream; do
+  if [ -f "$KITANA_DIR/themes/integrations/cava/kitana/$theme.cava" ]; then
+    pass "Kitana Cava authored theme: themes/integrations/cava/kitana/$theme.cava"
+  else
+    fail "Kitana Cava authored theme missing: themes/integrations/cava/kitana/$theme.cava"
+  fi
+done
+
+if [ -f "$KITANA_DIR/themes/dynamic/matugen/templates/cava.cava.tpl" ]; then
+  pass "Kitana Matugen Cava template: themes/dynamic/matugen/templates/cava.cava.tpl"
 else
-  fail "Kitana Ghostty vendored theme missing: vendor/ghostty/cyberdream"
+  fail "Kitana Matugen Cava template missing: themes/dynamic/matugen/templates/cava.cava.tpl"
+fi
+
+for theme in rose-pine tokyo-night dracula kanagawa-dragon cyberdream; do
+  if [ -f "$KITANA_DIR/themes/integrations/ghostty/vendor/$theme" ]; then
+    pass "Kitana Ghostty vendored theme: themes/integrations/ghostty/vendor/$theme"
+  else
+    fail "Kitana Ghostty vendored theme missing: themes/integrations/ghostty/vendor/$theme"
+  fi
+done
+
+if [ -f "$KITANA_DIR/themes/integrations/ghostty/vendor/catppuccin-mocha.conf" ]; then
+  pass "Kitana Ghostty vendored theme: themes/integrations/ghostty/vendor/catppuccin-mocha.conf"
+else
+  fail "Kitana Ghostty vendored theme missing: themes/integrations/ghostty/vendor/catppuccin-mocha.conf"
 fi
 
 if [ -x "$KITANA_DIR/bin/kitana-wallpaper-grid" ]; then

@@ -538,6 +538,8 @@ Item {
                 border.color: mediaHeroBorder.border.color
                 border.width: mediaHeroBorder.border.width
                 readonly property real innerItemHeight: 28
+                readonly property color itemColor: Colors.fgSecondary
+                readonly property color accentColor: Colors.mixColor(Colors.bgTertiary, Colors.bgAccent, 0.5)
 
                 RowLayout {
                     anchors.fill: parent
@@ -553,7 +555,7 @@ Item {
                         Layout.preferredHeight: audioFooter.innerItemHeight
                         Layout.alignment: Qt.AlignVCenter
                         radius: 15
-                        color: outputPickerMouse.containsMouse || tabRoot.audioOverlayOpen ? Colors.alpha(Colors.bgAccent, 0.28) : "transparent"
+                        color: outputPickerMouse.containsMouse || tabRoot.audioOverlayOpen ? audioFooter.accentColor : "transparent"
 
                         Text {
                             anchors.centerIn: parent
@@ -612,7 +614,7 @@ Item {
                                 anchors.bottom: parent.bottom
                                 width: volumeSurface.activeWidth + (volumeSurface.fillAtMax ? 0 : volumeSurface.radius)
                                 radius: volumeSurface.radius
-                                color: Services.SystemStatus.audioMuted ? Colors.alpha(Colors.fgSecondary, 0.28) : Colors.bgAccent
+                                color: Services.SystemStatus.audioMuted ? Colors.alpha(audioFooter.itemColor, 0.28) : audioFooter.accentColor
                             }
                         }
 
@@ -630,7 +632,7 @@ Item {
                                 anchors.top: parent.top
                                 anchors.bottom: parent.bottom
                                 radius: volumeSurface.radius
-                                color: Colors.alpha(Colors.fgSecondary, Colors.dark ? 0.28 : 0.38)
+                                color: Colors.alpha(audioFooter.itemColor, Colors.dark ? 0.28 : 0.38)
                             }
 
                             Rectangle {
@@ -651,7 +653,7 @@ Item {
                             y: -4
                             visible: volumeSurface.splitterVisible
                             radius: width / 2
-                            color: Services.SystemStatus.audioMuted ? Colors.alpha(Colors.fgSecondary, 0.48) : Colors.bgAccent
+                            color: Services.SystemStatus.audioMuted ? Colors.alpha(audioFooter.itemColor, 0.48) : audioFooter.accentColor
                         }
 
                         Text {
@@ -683,7 +685,7 @@ Item {
                         Layout.preferredHeight: audioFooter.innerItemHeight
                         Layout.alignment: Qt.AlignVCenter
                         radius: 15
-                        color: Services.SystemStatus.audioMuted ? Colors.alpha(Colors.fgSecondary, 0.28) : Colors.bgAccent
+                        color: Services.SystemStatus.audioMuted ? Colors.alpha(audioFooter.itemColor, 0.28) : audioFooter.accentColor
 
                         Controls.Icon {
                             anchors.centerIn: parent

@@ -114,11 +114,14 @@
     "border_inactive": "borderHeavy"
   },
   "ghostty": {
-    "theme": "Catppuccin Mocha"
+    "source_file": "themes/integrations/ghostty/vendor/catppuccin-mocha.conf"
+  },
+  "cava": {
+    "source_file": "themes/integrations/cava/vendor/catppuccin-mocha.cava"
   },
   "zed": {
     "source_url": "https://raw.githubusercontent.com/catppuccin/zed/main/themes/catppuccin-mauve.json",
-    "source_file": "vendor/zed/catppuccin-mocha.json",
+    "source_file": "themes/integrations/zed/vendor/catppuccin-mocha.json",
     "theme_name": "Catppuccin Mocha"
   },
   "neovim": {

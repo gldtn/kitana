@@ -105,11 +105,14 @@
     "border_inactive": "borderHeavy"
   },
   "ghostty": {
-    "theme": "Dracula"
+    "source_file": "themes/integrations/ghostty/vendor/dracula"
+  },
+  "cava": {
+    "source_file": "themes/integrations/cava/vendor/dracula.cava"
   },
   "zed": {
     "source_url": "https://raw.githubusercontent.com/dracula/zed/main/themes/dracula.json",
-    "source_file": "vendor/zed/dracula.json",
+    "source_file": "themes/integrations/zed/vendor/dracula.json",
     "theme_name": "Dracula Solid"
   }
 }

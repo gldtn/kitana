@@ -49,7 +49,7 @@ env_wallpaper_dir="${KITANA_WALLPAPER_DIR:-}"
 # shellcheck disable=SC1090
 source "$KITANA_CONFIG_FILE"
 WALLPAPER_DIR="${env_wallpaper_dir:-${KITANA_WALLPAPER_DIR:-$HOME/.config/kitana/wallpapers}}"
-KITANA_THEME="${KITANA_THEME:-catppuccin-mocha}"
+KITANA_THEME="${KITANA_THEME:-cyberdream}"
 
 mkdir -p "$WALLPAPER_DIR"
 

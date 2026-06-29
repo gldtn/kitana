@@ -102,30 +102,34 @@ eval "$theme_env"
 
 mkdir -p "$cava_theme_dir"
 tmp_theme="$(mktemp "$cava_theme_file.tmp.XXXXXX")"
-{
-  printf '[color]\n'
-  printf "background = '%s'\n" "$base0"
-  printf "foreground = '%s'\n" "$accent0"
-  printf '\n'
-  printf 'gradient = 1\n'
-  printf "gradient_color_1 = '%s'\n" "$accent0"
-  printf "gradient_color_2 = '%s'\n" "$info"
-  printf "gradient_color_3 = '%s'\n" "$accent1"
-  printf "gradient_color_4 = '%s'\n" "$warning0"
-  printf "gradient_color_5 = '%s'\n" "$danger0"
-  printf '\n'
-  printf 'horizontal_gradient = 1\n'
-  printf "horizontal_gradient_color_1 = '%s'\n" "$accent0"
-  printf "horizontal_gradient_color_2 = '%s'\n" "$accent1"
-  printf "horizontal_gradient_color_3 = '%s'\n" "$warning0"
-  printf "horizontal_gradient_color_4 = '%s'\n" "$danger0"
-  printf '\n'
-  printf "blend_direction = 'up'\n"
-} >"$tmp_theme"
+
+if [ -n "$cava_source_file" ]; then
+  source_path="$kitana_dir/$cava_source_file"
+  if [ ! -f "$source_path" ]; then
+    printf 'Cava source file missing for %s: %s\n' "$theme" "$cava_source_file" >&2
+    rm -f "$tmp_theme"
+    exit 1
+  fi
+  cp "$source_path" "$tmp_theme"
+else
+  {
+    printf '[color]\n'
+    printf "background = '%s'\n" "$base0"
+    printf "foreground = '%s'\n" "$accent0"
+    printf '\n'
+    printf 'gradient = 1\n'
+    printf 'gradient_count = 5\n'
+    printf "gradient_color_1 = '%s'\n" "$accent0"
+    printf "gradient_color_2 = '%s'\n" "$info"
+    printf "gradient_color_3 = '%s'\n" "$accent1"
+    printf "gradient_color_4 = '%s'\n" "$warning0"
+    printf "gradient_color_5 = '%s'\n" "$danger0"
+  } >"$tmp_theme"
+fi
 mv "$tmp_theme" "$cava_theme_file"
 
 patch_cava_config
 
 if command -v pkill >/dev/null 2>&1; then
-  pkill -USR2 -x cava >/dev/null 2>&1 || true
+  pkill -USR1 cava >/dev/null 2>&1 || true
 fi

@@ -1,6 +1,0 @@
-[config]
-version_check = false
-
-[templates.kitana-quickshell]
-input_path = "~/.local/share/kitana/matugen/quickshell-colors.json"
-output_path = "~/.config/quickshell/kitana/Theme/current.json"

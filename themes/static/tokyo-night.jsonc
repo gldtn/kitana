@@ -126,11 +126,14 @@
     "border_inactive": "borderHeavy"
   },
   "ghostty": {
-    "theme": "TokyoNight"
+    "source_file": "themes/integrations/ghostty/vendor/tokyo-night"
+  },
+  "cava": {
+    "source_file": "themes/integrations/cava/vendor/tokyo-night.cava"
   },
   "zed": {
     "source_url": "https://raw.githubusercontent.com/ssaunderss/zed-tokyo-night/main/themes/tokyo-night.json",
-    "source_file": "vendor/zed/tokyo-night.json",
+    "source_file": "themes/integrations/zed/vendor/tokyo-night.json",
     "theme_name": "Tokyo Night"
   },
   "neovim": {

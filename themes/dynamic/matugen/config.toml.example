@@ -1,0 +1,11 @@
+[config]
+version_check = false
+
+[templates.kitana-quickshell]
+input_path = "~/.local/share/kitana/themes/dynamic/matugen/quickshell-current.json.tpl"
+output_path = "~/.config/quickshell/kitana/Theme/current.json"
+
+[templates.kitana-cava]
+input_path = "~/.local/share/kitana/themes/dynamic/matugen/templates/cava.cava.tpl"
+output_path = "~/.config/cava/themes/kitana"
+post_hook = "pkill -USR2 -x cava || true"

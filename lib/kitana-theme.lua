@@ -62,7 +62,7 @@ local function kitana_dir()
 end
 
 local function theme_dir()
-  return kitana_dir() .. "/themes"
+  return kitana_dir() .. "/themes/static"
 end
 
 local function live_theme_path()
@@ -380,6 +380,7 @@ local function print_env(theme)
   local data = preview(theme)
   local hypr = theme.hypr or {}
   local ghostty = theme.ghostty or {}
+  local cava = theme.cava or {}
   local zed = theme.zed or {}
   local neovim = theme.neovim or {}
 
@@ -411,6 +412,7 @@ local function print_env(theme)
     danger0 = values.error,
     ghostty_theme = ghostty.theme or "",
     ghostty_source_file = ghostty.source_file or "",
+    cava_source_file = cava.source_file or "",
     zed_source_url = zed.source_url or "",
     zed_source_file = zed.source_file or "",
     zed_theme_name = zed.theme_name or theme.name,
@@ -447,6 +449,7 @@ local function print_env(theme)
     "danger0",
     "ghostty_theme",
     "ghostty_source_file",
+    "cava_source_file",
     "zed_source_url",
     "zed_source_file",
     "zed_theme_name",

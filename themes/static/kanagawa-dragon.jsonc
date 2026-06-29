@@ -151,11 +151,14 @@
     "border_inactive": "borderHeavy"
   },
   "ghostty": {
-    "theme": "Kanagawa Dragon"
+    "source_file": "themes/integrations/ghostty/vendor/kanagawa-dragon"
+  },
+  "cava": {
+    "source_file": "themes/integrations/cava/kitana/kanagawa-dragon.cava"
   },
   "zed": {
     "source_url": "https://raw.githubusercontent.com/ethangilmore/zed-kanagawa/main/themes/Kanagawa.json",
-    "source_file": "vendor/zed/kanagawa-dragon.json",
+    "source_file": "themes/integrations/zed/vendor/kanagawa-dragon.json",
     "theme_name": "Kanagawa Dragon"
   },
   "neovim": {

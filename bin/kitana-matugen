@@ -6,11 +6,23 @@ source_value="${1:-$HOME/.config/kitana/current-wallpaper}"
 kitana_dir="${KITANA_DIR:-$HOME/.local/share/kitana}"
 lua_path="$kitana_dir/lib/?.lua;$kitana_dir/lib/?/init.lua;;"
 target="$HOME/.config/quickshell/kitana/Theme/current.json"
+cava_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/cava"
+cava_config_file="$cava_config_dir/config"
+cava_theme_dir="$cava_config_dir/themes"
+cava_theme_file="$cava_theme_dir/kitana"
+cava_template="$kitana_dir/themes/dynamic/matugen/templates/cava.cava.tpl"
 state_dir="$HOME/.config/kitana"
 state_file="$state_dir/theme"
 legacy_target="$HOME/.config/quickshell/kitana/Colors.qml"
+managed_cava_begin="# BEGIN Kitana managed Cava theme"
+managed_cava_end="# END Kitana managed Cava theme"
+cava_enabled=0
 
 mkdir -p "$(dirname "$target")" "$state_dir"
+
+if command -v cava >/dev/null 2>&1 || [ -f "$cava_config_file" ]; then
+  cava_enabled=1
+fi
 
 remove_legacy_target() {
   if [ -f "$legacy_target" ] && grep -q "Kitana managed Quickshell colors" "$legacy_target"; then
@@ -18,22 +30,113 @@ remove_legacy_target() {
   fi
 }
 
+write_cava_managed_block() {
+  printf '%s\n' "$managed_cava_begin"
+  printf "theme = 'kitana'\n"
+  printf '%s\n' "$managed_cava_end"
+}
+
+patch_cava_config() {
+  local tmp mode line in_color block_written skipping
+
+  mkdir -p "$cava_config_dir"
+  tmp="$(mktemp "$cava_config_file.tmp.XXXXXX")"
+
+  if [ ! -f "$cava_config_file" ]; then
+    {
+      printf '# Kitana managed Cava config\n'
+      printf '[color]\n'
+      write_cava_managed_block
+    } >"$tmp"
+    mv "$tmp" "$cava_config_file"
+    return 0
+  fi
+
+  mode="$(stat -c '%a' "$cava_config_file" 2>/dev/null || printf '600')"
+  in_color=0
+  block_written=0
+  skipping=0
+
+  while IFS= read -r line || [ -n "$line" ]; do
+    if [ "$skipping" -eq 1 ]; then
+      if [ "$line" = "$managed_cava_end" ]; then
+        skipping=0
+      fi
+      continue
+    fi
+
+    if [ "$line" = "$managed_cava_begin" ]; then
+      skipping=1
+      continue
+    fi
+
+    if [[ "$line" =~ ^[[:space:]]*\[.*\][[:space:]]*$ ]]; then
+      if [ "$in_color" -eq 1 ] && [ "$block_written" -eq 0 ]; then
+        printf '\n' >>"$tmp"
+        write_cava_managed_block >>"$tmp"
+        block_written=1
+      fi
+
+      if [[ "$line" =~ ^[[:space:]]*\[color\][[:space:]]*$ ]]; then
+        in_color=1
+      else
+        in_color=0
+      fi
+    fi
+
+    printf '%s\n' "$line" >>"$tmp"
+  done <"$cava_config_file"
+
+  if [ "$block_written" -eq 0 ]; then
+    if [ "$in_color" -eq 1 ]; then
+      printf '\n' >>"$tmp"
+      write_cava_managed_block >>"$tmp"
+    else
+      printf '\n[color]\n' >>"$tmp"
+      write_cava_managed_block >>"$tmp"
+    fi
+  fi
+
+  chmod "$mode" "$tmp" 2>/dev/null || true
+  mv "$tmp" "$cava_config_file"
+}
+
 write_theme() {
   local mode="$1"
   local source="$2"
-  local tmp
+  local tmp tmp_cava
 
   tmp="$(mktemp "$target.tmp.XXXXXX")"
-  LUA_PATH="$lua_path" lua - "$mode" "$source" >"$tmp" <<'LUA'
+
+  if [ "$cava_enabled" -eq 1 ]; then
+    mkdir -p "$cava_theme_dir"
+    tmp_cava="$(mktemp "$cava_theme_file.tmp.XXXXXX")"
+  else
+    tmp_cava=""
+  fi
+
+  LUA_PATH="$lua_path" lua - "$mode" "$source" "$cava_template" "$tmp_cava" >"$tmp" <<'LUA'
 local json = require("kitana-json")
 
-local mode, source = arg[1], arg[2]
+local mode, source, cava_template_path, cava_output_path = arg[1], arg[2], arg[3], arg[4]
 
 local function read_file(path)
   local file = assert(io.open(path, "rb"))
   local data = file:read("*a")
   file:close()
   return data
+end
+
+local function write_file(path, data)
+  local file = assert(io.open(path, "wb"))
+  file:write(data)
+  file:close()
+end
+
+local function render_template(template, values)
+  return template:gsub("{{%s*([%w_]+)%s*}}", function(key)
+    return values[key] or ""
+  end)
 end
 
 local function normalize(color)
@@ -247,10 +350,27 @@ local theme = {
 }
 
 io.write(json.encode(theme, { indent = "  " }), "\n")
+if cava_output_path ~= "" then
+  write_file(cava_output_path, render_template(read_file(cava_template_path), colors))
+end
 LUA
   mv "$tmp" "$target"
+
+  if [ -n "$tmp_cava" ]; then
+    mv "$tmp_cava" "$cava_theme_file"
+  fi
+
   printf 'matugen\n' >"$state_file"
+
+  if [ "$cava_enabled" -eq 1 ]; then
+    patch_cava_config
+  fi
+
   remove_legacy_target
+
+  if [ "$cava_enabled" -eq 1 ] && command -v pkill >/dev/null 2>&1; then
+    pkill -USR1 cava >/dev/null 2>&1 || true
+  fi
 }
 
 average_color() {

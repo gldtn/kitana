@@ -103,11 +103,14 @@
     "border_inactive": "borderHeavy"
   },
   "ghostty": {
-    "theme": "Rose Pine"
+    "source_file": "themes/integrations/ghostty/vendor/rose-pine"
+  },
+  "cava": {
+    "source_file": "themes/integrations/cava/vendor/rose-pine.cava"
   },
   "zed": {
     "source_url": "https://raw.githubusercontent.com/rose-pine/zed/main/themes/rose-pine.json",
-    "source_file": "vendor/zed/rose-pine.json",
+    "source_file": "themes/integrations/zed/vendor/rose-pine.json",
     "theme_name": "Rosé Pine"
   }
 }
