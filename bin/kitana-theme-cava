@@ -131,5 +131,5 @@ mv "$tmp_theme" "$cava_theme_file"
 patch_cava_config
 
 if command -v pkill >/dev/null 2>&1; then
-  pkill -USR1 cava >/dev/null 2>&1 || true
+  pkill -USR2 cava >/dev/null 2>&1 || true
 fi

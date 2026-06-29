@@ -16,6 +16,7 @@ local chatClient = webappLauncher .. " https://web.whatsapp.com WhatsApp"
 -- NOTE: these are not web apps
 local iptvClient = "open_tv" -- this must be with an underscore
 local musicClient = "youtube-music-desktop-app"
+local visualizer = "ghostty --title=cava --class=io.kitana.cava -e cava"
 
 local bind = hl.bind
 
@@ -30,9 +31,10 @@ local mod = "SUPER" -- Sets "Windows" key as main modifier
 bind(mod .. " + Q", hl.dsp.window.close(), { description = "Close active window" })
 
 -- Launch programs
-bind(mod .. " + C", hl.dsp.exec_cmd(editor), { description = "Editor" })
+bind(mod .. " + V", hl.dsp.exec_cmd(visualizer), { description = "Cava" })
+bind(mod .. " + N", hl.dsp.exec_cmd(editor), { description = "Neovim" })
 bind(mod .. " + B", hl.dsp.exec_cmd(browser), { description = "Browser" })
-bind(mod .. " + G", hl.dsp.exec_cmd(guiEditor), { description = "Gui editor" })
+bind(mod .. " + C", hl.dsp.exec_cmd(guiEditor), { description = "Code editor" })
 bind(mod .. " + RETURN", hl.dsp.exec_cmd(terminal), { description = "Terminal" })
 bind(mod .. " + D", hl.dsp.exec_cmd(launcher), { description = "Launcher" })
 bind(mod .. " + E", hl.dsp.exec_cmd(fileManager), { description = "File manager" })
@@ -59,8 +61,8 @@ bind("PRINT", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-screenshot t
 bind(mod .. " + CTRL + T", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-theme-grid"), { description = "Theme chooser" })
 bind(mod .. " + CTRL + W", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-wallpaper-grid"), { description = "Wallpaper chooser" })
 bind(mod .. " + CTRL + R", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-quickshell --restart"), { description = "Restart Quickshell" })
-bind(mod .. " + CTRL + COMMA", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-control-panel toggle notifications"), { description = "Control panel" })
 bind(mod .. " + COMMA", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-notifications clear"), { description = "Dismiss all notifications" })
+bind(mod .. " + CTRL + COMMA", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-control-panel toggle notifications"), { description = "Control panel" })
 
 -- hyprland layout manipulation
 bind(mod .. " + TAB", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-hyprland-workspace-layout-toggle"), { description = "Toggle current workspace layout" })
@@ -77,17 +79,17 @@ bind(mod .. " + CTRL + SHIFT + C", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/s
 bind(mod .. " + P", hl.dsp.window.pseudo(), { description = "Toggle pseudo" })
 bind(mod .. " + X", hl.dsp.layout("togglesplit"), { description = "Toggle split" })
 bind(mod .. " + F", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/default/hypr/scripts/toggle_float.sh"), { description = "Toggle float and center" })
-bind(mod .. "+ SHIFT + F", function()
+bind(mod .. "+ CTRL + F", function()
   hl.dispatch(hl.dsp.window.float({ action = "toggle" }))
   hl.dispatch(hl.dsp.window.pin())
 end)
 
 -- Fullscreen window
-bind(mod .. " + CTRL + M", hl.dsp.window.fullscreen({ mode = "maximized" }), { description = "Full width" })
-bind(mod .. " + CTRL + SHIFT + M", hl.dsp.window.fullscreen({ mode = "fullscreen" }), { description = "Force full screen" })
+bind(mod .. " + M", hl.dsp.window.fullscreen({ mode = "maximized" }), { description = "Full width" })
+bind(mod .. " + CTRL + M", hl.dsp.window.fullscreen({ mode = "fullscreen" }), { description = "Force full screen" })
 
 -- Minimize window
-bind(mod .. " + M", function()
+bind(mod .. " + CTRL + SHIFT + M", function()
   hl.dispatch(hl.dsp.workspace.toggle_special("minimize"))
   hl.dispatch(hl.dsp.window.move({ workspace = "+0" }))
   hl.dispatch(hl.dsp.workspace.toggle_special("minimize"))

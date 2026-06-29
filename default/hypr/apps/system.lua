@@ -36,6 +36,16 @@ hl.window_rule({
 })
 
 hl.window_rule({
+  name = "cava-visualizer-pin",
+  match = { class = "^io\\.kitana\\.cava$", title = "^cava$" },
+
+  float = true,
+  pin = true,
+  size = "780 345",
+  move = "1772 1088",
+})
+
+hl.window_rule({
   name = "kitana-theme-preview-float",
   match = { class = "^org\\.quickshell$", title = "^Kitana Theme Preview$" },
 

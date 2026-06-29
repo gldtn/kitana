@@ -369,7 +369,7 @@ LUA
   remove_legacy_target
 
   if [ "$cava_enabled" -eq 1 ] && command -v pkill >/dev/null 2>&1; then
-    pkill -USR1 cava >/dev/null 2>&1 || true
+    pkill -USR2 cava >/dev/null 2>&1 || true
   fi
 }
 
