@@ -96,6 +96,8 @@ PanelWindow {
             return "/";
         if (key === "COMMA")
             return ",";
+        if (key === "PERIOD")
+            return ".";
         if (key.indexOf("XF86") === 0)
             return key.replace("XF86", "");
         return key;

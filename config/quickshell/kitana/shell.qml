@@ -14,6 +14,7 @@ import "./Screenshot" as Screenshot
 import "./Session" as Session
 import "./Settings" as Settings
 import "./Shortcuts" as Shortcuts
+import "./System" as System
 import "./Theme" as Theme
 import "./Wallpaper" as Wallpaper
 import "./Services" as Services
@@ -25,7 +26,18 @@ ShellRoot {
     readonly property var sharedScreenshotPanel: screenshotPanel
     readonly property var sharedSettingsPanel: settingsPanel
     readonly property var sharedShortcutsPanel: shortcutsPanel
+    readonly property var focusedScreen: screenForMonitor(Hyprland.focusedMonitor)
     readonly property var sharedThemePreview: themePreview
+
+    function screenForMonitor(monitor: var): var {
+        if (!monitor || !monitor.name)
+            return null;
+        for (let i = 0; i < Quickshell.screens.length; i++) {
+            if (Quickshell.screens[i].name === monitor.name)
+                return Quickshell.screens[i];
+        }
+        return null;
+    }
 
     // Global wallpaper picker panel
     Wallpaper.WallpaperGrid {}
@@ -43,6 +55,13 @@ ShellRoot {
     // Shared screenshot panel opened from bar and IPC
     Screenshot.ScreenshotPanel {
         id: screenshotPanel
+    }
+
+    // Shared control panel opened from global shortcuts and IPC
+    System.ControlPanel {
+        id: controlPanel
+
+        panelScreen: root.focusedScreen || (Quickshell.screens.length > 0 ? Quickshell.screens[0] : null)
     }
 
     // Global power/session action panel
@@ -126,6 +145,21 @@ ShellRoot {
         }
         function toggle(): void {
             screenshotPanel.toggle();
+        }
+    }
+
+    // Control panel command bridge
+    IpcHandler {
+        target: "kitana-control-panel"
+
+        function open(section: string): void {
+            controlPanel.open(section || "notifications");
+        }
+        function close(): void {
+            controlPanel.close();
+        }
+        function toggle(section: string): void {
+            controlPanel.toggle(section || "notifications");
         }
     }
 

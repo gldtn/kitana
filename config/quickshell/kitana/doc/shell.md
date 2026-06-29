@@ -12,7 +12,7 @@ Source file: `shell.qml`.
 
 Qt and Quickshell imports: `import QtQuick`, `import Quickshell`, `import Quickshell.Hyprland`, `import Quickshell.Io`.
 
-Project imports: `import "./Bar" as Bar`, `import "./Dashboard" as Dashboard`, `import "./Launcher" as Launcher`, `import "./Screenshot" as Screenshot`, `import "./Session" as Session`, `import "./Settings" as Settings`, `import "./Shortcuts" as Shortcuts`, `import "./Wallpaper" as Wallpaper`, `import "./Services" as Services`.
+Project imports: `import "./Bar" as Bar`, `import "./Dashboard" as Dashboard`, `import "./Launcher" as Launcher`, `import "./Screenshot" as Screenshot`, `import "./Session" as Session`, `import "./Settings" as Settings`, `import "./Shortcuts" as Shortcuts`, `import "./System" as System`, `import "./Theme" as Theme`, `import "./Wallpaper" as Wallpaper`, `import "./Services" as Services`.
 
 No direct QML instantiations were found; the component is an entrypoint, singleton, or loaded indirectly.
 
@@ -28,6 +28,7 @@ The root type is `ShellRoot`. The component composes child QML items, Kitana des
 | `sharedScreenshotPanel` | `readonly var` | `screenshotPanel` | No | Read-only. Receives a panel instance used for cross-panel coordination. |
 | `sharedSettingsPanel` | `readonly var` | `settingsPanel` | No | Read-only. Receives a panel instance used for cross-panel coordination. |
 | `sharedShortcutsPanel` | `readonly var` | `shortcutsPanel` | No | Read-only. Receives a panel instance used for cross-panel coordination. |
+| `focusedScreen` | `readonly var` | `screenForMonitor(Hyprland.focusedMonitor)` | No | Tracks the Quickshell screen for the focused Hyprland monitor. |
 
 ## Methods
 
@@ -67,6 +68,10 @@ Performs component-specific behavior used internally or by parent components.
 
 Performs component-specific behavior used internally or by parent components.
 
+#### screenForMonitor(monitor: var) : var
+
+Returns the Quickshell screen matching a Hyprland monitor.
+
 #### open() : void
 
 Opens the component or switches it to the requested section/tab. Side effects usually include focus changes, state reset, or data refresh.
@@ -81,4 +86,4 @@ Reads from or calls service singletons: `Services.NotificationService`, `Service
 
 Uses Quickshell Hyprland state for workspace, monitor, or compositor integration.
 
-Exposes IPC targets: `kitana-osd`, `kitana-notifications`, `kitana-bar`, `kitana-shell`, `kitana-screenshot`.
+Exposes IPC targets: `kitana-osd`, `kitana-notifications`, `kitana-bar`, `kitana-shell`, `kitana-screenshot`, `kitana-control-panel`.

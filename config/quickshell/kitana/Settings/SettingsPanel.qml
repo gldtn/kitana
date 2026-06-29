@@ -4,6 +4,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Shapes
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
@@ -17,7 +18,9 @@ PanelWindow {
     id: root
     // qmllint enable uncreatable-type
 
-    Custom.Settings { id: settings }
+    Custom.Settings {
+        id: settings
+    }
 
     property bool panelVisible: false
     property real revealProgress: 0
@@ -48,29 +51,75 @@ PanelWindow {
             open(targetTab);
     }
 
-    function modeTitle(mode: string): string {
-        if (mode === "icons")
-            return "Icons";
-        if (mode === "full")
-            return "Full";
-        return "Compact";
+    function workspaceLayoutOptions(): var {
+        return [
+            {
+                value: "icons",
+                label: "Icons",
+                iconName: "workspace.layout"
+            },
+            {
+                value: "compact",
+                label: "Compact",
+                iconName: "workspace.layout.dwindle"
+            },
+            {
+                value: "full",
+                label: "Full",
+                iconName: "workspace.layout.scrolling"
+            }
+        ];
     }
 
-    function modeSubtitle(mode: string): string {
-        if (mode === "icons")
-            return "Symbol only";
-        if (mode === "full")
-            return "Full layout names";
-        return "DWL / SCR labels";
+    function loginMonitorOptions(): var {
+        const options = [
+            {
+                value: "",
+                label: "Automatic",
+                iconName: "settings",
+                enabled: !Services.LoginMonitor.saving
+            }
+        ];
+        const monitors = Services.LoginMonitor.monitors || [];
+
+        for (let i = 0; i < monitors.length; i++) {
+            const monitor = monitors[i];
+            options.push({
+                value: monitor.selector || monitor.name || (monitor.description ? "desc:" + monitor.description : ""),
+                label: monitor.displayName || monitor.name || "Monitor",
+                iconName: "display.monitor",
+                enabled: !Services.LoginMonitor.saving
+            });
+        }
+
+        return options;
+    }
+
+    function loginMonitorSelection(): string {
+        const monitors = Services.LoginMonitor.monitors || [];
+
+        for (let i = 0; i < monitors.length; i++) {
+            const monitor = monitors[i];
+            if (Services.LoginMonitor.selectorMatches(monitor))
+                return monitor.selector || monitor.name || (monitor.description ? "desc:" + monitor.description : "");
+        }
+
+        return Services.LoginMonitor.selector || "";
     }
 
     // Settings panel IPC command bridge
     IpcHandler {
         target: "kitana-settings"
 
-        function open(tab: string): void { root.open(tab || "bar"); }
-        function close(): void { root.close(); }
-        function toggle(tab: string): void { root.toggle(tab || "bar"); }
+        function open(tab: string): void {
+            root.open(tab || "bar");
+        }
+        function close(): void {
+            root.close();
+        }
+        function toggle(tab: string): void {
+            root.toggle(tab || "bar");
+        }
     }
 
     visible: panelVisible
@@ -141,10 +190,20 @@ PanelWindow {
                 Layout.fillWidth: true
                 spacing: 8
 
-                TabButton { iconName: "workspace.layout"; label: "Bar"; tab: "bar" }
-                TabButton { iconName: "settings"; label: "System"; tab: "system" }
+                TabButton {
+                    iconName: "workspace.layout"
+                    label: "Bar"
+                    tab: "bar"
+                }
+                TabButton {
+                    iconName: "settings"
+                    label: "System"
+                    tab: "system"
+                }
 
-                Item { Layout.fillWidth: true }
+                Item {
+                    Layout.fillWidth: true
+                }
 
                 Controls.CloseButton {
                     Layout.alignment: Qt.AlignVCenter
@@ -228,134 +287,6 @@ PanelWindow {
         }
     }
 
-    // Reusable system setting row
-    component SettingRow: Rectangle {
-        id: rowRoot
-
-        property string iconName: Icons.defaultIcon
-        property string title: ""
-        property string subtitle: ""
-        property bool active: false
-
-        signal clicked
-
-        Layout.fillWidth: true
-        Layout.preferredHeight: 52
-        radius: 12
-        color: rowMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary
-        border.color: active ? Colors.borderAccent : Colors.borderFaint
-        border.width: 1
-
-        // Setting icon and labels
-        RowLayout {
-            anchors.fill: parent
-            anchors.leftMargin: 12
-            anchors.rightMargin: 12
-            spacing: 10
-
-            Controls.Icon {
-                Layout.preferredWidth: 24
-                name: rowRoot.iconName
-                tone: rowRoot.active ? "accent" : "primary"
-                size: settings.iconPixelSize + 1
-            }
-
-            ColumnLayout {
-                Layout.fillWidth: true
-                spacing: 1
-
-                Text {
-                    Layout.fillWidth: true
-                    text: rowRoot.title
-                    color: Colors.fgPrimary
-                    elide: Text.ElideRight
-                    font.family: Typography.fontFamily
-                    font.pixelSize: settings.textPixelSize
-                    font.weight: Font.Bold
-                }
-
-                Text {
-                    Layout.fillWidth: true
-                    text: rowRoot.subtitle
-                    color: Colors.fgSecondary
-                    elide: Text.ElideRight
-                    font.family: Typography.fontFamily
-                    font.pixelSize: settings.textPixelSize - 1
-                }
-            }
-        }
-
-        // Setting row click target
-        MouseArea {
-            id: rowMouse
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onClicked: rowRoot.clicked()
-        }
-    }
-
-    // Workspace layout display option card
-    component OptionButton: Rectangle {
-        id: optionRoot
-
-        property string mode: "compact"
-        readonly property bool selected: Services.UiPreferences.layoutPillDisplayMode === mode
-
-        Layout.fillWidth: true
-        Layout.preferredHeight: 88
-        radius: 13
-        color: selected ? Colors.subtleAccent : (optionMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary)
-        border.color: selected ? Colors.borderAccent : Colors.borderFaint
-        border.width: 1
-
-        // Option icon and description
-        Column {
-            anchors.centerIn: parent
-            width: parent.width - 24
-            spacing: 5
-
-            Controls.Icon {
-                anchors.horizontalCenter: parent.horizontalCenter
-                name: Icons.workspaceLayoutName(optionRoot.mode === "icons" ? "dwindle" : optionRoot.mode)
-                tone: optionRoot.selected ? "accent" : "primary"
-                size: settings.iconPixelSize + 2
-            }
-
-            Text {
-                width: parent.width
-                text: root.modeTitle(optionRoot.mode)
-                color: Colors.fgPrimary
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                elide: Text.ElideRight
-                font.family: Typography.fontFamily
-                font.pixelSize: settings.textPixelSize
-                font.weight: Font.Bold
-            }
-
-            Text {
-                width: parent.width
-                text: root.modeSubtitle(optionRoot.mode)
-                color: Colors.fgSecondary
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                elide: Text.ElideRight
-                font.family: Typography.fontFamily
-                font.pixelSize: settings.textPixelSize - 1
-            }
-        }
-
-        // Option selection click target
-        MouseArea {
-            id: optionMouse
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onClicked: Services.UiPreferences.setLayoutPillDisplayMode(optionRoot.mode)
-        }
-    }
-
     // Compact button used by geometry controls
     component GeometryActionButton: Rectangle {
         id: actionRoot
@@ -394,6 +325,210 @@ PanelWindow {
         }
     }
 
+    // Pagination-style numeric control for geometry values
+    component GeometryPager: Rectangle {
+        id: pagerRoot
+
+        property int value: 0
+        property int minimum: 0
+        property int maximum: 100
+        property int step: 1
+        readonly property bool canDecrease: enabled && value > minimum
+        readonly property bool canIncrease: enabled && value < maximum
+        readonly property color pagerAccentColor: Colors.alpha(Colors.scrimTertiary, 0.33)
+        readonly property real pagerBorderWidth: 0.8
+
+        signal valueRequested(int requestedValue)
+
+        Layout.preferredWidth: 124
+        Layout.preferredHeight: 30
+        radius: 8
+        color: "transparent"
+        border.color: pagerRoot.pagerAccentColor
+        border.width: pagerRoot.pagerBorderWidth
+        clip: true
+
+        RowLayout {
+            anchors.fill: parent
+            spacing: 0
+
+            Rectangle {
+                Layout.preferredWidth: 31
+                Layout.fillHeight: true
+                opacity: pagerRoot.canDecrease ? 1 : 0.45
+                color: "transparent"
+
+                Shape {
+                    id: decreaseHoverFill
+
+                    anchors.fill: parent
+                    anchors.margins: 3
+                    visible: decreaseMouse.containsMouse && pagerRoot.canDecrease
+
+                    ShapePath {
+                        id: decreaseHoverPath
+
+                        readonly property real r: Math.min(5, decreaseHoverFill.width / 2, decreaseHoverFill.height / 2)
+
+                        fillColor: pagerRoot.pagerAccentColor
+                        strokeWidth: 0
+                        startX: decreaseHoverPath.r
+                        startY: 0
+
+                        PathLine {
+                            x: decreaseHoverFill.width
+                            y: 0
+                        }
+                        PathLine {
+                            x: decreaseHoverFill.width
+                            y: decreaseHoverFill.height
+                        }
+                        PathLine {
+                            x: decreaseHoverPath.r
+                            y: decreaseHoverFill.height
+                        }
+                        PathQuad {
+                            x: 0
+                            y: decreaseHoverFill.height - decreaseHoverPath.r
+                            controlX: 0
+                            controlY: decreaseHoverFill.height
+                        }
+                        PathLine {
+                            x: 0
+                            y: decreaseHoverPath.r
+                        }
+                        PathQuad {
+                            x: decreaseHoverPath.r
+                            y: 0
+                            controlX: 0
+                            controlY: 0
+                        }
+                    }
+                }
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "-"
+                    color: Colors.fgPrimary
+                    font.family: Typography.fontFamily
+                    font.pixelSize: settings.textPixelSize
+                    font.weight: Font.Bold
+                }
+
+                MouseArea {
+                    id: decreaseMouse
+
+                    anchors.fill: parent
+                    enabled: pagerRoot.canDecrease
+                    hoverEnabled: true
+                    cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                    onClicked: pagerRoot.valueRequested(Math.max(pagerRoot.minimum, pagerRoot.value - pagerRoot.step))
+                }
+            }
+
+            Rectangle {
+                Layout.preferredWidth: pagerRoot.pagerBorderWidth
+                Layout.fillHeight: true
+                color: pagerRoot.pagerAccentColor
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                color: pagerRoot.pagerAccentColor
+
+                Text {
+                    anchors.centerIn: parent
+                    text: pagerRoot.value + " px"
+                    color: Colors.fgPrimary
+                    font.family: Typography.fontFamily
+                    font.pixelSize: settings.textPixelSize
+                    font.weight: Font.DemiBold
+                }
+            }
+
+            Rectangle {
+                Layout.preferredWidth: pagerRoot.pagerBorderWidth
+                Layout.fillHeight: true
+                color: pagerRoot.pagerAccentColor
+            }
+
+            Rectangle {
+                Layout.preferredWidth: 31
+                Layout.fillHeight: true
+                opacity: pagerRoot.canIncrease ? 1 : 0.45
+                color: "transparent"
+
+                Shape {
+                    id: increaseHoverFill
+
+                    anchors.fill: parent
+                    anchors.margins: 3
+                    visible: increaseMouse.containsMouse && pagerRoot.canIncrease
+
+                    ShapePath {
+                        id: increaseHoverPath
+
+                        readonly property real r: Math.min(5, increaseHoverFill.width / 2, increaseHoverFill.height / 2)
+
+                        fillColor: pagerRoot.pagerAccentColor
+                        strokeWidth: 0
+                        startX: 0
+                        startY: 0
+
+                        PathLine {
+                            x: increaseHoverFill.width - increaseHoverPath.r
+                            y: 0
+                        }
+                        PathQuad {
+                            x: increaseHoverFill.width
+                            y: increaseHoverPath.r
+                            controlX: increaseHoverFill.width
+                            controlY: 0
+                        }
+                        PathLine {
+                            x: increaseHoverFill.width
+                            y: increaseHoverFill.height - increaseHoverPath.r
+                        }
+                        PathQuad {
+                            x: increaseHoverFill.width - increaseHoverPath.r
+                            y: increaseHoverFill.height
+                            controlX: increaseHoverFill.width
+                            controlY: increaseHoverFill.height
+                        }
+                        PathLine {
+                            x: 0
+                            y: increaseHoverFill.height
+                        }
+                        PathLine {
+                            x: 0
+                            y: 0
+                        }
+                    }
+                }
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "+"
+                    color: Colors.fgPrimary
+                    font.family: Typography.fontFamily
+                    font.pixelSize: settings.textPixelSize
+                    font.weight: Font.Bold
+                }
+
+                MouseArea {
+                    id: increaseMouse
+
+                    anchors.fill: parent
+                    enabled: pagerRoot.canIncrease
+                    hoverEnabled: true
+                    cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                    onClicked: pagerRoot.valueRequested(Math.min(pagerRoot.maximum, pagerRoot.value + pagerRoot.step))
+                }
+            }
+        }
+    }
+
     // Numeric geometry preference row
     component GeometryStepper: Rectangle {
         id: stepRoot
@@ -404,15 +539,15 @@ PanelWindow {
         property int minimum: 0
         property int maximum: 100
         property int step: 1
+        property int rowIndex: 0
 
         signal valueRequested(int requestedValue)
 
         Layout.fillWidth: true
         Layout.preferredHeight: 48
-        radius: 12
-        color: Colors.bgTertiary
-        border.color: Colors.borderFaint
-        border.width: 1
+        radius: 5
+        color: rowIndex % 2 === 0 ? Colors.alpha(Colors.bgTertiary, Colors.dark ? 0.14 : 0.20) : "transparent"
+        border.width: 0
 
         // Label, value, and increment controls
         RowLayout {
@@ -445,48 +580,14 @@ PanelWindow {
                 }
             }
 
-            GeometryActionButton {
-                label: "-"
-                enabled: stepRoot.value > stepRoot.minimum
-                onClicked: stepRoot.valueRequested(Math.max(stepRoot.minimum, stepRoot.value - stepRoot.step))
-            }
-
-            Rectangle {
-                Layout.preferredWidth: 60
-                Layout.preferredHeight: 30
-                radius: 9
-                color: Colors.bgSecondary
-                border.color: Colors.borderFaint
-                border.width: 1
-
-                Text {
-                    anchors.centerIn: parent
-                    text: stepRoot.value + " px"
-                    color: Colors.fgPrimary
-                    font.family: Typography.fontFamily
-                    font.pixelSize: settings.textPixelSize
-                    font.weight: Font.DemiBold
-                }
-            }
-
-            GeometryActionButton {
-                label: "+"
-                enabled: stepRoot.value < stepRoot.maximum
-                onClicked: stepRoot.valueRequested(Math.min(stepRoot.maximum, stepRoot.value + stepRoot.step))
+            GeometryPager {
+                value: stepRoot.value
+                minimum: stepRoot.minimum
+                maximum: stepRoot.maximum
+                step: stepRoot.step
+                onValueRequested: requestedValue => stepRoot.valueRequested(requestedValue)
             }
         }
-    }
-
-    // Detected monitor option for SDDM focus
-    component LoginMonitorOption: SettingRow {
-        required property var modelData
-
-        iconName: "display.monitor"
-        title: modelData.displayName || modelData.name || "Monitor"
-        subtitle: Services.LoginMonitor.monitorSubtitle(modelData)
-        active: Services.LoginMonitor.selectorMatches(modelData)
-        enabled: !Services.LoginMonitor.saving
-        onClicked: Services.LoginMonitor.setSelector(modelData.selector || modelData.name || "")
     }
 
     // Bar settings tab content
@@ -518,34 +619,56 @@ PanelWindow {
                 // Workspace layout options card
                 Rectangle {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 176
+                    Layout.preferredHeight: workspaceLayoutContent.implicitHeight + 24
                     radius: 14
                     color: Colors.bgSecondary
                     border.color: Colors.borderFaint
-                    border.width: 1
+                    border.width: 0.8
 
                     // Workspace layout options content
-                    ColumnLayout {
+                    GridLayout {
+                        id: workspaceLayoutContent
+
                         anchors.fill: parent
                         anchors.margins: 12
-                        spacing: 12
+                        columns: 2
+                        columnSpacing: 14
+                        rowSpacing: 4
 
-                        Text {
+                        ColumnLayout {
                             Layout.fillWidth: true
-                            text: "Workspace layout control"
-                            color: Colors.fgPrimary
-                            font.family: Typography.fontFamily
-                            font.pixelSize: settings.textPixelSize
-                            font.weight: Font.Bold
+                            Layout.preferredWidth: 300
+                            spacing: 2
+
+                            Text {
+                                Layout.fillWidth: true
+                                text: "Workspace layout control"
+                                color: Colors.fgPrimary
+                                font.family: Typography.fontFamily
+                                font.pixelSize: settings.textPixelSize
+                                font.weight: Font.Bold
+                            }
+
+                            Text {
+                                Layout.fillWidth: true
+                                text: "Toggle the focused workspace between dwindle and scrolling."
+                                color: Colors.fgSecondary
+                                wrapMode: Text.WordWrap
+                                font.family: Typography.fontFamily
+                                font.pixelSize: settings.textPixelSize - 1
+                            }
                         }
 
-                        RowLayout {
-                            Layout.fillWidth: true
-                            spacing: 10
-
-                            OptionButton { mode: "icons" }
-                            OptionButton { mode: "compact" }
-                            OptionButton { mode: "full" }
+                        Controls.SegmentedTabs {
+                            Layout.fillWidth: false
+                            Layout.preferredWidth: 220
+                            Layout.maximumWidth: 220
+                            Layout.alignment: Qt.AlignTop
+                            small: true
+                            showIcons: false
+                            model: root.workspaceLayoutOptions()
+                            currentValue: Services.UiPreferences.layoutPillDisplayMode
+                            onActivated: value => Services.UiPreferences.setLayoutPillDisplayMode(value)
                         }
                     }
                 }
@@ -553,13 +676,15 @@ PanelWindow {
                 // Persistent bar geometry controls card
                 Rectangle {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 276
+                    Layout.preferredHeight: geometryContent.implicitHeight + 24
                     radius: 14
                     color: Colors.bgSecondary
                     border.color: Colors.borderFaint
-                    border.width: 1
+                    border.width: 0.8
 
                     ColumnLayout {
+                        id: geometryContent
+
                         anchors.fill: parent
                         anchors.margins: 12
                         spacing: 10
@@ -598,6 +723,7 @@ PanelWindow {
                         }
 
                         GeometryStepper {
+                            rowIndex: 0
                             title: "Bar height"
                             subtitle: "Default " + Services.UiPreferences.defaultPanelHeight + " px, reserved edge height"
                             value: Services.UiPreferences.panelHeight
@@ -607,6 +733,7 @@ PanelWindow {
                         }
 
                         GeometryStepper {
+                            rowIndex: 1
                             title: "Pill height"
                             subtitle: "Default " + Services.UiPreferences.defaultPillHeight + " px, capped by bar height"
                             value: Services.UiPreferences.pillHeight
@@ -616,6 +743,7 @@ PanelWindow {
                         }
 
                         GeometryStepper {
+                            rowIndex: 2
                             title: "Top margin"
                             subtitle: "Default " + Services.UiPreferences.defaultTopMargin + " px, distance from screen edge"
                             value: Services.UiPreferences.topMargin
@@ -625,6 +753,7 @@ PanelWindow {
                         }
 
                         GeometryStepper {
+                            rowIndex: 3
                             title: "Pill radius"
                             subtitle: "Default " + Services.UiPreferences.defaultPillRadius + " px, capped at half pill height"
                             value: Services.UiPreferences.pillRadius
@@ -635,16 +764,9 @@ PanelWindow {
                     }
                 }
 
-                Text {
-                    Layout.fillWidth: true
-                    text: "The control toggles the focused workspace between dwindle and scrolling without changing your Hyprland default layout."
-                    color: Colors.fgSecondary
-                    wrapMode: Text.WordWrap
-                    font.family: Typography.fontFamily
-                    font.pixelSize: settings.textPixelSize
+                Item {
+                    Layout.fillHeight: true
                 }
-
-                Item { Layout.fillHeight: true }
             }
         }
     }
@@ -666,24 +788,6 @@ PanelWindow {
                 font.weight: Font.Bold
             }
 
-            // Do not disturb toggle row
-            SettingRow {
-                iconName: "notifications.on"
-                title: "Do Not Disturb"
-                subtitle: Services.NotificationService.doNotDisturb ? "Notifications paused" : "Notifications visible"
-                active: Services.NotificationService.doNotDisturb
-                onClicked: Services.NotificationService.toggleDoNotDisturb()
-            }
-
-            // Caffeine toggle row
-            SettingRow {
-                iconName: Services.CaffeineService.iconName
-                title: "Caffeine"
-                subtitle: Services.CaffeineService.enabled ? "Idle inhibit on" : "Idle inhibit off"
-                active: Services.CaffeineService.enabled
-                onClicked: Services.CaffeineService.toggle()
-            }
-
             // SDDM login monitor selector card
             Rectangle {
                 Layout.fillWidth: true
@@ -691,85 +795,69 @@ PanelWindow {
                 radius: 14
                 color: Colors.bgSecondary
                 border.color: Colors.borderFaint
-                border.width: 1
+                border.width: 0.8
 
-                ColumnLayout {
+                GridLayout {
                     id: loginMonitorContent
 
                     anchors.fill: parent
                     anchors.margins: 12
-                    spacing: 10
+                    columns: 2
+                    columnSpacing: 14
+                    rowSpacing: 8
 
-                    RowLayout {
+                    ColumnLayout {
                         Layout.fillWidth: true
-                        spacing: 8
+                        Layout.preferredWidth: 300
+                        spacing: 2
 
-                        ColumnLayout {
+                        Text {
                             Layout.fillWidth: true
-                            spacing: 1
-
-                            Text {
-                                Layout.fillWidth: true
-                                text: "Login monitor"
-                                color: Colors.fgPrimary
-                                font.family: Typography.fontFamily
-                                font.pixelSize: settings.textPixelSize
-                                font.weight: Font.Bold
-                            }
-
-                            Text {
-                                Layout.fillWidth: true
-                                text: "Choose where SDDM places keyboard focus."
-                                color: Colors.fgSecondary
-                                elide: Text.ElideRight
-                                font.family: Typography.fontFamily
-                                font.pixelSize: settings.textPixelSize - 1
-                            }
+                            text: "Login monitor"
+                            color: Colors.fgPrimary
+                            font.family: Typography.fontFamily
+                            font.pixelSize: settings.textPixelSize
+                            font.weight: Font.Bold
                         }
 
-                        GeometryActionButton {
-                            label: Services.LoginMonitor.refreshing ? "Refreshing" : "Refresh"
-                            enabled: !Services.LoginMonitor.refreshing && !Services.LoginMonitor.saving
-                            onClicked: Services.LoginMonitor.refresh()
+                        Text {
+                            Layout.fillWidth: true
+                            text: "Choose where SDDM places keyboard focus."
+                            color: Colors.fgSecondary
+                            wrapMode: Text.WordWrap
+                            font.family: Typography.fontFamily
+                            font.pixelSize: settings.textPixelSize - 1
+                        }
+
+                        Text {
+                            Layout.fillWidth: true
+                            visible: Services.LoginMonitor.statusText.length > 0
+                            text: Services.LoginMonitor.statusText
+                            color: Colors.fgSecondary
+                            wrapMode: Text.WordWrap
+                            font.family: Typography.fontFamily
+                            font.pixelSize: settings.textPixelSize - 1
                         }
                     }
 
-                    Text {
-                        Layout.fillWidth: true
-                        visible: Services.LoginMonitor.statusText.length > 0
-                        text: Services.LoginMonitor.statusText
-                        color: Colors.fgSecondary
-                        wrapMode: Text.WordWrap
-                        font.family: Typography.fontFamily
-                        font.pixelSize: settings.textPixelSize - 1
-                    }
-
-                    SettingRow {
-                        iconName: "settings"
-                        title: "Automatic"
-                        subtitle: "Let Hyprland keep its default SDDM focus"
-                        active: Services.LoginMonitor.selector.length === 0
+                    Controls.SegmentedTabs {
+                        Layout.fillWidth: false
+                        Layout.preferredWidth: 210
+                        Layout.maximumWidth: 210
+                        Layout.alignment: Qt.AlignTop
+                        small: true
+                        showIcons: false
                         enabled: !Services.LoginMonitor.saving
-                        onClicked: Services.LoginMonitor.setSelector("")
-                    }
-
-                    Repeater {
-                        model: Services.LoginMonitor.monitors
-                        delegate: LoginMonitorOption {}
+                        model: root.loginMonitorOptions()
+                        currentValue: root.loginMonitorSelection()
+                        onActivated: value => Services.LoginMonitor.setSelector(value)
                     }
                 }
             }
 
-            Text {
-                Layout.fillWidth: true
-                text: "Network, Bluetooth, and audio routing stay in the control panel."
-                color: Colors.fgSecondary
-                wrapMode: Text.WordWrap
-                font.family: Typography.fontFamily
-                font.pixelSize: settings.textPixelSize
+            Item {
+                Layout.fillHeight: true
             }
-
-            Item { Layout.fillHeight: true }
         }
     }
 }

@@ -14,7 +14,7 @@ Qt and Quickshell imports: `import QtQuick`, `import Quickshell`, `import Quicks
 
 Project imports: `import ".."`, `import "../custom" as Custom`, `import "../Services" as Services`, `import "./Components" as System`, `import "./Panes" as Panes`.
 
-Referenced or instantiated by: `Bar/BarWindow.qml`.
+Referenced or instantiated by: `Bar/BarWindow.qml`, `shell.qml`.
 
 ## Component Hierarchy and Role
 
@@ -47,6 +47,6 @@ Toggles the component between open and closed states, often preserving or select
 
 ## Inter-Component Interactions
 
-External components bind this component through its declared properties and call its public functions where exposed.
+External components bind this component through its declared properties and call its public functions where exposed. `shell.qml` exposes a shared instance through the `kitana-control-panel` IPC target.
 
 Reads from or calls service singletons: `Services.SystemStatus`.
