@@ -110,6 +110,7 @@ QtObject {
         "ui.chevron.left": "󰅁",
         "ui.chevron.right": "󰅂",
         "ui.delete": "󰆴",
+        "ui.more.horizontal": "󰇙",
         "ui.refresh": "󰑐",
         "ui.scan": "󰓦",
         "ui.visibility": "󰈈",

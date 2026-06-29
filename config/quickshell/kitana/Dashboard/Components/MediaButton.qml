@@ -9,34 +9,38 @@ import "../../custom" as Custom
 Rectangle {
     id: root
 
-    Custom.Settings { id: settings }
+    Custom.Settings {
+        id: settings
+    }
 
     property string iconName: Icons.defaultIcon
     property bool prominent: false
+    property bool selected: false
 
     signal clicked
 
-    Layout.preferredWidth: prominent ? 48 : 40
-    Layout.preferredHeight: prominent ? 40 : 36
-    radius: 12
-    color: prominent ? Colors.subtleAccent : (mediaButtonMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary)
-    border.color: prominent ? Colors.borderAccent : Colors.borderFaint
-    border.width: 1
+    Layout.preferredWidth: prominent ? 46 : 38
+    Layout.preferredHeight: prominent ? 46 : 38
+    radius: prominent ? 14 : 14
+    color: !enabled ? Colors.subtlePrimary : prominent ? (mediaButtonMouse.containsMouse ? Colors.bgAccent : Colors.alpha(Colors.bgAccent, 0.3)) : selected ? (mediaButtonMouse.containsMouse ? Colors.bgAccent : Colors.alpha(Colors.bgAccent, 0.3)) : mediaButtonMouse.containsMouse ? Colors.bgTertiary : Colors.subtleSecondary
+    border.color: !enabled ? Colors.borderFaint : (prominent || selected ? Colors.borderAccent : Colors.borderFaint)
+    border.width: 0.8
 
     // Media control icon
     Controls.Icon {
-        anchors.centerIn: parent
+        anchors.fill: parent
         name: root.iconName
-        tone: root.prominent ? "accent" : "primary"
-        size: root.prominent ? settings.iconPixelSize + 2 : settings.iconPixelSize - 1
+        tone: !root.enabled ? "disabled" : (root.prominent ? "onAccent" : (root.selected ? "accent" : "primary"))
+        size: root.prominent ? settings.iconPixelSize + 4 : settings.iconPixelSize - 1
     }
 
     // Media control click target
     MouseArea {
         id: mediaButtonMouse
         anchors.fill: parent
+        enabled: root.enabled
         hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
+        cursorShape: root.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
         onClicked: root.clicked()
     }
 }

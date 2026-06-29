@@ -61,10 +61,7 @@ PanelWindow {
     property string firstClockDate: ""
     property string secondClockTime: "--"
     property string secondClockDate: ""
-    property var cavaLevels: [1, 2, 3, 2, 1, 3, 4, 3, 2, 1, 2, 3, 2, 1, 2, 4, 3, 2, 1, 2, 3, 5, 4, 2, 1, 2, 3, 2, 1, 3, 2, 1]
-    property int mediaVisualStep: 0
     property bool mediaAudioOverlayOpen: false
-    readonly property bool mediaPlaying: Services.MediaService.playing
 
     // Saved weather preferences
     PersistentProperties {
@@ -216,16 +213,6 @@ PanelWindow {
 
     function refreshMedia(): void {
         Services.SystemStatus.refresh();
-    }
-
-    function updateMediaVisual(): void {
-        mediaVisualStep = (mediaVisualStep + 1) % 360;
-        const values = [];
-        for (let i = 0; i < 32; i++) {
-            const wave = Math.sin((mediaVisualStep + i * 18) / 11) + Math.sin((mediaVisualStep + i * 9) / 17);
-            values.push(Math.max(1, Math.min(8, Math.round(4 + wave * 1.8))));
-        }
-        cavaLevels = values;
     }
 
     function refreshWeather(): void {
@@ -606,14 +593,6 @@ PanelWindow {
         running: true
         repeat: true
         onTriggered: root.refreshWeather()
-    }
-
-    // Media visualizer animation timer
-    Timer {
-        interval: 140
-        running: root.panelVisible && root.activeTab === "media" && root.mediaPlaying
-        repeat: true
-        onTriggered: root.updateMediaVisual()
     }
 
     // Wallpaper directory model

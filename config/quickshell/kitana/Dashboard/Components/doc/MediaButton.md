@@ -26,6 +26,7 @@ The root type is `Rectangle`. The component composes child QML items, Kitana des
 |----------|------|---------|----------|-------------|
 | `iconName` | `string` | `Icons.defaultIcon` | No | Selects a semantic icon token from the Kitana icon registry. |
 | `prominent` | `bool` | `false` | No | Enables or disables the `prominent` state. |
+| `selected` | `bool` | `false` | No | Applies selected chip styling for secondary media controls. |
 
 ## Signals
 

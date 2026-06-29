@@ -2,7 +2,6 @@
 
 | Component | Source | Summary |
 |-----------|--------|---------|
-| [`CavaBars`](CavaBars.md) | `CavaBars.qml` | CavaBars is a reusable Dashboard component used to compose panel content consistently. |
 | [`DashboardField`](DashboardField.md) | `DashboardField.qml` | DashboardField is a reusable Dashboard component used to compose panel content consistently. |
 | [`MediaButton`](MediaButton.md) | `MediaButton.qml` | MediaButton is a reusable Dashboard component used to compose panel content consistently. |
 | [`MediaDeviceRow`](MediaDeviceRow.md) | `MediaDeviceRow.qml` | MediaDeviceRow is a reusable Dashboard component used to compose panel content consistently. |

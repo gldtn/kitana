@@ -26,7 +26,6 @@ Generated reference for the QML components that make up the Kitana Quickshell de
 | `Colors` | Config | `Config/Colors.qml` | [Colors](../Config/doc/Colors.md) |
 | `Icons` | Config | `Config/Icons.qml` | [Icons](../Config/doc/Icons.md) |
 | `Typography` | Config | `Config/Typography.qml` | [Typography](../Config/doc/Typography.md) |
-| `CavaBars` | Dashboard | `Dashboard/Components/CavaBars.qml` | [CavaBars](../Dashboard/Components/doc/CavaBars.md) |
 | `DashboardField` | Dashboard | `Dashboard/Components/DashboardField.qml` | [DashboardField](../Dashboard/Components/doc/DashboardField.md) |
 | `MediaButton` | Dashboard | `Dashboard/Components/MediaButton.qml` | [MediaButton](../Dashboard/Components/doc/MediaButton.md) |
 | `MediaDeviceRow` | Dashboard | `Dashboard/Components/MediaDeviceRow.qml` | [MediaDeviceRow](../Dashboard/Components/doc/MediaDeviceRow.md) |

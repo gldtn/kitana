@@ -59,10 +59,7 @@ The root type is `PanelWindow`. It owns the expanded dashboard and morph animati
 | `firstClockDate` | `string` | `""` | No | Stores the string value for `firstClockDate`. |
 | `secondClockTime` | `string` | `"--"` | No | Stores the string value for `secondClockTime`. |
 | `secondClockDate` | `string` | `""` | No | Stores the string value for `secondClockDate`. |
-| `cavaLevels` | `var` | `[1, 2, 3, 2, 1, 3, 4, 3, 2, 1, 2, 3, 2, 1, 2, 4, 3, 2, 1, 2, 3, 5, 4, 2, 1, 2, 3, 2, 1,...` | No | Provides component state or configuration for `cavaLevels`. |
-| `mediaVisualStep` | `int` | `0` | No | Controls the numeric value for `mediaVisualStep`. |
 | `mediaAudioOverlayOpen` | `bool` | `false` | No | Enables or disables the `mediaAudioOverlayOpen` state. |
-| `mediaPlaying` | `readonly bool` | `Services.MediaService.playing` | No | Read-only. Enables or disables the `mediaPlaying` state. |
 | `islandActive` | `readonly bool` | `panelVisible` | No | Read-only. Indicates that the dashboard island is expanded or morphing open. |
 | `expandedSurface` | `readonly bool` | computed | No | Switches the island window between compact and full-screen input modes. |
 | `focusedScreen` | `readonly var` | computed | No | Maps Hyprland's focused monitor to a Quickshell screen. |
