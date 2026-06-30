@@ -37,6 +37,7 @@ Item {
         // Workspace layout toggle
         Items.Layout {
             embedded: root.embedded
+            panelScreen: root.panelScreen
         }
     }
 }

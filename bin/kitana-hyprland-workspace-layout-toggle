@@ -4,9 +4,10 @@ set -euo pipefail
 
 notify=true
 action="toggle"
+workspace_target=""
 
 usage() {
-  printf 'Usage: kitana-hyprland-workspace-layout-toggle [--current] [--quiet]\n'
+  printf 'Usage: kitana-hyprland-workspace-layout-toggle [--current] [--workspace WORKSPACE] [--quiet]\n'
 }
 
 layout_label() {
@@ -28,6 +29,14 @@ while [ "$#" -gt 0 ]; do
     --current)
       action="current"
       ;;
+    --workspace)
+      shift
+      if [ "$#" -eq 0 ]; then
+        usage >&2
+        exit 2
+      fi
+      workspace_target="$1"
+      ;;
     --quiet|--no-notify)
       notify=false
       ;;
@@ -47,7 +56,16 @@ if ! command -v hyprctl >/dev/null 2>&1 || ! command -v jq >/dev/null 2>&1; then
   exit 1
 fi
 
-workspace_json="$(hyprctl -j activeworkspace)"
+if [ -n "$workspace_target" ]; then
+  workspace_json="$(hyprctl -j workspaces | jq -c --arg workspace "$workspace_target" 'map(select((.id | tostring) == $workspace or .name == $workspace))[0] // empty')"
+else
+  workspace_json="$(hyprctl -j activeworkspace)"
+fi
+
+if [ -z "$workspace_json" ]; then
+  exit 1
+fi
+
 workspace_id="$(jq -r '.id // empty' <<<"$workspace_json")"
 workspace_name="$(jq -r '.name // empty' <<<"$workspace_json")"
 current_layout="$(jq -r '.tiledLayout // "dwindle"' <<<"$workspace_json")"

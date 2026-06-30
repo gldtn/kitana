@@ -18,8 +18,11 @@ Item {
 
     readonly property string kitanaDir: Quickshell.env("KITANA_DIR") || Quickshell.env("HOME") + "/.local/share/kitana"
     readonly property string helper: kitanaDir + "/bin/kitana-hyprland-workspace-layout-toggle"
-    readonly property var activeWorkspace: Hyprland.focusedWorkspace || Hyprland.workspaces.values.find(workspace => workspace.active)
+    required property var panelScreen
+    readonly property var hyprlandMonitor: panelScreen ? Hyprland.monitorFor(panelScreen) : null
+    readonly property var activeWorkspace: hyprlandMonitor && hyprlandMonitor.activeWorkspace ? hyprlandMonitor.activeWorkspace : Hyprland.focusedWorkspace || Hyprland.workspaces.values.find(workspace => workspace.active)
     readonly property var workspaceIpc: activeWorkspace && activeWorkspace.lastIpcObject ? activeWorkspace.lastIpcObject : ({})
+    readonly property string workspaceTarget: String(workspaceIpc.name || (activeWorkspace && activeWorkspace.name) || workspaceIpc.id || (activeWorkspace && activeWorkspace.id) || "")
     readonly property string currentLayout: normalizeLayout(workspaceIpc.tiledLayout || "dwindle")
     readonly property string displayMode: Services.UiPreferences.layoutPillDisplayMode
     property bool embedded: false
@@ -61,6 +64,10 @@ Item {
 
     function refreshWorkspaces(): void {
         Hyprland.refreshWorkspaces();
+    }
+
+    function toggleArgs(): var {
+        return workspaceTarget.length > 0 ? [helper, "--workspace", workspaceTarget] : [helper];
     }
 
     // Layout toggle command runner
@@ -117,6 +124,6 @@ Item {
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
         onClicked: if (!layoutToggle.running)
-            layoutToggle.exec([root.helper])
+            layoutToggle.exec(root.toggleArgs())
     }
 }

@@ -26,8 +26,11 @@ The root type is `Item`. The component composes child QML items, Kitana design t
 |----------|------|---------|----------|-------------|
 | `kitanaDir` | `readonly string` | `Quickshell.env("KITANA_DIR") \|\| Quickshell.env("HOME") + "/.local/share/kitana"` | No | Read-only. Stores the Kitana repository path used to call helper commands. |
 | `helper` | `readonly string` | `kitanaDir + "/bin/kitana-hyprland-workspace-layout-toggle"` | No | Read-only. Stores the string value for `helper`. |
-| `activeWorkspace` | `readonly var` | `Hyprland.focusedWorkspace \|\| Hyprland.workspaces.values.find(workspace => workspace.act...` | No | Read-only. Provides component state or configuration for `activeWorkspace`. |
+| `panelScreen` | `var` | Required | Yes | Quickshell screen whose monitor active workspace should drive the indicator. |
+| `hyprlandMonitor` | `readonly var` | `Hyprland.monitorFor(panelScreen)` | No | Read-only. Hyprland monitor for this bar instance. |
+| `activeWorkspace` | `readonly var` | Monitor active workspace with focused-workspace fallback | No | Read-only. Workspace whose layout is shown and toggled. |
 | `workspaceIpc` | `readonly var` | `activeWorkspace && activeWorkspace.lastIpcObject ? activeWorkspace.lastIpcObject : ({})` | No | Read-only. Provides component state or configuration for `workspaceIpc`. |
+| `workspaceTarget` | `readonly string` | Active workspace name or id | No | Read-only. Workspace passed to the layout toggle helper. |
 | `currentLayout` | `readonly string` | `normalizeLayout(workspaceIpc.tiledLayout \|\| "dwindle")` | No | Read-only. Stores the string value for `currentLayout`. |
 | `displayMode` | `readonly string` | `Services.UiPreferences.layoutPillDisplayMode` | No | Read-only. Stores the string value for `displayMode`. |
 | `embedded` | `bool` | `false` | No | Switches the component into shared-pill mode so its own background is suppressed by a parent container. |
@@ -53,6 +56,10 @@ Performs component-specific behavior used internally or by parent components.
 #### refreshWorkspaces() : void
 
 Refreshes data used by the component. Side effects may include starting a process, updating service state, or repopulating a model.
+
+#### toggleArgs() : var
+
+Builds the helper command arguments for the active workspace on this bar's monitor.
 
 ## Inter-Component Interactions
 

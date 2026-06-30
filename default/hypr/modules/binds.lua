@@ -60,20 +60,18 @@ bind(mod .. " + CTRL + PERIOD", hl.dsp.exec_cmd("quickshell ipc -c kitana call k
 bind("PRINT", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-screenshot toggle"), { description = "Screenshot menu" })
 bind(mod .. " + SPACE", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-wallpaper --random"), { description = "Random wallpaper" })
 bind(mod .. " + CTRL + SPACE", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-theme --next"), { description = "Next theme" })
-bind(mod .. " + CTRL + R", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-quickshell --restart"), { description = "Restart Quickshell" })
+bind(mod .. " + CTRL + SHIFT + R", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-quickshell --restart"), { description = "Restart Quickshell" })
 bind(mod .. " + COMMA", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-notifications clear"), { description = "Dismiss all notifications" })
 bind(mod .. " + CTRL + COMMA", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-control-panel toggle notifications"), { description = "Control panel" })
 
--- hyprland layout manipulation
-bind(mod .. " + TAB", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-hyprland-workspace-layout-toggle"), { description = "Toggle current workspace layout" })
-bind(mod .. " + LEFT", hl.dsp.layout("focus l"), { description = "Scroll active workspace backward" })
-bind(mod .. " + RIGHT", hl.dsp.layout("focus r"), { description = "Scroll active workspace forward" })
+-- Toggle between dwindle and scrolling workspace layouts
+bind(mod .. " + CTRL + TAB", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-hyprland-workspace-layout-toggle"), { description = "Toggle current workspace layout" })
 
 -- Screenshot
-bind(mod .. " + CTRL + SHIFT + P", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-screenshot output"), { description = "Screenshot monitor" })
-bind(mod .. " + CTRL + SHIFT + W", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-screenshot window"), { description = "Screenshot window" })
-bind(mod .. " + CTRL + SHIFT + R", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-screenshot region"), { description = "Screenshot region" })
-bind(mod .. " + CTRL + SHIFT + C", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-screenshot region --clipboard-only"), { description = "Screenshot region (clipboard)" })
+bind(mod .. " + CTRL + P", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-screenshot output"), { description = "Screenshot monitor" })
+bind(mod .. " + CTRL + W", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-screenshot window"), { description = "Screenshot window" })
+bind(mod .. " + CTRL + R", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-screenshot region"), { description = "Screenshot region" })
+bind(mod .. " + CTRL + C", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-screenshot region --clipboard-only"), { description = "Screenshot region (clipboard)" })
 
 -- Window split/pseudo/float
 bind(mod .. " + P", hl.dsp.window.pseudo(), { description = "Toggle pseudo" })
@@ -111,13 +109,21 @@ for key, dir in pairs(directions) do
   bind(mod .. " + SHIFT + " .. key, hl.dsp.window.swap({ direction = dir }), { description = "Swap " .. dir })
 end
 
--- Window workspace management
+-- Move and focus windows to workspaces
 for i = 1, 10 do
   local key = i % 10
   bind(mod .. " + " .. key, hl.dsp.focus({ workspace = i }), { description = "Go to workspace " .. i })
   bind(mod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = i }), { description = "Move window to workspace " .. i })
   bind(mod .. " + CTRL + " .. key, hl.dsp.window.move({ workspace = i, follow = false }), { description = "Move window to workspace " .. i .. " (silent)" })
 end
+
+-- Toggle between current and previous workspace
+bind(mod .. " + TAB", hl.dsp.focus({ workspace = "previous" }), { description = "Previous workspace" })
+bind(mod .. " + SHIFT + TAB", hl.dsp.focus({ workspace = "previous_per_monitor" }), { description = "Previous workspace on monitor" })
+
+-- Focus previous/next workspace
+bind(mod .. " + SHIFT + left", hl.dsp.focus({ workspace = "r-1" }), { description = "Focus previous workspace" })
+bind(mod .. " + SHIFT + right", hl.dsp.focus({ workspace = "r+1" }), { description = "Focus next workspace" })
 
 bind(mod .. " + S", hl.dsp.workspace.toggle_special("magic"), { description = "Toggle magic workspace" })
 bind(mod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }), { description = "Move window to magic workspace" })
