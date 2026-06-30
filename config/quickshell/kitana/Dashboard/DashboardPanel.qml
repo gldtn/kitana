@@ -10,7 +10,6 @@ import Quickshell.Hyprland
 import Quickshell.Io
 import Quickshell.Wayland
 import ".."
-import "../Bar/Sections" as BarSections
 import "../Components/Controls" as Controls
 import "../custom" as Custom
 import "../Services" as Services
@@ -32,10 +31,7 @@ PanelWindow {
     property real morphProgress: 0
     property var fallbackScreen: null
     property var panelScreen: null
-    property real sourceX: 0
-    property real sourceY: Services.UiPreferences.topMargin + (Services.UiPreferences.panelHeight - Services.UiPreferences.pillHeight) / 2
-    property real sourceWidth: 240
-    property real sourceHeight: Services.UiPreferences.pillHeight
+    property bool barVisible: true
     property string activeTab: "datetime"
     property var wallpapers: []
     property var themes: []
@@ -62,6 +58,10 @@ PanelWindow {
     property string secondClockTime: "--"
     property string secondClockDate: ""
     property bool mediaAudioOverlayOpen: false
+    readonly property string stateDir: (Quickshell.env("HOME") || "") + "/.local/state/kitana"
+    readonly property string weatherCachePath: stateDir + "/dashboard-weather-cache.json"
+
+    signal openingRequested(var panel)
 
     // Saved weather preferences
     PersistentProperties {
@@ -86,12 +86,11 @@ PanelWindow {
 
     readonly property bool islandActive: panelVisible
     readonly property bool expandedSurface: panelVisible || closing
-    readonly property var focusedScreen: screenForMonitor(Hyprland.focusedMonitor)
-    readonly property var activeScreen: expandedSurface ? (panelScreen || focusedScreen || fallbackScreen) : (focusedScreen || panelScreen || fallbackScreen)
+    readonly property var activeScreen: panelScreen || fallbackScreen
     readonly property int activeScreenWidth: activeScreen ? activeScreen.width : 1920
     readonly property int activeScreenHeight: activeScreen ? activeScreen.height : 1080
-    readonly property real collapsedWidth: Math.max(sourceWidth, Services.UiPreferences.pillHeight * 4)
-    readonly property real collapsedHeight: Math.max(sourceHeight, Services.UiPreferences.pillHeight)
+    readonly property real collapsedWidth: Math.max(islandPreview.implicitWidth, 1)
+    readonly property real collapsedHeight: Math.max(islandPreview.implicitHeight, Services.UiPreferences.pillHeight)
     readonly property real collapsedX: Math.max(0, (activeScreenWidth - collapsedWidth) / 2)
     readonly property real collapsedY: Services.UiPreferences.topMargin + (Services.UiPreferences.panelHeight - collapsedHeight) / 2
     readonly property int compactX: Math.round(collapsedX)
@@ -104,8 +103,12 @@ PanelWindow {
     readonly property real expandedTopMargin: Services.UiPreferences.topMargin + 6
     readonly property real collapsedRadius: Math.min(collapsedHeight / 2, Services.UiPreferences.pillRadius)
     readonly property real expandedRadius: 18
-    readonly property real contentOpacity: Math.max(0, Math.min(1, (morphProgress - 0.36) / 0.64))
-    readonly property real previewOpacity: Math.max(0, Math.min(1, 1 - morphProgress * 2.6))
+    readonly property real contentOpacity: smoothstep(0.58, 1, morphProgress)
+    readonly property real previewOpacity: 1 - smoothstep(0.12, 0.42, morphProgress)
+    readonly property bool summaryIconVisible: compactHoverLatched || (!expandedSurface && cardMouse.containsMouse)
+    readonly property var hyprlandMonitor: panelScreen ? Hyprland.monitorFor(panelScreen) : null
+    readonly property var activeWorkspace: hyprlandMonitor !== null ? hyprlandMonitor.activeWorkspace : null
+    readonly property bool hiddenByFullscreen: !expandedSurface && activeWorkspace !== null && activeWorkspace.hasFullscreen && hasTrueFullscreen(activeWorkspace)
     // dashboard-wide UI properties
     readonly property color sectionContainer: Colors.bgSecondary
     readonly property color sectionBorder: Colors.borderFaint
@@ -114,6 +117,11 @@ PanelWindow {
 
     function lerp(from: real, to: real, progress: real): real {
         return from + (to - from) * progress;
+    }
+
+    function smoothstep(edge0: real, edge1: real, value: real): real {
+        const progress = Math.max(0, Math.min(1, (value - edge0) / (edge1 - edge0)));
+        return progress * progress * (3 - 2 * progress);
     }
 
     function animateTo(progress: real): void {
@@ -137,30 +145,30 @@ PanelWindow {
 
     function reopenFromCompact(): void {
         compactHoverLatched = true;
-        open(activeTab || "datetime", panelScreen, compactX, compactY, compactWidth, compactHeight);
+        open(activeTab || "datetime");
     }
 
-    function screenForMonitor(monitor: var): var {
-        if (!monitor || !monitor.name)
-            return null;
-        for (let i = 0; i < Quickshell.screens.length; i++) {
-            if (Quickshell.screens[i].name === monitor.name)
-                return Quickshell.screens[i];
+    function hasTrueFullscreen(workspace: var): bool {
+        const toplevels = workspace && workspace.toplevels ? workspace.toplevels.values : [];
+
+        for (const toplevel of toplevels) {
+            const ipc = toplevel && toplevel.lastIpcObject ? toplevel.lastIpcObject : null;
+            if (ipc === null)
+                continue;
+
+            // Hyprland mode 1 is maximized; mode 2 is true fullscreen.
+            const mode = typeof ipc.fullscreen !== "undefined" ? Number(ipc.fullscreen) : Number(ipc.fullscreenClient);
+            if (mode === 2)
+                return true;
         }
-        return null;
+
+        return false;
     }
 
-    function open(tab: string, sourceScreen: var, x: var, y: var, width: var, height: var): void {
-        if (sourceScreen)
-            panelScreen = sourceScreen;
-        else if (activeScreen)
-            panelScreen = activeScreen;
-        else if (!panelScreen && fallbackScreen)
+    function open(tab: string): void {
+        if (!panelScreen && fallbackScreen)
             panelScreen = fallbackScreen;
-        if (typeof width === "number" && width > 0)
-            sourceWidth = width;
-        if (typeof height === "number" && height > 0)
-            sourceHeight = height;
+        openingRequested(root.panelSelf);
         activeTab = tab || "datetime";
         resetPickerState();
         closing = false;
@@ -178,30 +186,24 @@ PanelWindow {
         animateTo(0);
     }
 
-    function toggle(tab: string, sourceScreen: var, x: var, y: var, width: var, height: var): void {
+    function toggle(tab: string): void {
         const targetTab = tab || activeTab;
         if (panelVisible && !closing && activeTab === targetTab)
             close();
         else
-            open(targetTab, sourceScreen, x, y, width, height);
+            open(targetTab);
     }
 
     function focusPanel(): void {
         closeArea.forceActiveFocus();
     }
 
-    // Dashboard IPC command bridge
-    IpcHandler {
-        target: "kitana-dashboard"
+    Connections {
+        target: Hyprland
 
-        function open(tab: string): void {
-            root.open(tab || "datetime");
-        }
-        function close(): void {
-            root.close();
-        }
-        function toggle(tab: string): void {
-            root.toggle(tab || "datetime");
+        function onRawEvent(event): void {
+            if (event.name === "fullscreen" || event.name === "fullscreenmode")
+                Hyprland.refreshToplevels();
         }
     }
 
@@ -224,10 +226,48 @@ PanelWindow {
         if (weatherProcess.running)
             return;
 
-        const location = weatherLocation.trim();
+        const location = weatherLocationKey();
         const target = location.length > 0 ? encodeURIComponent(location) : "";
         weatherStatus = "Loading weather...";
         weatherProcess.exec(["curl", "-fsSL", "https://wttr.in/" + target + "?format=j1"]);
+    }
+
+    function weatherLocationKey(): string {
+        return weatherLocation.trim();
+    }
+
+    function weatherCachePayload(data: var): var {
+        return {
+            current_condition: data.current_condition || [],
+            nearest_area: data.nearest_area || [],
+            weather: data.weather || []
+        };
+    }
+
+    function cacheWeather(data: var): void {
+        if (!data || !data.current_condition)
+            return;
+
+        weatherCacheFile.setText(JSON.stringify({
+            location: weatherLocationKey(),
+            weather: weatherCachePayload(data)
+        }));
+    }
+
+    function loadCachedWeather(): void {
+        try {
+            const cached = weatherCacheFile.text().trim();
+            if (cached.length === 0)
+                return;
+
+            const parsed = JSON.parse(cached);
+            if (parsed && parsed.location === weatherLocationKey() && parsed.weather && parsed.weather.current_condition) {
+                weather = parsed.weather;
+                weatherStatus = "";
+            }
+        } catch (error) {
+            weatherCacheFile.setText("");
+        }
     }
 
     function basename(path: string): string {
@@ -297,6 +337,13 @@ PanelWindow {
         wallpaperCurrentIndex = 0;
         themePage = 0;
         themeCurrentIndex = 0;
+    }
+
+    function selectTab(tab: string): void {
+        if (activeTab !== tab)
+            resetPickerState();
+        activeTab = tab;
+        refreshTab();
     }
 
     function filteredWallpapers(): var {
@@ -389,7 +436,36 @@ PanelWindow {
             return;
         }
 
-        if (!pickerTab || pickerSearchActive)
+        if (pickerSearchActive)
+            return;
+
+        if (key === Qt.Key_1) {
+            selectTab("datetime");
+            event.accepted = true;
+            return;
+        } else if (key === Qt.Key_2) {
+            selectTab("weather");
+            event.accepted = true;
+            return;
+        } else if (key === Qt.Key_3) {
+            selectTab("media");
+            event.accepted = true;
+            return;
+        } else if (key === Qt.Key_4) {
+            selectTab("wallpapers");
+            event.accepted = true;
+            return;
+        } else if (key === Qt.Key_5) {
+            selectTab("themes");
+            event.accepted = true;
+            return;
+        } else if (key === Qt.Key_Period || text === ".") {
+            selectTab("settings");
+            event.accepted = true;
+            return;
+        }
+
+        if (!pickerTab)
             return;
 
         if (key === Qt.Key_Return || key === Qt.Key_Enter || key === Qt.Key_Space) {
@@ -549,13 +625,17 @@ PanelWindow {
         secondClockProcess.exec(["env", "TZ=" + worldClockPreferences.secondTimeZone, "date", "+%l:%M %p|%a, %b %-d"]);
     }
 
-    visible: expandedSurface
+    visible: barVisible && !hiddenByFullscreen
     focusable: expandedSurface
     screen: activeScreen
-    implicitWidth: expandedSurface ? activeScreenWidth : compactWidth
-    implicitHeight: expandedSurface ? activeScreenHeight : compactHeight
+    implicitWidth: activeScreenWidth
+    implicitHeight: activeScreenHeight
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
+    mask: Region {
+        item: root.expandedSurface ? closeArea : card
+        radius: root.expandedSurface ? 0 : Math.round(card.radius)
+    }
 
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "qs-panel"
@@ -565,18 +645,21 @@ PanelWindow {
     anchors {
         top: true
         left: true
-        right: root.expandedSurface
-        bottom: root.expandedSurface
+        right: true
+        bottom: true
     }
 
     // qmllint disable unqualified unresolved-type
-    margins.top: root.expandedSurface ? 0 : root.compactY
-    margins.left: root.expandedSurface ? 0 : root.compactX
+    margins.top: 0
+    margins.left: 0
     margins.right: 0
     margins.bottom: 0
     // qmllint enable unqualified unresolved-type
 
-    Component.onCompleted: root.refreshWeather()
+    Component.onCompleted: {
+        weatherCacheDirProcess.exec(["mkdir", "-p", root.stateDir]);
+        root.refreshWeather();
+    }
 
     // Clock and tab refresh timer
     Timer {
@@ -645,6 +728,20 @@ PanelWindow {
         id: themeApplyProcess
     }
 
+    // Cached weather lets the collapsed island show stale-but-recent data while refreshing.
+    FileView {
+        id: weatherCacheFile
+
+        path: root.weatherCachePath
+        printErrors: false
+        onLoaded: root.loadCachedWeather()
+    }
+
+    // Weather cache directory creator
+    Process {
+        id: weatherCacheDirProcess
+    }
+
     // Primary weather fetch process
     Process {
         id: weatherProcess
@@ -655,6 +752,7 @@ PanelWindow {
                     const parsed = JSON.parse(text);
                     root.weather = parsed;
                     root.weatherStatus = "";
+                    root.cacheWeather(parsed);
                     root.refreshExtendedForecast(parsed);
                 } catch (error) {
                     root.weather = ({});
@@ -678,6 +776,7 @@ PanelWindow {
                     const merged = Object.assign({}, root.weather);
                     merged.weather = root.weather.weather.concat(days.slice(root.weather.weather.length));
                     root.weather = merged;
+                    root.cacheWeather(merged);
                 } catch (error) {
                     // wttr.in already supplied the first three days; keep those on forecast fetch failure.
                 }
@@ -735,15 +834,15 @@ PanelWindow {
     Rectangle {
         id: card
 
-        x: root.expandedSurface ? root.lerp(root.compactX, root.expandedX, root.morphProgress) : 0
-        y: root.expandedSurface ? root.lerp(root.compactY, root.expandedTopMargin, root.morphProgress) : 0
+        x: root.lerp(root.compactX, root.expandedX, root.morphProgress)
+        y: root.lerp(root.compactY, root.expandedTopMargin, root.morphProgress)
         width: root.lerp(root.compactWidth, root.expandedWidth, root.morphProgress)
         height: root.lerp(root.compactHeight, root.expandedHeight, root.morphProgress)
         opacity: root.visible ? 1 : 0
         radius: root.lerp(root.collapsedRadius, root.expandedRadius, root.morphProgress)
-        color: Colors.mixColor(Colors.bgSecondary, Colors.bgPrimary, root.morphProgress)
-        border.color: Colors.borderLight
-        border.width: 1
+        color: Colors.mixColor(Colors.barItemBg, Colors.bgPrimary, root.morphProgress)
+        border.color: Colors.mixColor(Colors.barItemBorder, Colors.borderLight, root.morphProgress)
+        border.width: root.lerp(settings.borderWidth, 1, root.morphProgress)
         clip: true
 
         // Prevent clicks inside card from closing dashboard
@@ -754,6 +853,8 @@ PanelWindow {
             hoverEnabled: true
             cursorShape: root.expandedSurface ? Qt.ArrowCursor : Qt.PointingHandCursor
             onPressed: mouse => mouse.accepted = true
+            onContainsMouseChanged: if (!root.expandedSurface)
+                root.setCompactHoverLatched(containsMouse)
             onPositionChanged: mouse => root.updateCompactHover(card.x + mouse.x, card.y + mouse.y)
             onClicked: {
                 if (root.closing) {
@@ -761,25 +862,55 @@ PanelWindow {
                     return;
                 }
                 if (!root.expandedSurface)
-                    root.open("datetime", root.activeScreen);
+                    root.open("datetime");
             }
         }
 
-        // Collapsed island preview that replaces the old bar center pill.
-        BarSections.Center {
+        // Collapsed island content inside the morphing dashboard card.
+        Item {
             id: islandPreview
 
-            anchors.centerIn: parent
-            embedded: true
-            interactive: false
-            forceDashboardIcon: root.compactHoverLatched
-            hideWhenDashboardActive: false
-            dashboardPanel: root.panelSelf
-            panelScreen: root.activeScreen
-            sourceX: root.collapsedX
-            sourceY: root.collapsedY
+            x: root.compactX - card.x
+            y: root.compactY - card.y
+            implicitWidth: Math.max(islandSummary.implicitWidth, Services.UiPreferences.pillHeight) + Services.UiPreferences.clockHorizontalPadding
+            implicitHeight: Services.UiPreferences.pillHeight
+            width: implicitWidth
+            height: implicitHeight
             opacity: root.previewOpacity
             visible: opacity > 0
+
+            Dashboard.IslandSummary {
+                id: islandSummary
+
+                anchors.centerIn: parent
+                dashboardPanel: root.panelSelf
+                opacity: root.summaryIconVisible ? 0 : 1
+                visible: !root.summaryIconVisible
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 120
+                        easing.type: Easing.OutCubic
+                    }
+                }
+            }
+
+            // Hover affordance for the whole clickable dashboard island.
+            Controls.Icon {
+                anchors.centerIn: parent
+                name: "dashboard"
+                tone: "accent"
+                sizeRole: "bar"
+                opacity: root.summaryIconVisible ? 1 : 0
+                visible: root.summaryIconVisible || opacity > 0
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 120
+                        easing.type: Easing.OutCubic
+                    }
+                }
+            }
         }
 
         // Dashboard tab chrome and content area
@@ -868,8 +999,8 @@ PanelWindow {
         id: morphAnimation
         target: root
         property: "morphProgress"
-        duration: root.closing ? 220 : 260
-        easing.type: root.closing ? Easing.InOutCubic : Easing.OutCubic
+        duration: root.closing ? 240 : 340
+        easing.type: root.closing ? Easing.InOutCubic : Easing.OutQuint
         onStopped: if (root.closing && root.morphProgress <= 0.01) {
             root.panelVisible = false;
             root.closing = false;

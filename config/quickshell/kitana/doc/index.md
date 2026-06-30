@@ -5,14 +5,12 @@ Generated reference for the QML components that make up the Kitana Quickshell de
 | Component | Module | Source | Documentation |
 |-----------|--------|--------|---------------|
 | `BarWindow` | Bar | `Bar/BarWindow.qml` | [BarWindow](../Bar/doc/BarWindow.md) |
-| `DateTime` | Bar | `Bar/Items/DateTime.qml` | [DateTime](../Bar/Items/doc/DateTime.md) |
 | `Layout` | Bar | `Bar/Items/Layout.qml` | [Layout](../Bar/Items/doc/Layout.md) |
 | `Screenshot` | Bar | `Bar/Items/Screenshot.qml` | [Screenshot](../Bar/Items/doc/Screenshot.md) |
 | `Session` | Bar | `Bar/Items/Session.qml` | [Session](../Bar/Items/doc/Session.md) |
 | `Start` | Bar | `Bar/Items/Start.qml` | [Start](../Bar/Items/doc/Start.md) |
 | `ControlCluster` | Bar | `Bar/Items/ControlCluster.qml` | [ControlCluster](../Bar/Items/doc/ControlCluster.md) |
 | `Workspaces` | Bar | `Bar/Items/Workspaces.qml` | [Workspaces](../Bar/Items/doc/Workspaces.md) |
-| `Center` | Bar | `Bar/Sections/Center.qml` | [Center](../Bar/Sections/doc/Center.md) |
 | `Left` | Bar | `Bar/Sections/Left.qml` | [Left](../Bar/Sections/doc/Left.md) |
 | `Right` | Bar | `Bar/Sections/Right.qml` | [Right](../Bar/Sections/doc/Right.md) |
 | `StartMenu` | Bar | `Bar/StartMenu.qml` | [StartMenu](../Bar/doc/StartMenu.md) |
@@ -27,6 +25,7 @@ Generated reference for the QML components that make up the Kitana Quickshell de
 | `Icons` | Config | `Config/Icons.qml` | [Icons](../Config/doc/Icons.md) |
 | `Typography` | Config | `Config/Typography.qml` | [Typography](../Config/doc/Typography.md) |
 | `DashboardField` | Dashboard | `Dashboard/Components/DashboardField.qml` | [DashboardField](../Dashboard/Components/doc/DashboardField.md) |
+| `IslandSummary` | Dashboard | `Dashboard/Components/IslandSummary.qml` | [IslandSummary](../Dashboard/Components/doc/IslandSummary.md) |
 | `MediaButton` | Dashboard | `Dashboard/Components/MediaButton.qml` | [MediaButton](../Dashboard/Components/doc/MediaButton.md) |
 | `MediaDeviceRow` | Dashboard | `Dashboard/Components/MediaDeviceRow.qml` | [MediaDeviceRow](../Dashboard/Components/doc/MediaDeviceRow.md) |
 | `MiniButton` | Dashboard | `Dashboard/Components/MiniButton.qml` | [MiniButton](../Dashboard/Components/doc/MiniButton.md) |
@@ -39,7 +38,6 @@ Generated reference for the QML components that make up the Kitana Quickshell de
 | `WeatherMetric` | Dashboard | `Dashboard/Components/WeatherMetric.qml` | [WeatherMetric](../Dashboard/Components/doc/WeatherMetric.md) |
 | `WorldClockRow` | Dashboard | `Dashboard/Components/WorldClockRow.qml` | [WorldClockRow](../Dashboard/Components/doc/WorldClockRow.md) |
 | `DashboardPanel` | Dashboard | `Dashboard/DashboardPanel.qml` | [DashboardPanel](../Dashboard/doc/DashboardPanel.md) |
-| `IslandWindow` | Dashboard | `Dashboard/IslandWindow.qml` | [IslandWindow](../Dashboard/doc/IslandWindow.md) |
 | `DateTimeTab` | Dashboard | `Dashboard/Tabs/DateTimeTab.qml` | [DateTimeTab](../Dashboard/Tabs/doc/DateTimeTab.md) |
 | `MediaTab` | Dashboard | `Dashboard/Tabs/MediaTab.qml` | [MediaTab](../Dashboard/Tabs/doc/MediaTab.md) |
 | `SettingsTab` | Dashboard | `Dashboard/Tabs/SettingsTab.qml` | [SettingsTab](../Dashboard/Tabs/doc/SettingsTab.md) |

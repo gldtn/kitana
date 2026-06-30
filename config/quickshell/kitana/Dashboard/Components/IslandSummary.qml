@@ -1,4 +1,4 @@
-// Kitana managed Quickshell module
+// Kitana managed Quickshell dashboard component
 
 import QtQuick
 import "../.."
@@ -24,9 +24,10 @@ Item {
     width: implicitWidth
     height: implicitHeight
 
-    // Date and time row
+    // Date, time, and weather summary for the collapsed island.
     Row {
         id: clockRow
+
         anchors.centerIn: parent
         spacing: 10
 

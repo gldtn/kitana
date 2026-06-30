@@ -332,6 +332,55 @@ for quickshell_legacy_dir in Common Modules Widgets; do
   fi
 done
 
+quickshell_legacy_files=(
+  "Bar/Items/DashboardButton.qml|Kitana managed Quickshell"
+  'Bar/Items/doc/DashboardButton.md|Source file: `Bar/Items/DashboardButton.qml`'
+  "Bar/Items/DateTime.qml|Kitana managed Quickshell"
+  'Bar/Items/doc/DateTime.md|Source file: `Bar/Items/DateTime.qml`'
+  'Bar/Items/doc/index.md|[`DateTime`](DateTime.md)'
+  "Bar/Items/Status.qml|Kitana managed Quickshell"
+  'Bar/Items/doc/Status.md|Source file: `Bar/Items/Status.qml`'
+  'Bar/Items/doc/index.md|[`Status`](Status.md)'
+  "Bar/Sections/Center.qml|Kitana managed Quickshell"
+  'Bar/Sections/doc/Center.md|Source file: `Bar/Sections/Center.qml`'
+  'Bar/Sections/doc/index.md|[`Center`](Center.md)'
+  "Bar/Sections/doc/Center.md|Receives the shared dashboard panel instance used by bar controls to open dashboard tabs."
+  "Bar/doc/BarWindow.md|Receives the shared dashboard panel instance used by bar controls to open dashboard tabs."
+  "Components/Controls/doc/Icon.md|Bar/Items/DateTime.qml"
+  "Components/Controls/doc/Icon.md|Bar/Items/Status.qml"
+  "Config/doc/Colors.md|Bar/Items/DateTime.qml"
+  "Config/doc/Colors.md|Bar/Items/Status.qml"
+  "Config/doc/Icons.md|Bar/Items/Status.qml"
+  "Config/doc/Typography.md|Bar/Items/DateTime.qml"
+  "Config/doc/Typography.md|Bar/Items/Status.qml"
+  "Dashboard/Components/CavaBars.qml|Kitana managed Quickshell"
+  'Dashboard/Components/doc/CavaBars.md|Source file: `Dashboard/Components/CavaBars.qml`'
+  'Dashboard/Components/doc/index.md|[`CavaBars`](CavaBars.md)'
+  "Dashboard/IslandWindow.qml|Kitana managed Quickshell"
+  'Dashboard/doc/IslandWindow.md|Source file: `Dashboard/IslandWindow.qml`'
+  "Services/doc/NotificationService.md|Bar/Items/Status.qml"
+  "Services/doc/SystemStatus.md|Bar/Items/Status.qml"
+  "System/Components/doc/ControlSliders.md|System/SystemPanel.qml"
+  "System/Components/doc/PanelHeader.md|System/SystemPanel.qml"
+  "System/Components/doc/QuickSettingsGrid.md|System/SystemPanel.qml"
+  "System/Panes/doc/AudioPane.md|System/SystemPanel.qml"
+  "System/Panes/doc/BluetoothPane.md|System/SystemPanel.qml"
+  "System/Panes/doc/NetworkPane.md|System/SystemPanel.qml"
+  "System/Panes/doc/NotificationsPane.md|System/SystemPanel.qml"
+  'System/doc/SystemPanel.md|Source file: `System/SystemPanel.qml`'
+)
+
+for legacy_file in "${quickshell_legacy_files[@]}"; do
+  relative_path="${legacy_file%%|*}"
+  marker="${legacy_file#*|}"
+  target="$QUICKSHELL_CONFIG_DIR/$relative_path"
+  [ -f "$target" ] || continue
+
+  if grep -F -q -- "$marker" "$target"; then
+    rm "$target"
+  fi
+done
+
 if [ ! -e "$QUICKSHELL_CONFIG_DIR/shell.qml" ] || grep -q "Kitana managed Quickshell bar" "$QUICKSHELL_CONFIG_DIR/shell.qml"; then
   cp "$KITANA_DIR/config/quickshell/kitana/shell.qml" "$QUICKSHELL_CONFIG_DIR/shell.qml"
 else

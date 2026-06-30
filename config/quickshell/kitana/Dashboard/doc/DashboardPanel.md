@@ -4,7 +4,7 @@
 
 Kitana is a Quickshell desktop shell for Hyprland. This component belongs to the dashboard panel shell and dashboard-wide state area.
 
-DashboardPanel is the shared layer-shell panel window that expands from the active monitor's per-monitor island.
+DashboardPanel is the per-monitor layer-shell surface that owns both the collapsed dashboard island and the expanded dashboard card.
 
 ## Project Structure and Dependencies
 
@@ -12,13 +12,13 @@ Source file: `Dashboard/DashboardPanel.qml`.
 
 Qt and Quickshell imports: `import QtQuick`, `import QtQuick.Layouts`, `import Qt.labs.folderlistmodel`, `import Quickshell`, `import Quickshell.Hyprland`, `import Quickshell.Io`, `import Quickshell.Wayland`.
 
-Project imports: `import ".."`, `import "../Bar/Sections" as BarSections`, `import "../Components/Controls" as Controls`, `import "../custom" as Custom`, `import "../Services" as Services`, `import "./Components" as Dashboard`, `import "./Tabs" as Tabs`.
+Project imports: `import ".."`, `import "../Components/Controls" as Controls`, `import "../custom" as Custom`, `import "../Services" as Services`, `import "./Components" as Dashboard`, `import "./Tabs" as Tabs`.
 
 Referenced or instantiated by: `shell.qml`.
 
 ## Component Hierarchy and Role
 
-The root type is `PanelWindow`. It owns the expanded dashboard and morph animation, while `Dashboard/IslandWindow.qml` owns the always-visible collapsed islands on each monitor.
+The root type is `PanelWindow`. Each monitor receives one masked DashboardPanel from `shell.qml`; the same card renders the collapsed island, grows into the expanded dashboard, and shrinks back without handing off to a second layer surface.
 
 ## Properties
 
@@ -26,14 +26,11 @@ The root type is `PanelWindow`. It owns the expanded dashboard and morph animati
 |----------|------|---------|----------|-------------|
 | `panelSelf` | `readonly var` | `root` | No | Read-only. Provides component state or configuration for `panelSelf`. |
 | `panelVisible` | `bool` | `false` | No | Tracks whether the panel window should be visible. |
-| `closing` | `bool` | `false` | No | Tracks whether the island is reversing back into the center pill. |
+| `closing` | `bool` | `false` | No | Tracks whether the island is reversing back into the compact island. |
 | `morphProgress` | `real` | `0` | No | Controls the numeric value for the island morph animation. |
 | `fallbackScreen` | `var` | `null` | No | First-screen fallback used before Hyprland focused monitor data is available. |
 | `panelScreen` | `var` | `null` | No | Selects the Quickshell screen or monitor that owns this window or bar instance. |
-| `sourceX` | `real` | `0` | No | Screen-local x coordinate passed by a collapsed island. |
-| `sourceY` | `real` | `Services.UiPreferences.topMargin + (...)` | No | Screen-local y coordinate passed by a collapsed island. |
-| `sourceWidth` | `real` | `240` | No | Width of the center island pill used as the collapsed dashboard size. |
-| `sourceHeight` | `real` | `Services.UiPreferences.pillHeight` | No | Height of the center island pill used as the collapsed dashboard size. |
+| `barVisible` | `bool` | `true` | No | Keeps the per-monitor island in sync with bar visibility. |
 | `activeTab` | `string` | `"datetime"` | No | Tracks which tab is currently selected. |
 | `wallpapers` | `var` | `[]` | No | Provides component state or configuration for `wallpapers`. |
 | `themes` | `var` | `[]` | No | Provides component state or configuration for `themes`. |
@@ -62,8 +59,7 @@ The root type is `PanelWindow`. It owns the expanded dashboard and morph animati
 | `mediaAudioOverlayOpen` | `bool` | `false` | No | Enables or disables the `mediaAudioOverlayOpen` state. |
 | `islandActive` | `readonly bool` | `panelVisible` | No | Read-only. Indicates that the dashboard island is expanded or morphing open. |
 | `expandedSurface` | `readonly bool` | computed | No | Switches the island window between compact and full-screen input modes. |
-| `focusedScreen` | `readonly var` | computed | No | Maps Hyprland's focused monitor to a Quickshell screen. |
-| `activeScreen` | `readonly var` | computed | No | Screen currently used by the collapsed or expanded island. |
+| `activeScreen` | `readonly var` | computed | No | Screen used by this per-monitor island and expanded card. |
 | `activeScreenWidth` | `readonly int` | computed | No | Width of `activeScreen`, with a fallback for early startup. |
 | `activeScreenHeight` | `readonly int` | computed | No | Height of `activeScreen`, with a fallback for early startup. |
 | `collapsedWidth` | `readonly real` | computed | No | Width of the collapsed dashboard island. |
@@ -82,6 +78,8 @@ The root type is `PanelWindow`. It owns the expanded dashboard and morph animati
 | `expandedRadius` | `readonly real` | `18` | No | Radius used by the expanded dashboard card. |
 | `contentOpacity` | `readonly real` | computed | No | Read-only. Fades the expanded dashboard content in after the island grows. |
 | `previewOpacity` | `readonly real` | computed | No | Read-only. Fades the collapsed island clock preview out during the morph. |
+| `summaryIconVisible` | `readonly bool` | computed | No | Read-only. Shows the dashboard icon in place of the compact date/time/weather summary. |
+| `hiddenByFullscreen` | `readonly bool` | computed | No | Hides the collapsed island while its workspace has a true fullscreen client. |
 
 ## Methods
 
@@ -109,19 +107,19 @@ Updates `compactHoverLatched` from full-screen dashboard pointer coordinates.
 
 Reopens the dashboard from its compact island geometry while a close animation is still running.
 
-#### screenForMonitor(monitor: var) : var
+#### hasTrueFullscreen(workspace: var) : bool
 
-Returns the Quickshell screen whose name matches the focused Hyprland monitor.
+Returns whether a Hyprland workspace contains a true fullscreen client.
 
-#### open(tab: string, sourceScreen: var, x: var, y: var, width: var, height: var) : void
+#### open(tab: string) : void
 
-Opens the dashboard on the requested screen, or the current focused screen when called through IPC. Width and height are used to match the active collapsed island.
+Opens the dashboard tab on this monitor and asks `shell.qml` to close other dashboard instances.
 
 #### close() : void
 
 Closes the component and resets transient state used while visible.
 
-#### toggle(tab: string, sourceScreen: var, x: var, y: var, width: var, height: var) : void
+#### toggle(tab: string) : void
 
 Toggles the component between open and closed states, often preserving or selecting a requested section.
 
@@ -144,6 +142,22 @@ Performs component-specific behavior used internally or by parent components.
 #### refreshWeather() : void
 
 Refreshes data used by the component. Side effects may include starting a process, updating service state, or repopulating a model.
+
+#### weatherLocationKey() : string
+
+Returns the normalized weather location used to scope cached weather data.
+
+#### weatherCachePayload(data: var) : var
+
+Builds the compact persisted weather payload from the latest successful fetch.
+
+#### cacheWeather(data: var) : void
+
+Stores the latest successful weather response so the collapsed island can render weather immediately after reload.
+
+#### loadCachedWeather() : void
+
+Loads cached weather for the current location before the background refresh finishes.
 
 #### basename(path: string) : string
 
@@ -180,6 +194,10 @@ Applies the requested user selection by invoking the associated service or Kitan
 #### resetPickerState() : void
 
 Performs component-specific behavior used internally or by parent components.
+
+#### selectTab(tab: string) : void
+
+Selects a dashboard tab, resets transient picker state when the tab changes, and refreshes the selected tab's data.
 
 #### filteredWallpapers() : var
 
@@ -231,7 +249,7 @@ Applies the requested user selection by invoking the associated service or Kitan
 
 #### handleKey(event: var) : void
 
-Performs component-specific behavior used internally or by parent components.
+Handles dashboard keyboard shortcuts. `1`-`5` select Date, Weather, Media, Wallpapers, and Themes; `.` selects Settings. Picker search input keeps normal text entry behavior.
 
 #### tempValue(day: var, keyC: string, keyF: string) : string
 

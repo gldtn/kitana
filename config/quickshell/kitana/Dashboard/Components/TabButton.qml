@@ -61,10 +61,7 @@ Rectangle {
         onClicked: {
             if (!root.dashboard)
                 return;
-            if (root.dashboard.activeTab !== root.tab)
-                root.dashboard.resetPickerState();
-            root.dashboard.activeTab = root.tab;
-            root.dashboard.refreshTab();
+            root.dashboard.selectTab(root.tab);
         }
     }
 }

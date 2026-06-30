@@ -3,6 +3,7 @@
 | Component | Source | Summary |
 |-----------|--------|---------|
 | [`DashboardField`](DashboardField.md) | `DashboardField.qml` | DashboardField is a reusable Dashboard component used to compose panel content consistently. |
+| [`IslandSummary`](IslandSummary.md) | `IslandSummary.qml` | IslandSummary renders the date, time, and weather summary for the collapsed dashboard island. |
 | [`MediaButton`](MediaButton.md) | `MediaButton.qml` | MediaButton is a reusable Dashboard component used to compose panel content consistently. |
 | [`MediaDeviceRow`](MediaDeviceRow.md) | `MediaDeviceRow.qml` | MediaDeviceRow is a reusable Dashboard component used to compose panel content consistently. |
 | [`MiniButton`](MiniButton.md) | `MiniButton.qml` | MiniButton is a reusable Dashboard component used to compose panel content consistently. |

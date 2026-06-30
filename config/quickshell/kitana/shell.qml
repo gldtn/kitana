@@ -39,18 +39,34 @@ ShellRoot {
         return null;
     }
 
+    function dashboardPanelForScreen(screen: var): var {
+        if (!screen || !screen.name)
+            return null;
+        for (let i = 0; i < dashboardPanels.instances.length; i++) {
+            const panel = dashboardPanels.instances[i];
+            if (panel && panel.panelScreen && panel.panelScreen.name === screen.name)
+                return panel;
+        }
+        return null;
+    }
+
+    function focusedDashboardPanel(): var {
+        return dashboardPanelForScreen(root.focusedScreen) || (dashboardPanels.instances.length > 0 ? dashboardPanels.instances[0] : null);
+    }
+
+    function closeDashboardPanels(exceptPanel: var): void {
+        for (let i = 0; i < dashboardPanels.instances.length; i++) {
+            const panel = dashboardPanels.instances[i];
+            if (panel && panel !== exceptPanel)
+                panel.close();
+        }
+    }
+
     // Global wallpaper picker panel
     Wallpaper.WallpaperGrid {}
 
     // Global application launcher panel
     Launcher.AppLauncher {}
-
-    // Shared dashboard panel opened from the clock
-    Dashboard.DashboardPanel {
-        id: dashboardPanel
-
-        fallbackScreen: Quickshell.screens.length > 0 ? Quickshell.screens[0] : null
-    }
 
     // Shared screenshot panel opened from bar and IPC
     Screenshot.ScreenshotPanel {
@@ -163,16 +179,39 @@ ShellRoot {
         }
     }
 
-    // Per-monitor dashboard islands
+    // Dashboard command bridge routed to the focused monitor.
+    IpcHandler {
+        target: "kitana-dashboard"
+
+        function open(tab: string): void {
+            const panel = root.focusedDashboardPanel();
+            if (panel)
+                panel.open(tab || "datetime");
+        }
+        function close(): void {
+            root.closeDashboardPanels(null);
+        }
+        function toggle(tab: string): void {
+            const panel = root.focusedDashboardPanel();
+            if (panel)
+                panel.toggle(tab || "datetime");
+        }
+    }
+
+    // Per-monitor dashboard islands and expandable cards
     Variants {
+        id: dashboardPanels
+
         model: Quickshell.screens
 
-        // Collapsed dashboard island for one output
-        Dashboard.IslandWindow {
+        // One masked surface owns both collapsed and expanded states for one output.
+        Dashboard.DashboardPanel {
             required property var modelData
+
             panelScreen: modelData
             barVisible: root.barVisible
-            dashboardPanel: dashboardPanel
+            fallbackScreen: Quickshell.screens.length > 0 ? Quickshell.screens[0] : null
+            onOpeningRequested: panel => root.closeDashboardPanels(panel)
         }
     }
 

@@ -2,7 +2,6 @@
 
 | Component | Source | Summary |
 |-----------|--------|---------|
-| [`DateTime`](DateTime.md) | `DateTime.qml` | DateTime is an interactive control embedded in the top bar. |
 | [`Layout`](Layout.md) | `Layout.qml` | Layout is an interactive control embedded in the top bar. |
 | [`Screenshot`](Screenshot.md) | `Screenshot.qml` | Screenshot is an interactive control embedded in the top bar. |
 | [`Session`](Session.md) | `Session.qml` | Session is an interactive control embedded in the top bar. |
