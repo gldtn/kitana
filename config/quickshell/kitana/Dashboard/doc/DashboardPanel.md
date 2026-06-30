@@ -36,8 +36,8 @@ The root type is `PanelWindow`. Each monitor receives one masked DashboardPanel 
 | `themes` | `var` | `[]` | No | Provides component state or configuration for `themes`. |
 | `weatherStatus` | `string` | `"Loading weather..."` | No | Stores the string value for `weatherStatus`. |
 | `weather` | `var` | `({})` | No | Provides component state or configuration for `weather`. |
-| `weatherLocation` | `alias` | `weatherPreferences.location` | No | Exposes an internal child property through the `weatherLocation` alias. |
-| `weatherUnits` | `alias` | `weatherPreferences.units` | No | Exposes an internal child property through the `weatherUnits` alias. |
+| `weatherLocation` | `readonly string` | `Services.QuickshellSettings.weatherLocation` | No | Read-only. Weather location persisted in `QuickshellSettings`. |
+| `weatherUnits` | `readonly string` | `Services.QuickshellSettings.weatherUnits` | No | Read-only. Weather unit preference persisted in `QuickshellSettings`. |
 | `wallpaperPage` | `int` | `0` | No | Controls the numeric value for `wallpaperPage`. |
 | `wallpaperPageSize` | `int` | `12` | No | Controls the numeric value for `wallpaperPageSize`. |
 | `wallpaperCurrentIndex` | `int` | `0` | No | Controls the numeric value for `wallpaperCurrentIndex`. |
@@ -57,6 +57,8 @@ The root type is `PanelWindow`. Each monitor receives one masked DashboardPanel 
 | `secondClockTime` | `string` | `"--"` | No | Stores the string value for `secondClockTime`. |
 | `secondClockDate` | `string` | `""` | No | Stores the string value for `secondClockDate`. |
 | `mediaAudioOverlayOpen` | `bool` | `false` | No | Enables or disables the `mediaAudioOverlayOpen` state. |
+| `weatherHideLocation` | `readonly bool` | `Services.QuickshellSettings.weatherHideLocation` | No | Read-only. Controls whether weather location fields mask their text. |
+| `worldClocks` | `readonly var` | `Services.QuickshellSettings.worldClocks` | No | Read-only. Configured world clock labels and timezones. |
 | `islandActive` | `readonly bool` | `panelVisible` | No | Read-only. Indicates that the dashboard island is expanded or morphing open. |
 | `expandedSurface` | `readonly bool` | computed | No | Switches the island window between compact and full-screen input modes. |
 | `activeScreen` | `readonly var` | computed | No | Screen used by this per-monitor island and expanded card. |
@@ -146,6 +148,34 @@ Refreshes data used by the component. Side effects may include starting a proces
 #### weatherLocationKey() : string
 
 Returns the normalized weather location used to scope cached weather data.
+
+#### setWeatherLocation(value: string) : void
+
+Stores the weather location through `QuickshellSettings`.
+
+#### toggleWeatherUnits() : void
+
+Toggles between Fahrenheit and Celsius through `QuickshellSettings`.
+
+#### setWeatherHideLocation(value: bool) : void
+
+Stores whether weather location fields should be hidden.
+
+#### worldClockLabel(index: int) : string
+
+Returns the configured world clock label for the requested index.
+
+#### worldClockTimezone(index: int) : string
+
+Returns the configured world clock timezone for the requested index.
+
+#### setWorldClockLabel(index: int, value: string) : void
+
+Stores a configured world clock label through `QuickshellSettings`.
+
+#### setWorldClockTimezone(index: int, value: string) : void
+
+Stores a configured world clock timezone through `QuickshellSettings`.
 
 #### weatherCachePayload(data: var) : var
 

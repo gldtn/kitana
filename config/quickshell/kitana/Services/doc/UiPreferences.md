@@ -12,7 +12,7 @@ Source file: `Services/UiPreferences.qml`.
 
 Qt and Quickshell imports: `import QtQuick`, `import Quickshell`.
 
-Project imports: `import "../custom" as Custom`.
+Project imports: `import "." as Services`, `import "../custom" as Custom`.
 
 Referenced or instantiated by: bar windows and items, dashboard island geometry, notification/control popups, and `Settings/SettingsPanel.qml`.
 
@@ -24,11 +24,11 @@ The root type is `Singleton`. The component composes child QML items, Kitana des
 
 | Property | Type | Default | Required | Description |
 |----------|------|---------|----------|-------------|
-| `layoutPillDisplayMode` | `alias` | `state.layoutPillDisplayMode` | No | Exposes an internal child property through the `layoutPillDisplayMode` alias. |
-| `panelHeightPreference` | `alias` | `state.panelHeight` | No | Raw persisted bar height override; `0` means use the custom settings default. |
-| `pillHeightPreference` | `alias` | `state.pillHeight` | No | Raw persisted bar pill height override; `0` means use the custom settings default. |
-| `topMarginPreference` | `alias` | `state.topMargin` | No | Raw persisted top margin override; `-1` means use the custom settings default. |
-| `pillRadiusPreference` | `alias` | `state.pillRadius` | No | Raw persisted pill radius override; `-1` means use the custom settings default. |
+| `layoutPillDisplayMode` | `readonly string` | `Services.QuickshellSettings.layoutPillDisplayMode` | No | Read-only. Current workspace layout pill display mode. |
+| `panelHeightPreference` | `readonly int` | `Services.QuickshellSettings.panelHeightPreference` | No | Read-only. Raw persisted bar height override; `0` means use the custom settings default. |
+| `pillHeightPreference` | `readonly int` | `Services.QuickshellSettings.pillHeightPreference` | No | Read-only. Raw persisted bar pill height override; `0` means use the custom settings default. |
+| `topMarginPreference` | `readonly int` | `Services.QuickshellSettings.topMarginPreference` | No | Read-only. Raw persisted top margin override; `-1` means use the custom settings default. |
+| `pillRadiusPreference` | `readonly int` | `Services.QuickshellSettings.pillRadiusPreference` | No | Read-only. Raw persisted pill radius override; `-1` means use the custom settings default. |
 | `layoutPillDisplayModes` | `readonly var` | `["icons", "compact", "full"]` | No | Read-only. Provides component state or configuration for `layoutPillDisplayModes`. |
 | `defaultPanelHeight` | `readonly int` | `defaults.panelHeight` | No | Fallback bar height from `custom.Settings`. |
 | `defaultPillHeight` | `readonly int` | `defaults.pillHeight` | No | Fallback bar pill height from `custom.Settings`. |
@@ -52,19 +52,19 @@ Clamps numeric preference values, falling back when the stored value is outside 
 
 #### setPanelHeight(value: int) : void
 
-Persists a clamped bar height and keeps the stored pill height no taller than the bar.
+Stores a clamped bar height through `QuickshellSettings` and keeps the stored pill height no taller than the bar.
 
 #### setPillHeight(value: int) : void
 
-Persists a clamped pill height and keeps the stored radius no larger than half the pill height.
+Stores a clamped pill height through `QuickshellSettings` and keeps the stored radius no larger than half the pill height.
 
 #### setTopMargin(value: int) : void
 
-Persists a clamped top margin.
+Stores a clamped top margin through `QuickshellSettings`.
 
 #### setPillRadius(value: int) : void
 
-Persists a clamped bar pill radius.
+Stores a clamped bar pill radius through `QuickshellSettings`.
 
 #### resetBarGeometry() : void
 
@@ -72,7 +72,7 @@ Clears stored bar geometry overrides so resolved values return to `custom.Settin
 
 #### setLayoutPillDisplayMode(mode: string) : void
 
-Performs component-specific behavior used internally or by parent components.
+Stores the requested workspace layout pill display mode through `QuickshellSettings`.
 
 ## Inter-Component Interactions
 

@@ -37,8 +37,6 @@ PanelWindow {
     property var themes: []
     property string weatherStatus: "Loading weather..."
     property var weather: ({})
-    property alias weatherLocation: weatherPreferences.location
-    property alias weatherUnits: weatherPreferences.units
     property int wallpaperPage: 0
     property int wallpaperPageSize: 12
     property int wallpaperCurrentIndex: 0
@@ -60,29 +58,12 @@ PanelWindow {
     property bool mediaAudioOverlayOpen: false
     readonly property string stateDir: (Quickshell.env("HOME") || "") + "/.local/state/kitana"
     readonly property string weatherCachePath: stateDir + "/dashboard-weather-cache.json"
+    readonly property string weatherLocation: Services.QuickshellSettings.weatherLocation
+    readonly property string weatherUnits: Services.QuickshellSettings.weatherUnits
+    readonly property bool weatherHideLocation: Services.QuickshellSettings.weatherHideLocation
+    readonly property var worldClocks: Services.QuickshellSettings.worldClocks
 
     signal openingRequested(var panel)
-
-    // Saved weather preferences
-    PersistentProperties {
-        id: weatherPreferences
-
-        reloadableId: "kitanaDashboardWeather"
-        property string location: "Attleboro, MA"
-        property string units: "F"
-        property bool hideLocation: false
-    }
-
-    // Saved world clock preferences
-    PersistentProperties {
-        id: worldClockPreferences
-
-        reloadableId: "kitanaDashboardWorldClocks"
-        property string firstName: "Eastern"
-        property string firstTimeZone: "America/New_York"
-        property string secondName: "Brasilia"
-        property string secondTimeZone: "America/Sao_Paulo"
-    }
 
     readonly property bool islandActive: panelVisible
     readonly property bool expandedSurface: panelVisible || closing
@@ -207,6 +188,25 @@ PanelWindow {
         }
     }
 
+    Connections {
+        target: Services.QuickshellSettings
+
+        function onWeatherLocationChanged(): void {
+            root.weather = ({});
+            root.loadCachedWeather();
+            root.refreshWeather();
+        }
+
+        function onWeatherUnitsChanged(): void {
+            root.weather = ({});
+            root.refreshWeather();
+        }
+
+        function onWorldClocksChanged(): void {
+            root.refreshWorldClocks();
+        }
+    }
+
     function refreshTab(): void {
         if (activeTab === "themes" && themes.length === 0)
             themeListProcess.exec([kitanaDir + "/bin/kitana-theme", "--list"]);
@@ -234,6 +234,37 @@ PanelWindow {
 
     function weatherLocationKey(): string {
         return weatherLocation.trim();
+    }
+
+    function setWeatherLocation(value: string): void {
+        const unchanged = value === weatherLocation;
+        Services.QuickshellSettings.setWeatherLocation(value);
+        if (unchanged)
+            refreshWeather();
+    }
+
+    function toggleWeatherUnits(): void {
+        Services.QuickshellSettings.setWeatherUnits(weatherUnits === "C" ? "F" : "C");
+    }
+
+    function setWeatherHideLocation(value: bool): void {
+        Services.QuickshellSettings.setWeatherHideLocation(value);
+    }
+
+    function worldClockLabel(index: int): string {
+        return Services.QuickshellSettings.normalizeWorldClocks(worldClocks)[index].label;
+    }
+
+    function worldClockTimezone(index: int): string {
+        return Services.QuickshellSettings.normalizeWorldClocks(worldClocks)[index].timezone;
+    }
+
+    function setWorldClockLabel(index: int, value: string): void {
+        Services.QuickshellSettings.setWorldClockLabel(index, value);
+    }
+
+    function setWorldClockTimezone(index: int, value: string): void {
+        Services.QuickshellSettings.setWorldClockTimezone(index, value);
     }
 
     function weatherCachePayload(data: var): var {
@@ -621,8 +652,8 @@ PanelWindow {
     }
 
     function refreshWorldClocks(): void {
-        firstClockProcess.exec(["env", "TZ=" + worldClockPreferences.firstTimeZone, "date", "+%l:%M %p|%a, %b %-d"]);
-        secondClockProcess.exec(["env", "TZ=" + worldClockPreferences.secondTimeZone, "date", "+%l:%M %p|%a, %b %-d"]);
+        firstClockProcess.exec(["env", "TZ=" + worldClockTimezone(0), "date", "+%l:%M %p|%a, %b %-d"]);
+        secondClockProcess.exec(["env", "TZ=" + worldClockTimezone(1), "date", "+%l:%M %p|%a, %b %-d"]);
     }
 
     visible: barVisible && !hiddenByFullscreen
@@ -1013,7 +1044,6 @@ PanelWindow {
         id: datetimeTab
         Tabs.DateTimeTab {
             dashboard: root.panelSelf
-            worldClockPrefs: worldClockPreferences
         }
     }
 
@@ -1022,7 +1052,6 @@ PanelWindow {
         id: weatherTab
         Tabs.WeatherTab {
             dashboard: root.panelSelf
-            weatherPrefs: weatherPreferences
         }
     }
 
@@ -1055,8 +1084,6 @@ PanelWindow {
         id: settingsTab
         Tabs.SettingsTab {
             dashboard: root.panelSelf
-            weatherPrefs: weatherPreferences
-            worldClockPrefs: worldClockPreferences
         }
     }
 }

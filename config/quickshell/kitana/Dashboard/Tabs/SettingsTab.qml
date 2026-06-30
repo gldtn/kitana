@@ -16,8 +16,6 @@ ColumnLayout {
     }
 
     property var dashboard: null
-    property var weatherPrefs: null
-    property var worldClockPrefs: null
     readonly property var panel: dashboard
 
     spacing: 12
@@ -65,20 +63,17 @@ ColumnLayout {
                     Layout.fillWidth: true
                     label: "Location"
                     value: tabRoot.panel.weatherLocation
-                    secret: tabRoot.weatherPrefs.hideLocation
+                    secret: tabRoot.panel.weatherHideLocation
                     onEscaped: tabRoot.panel.close()
-                    onCommitted: value => {
-                        tabRoot.panel.weatherLocation = value;
-                        tabRoot.panel.refreshWeather();
-                    }
+                    onCommitted: value => tabRoot.panel.setWeatherLocation(value)
                 }
 
                 MiniButton {
                     Layout.alignment: Qt.AlignBottom
-                    iconName: tabRoot.weatherPrefs.hideLocation ? "weather.visibility.off" : "weather.visibility"
+                    iconName: tabRoot.panel.weatherHideLocation ? "weather.visibility.off" : "weather.visibility"
                     widthOverride: 46
                     heightOverride: 34
-                    onClicked: tabRoot.weatherPrefs.hideLocation = !tabRoot.weatherPrefs.hideLocation
+                    onClicked: tabRoot.panel.setWeatherHideLocation(!tabRoot.panel.weatherHideLocation)
                 }
 
                 MiniButton {
@@ -86,7 +81,7 @@ ColumnLayout {
                     text: tabRoot.panel.weatherUnits === "C" ? "°C" : "°F"
                     widthOverride: 46
                     heightOverride: 34
-                    onClicked: tabRoot.panel.weatherUnits = tabRoot.panel.weatherUnits === "C" ? "F" : "C"
+                    onClicked: tabRoot.panel.toggleWeatherUnits()
                 }
             }
         }
@@ -125,40 +120,34 @@ ColumnLayout {
 
                 DashboardField {
                     Layout.fillWidth: true
-                    label: "Clock 1 Name"
-                    value: tabRoot.worldClockPrefs.firstName
+                    label: "Clock 1 Label"
+                    value: tabRoot.panel.worldClockLabel(0)
                     onEscaped: tabRoot.panel.close()
-                    onCommitted: value => tabRoot.worldClockPrefs.firstName = value
+                    onCommitted: value => tabRoot.panel.setWorldClockLabel(0, value)
                 }
 
                 DashboardField {
                     Layout.fillWidth: true
                     label: "Clock 1 Timezone"
-                    value: tabRoot.worldClockPrefs.firstTimeZone
+                    value: tabRoot.panel.worldClockTimezone(0)
                     onEscaped: tabRoot.panel.close()
-                    onCommitted: value => {
-                        tabRoot.worldClockPrefs.firstTimeZone = value;
-                        tabRoot.panel.refreshWorldClocks();
-                    }
+                    onCommitted: value => tabRoot.panel.setWorldClockTimezone(0, value)
                 }
 
                 DashboardField {
                     Layout.fillWidth: true
-                    label: "Clock 2 Name"
-                    value: tabRoot.worldClockPrefs.secondName
+                    label: "Clock 2 Label"
+                    value: tabRoot.panel.worldClockLabel(1)
                     onEscaped: tabRoot.panel.close()
-                    onCommitted: value => tabRoot.worldClockPrefs.secondName = value
+                    onCommitted: value => tabRoot.panel.setWorldClockLabel(1, value)
                 }
 
                 DashboardField {
                     Layout.fillWidth: true
                     label: "Clock 2 Timezone"
-                    value: tabRoot.worldClockPrefs.secondTimeZone
+                    value: tabRoot.panel.worldClockTimezone(1)
                     onEscaped: tabRoot.panel.close()
-                    onCommitted: value => {
-                        tabRoot.worldClockPrefs.secondTimeZone = value;
-                        tabRoot.panel.refreshWorldClocks();
-                    }
+                    onCommitted: value => tabRoot.panel.setWorldClockTimezone(1, value)
                 }
             }
         }

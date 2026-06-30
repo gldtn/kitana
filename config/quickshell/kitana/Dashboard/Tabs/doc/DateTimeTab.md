@@ -25,9 +25,8 @@ The root type is `RowLayout`. The component composes child QML items, Kitana des
 | Property | Type | Default | Required | Description |
 |----------|------|---------|----------|-------------|
 | `dashboard` | `var` | `null` | No | Provides component state or configuration for `dashboard`. |
-| `worldClockPrefs` | `var` | `null` | No | Provides component state or configuration for `worldClockPrefs`. |
-| `root` | `readonly var` | `dashboard` | No | Read-only. Provides component state or configuration for `root`. |
-| `weather` | `readonly var` | `root ? root.weather : ({})` | No | Read-only. Provides component state or configuration for `weather`. |
+| `panel` | `readonly var` | `dashboard` | No | Read-only. Dashboard panel API used by the tab. |
+| `weather` | `readonly var` | `panel ? panel.weather : ({})` | No | Read-only. Provides component state or configuration for `weather`. |
 
 ## Inter-Component Interactions
 

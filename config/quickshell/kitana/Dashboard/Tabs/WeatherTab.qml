@@ -17,7 +17,6 @@ ColumnLayout {
     }
 
     property var dashboard: null
-    property var weatherPrefs: null
     readonly property var panel: dashboard
     readonly property var weatherData: panel ? panel.weather : ({})
 
@@ -35,26 +34,23 @@ ColumnLayout {
             fieldHeight: 34
             radius: 10
             text: tabRoot.panel.weatherLocation
-            echoMode: tabRoot.weatherPrefs.hideLocation ? TextInput.Password : TextInput.Normal
+            echoMode: tabRoot.panel.weatherHideLocation ? TextInput.Password : TextInput.Normal
             onEscaped: tabRoot.panel.close()
-            onEditingFinished: {
-                tabRoot.panel.weatherLocation = locationInput.text;
-                tabRoot.panel.refreshWeather();
-            }
+            onEditingFinished: tabRoot.panel.setWeatherLocation(locationInput.text)
         }
 
         MiniButton {
-            iconName: tabRoot.weatherPrefs.hideLocation ? "weather.visibility.off" : "weather.visibility"
+            iconName: tabRoot.panel.weatherHideLocation ? "weather.visibility.off" : "weather.visibility"
             widthOverride: 46
             heightOverride: 34
-            onClicked: tabRoot.weatherPrefs.hideLocation = !tabRoot.weatherPrefs.hideLocation
+            onClicked: tabRoot.panel.setWeatherHideLocation(!tabRoot.panel.weatherHideLocation)
         }
 
         MiniButton {
             text: tabRoot.panel.weatherUnits === "C" ? "°C" : "°F"
             widthOverride: 46
             heightOverride: 34
-            onClicked: tabRoot.panel.weatherUnits = tabRoot.panel.weatherUnits === "C" ? "F" : "C"
+            onClicked: tabRoot.panel.toggleWeatherUnits()
         }
 
         MiniButton {

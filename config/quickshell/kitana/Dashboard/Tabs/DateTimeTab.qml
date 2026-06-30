@@ -16,7 +16,6 @@ RowLayout {
     }
 
     property var dashboard: null
-    property var worldClockPrefs: null
     readonly property var panel: dashboard
     readonly property var weather: panel ? panel.weather : ({})
 
@@ -124,13 +123,13 @@ RowLayout {
                 spacing: 4
 
                 WorldClockRow {
-                    name: tabRoot.worldClockPrefs.firstName
+                    name: tabRoot.panel.worldClockLabel(0)
                     clockDateText: tabRoot.panel.firstClockDate
                     clockTimeText: tabRoot.panel.firstClockTime
                 }
 
                 WorldClockRow {
-                    name: tabRoot.worldClockPrefs.secondName
+                    name: tabRoot.panel.worldClockLabel(1)
                     clockDateText: tabRoot.panel.secondClockDate
                     clockTimeText: tabRoot.panel.secondClockTime
                 }
