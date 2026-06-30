@@ -78,6 +78,5 @@ Generated reference for the QML components that make up the Kitana Quickshell de
 | `SessionPane` | System | `System/Panes/SessionPane.qml` | [SessionPane](../System/Panes/doc/SessionPane.md) |
 | `SettingsPane` | System | `System/Panes/SettingsPane.qml` | [SettingsPane](../System/Panes/doc/SettingsPane.md) |
 | `ControlPanel` | System | `System/ControlPanel.qml` | [ControlPanel](../System/doc/ControlPanel.md) |
-| `WallpaperGrid` | Wallpaper | `Wallpaper/WallpaperGrid.qml` | [WallpaperGrid](../Wallpaper/doc/WallpaperGrid.md) |
 | `Settings` | Custom Settings | `custom/Settings.qml` | [Settings](../custom/doc/Settings.md) |
 | `shell` | Shell | `shell.qml` | [shell](shell.md) |

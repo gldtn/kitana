@@ -9,7 +9,7 @@ state_dir="$HOME/.config/kitana"
 state_file="$state_dir/theme"
 
 usage() {
-  printf 'Usage: %s [--list|--restore|THEME]\n' "$(basename "$0")"
+  printf 'Usage: %s [--list|--next|--restore|THEME]\n' "$(basename "$0")"
 }
 
 notify_theme() {
@@ -112,9 +112,42 @@ apply_theme() {
   printf 'Theme applied: %s\n' "$name"
 }
 
+apply_next_theme() {
+  local themes=()
+  local current_slug=""
+  local next_slug=""
+  local slug rest i
+
+  while IFS='|' read -r slug rest; do
+    [ -n "$slug" ] && themes+=("$slug")
+  done < <(LUA_PATH="$lua_path" lua "$kitana_dir/lib/kitana-theme.lua" list)
+
+  if [ "${#themes[@]}" -eq 0 ]; then
+    printf 'No themes found\n' >&2
+    exit 1
+  fi
+
+  if [ -f "$state_file" ]; then
+    current_slug="$(<"$state_file")"
+  fi
+
+  next_slug="${themes[0]}"
+  for i in "${!themes[@]}"; do
+    if [ "${themes[$i]}" = "$current_slug" ]; then
+      next_slug="${themes[$(((i + 1) % ${#themes[@]}))]}"
+      break
+    fi
+  done
+
+  apply_theme "$next_slug" 1
+}
+
 case "${1:-}" in
   --list)
     LUA_PATH="$lua_path" lua "$kitana_dir/lib/kitana-theme.lua" list
+    ;;
+  --next)
+    apply_next_theme
     ;;
   --restore)
     if [ -f "$state_file" ]; then

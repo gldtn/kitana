@@ -12,7 +12,7 @@ Source file: `shell.qml`.
 
 Qt and Quickshell imports: `import QtQuick`, `import Quickshell`, `import Quickshell.Hyprland`, `import Quickshell.Io`.
 
-Project imports: `import "./Bar" as Bar`, `import "./Dashboard" as Dashboard`, `import "./Launcher" as Launcher`, `import "./Screenshot" as Screenshot`, `import "./Session" as Session`, `import "./Settings" as Settings`, `import "./Shortcuts" as Shortcuts`, `import "./System" as System`, `import "./Theme" as Theme`, `import "./Wallpaper" as Wallpaper`, `import "./Services" as Services`.
+Project imports: `import "./Bar" as Bar`, `import "./Dashboard" as Dashboard`, `import "./Launcher" as Launcher`, `import "./Screenshot" as Screenshot`, `import "./Session" as Session`, `import "./Settings" as Settings`, `import "./Shortcuts" as Shortcuts`, `import "./System" as System`, `import "./Theme" as Theme`, `import "./Services" as Services`.
 
 No direct QML instantiations were found; the component is an entrypoint, singleton, or loaded indirectly.
 

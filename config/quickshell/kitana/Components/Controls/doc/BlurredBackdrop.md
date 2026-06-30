@@ -14,7 +14,7 @@ Qt and Quickshell imports: `import QtQuick`.
 
 Project imports: `import "../.."`.
 
-Referenced or instantiated by: `Launcher/AppLauncher.qml`, `Screenshot/ScreenshotPanel.qml`, `Session/SessionPanel.qml`, `Settings/SettingsPanel.qml`, `Shortcuts/ShortcutsPanel.qml`, `Wallpaper/WallpaperGrid.qml`.
+Referenced or instantiated by: `Launcher/AppLauncher.qml`, `Screenshot/ScreenshotPanel.qml`, `Session/SessionPanel.qml`, `Settings/SettingsPanel.qml`, `Shortcuts/ShortcutsPanel.qml`.
 
 ## Component Hierarchy and Role
 

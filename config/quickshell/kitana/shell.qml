@@ -16,7 +16,6 @@ import "./Settings" as Settings
 import "./Shortcuts" as Shortcuts
 import "./System" as System
 import "./Theme" as Theme
-import "./Wallpaper" as Wallpaper
 import "./Services" as Services
 
 ShellRoot {
@@ -61,9 +60,6 @@ ShellRoot {
                 panel.close();
         }
     }
-
-    // Global wallpaper picker panel
-    Wallpaper.WallpaperGrid {}
 
     // Global application launcher panel
     Launcher.AppLauncher {}
