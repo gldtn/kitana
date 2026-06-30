@@ -98,7 +98,7 @@ elif [ -z "$selected" ]; then
     [ -n "$selected_name" ] || exit 0
     selected="$wall_dir/$selected_name"
   else
-    echo "Install fzf or use kitana-wallpaper-grid to choose a wallpaper interactively."
+    echo "Install fzf or open the dashboard wallpaper tab to choose a wallpaper interactively."
     exit 1
   fi
 

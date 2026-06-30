@@ -568,12 +568,6 @@ else
   fail "Kitana Ghostty vendored theme missing: themes/integrations/ghostty/vendor/catppuccin-mocha.conf"
 fi
 
-if [ -x "$KITANA_DIR/bin/kitana-wallpaper-grid" ]; then
-  pass "Kitana wallpaper grid helper: bin/kitana-wallpaper-grid"
-else
-  fail "Kitana wallpaper grid helper missing or not executable: bin/kitana-wallpaper-grid"
-fi
-
 if [ -f "$KITANA_DIR/default/xcompose" ]; then
   pass "Kitana XCompose default: default/xcompose"
 else
