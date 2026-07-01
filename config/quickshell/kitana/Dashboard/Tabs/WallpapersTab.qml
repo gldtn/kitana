@@ -7,6 +7,7 @@ import QtQuick.Effects
 import QtQuick.Layouts
 import "../.."
 import "../Components"
+import "../../Components/Controls" as Controls
 import "../../custom" as Custom
 
 ColumnLayout {
@@ -121,25 +122,16 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.preferredHeight: 30
 
-        // Previous and next page controls
-        Row {
+        // Page controls
+        Controls.Pagination {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
-            spacing: 10
 
-            MiniButton { iconName: "ui.chevron.left"; onClicked: tabRoot.panel.shiftWallpaperPage(-1) }
+            currentPage: tabRoot.panel.wallpaperPage
+            pageCount: tabRoot.panel.wallpaperPageCount()
+            wrap: true
 
-            Text {
-                height: 28
-                text: (tabRoot.panel.wallpaperPage + 1) + " / " + tabRoot.panel.wallpaperPageCount()
-                verticalAlignment: Text.AlignVCenter
-                color: Colors.fgSecondary
-                font.family: Typography.fontFamily
-                font.pixelSize: settings.textPixelSize
-                font.weight: Font.DemiBold
-            }
-
-            MiniButton { iconName: "ui.chevron.right"; onClicked: tabRoot.panel.shiftWallpaperPage(1) }
+            onPageRequested: page => tabRoot.panel.setWallpaperPage(page)
         }
 
         // Filtered wallpaper count label

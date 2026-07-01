@@ -395,10 +395,15 @@ PanelWindow {
         return pageItems(wallpaperPage, filteredWallpapers(), wallpaperPageSize);
     }
 
+    function setWallpaperPage(page: int): void {
+        const count = wallpaperPageCount();
+        wallpaperPage = Math.max(0, Math.min(count - 1, page));
+        wallpaperCurrentIndex = Math.min(filteredWallpapers().length - 1, wallpaperPage * wallpaperPageSize);
+    }
+
     function shiftWallpaperPage(delta: int): void {
         const count = wallpaperPageCount();
-        wallpaperPage = (wallpaperPage + delta + count) % count;
-        wallpaperCurrentIndex = Math.min(filteredWallpapers().length - 1, wallpaperPage * wallpaperPageSize);
+        setWallpaperPage((wallpaperPage + delta + count) % count);
     }
 
     function filteredThemes(): var {
@@ -414,10 +419,15 @@ PanelWindow {
         return pageItems(themePage, filteredThemes(), themePageSize);
     }
 
+    function setThemePage(page: int): void {
+        const count = themePageCount();
+        themePage = Math.max(0, Math.min(count - 1, page));
+        themeCurrentIndex = Math.min(filteredThemes().length - 1, themePage * themePageSize);
+    }
+
     function shiftThemePage(delta: int): void {
         const count = themePageCount();
-        themePage = (themePage + delta + count) % count;
-        themeCurrentIndex = Math.min(filteredThemes().length - 1, themePage * themePageSize);
+        setThemePage((themePage + delta + count) % count);
     }
 
     function movePickerSelection(delta: int): void {

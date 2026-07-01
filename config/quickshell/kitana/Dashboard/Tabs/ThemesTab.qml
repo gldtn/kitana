@@ -6,6 +6,7 @@ import QtQuick
 import QtQuick.Layouts
 import "../.."
 import "../Components"
+import "../../Components/Controls" as Controls
 import "../../custom" as Custom
 
 ColumnLayout {
@@ -146,25 +147,16 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.preferredHeight: 30
 
-        // Previous and next page controls
-        Row {
+        // Page controls
+        Controls.Pagination {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
-            spacing: 10
 
-            MiniButton { iconName: "ui.chevron.left"; onClicked: tabRoot.panel.shiftThemePage(-1) }
+            currentPage: tabRoot.panel.themePage
+            pageCount: tabRoot.panel.themePageCount()
+            wrap: true
 
-            Text {
-                height: 28
-                text: (tabRoot.panel.themePage + 1) + " / " + tabRoot.panel.themePageCount()
-                verticalAlignment: Text.AlignVCenter
-                color: Colors.fgSecondary
-                font.family: Typography.fontFamily
-                font.pixelSize: settings.textPixelSize
-                font.weight: Font.DemiBold
-            }
-
-            MiniButton { iconName: "ui.chevron.right"; onClicked: tabRoot.panel.shiftThemePage(1) }
+            onPageRequested: page => tabRoot.panel.setThemePage(page)
         }
 
         // Filtered theme count label
