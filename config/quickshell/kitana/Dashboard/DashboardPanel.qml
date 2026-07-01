@@ -702,6 +702,12 @@ PanelWindow {
         root.refreshWeather();
     }
 
+    // Keep dashboard shortcuts live after IPC opens without requiring pointer focus.
+    HyprlandFocusGrab {
+        active: root.expandedSurface
+        windows: [root]
+    }
+
     // Clock and tab refresh timer
     Timer {
         interval: 1000
