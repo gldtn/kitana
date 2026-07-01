@@ -36,7 +36,7 @@
     "fgSecondary": "grey",
     "fgTertiary": {
       "ref": "fg",
-      "darken": 0.5
+      "darken": 0.2
     },
     "fgOnPrimary": "bg",
     // bg color palette

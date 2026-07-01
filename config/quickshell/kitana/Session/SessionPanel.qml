@@ -22,6 +22,7 @@ PanelWindow {
 
     property bool panelVisible: false
     property string confirmAction: ""
+    property string confirmSelection: "confirm"
     property string confirmTitle: ""
     property string kitanaDir: Quickshell.env("KITANA_DIR") || Quickshell.env("HOME") + "/.local/share/kitana"
 
@@ -44,6 +45,7 @@ PanelWindow {
 
     function open(): void {
         confirmAction = "";
+        confirmSelection = "confirm";
         confirmTitle = "";
         panelVisible = true;
         closeArea.forceActiveFocus();
@@ -52,6 +54,7 @@ PanelWindow {
     function close(): void {
         panelVisible = false;
         confirmAction = "";
+        confirmSelection = "confirm";
         confirmTitle = "";
     }
 
@@ -61,7 +64,15 @@ PanelWindow {
 
     function ask(action: string, title: string): void {
         confirmAction = action;
+        confirmSelection = "confirm";
         confirmTitle = title;
+        closeArea.forceActiveFocus();
+    }
+
+    function cancelConfirmation(): void {
+        confirmAction = "";
+        confirmSelection = "confirm";
+        confirmTitle = "";
         closeArea.forceActiveFocus();
     }
 
@@ -83,19 +94,16 @@ PanelWindow {
     }
 
     function handleKey(event: var): void {
+        if (confirmAction.length > 0) {
+            handleConfirmKey(event);
+            return;
+        }
+
         if (event.key === Qt.Key_Escape) {
-            if (confirmAction.length > 0) {
-                confirmAction = "";
-                confirmTitle = "";
-            } else {
-                close();
-            }
+            close();
             event.accepted = true;
         } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-            if (confirmAction.length > 0) {
-                runConfirmedAction();
-                event.accepted = true;
-            }
+            event.accepted = true;
         } else if (event.key === Qt.Key_L) {
             lockSession();
             event.accepted = true;
@@ -107,6 +115,25 @@ PanelWindow {
             event.accepted = true;
         } else if (event.key === Qt.Key_S) {
             ask("shutdown", "Shut down?");
+            event.accepted = true;
+        }
+    }
+
+    function handleConfirmKey(event: var): void {
+        if (event.key === Qt.Key_Escape) {
+            cancelConfirmation();
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Left || event.key === Qt.Key_H || event.key === Qt.Key_Backtab) {
+            confirmSelection = "cancel";
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Right || event.key === Qt.Key_L || event.key === Qt.Key_Tab) {
+            confirmSelection = "confirm";
+            event.accepted = true;
+        } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.key === Qt.Key_Space) {
+            if (confirmSelection === "cancel")
+                cancelConfirmation();
+            else
+                runConfirmedAction();
             event.accepted = true;
         }
     }
@@ -132,7 +159,6 @@ PanelWindow {
 
         anchors.fill: parent
         focus: true
-        Keys.onEscapePressed: root.close()
         Keys.onPressed: event => root.handleKey(event)
         onClicked: root.close()
     }
@@ -247,19 +273,18 @@ PanelWindow {
             }
         }
 
-        // Destructive action confirmation overlay
+        // Destructive action confirmation backdrop
         Rectangle {
             anchors.fill: parent
             visible: root.confirmAction.length > 0
             radius: parent.radius
-            color: Colors.scrimPrimary
+            color: Colors.alpha(Colors.bgPrimary, 0.7)
 
             // Confirmation cancel click target
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    root.confirmAction = "";
-                    root.confirmTitle = "";
+                    root.cancelConfirmation();
                 }
             }
 
@@ -271,7 +296,7 @@ PanelWindow {
                 radius: 16
                 color: Colors.bgPrimary
                 border.color: Colors.borderFaint
-                border.width: 1
+                border.width: 0.6
 
                 // Confirmation text and actions
                 ColumnLayout {
@@ -291,7 +316,7 @@ PanelWindow {
 
                     Text {
                         Layout.fillWidth: true
-                        text: "Press Enter to confirm or Escape to cancel"
+                        text: "Use arrows or H/L to choose, Enter to select"
                         color: Colors.fgSecondary
                         horizontalAlignment: Text.AlignHCenter
                         wrapMode: Text.WordWrap
@@ -306,16 +331,17 @@ PanelWindow {
 
                         ConfirmButton {
                             label: "Cancel"
-                            accent: false
+                            targetSelection: "cancel"
+                            active: root.confirmSelection === "cancel"
                             onClicked: {
-                                root.confirmAction = "";
-                                root.confirmTitle = "";
+                                root.cancelConfirmation();
                             }
                         }
 
                         ConfirmButton {
                             label: "Confirm"
-                            accent: true
+                            targetSelection: "confirm"
+                            active: root.confirmSelection === "confirm"
                             onClicked: root.runConfirmedAction()
                         }
                     }
@@ -334,21 +360,22 @@ PanelWindow {
         id: button
 
         property string label: ""
-        property bool accent: false
+        property string targetSelection: ""
+        property bool active: false
         signal clicked
 
         Layout.fillWidth: true
         Layout.preferredHeight: 34
         radius: 10
-        color: accent ? Colors.subtleAccent : (buttonMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary)
-        border.color: accent ? Colors.borderAccent : Colors.borderFaint
-        border.width: 1
+        color: button.active || buttonMouse.containsMouse ? Colors.subtleAccent : Colors.bgTertiary
+        border.color: button.active ? Colors.mixColor(Colors.bgPrimary, Colors.subtleAccent, .2) : "transparent"
+        border.width: 0.6
 
         // Confirmation button label
         Text {
             anchors.centerIn: parent
             text: button.label
-            color: Colors.fgPrimary
+            color: button.active || buttonMouse.containsMouse ? Colors.fgPrimary : Colors.fgTertiary
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize
             font.weight: Font.Bold
@@ -361,6 +388,7 @@ PanelWindow {
             anchors.fill: parent
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
+            onEntered: root.confirmSelection = button.targetSelection
             onClicked: button.clicked()
         }
     }
