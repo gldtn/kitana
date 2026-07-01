@@ -24,7 +24,7 @@ Rectangle {
     Layout.fillHeight: true
     radius: 14
     color: actionMouse.containsMouse ? Colors.scrimTertiary : Colors.bgTertiary
-    border.color: actionMouse.containsMouse ? Colors.borderAccent : Colors.borderLight
+    border.color: actionMouse.containsMouse ? Colors.mixColor(Colors.borderLight, Colors.borderAccent, .12) : Colors.borderLight
     border.width: 1
 
     // Shortcut badge
