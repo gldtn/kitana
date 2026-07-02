@@ -38,7 +38,7 @@ PanelWindow {
     property string weatherStatus: "Loading weather..."
     property var weather: ({})
     property int wallpaperPage: 0
-    property int wallpaperPageSize: 12
+    property int wallpaperPageSize: 16
     property int wallpaperCurrentIndex: 0
     property int themePage: 0
     property int themePageSize: 6
@@ -47,6 +47,13 @@ PanelWindow {
     property bool pickerSearchActive: false
     property bool pickerHelpVisible: false
     property bool compactHoverLatched: false
+    property string wallpaperDirPending: ""
+    property string wallpaperSetName: "default"
+    property string wallpaperManagerPath: ""
+    property string wallpaperManagerStatus: ""
+    property bool wallpaperSetBusy: false
+    property string wallpaperSetAction: ""
+    property real settingsPreferredContentHeight: 0
     property string kitanaDir: Quickshell.env("KITANA_DIR") || Quickshell.env("HOME") + "/.local/share/kitana"
     property string wallpaperDir: Quickshell.env("KITANA_WALLPAPER_DIR") || Quickshell.env("HOME") + "/.config/kitana/wallpapers"
     property date currentTime: new Date()
@@ -78,8 +85,12 @@ PanelWindow {
     readonly property int compactY: Math.round(collapsedY)
     readonly property int compactWidth: Math.round(collapsedWidth)
     readonly property int compactHeight: Math.round(collapsedHeight)
-    readonly property real expandedWidth: Math.min(700, Math.max(collapsedWidth, activeScreenWidth - 32))
-    readonly property real expandedHeight: Math.min(500, Math.max(collapsedHeight, activeScreenHeight - Services.UiPreferences.panelHeight - 34))
+    readonly property bool settingsExpanded: activeTab === "settings"
+    readonly property real expandedChromeHeight: 2 * 14 + 2 * 10 + tabSelector.implicitHeight + 1
+    readonly property real expandedTargetWidth: settingsExpanded ? 820 : 700
+    readonly property real expandedTargetHeight: settingsExpanded && settingsPreferredContentHeight > 0 ? Math.max(500, settingsPreferredContentHeight + expandedChromeHeight) : 500
+    readonly property real expandedWidth: Math.min(expandedTargetWidth, Math.max(collapsedWidth, activeScreenWidth - 32))
+    readonly property real expandedHeight: Math.min(expandedTargetHeight, Math.max(collapsedHeight, activeScreenHeight - Services.UiPreferences.panelHeight - 34))
     readonly property real expandedX: (activeScreenWidth - expandedWidth) / 2
     readonly property real expandedTopMargin: Services.UiPreferences.topMargin + 6
     readonly property real collapsedRadius: Math.min(collapsedHeight / 2, Services.UiPreferences.pillRadius)
@@ -95,6 +106,9 @@ PanelWindow {
     readonly property color sectionBorder: Colors.borderFaint
     readonly property real sectionBorderWidth: 0.6
     readonly property real sectionRadius: 16
+    readonly property real tabCardHorizontalInset: 0
+    readonly property real tabCardVerticalInset: 0
+    readonly property real tabCardSpacing: 12
 
     function lerp(from: real, to: real, progress: real): real {
         return from + (to - from) * progress;
@@ -310,7 +324,14 @@ PanelWindow {
     }
 
     function pathFromFileUrl(path: string): string {
-        return path.indexOf("file://") === 0 ? path.slice(7) : path;
+        const value = String(path || "");
+        const localPath = value.indexOf("file://") === 0 ? value.slice(7) : value;
+
+        try {
+            return decodeURIComponent(localPath);
+        } catch (error) {
+            return localPath;
+        }
     }
 
     function wallpaperFolderUrl(): string {
@@ -319,19 +340,124 @@ PanelWindow {
 
     function refreshWallpaperCache(): void {
         const items = [];
+        let filteredCount = 0;
+
         for (let i = 0; i < wallpaperFolderModel.count; i++) {
             const path = wallpaperFolderModel.get(i, "filePath");
             if (path)
                 items.push(pathFromFileUrl(path.toString()));
         }
         wallpapers = items;
+        filteredCount = filteredWallpapers().length;
         wallpaperPage = Math.min(wallpaperPage, wallpaperPageCount() - 1);
-        wallpaperCurrentIndex = wallpapers.length > 0 ? Math.max(0, Math.min(wallpaperCurrentIndex, filteredWallpapers().length - 1)) : -1;
+        wallpaperCurrentIndex = filteredCount > 0 ? Math.max(0, Math.min(wallpaperCurrentIndex, filteredCount - 1)) : -1;
     }
 
     function applyWallpaper(path: string): void {
         if (path)
             applyProcess.exec([kitanaDir + "/bin/kitana-wallpaper", path]);
+    }
+
+    function loadWallpaperDir(): void {
+        if (!wallpaperDirLoadProcess.running)
+            wallpaperDirLoadProcess.exec([kitanaDir + "/bin/kitana-wallpaper", "--dir"]);
+    }
+
+    function setWallpaperDir(path: string): void {
+        const nextDir = pathFromFileUrl(path).trim();
+        const currentDir = pathFromFileUrl(wallpaperDir).trim();
+        if (nextDir.length === 0 || wallpaperDirSetProcess.running)
+            return;
+        if (nextDir === currentDir)
+            return;
+
+        wallpaperDirPending = nextDir;
+        root.wallpaperManagerStatus = "Updating wallpaper folder...";
+        wallpaperDirSetProcess.exec([kitanaDir + "/bin/kitana-wallpaper", "--set-dir", nextDir]);
+    }
+
+    function applyWallpaperDir(path: string): void {
+        if (path.length === 0)
+            return;
+
+        if (path === wallpaperDir) {
+            wallpaperDirPending = "";
+            refreshWallpaperCache();
+            return;
+        }
+
+        wallpaperDir = path;
+        wallpaperDirPending = "";
+        wallpaperPage = 0;
+        wallpaperCurrentIndex = 0;
+        wallpapers = [];
+    }
+
+    function setWallpaperSetName(value: string): void {
+        root.wallpaperSetName = value.trim();
+    }
+
+    function setWallpaperManagerPath(value: string): void {
+        root.wallpaperManagerPath = pathFromFileUrl(value).trim();
+    }
+
+    function currentWallpaperPath(): string {
+        const items = filteredWallpapers();
+        return wallpaperCurrentIndex >= 0 && wallpaperCurrentIndex < items.length ? items[wallpaperCurrentIndex] : "";
+    }
+
+    function runWallpaperSetCommand(args: var, action: string): void {
+        if (root.wallpaperSetBusy)
+            return;
+
+        const command = [kitanaDir + "/bin/kitana-wallpaper-set"];
+        for (const arg of args)
+            command.push(String(arg));
+
+        root.wallpaperSetAction = action;
+        root.wallpaperManagerStatus = "Working...";
+        wallpaperSetProcess.exec(command);
+    }
+
+    function createWallpaperSet(): void {
+        if (root.wallpaperSetName.length > 0)
+            runWallpaperSetCommand(["create", root.wallpaperSetName], "refresh");
+    }
+
+    function deleteWallpaperSet(): void {
+        if (root.wallpaperSetName.length > 0)
+            runWallpaperSetCommand(["delete", root.wallpaperSetName], "refresh");
+    }
+
+    function activateWallpaperSet(): void {
+        if (root.wallpaperSetName.length > 0)
+            runWallpaperSetCommand(["activate", root.wallpaperSetName], "reloadDir");
+    }
+
+    function addWallpaperToSet(): void {
+        if (root.wallpaperSetName.length > 0 && root.wallpaperManagerPath.length > 0)
+            runWallpaperSetCommand(["add", root.wallpaperSetName, root.wallpaperManagerPath], "refresh");
+    }
+
+    function importWallpaperDirToSet(): void {
+        if (root.wallpaperSetName.length > 0 && root.wallpaperManagerPath.length > 0)
+            runWallpaperSetCommand(["import-dir", root.wallpaperSetName, root.wallpaperManagerPath], "refresh");
+    }
+
+    function removeCurrentWallpaperFromSet(): void {
+        const current = currentWallpaperPath();
+        if (root.wallpaperSetName.length > 0 && current.length > 0)
+            runWallpaperSetCommand(["remove", root.wallpaperSetName, basename(current)], "reloadDir");
+    }
+
+    function generateWallpaperSetTheme(): void {
+        if (root.wallpaperSetName.length > 0)
+            runWallpaperSetCommand(["generate", root.wallpaperSetName, "--current"], "refresh");
+    }
+
+    function generateWallpaperSetAllThemes(): void {
+        if (root.wallpaperSetName.length > 0)
+            runWallpaperSetCommand(["generate", root.wallpaperSetName, "--all"], "refresh");
     }
 
     function themeFromLine(line: string): var {
@@ -457,8 +583,11 @@ PanelWindow {
     function applyCurrentPickerItem(): void {
         if (activeTab === "themes")
             applyTheme(filteredThemes()[themeCurrentIndex]);
-        else if (activeTab === "wallpapers")
-            applyWallpaper(filteredWallpapers()[wallpaperCurrentIndex]);
+        else if (activeTab === "wallpapers") {
+            const wallpaper = filteredWallpapers()[wallpaperCurrentIndex];
+            if (wallpaper)
+                applyWallpaper(wallpaper);
+        }
     }
 
     function handleKey(event: var): void {
@@ -699,6 +828,7 @@ PanelWindow {
 
     Component.onCompleted: {
         weatherCacheDirProcess.exec(["mkdir", "-p", root.stateDir]);
+        root.loadWallpaperDir();
         root.refreshWeather();
     }
 
@@ -755,6 +885,57 @@ PanelWindow {
 
         onRunningChanged: if (!running)
             root.close()
+    }
+
+    // Wallpaper directory reader
+    Process {
+        id: wallpaperDirLoadProcess
+
+        stdout: StdioCollector {
+            onStreamFinished: root.applyWallpaperDir(text.trim())
+        }
+
+        stderr: StdioCollector {
+            onStreamFinished: if (text.trim().length > 0)
+                root.wallpaperManagerStatus = text.trim()
+        }
+    }
+
+    // Wallpaper directory persistence command runner
+    Process {
+        id: wallpaperDirSetProcess
+
+        stdout: StdioCollector {
+            onStreamFinished: root.applyWallpaperDir(text.trim())
+        }
+    }
+
+    // Custom wallpaper set command runner
+    Process {
+        id: wallpaperSetProcess
+
+        stdout: StdioCollector {
+            onStreamFinished: if (text.trim().length > 0)
+                root.wallpaperManagerStatus = text.trim().split("\n").pop()
+        }
+
+        stderr: StdioCollector {
+            onStreamFinished: if (text.trim().length > 0)
+                root.wallpaperManagerStatus = text.trim().split("\n").pop()
+        }
+
+        onRunningChanged: {
+            root.wallpaperSetBusy = running;
+            if (running)
+                return;
+
+            if (root.wallpaperSetAction === "reloadDir")
+                root.loadWallpaperDir();
+            else if (root.wallpaperSetAction === "refresh")
+                root.refreshWallpaperCache();
+
+            root.wallpaperSetAction = "";
+        }
     }
 
     // Theme list command runner
@@ -892,6 +1073,33 @@ PanelWindow {
         border.width: root.lerp(settings.borderWidth, 1, root.morphProgress)
         clip: true
 
+        Behavior on x {
+            enabled: root.expandedSurface && !root.closing && root.morphProgress >= 0.99
+
+            NumberAnimation {
+                duration: 220
+                easing.type: Easing.OutCubic
+            }
+        }
+
+        Behavior on width {
+            enabled: root.expandedSurface && !root.closing && root.morphProgress >= 0.99
+
+            NumberAnimation {
+                duration: 220
+                easing.type: Easing.OutCubic
+            }
+        }
+
+        Behavior on height {
+            enabled: root.expandedSurface && !root.closing && root.morphProgress >= 0.99
+
+            NumberAnimation {
+                duration: 220
+                easing.type: Easing.OutCubic
+            }
+        }
+
         // Prevent clicks inside card from closing dashboard
         MouseArea {
             id: cardMouse
@@ -970,6 +1178,8 @@ PanelWindow {
 
             // Dashboard tab selector row
             RowLayout {
+                id: tabSelector
+
                 Layout.fillWidth: true
                 spacing: 8
 
@@ -1034,6 +1244,8 @@ PanelWindow {
 
             // Active dashboard tab loader
             Loader {
+                id: activeTabLoader
+
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 sourceComponent: root.activeTab === "wallpapers" ? wallpapersTab : (root.activeTab === "themes" ? themesTab : (root.activeTab === "media" ? mediaTab : (root.activeTab === "weather" ? weatherTab : (root.activeTab === "settings" ? settingsTab : datetimeTab))))

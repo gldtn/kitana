@@ -1,0 +1,546 @@
+#!/bin/bash
+
+set -euo pipefail
+
+KITANA_DIR="${KITANA_DIR:-$HOME/.local/share/kitana}"
+custom_root="${KITANA_WALLPAPER_CUSTOM_DIR:-$HOME/.local/share/kitana-wallpapers-custom}"
+extras_root="${KITANA_WALLPAPER_EXTRAS_DIR:-$HOME/.local/share/kitana-wallpapers-extras}"
+set_root="$custom_root/sets"
+state_dir="$HOME/.config/kitana"
+active_set_file="$state_dir/wallpaper-set"
+theme_file="$state_dir/theme"
+
+usage() {
+  cat <<EOF
+Usage: kitana-wallpaper-set COMMAND [ARGS]
+
+Commands:
+  list
+  themes
+  dir SET [VARIANT]
+  create SET
+  delete SET
+  activate SET [VARIANT]
+  add SET FILE [FILE...] [--replace] [--current|--theme THEME|--all]
+  import-dir SET DIR [--replace] [--current|--theme THEME|--all]
+  remove SET WALLPAPER [WALLPAPER...]
+  generate SET (--current|--theme THEME|--all) [--wallpaper WALLPAPER] [--force]
+
+Custom sets are stored under:
+  $set_root/<set>/{originals,<theme>}/
+
+Themed generation uses palettes and scripts from:
+  $extras_root
+EOF
+}
+
+valid_set_name() {
+  local set_name="$1"
+
+  [[ "$set_name" =~ ^[A-Za-z0-9._-]+$ ]] || return 1
+  [ "$set_name" != "." ] && [ "$set_name" != ".." ]
+}
+
+require_set_name() {
+  local set_name="$1"
+
+  if ! valid_set_name "$set_name"; then
+    printf 'Invalid wallpaper set name: %s\n' "$set_name" >&2
+    exit 2
+  fi
+}
+
+set_dir() {
+  printf '%s/%s\n' "$set_root" "$1"
+}
+
+variant_dir() {
+  printf '%s/%s\n' "$(set_dir "$1")" "${2:-originals}"
+}
+
+current_theme() {
+  [ -f "$theme_file" ] || return 0
+  tr -d '\n' <"$theme_file"
+}
+
+preferred_variant() {
+  local set_name="$1"
+  local theme
+
+  theme="$(current_theme)"
+  if [ -n "$theme" ] && [ -d "$(variant_dir "$set_name" "$theme")" ]; then
+    printf '%s\n' "$theme"
+  else
+    printf 'originals\n'
+  fi
+}
+
+require_set() {
+  local set_name="$1"
+  local dir
+
+  require_set_name "$set_name"
+  dir="$(variant_dir "$set_name" originals)"
+  if [ ! -d "$dir" ]; then
+    printf 'Wallpaper set not found: %s\n' "$set_name" >&2
+    exit 1
+  fi
+}
+
+ensure_set() {
+  local set_name="$1"
+
+  require_set_name "$set_name"
+  mkdir -p "$(variant_dir "$set_name" originals)" "$state_dir"
+}
+
+is_wallpaper_file() {
+  case "${1,,}" in
+    *.jpg|*.jpeg|*.png|*.webp|*.gif|*.avif)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+is_theme_source_file() {
+  case "${1,,}" in
+    *.jpg|*.jpeg|*.png|*.webp|*.avif)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+copy_wallpaper() {
+  local source="$1"
+  local dest_dir="$2"
+  local replace="$3"
+  local target
+
+  if [ ! -f "$source" ]; then
+    printf 'Wallpaper file not found: %s\n' "$source" >&2
+    exit 1
+  fi
+
+  if ! is_wallpaper_file "$source"; then
+    printf 'Unsupported wallpaper file: %s\n' "$source" >&2
+    exit 1
+  fi
+
+  mkdir -p "$dest_dir"
+  target="$dest_dir/$(basename "$source")"
+  if [ -e "$target" ] && [ "$replace" -eq 0 ]; then
+    printf 'Wallpaper already exists: %s\n' "$target" >&2
+    exit 1
+  fi
+
+  cp --reflink=auto -- "$source" "$target" 2>/dev/null || cp -- "$source" "$target"
+  printf '%s\n' "$target"
+}
+
+list_sets() {
+  local dir
+
+  [ -d "$set_root" ] || return 0
+  for dir in "$set_root"/*; do
+    [ -d "$dir/originals" ] || continue
+    basename "$dir"
+  done | sort -V
+}
+
+list_themes() {
+  local generator="$extras_root/scripts/lutgen-wallpapers"
+
+  if [ ! -x "$generator" ]; then
+    printf 'Missing themed wallpaper generator: %s\n' "$generator" >&2
+    exit 1
+  fi
+
+  "$generator" --list-themes
+}
+
+create_set() {
+  local set_name="$1"
+
+  ensure_set "$set_name"
+  printf 'Wallpaper set ready: %s\n' "$set_name"
+}
+
+delete_set() {
+  local set_name="$1"
+
+  require_set "$set_name"
+  if [ -f "$active_set_file" ]; then
+    case "$(<"$active_set_file")" in
+      "custom:$set_name"|"custom:$set_name:"*)
+        printf 'Cannot delete active wallpaper set: %s\n' "$set_name" >&2
+        exit 1
+        ;;
+    esac
+  fi
+
+  rm -rf -- "$(set_dir "$set_name")"
+  printf 'Wallpaper set deleted: %s\n' "$set_name"
+}
+
+activate_set() {
+  local set_name="$1"
+  local variant="${2:-}"
+  local dir
+
+  require_set "$set_name"
+  [ -n "$variant" ] || variant="$(preferred_variant "$set_name")"
+  dir="$(variant_dir "$set_name" "$variant")"
+  if [ ! -d "$dir" ]; then
+    printf 'Wallpaper variant not found: %s/%s\n' "$set_name" "$variant" >&2
+    exit 1
+  fi
+
+  mkdir -p "$state_dir"
+  printf 'custom:%s:%s\n' "$set_name" "$variant" >"$active_set_file"
+  "$KITANA_DIR/bin/kitana-wallpaper" --set-dir "$dir"
+}
+
+resolve_wallpaper_source() {
+  local set_name="$1"
+  local wallpaper="$2"
+  local basename_value
+  local source
+
+  basename_value="$(basename "$wallpaper")"
+  source="$(variant_dir "$set_name" originals)/$basename_value"
+  if [ ! -f "$source" ]; then
+    printf 'Wallpaper not found in %s originals: %s\n' "$set_name" "$basename_value" >&2
+    exit 1
+  fi
+
+  if ! is_theme_source_file "$source"; then
+    printf 'Wallpaper cannot be themed by lutgen: %s\n' "$basename_value" >&2
+    exit 1
+  fi
+
+  printf '%s\n' "$source"
+}
+
+generator_args() {
+  local force="$1"
+  local all="$2"
+  local theme="$3"
+  local -n out_args="$4"
+
+  [ "$force" -eq 1 ] && out_args+=("--force")
+
+  if [ "$all" -eq 1 ]; then
+    out_args+=("--all")
+  else
+    if [ -z "$theme" ]; then
+      printf 'No theme selected. Use --theme THEME, --current, or --all.\n' >&2
+      exit 2
+    fi
+    out_args+=("--theme" "$theme")
+  fi
+}
+
+generate_with_lutgen() {
+  local source_dir="$1"
+  local output_dir="$2"
+  local force="$3"
+  local all="$4"
+  local theme="$5"
+  local generator="$extras_root/scripts/lutgen-wallpapers"
+  local args=("--source-dir" "$source_dir" "--output-dir" "$output_dir")
+
+  if [ ! -x "$generator" ]; then
+    printf 'Missing themed wallpaper generator: %s\n' "$generator" >&2
+    exit 1
+  fi
+
+  generator_args "$force" "$all" "$theme" args
+  "$generator" "${args[@]}"
+}
+
+generate_wallpaper_file() {
+  local set_name="$1"
+  local wallpaper="$2"
+  local force="$3"
+  local all="$4"
+  local theme="$5"
+  local source tmp_dir link_name
+
+  require_set "$set_name"
+  source="$(resolve_wallpaper_source "$set_name" "$wallpaper")"
+  tmp_dir="$(mktemp -d "${TMPDIR:-/tmp}/kitana-wallpaper-one.XXXXXX")"
+  link_name="$tmp_dir/$(basename "$source")"
+  ln -s -- "$source" "$link_name"
+
+  if ! generate_with_lutgen "$tmp_dir" "$(set_dir "$set_name")" "$force" "$all" "$theme"; then
+    rm -rf -- "$tmp_dir"
+    exit 1
+  fi
+
+  rm -rf -- "$tmp_dir"
+}
+
+parse_theme_options() {
+  local -n args_ref="$1"
+  local -n files_ref="$2"
+  local -n replace_ref="$3"
+  local -n force_ref="$4"
+  local -n all_ref="$5"
+  local -n theme_ref="$6"
+  local arg
+
+  replace_ref=0
+  force_ref=0
+  all_ref=0
+  theme_ref=""
+  files_ref=()
+
+  while [ "${#args_ref[@]}" -gt 0 ]; do
+    arg="${args_ref[0]}"
+    args_ref=("${args_ref[@]:1}")
+
+    case "$arg" in
+      --replace)
+        replace_ref=1
+        force_ref=1
+        ;;
+      --force)
+        force_ref=1
+        ;;
+      --current)
+        theme_ref="$(current_theme)"
+        ;;
+      --theme)
+        if [ "${#args_ref[@]}" -lt 1 ]; then
+          printf 'Missing value for --theme\n' >&2
+          exit 2
+        fi
+        theme_ref="${args_ref[0]}"
+        args_ref=("${args_ref[@]:1}")
+        ;;
+      --all)
+        all_ref=1
+        ;;
+      --)
+        files_ref+=("${args_ref[@]}")
+        args_ref=()
+        ;;
+      --*)
+        printf 'Unknown option: %s\n' "$arg" >&2
+        exit 2
+        ;;
+      *)
+        files_ref+=("$arg")
+        ;;
+    esac
+  done
+}
+
+add_wallpapers() {
+  local set_name="$1"
+  local dest_dir target copied=0 generated=0
+  local replace force all theme
+  local args files=() copied_names=()
+
+  shift
+  args=("$@")
+  parse_theme_options args files replace force all theme
+  if [ "${#files[@]}" -eq 0 ]; then
+    printf 'No wallpaper files provided.\n' >&2
+    exit 2
+  fi
+
+  ensure_set "$set_name"
+  dest_dir="$(variant_dir "$set_name" originals)"
+  for source in "${files[@]}"; do
+    target="$(copy_wallpaper "$source" "$dest_dir" "$replace")"
+    copied_names+=("$(basename "$target")")
+    copied=$((copied + 1))
+  done
+
+  if [ "$all" -eq 1 ] || [ -n "$theme" ]; then
+    for wallpaper in "${copied_names[@]}"; do
+      generate_wallpaper_file "$set_name" "$wallpaper" "$force" "$all" "$theme"
+      generated=$((generated + 1))
+    done
+  fi
+
+  if [ "$generated" -gt 0 ]; then
+    printf 'Added %s wallpaper(s) to %s and themed %s\n' "$copied" "$set_name" "$generated"
+  else
+    printf 'Added %s wallpaper(s) to %s\n' "$copied" "$set_name"
+  fi
+}
+
+import_dir() {
+  local set_name="$1"
+  local source_dir="$2"
+  local dest_dir source target imported=0 generated=0
+  local replace force all theme
+  local args files=() copied_names=()
+
+  shift 2
+  args=("$@")
+  parse_theme_options args files replace force all theme
+  if [ "${#files[@]}" -gt 0 ]; then
+    printf 'Unexpected positional argument: %s\n' "${files[0]}" >&2
+    exit 2
+  fi
+
+  if [ ! -d "$source_dir" ]; then
+    printf 'Wallpaper source directory not found: %s\n' "$source_dir" >&2
+    exit 1
+  fi
+
+  ensure_set "$set_name"
+  dest_dir="$(variant_dir "$set_name" originals)"
+  while IFS= read -r -d '' source; do
+    target="$(copy_wallpaper "$source" "$dest_dir" "$replace")"
+    copied_names+=("$(basename "$target")")
+    imported=$((imported + 1))
+  done < <(find "$source_dir" -maxdepth 1 -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.gif' -o -iname '*.avif' \) -print0 | sort -z)
+
+  if [ "$all" -eq 1 ] || [ -n "$theme" ]; then
+    for wallpaper in "${copied_names[@]}"; do
+      if is_theme_source_file "$wallpaper"; then
+        generate_wallpaper_file "$set_name" "$wallpaper" "$force" "$all" "$theme"
+        generated=$((generated + 1))
+      fi
+    done
+  fi
+
+  if [ "$generated" -gt 0 ]; then
+    printf 'Imported %s wallpaper(s) to %s and themed %s\n' "$imported" "$set_name" "$generated"
+  else
+    printf 'Imported %s wallpaper(s) to %s\n' "$imported" "$set_name"
+  fi
+}
+
+remove_wallpapers() {
+  local set_name="$1"
+  local dir wallpaper basename_value variant removed=0
+
+  shift
+  require_set "$set_name"
+  dir="$(set_dir "$set_name")"
+
+  for wallpaper in "$@"; do
+    basename_value="$(basename "$wallpaper")"
+    for variant in "$dir"/*; do
+      [ -d "$variant" ] || continue
+      if [ -e "$variant/$basename_value" ]; then
+        rm -f -- "$variant/$basename_value"
+        removed=$((removed + 1))
+      fi
+    done
+  done
+
+  printf 'Removed %s file(s) from %s\n' "$removed" "$set_name"
+}
+
+generate_set() {
+  local set_name="$1"
+  local theme=""
+  local all=0
+  local force=0
+  local wallpaper=""
+  local source_dir output_dir
+
+  shift
+  require_set "$set_name"
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --current)
+        theme="$(current_theme)"
+        ;;
+      --theme)
+        [ "$#" -ge 2 ] || { usage >&2; exit 2; }
+        theme="$2"
+        shift
+        ;;
+      --all)
+        all=1
+        ;;
+      --force)
+        force=1
+        ;;
+      --wallpaper|-w)
+        [ "$#" -ge 2 ] || { usage >&2; exit 2; }
+        wallpaper="$2"
+        shift
+        ;;
+      *)
+        printf 'Unknown option: %s\n' "$1" >&2
+        exit 2
+        ;;
+    esac
+    shift
+  done
+
+  if [ -n "$wallpaper" ]; then
+    generate_wallpaper_file "$set_name" "$wallpaper" "$force" "$all" "$theme"
+  else
+    source_dir="$(variant_dir "$set_name" originals)"
+    output_dir="$(set_dir "$set_name")"
+    generate_with_lutgen "$source_dir" "$output_dir" "$force" "$all" "$theme"
+  fi
+}
+
+command="${1:-}"
+shift || true
+
+case "$command" in
+  list)
+    list_sets
+    ;;
+  themes)
+    list_themes
+    ;;
+  dir)
+    [ "$#" -ge 1 ] || { usage >&2; exit 2; }
+    require_set_name "$1"
+    variant_dir "$1" "${2:-originals}"
+    ;;
+  create)
+    [ "$#" -eq 1 ] || { usage >&2; exit 2; }
+    create_set "$1"
+    ;;
+  delete)
+    [ "$#" -eq 1 ] || { usage >&2; exit 2; }
+    delete_set "$1"
+    ;;
+  activate)
+    [ "$#" -ge 1 ] && [ "$#" -le 2 ] || { usage >&2; exit 2; }
+    activate_set "$1" "${2:-}"
+    ;;
+  add)
+    [ "$#" -ge 2 ] || { usage >&2; exit 2; }
+    add_wallpapers "$@"
+    ;;
+  import-dir)
+    [ "$#" -ge 2 ] || { usage >&2; exit 2; }
+    import_dir "$@"
+    ;;
+  remove|delete-wallpaper)
+    [ "$#" -ge 2 ] || { usage >&2; exit 2; }
+    remove_wallpapers "$@"
+    ;;
+  generate|theme)
+    [ "$#" -ge 2 ] || { usage >&2; exit 2; }
+    generate_set "$@"
+    ;;
+  --help|-h|help|"")
+    usage
+    ;;
+  *)
+    printf 'Unknown command: %s\n' "$command" >&2
+    usage >&2
+    exit 2
+    ;;
+esac

@@ -3,6 +3,7 @@
 | Component | Source | Summary |
 |-----------|--------|---------|
 | [`DashboardField`](DashboardField.md) | `DashboardField.qml` | DashboardField is a reusable Dashboard component used to compose panel content consistently. |
+| [`CachedWallpaperImage`](CachedWallpaperImage.md) | `CachedWallpaperImage.qml` | CachedWallpaperImage loads generated wallpaper thumbnails with original-image fallback. |
 | [`IslandSummary`](IslandSummary.md) | `IslandSummary.qml` | IslandSummary renders the date, time, and weather summary for the collapsed dashboard island. |
 | [`MediaButton`](MediaButton.md) | `MediaButton.qml` | MediaButton is a reusable Dashboard component used to compose panel content consistently. |
 | [`MediaDeviceRow`](MediaDeviceRow.md) | `MediaDeviceRow.qml` | MediaDeviceRow is a reusable Dashboard component used to compose panel content consistently. |
@@ -14,4 +15,5 @@
 | [`TodayFact`](TodayFact.md) | `TodayFact.qml` | TodayFact is a reusable Dashboard component used to compose panel content consistently. |
 | [`VolumeSlider`](VolumeSlider.md) | `VolumeSlider.qml` | VolumeSlider is a reusable Dashboard component used to compose panel content consistently. |
 | [`WeatherMetric`](WeatherMetric.md) | `WeatherMetric.qml` | WeatherMetric is a reusable Dashboard component used to compose panel content consistently. |
+| [`WallpaperThumbnailPreloader`](WallpaperThumbnailPreloader.md) | `WallpaperThumbnailPreloader.qml` | WallpaperThumbnailPreloader generates wallpaper thumbnail cache entries in the background. |
 | [`WorldClockRow`](WorldClockRow.md) | `WorldClockRow.qml` | WorldClockRow is a reusable Dashboard component used to compose panel content consistently. |

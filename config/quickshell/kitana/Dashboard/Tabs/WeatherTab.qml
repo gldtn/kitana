@@ -20,7 +20,7 @@ ColumnLayout {
     readonly property var panel: dashboard
     readonly property var weatherData: panel ? panel.weather : ({})
 
-    spacing: 12
+    spacing: tabRoot.panel.tabCardSpacing
 
     // Weather search and unit controls
     RowLayout {
@@ -204,8 +204,8 @@ ColumnLayout {
     GridLayout {
         Layout.fillWidth: true
         columns: 5
-        rowSpacing: 10
-        columnSpacing: 10
+        rowSpacing: tabRoot.panel.tabCardSpacing
+        columnSpacing: tabRoot.panel.tabCardSpacing
 
         // One forecast card per day
         Repeater {

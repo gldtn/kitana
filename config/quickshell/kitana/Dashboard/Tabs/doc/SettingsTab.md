@@ -4,7 +4,7 @@
 
 Kitana is a Quickshell desktop shell for Hyprland. This component belongs to the dashboard tab content for date/time, media, settings, themes, wallpapers, and weather area.
 
-SettingsTab provides one tab of the dashboard experience.
+SettingsTab provides dashboard settings for wallpapers, weather, and world clocks.
 
 ## Project Structure and Dependencies
 

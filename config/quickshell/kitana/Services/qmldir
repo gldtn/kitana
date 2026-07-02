@@ -7,3 +7,4 @@ singleton OsdService 1.0 OsdService.qml
 singleton QuickshellSettings 1.0 QuickshellSettings.qml
 singleton SystemStatus 1.0 SystemStatus.qml
 singleton UiPreferences 1.0 UiPreferences.qml
+singleton WallpaperThumbnailCache 1.0 WallpaperThumbnailCache.qml

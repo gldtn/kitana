@@ -34,7 +34,7 @@ ColumnLayout {
         clip: true
 
         readonly property int columns: 3
-        readonly property int gap: 10
+        readonly property int gap: tabRoot.panel.tabCardSpacing
         readonly property int edgeInset: 5
         readonly property real cardWidth: Math.floor((width - 2 * edgeInset - (columns - 1) * gap) / columns)
         readonly property real cardHeight: Math.floor((height - 2 * edgeInset - gap) / 2)

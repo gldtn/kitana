@@ -3,8 +3,8 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Effects
 import QtQuick.Layouts
-import Quickshell.Widgets as QW
 import "../.."
 import "../Components"
 import "../../Components/Controls" as Controls
@@ -22,6 +22,31 @@ ColumnLayout {
 
     spacing: 8
 
+    function currentPageIndex(): int {
+        const pageIndex = tabRoot.panel.wallpaperCurrentIndex - tabRoot.panel.wallpaperPage * tabRoot.panel.wallpaperPageSize;
+        const pageCount = tabRoot.panel.wallpaperPageItems().length;
+        return pageIndex >= 0 && pageIndex < pageCount ? pageIndex : -1;
+    }
+
+    function preloadPaths(): var {
+        const seen = ({});
+        const paths = [];
+
+        function append(items): void {
+            for (const item of items || []) {
+                if (!item || seen[item])
+                    continue;
+
+                seen[item] = true;
+                paths.push(item);
+            }
+        }
+
+        append(tabRoot.panel.wallpaperPageItems());
+        append(tabRoot.panel.filteredWallpapers());
+        return paths;
+    }
+
     // Top breathing space for picker tabs
     PickerTopInset {}
 
@@ -36,79 +61,130 @@ ColumnLayout {
 
         Layout.fillWidth: true
         Layout.fillHeight: true
-        clip: true
 
         readonly property int columns: 4
-        readonly property int gap: 10
-        readonly property int edgeInset: 5
-        readonly property real cardWidth: Math.floor((width - 2 * edgeInset - (columns - 1) * gap) / columns)
-        readonly property real cardHeight: Math.floor((height - 2 * edgeInset - 2 * gap) / 3)
-        readonly property real trackWidth: columns * cardWidth + (columns - 1) * gap
+        readonly property int rows: 4
+        readonly property int cardMargin: Math.max(1, Math.round(tabRoot.panel.tabCardSpacing / 2))
+        readonly property int cardRadius: 14
+        readonly property int visualBalanceOffset: -8
+        readonly property real idealGridHeight: Math.round(width / columns * rows * 9 / 16)
 
-        // Wallpaper page item repeater
-        Repeater {
+        WallpaperThumbnailPreloader {
+            paths: tabRoot.preloadPaths()
+            cacheSize: 256
+        }
+
+        // Paged wallpaper grid with native current-index highlight handling.
+        GridView {
+            id: wallpaperView
+
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.verticalCenterOffset: wallpaperGrid.visualBalanceOffset
+            width: parent.width
+            height: Math.min(parent.height, wallpaperGrid.idealGridHeight)
+            clip: true
+            boundsBehavior: Flickable.StopAtBounds
+            interactive: false
+            keyNavigationEnabled: false
+            highlightFollowsCurrentItem: true
+            highlightMoveDuration: 120
+            currentIndex: tabRoot.currentPageIndex()
+            cellWidth: width / wallpaperGrid.columns
+            cellHeight: height / wallpaperGrid.rows
             model: tabRoot.panel.wallpaperPageItems()
 
-            // Selectable wallpaper thumbnail card
-            QW.ClippingRectangle {
-                id: wallpaperCard
+            onCurrentIndexChanged: if (currentIndex >= 0)
+                positionViewAtIndex(currentIndex, GridView.Contain)
+
+            highlight: Item {
+                z: 1000
+
+                // Keyboard and mouse selection border
+                Rectangle {
+                    anchors.fill: parent
+                    anchors.margins: wallpaperGrid.cardMargin
+                    radius: wallpaperGrid.cardRadius
+                    color: "transparent"
+                    border.color: Colors.fgAccent
+                    border.width: 1
+                    antialiasing: true
+                }
+            }
+
+            // Wallpaper thumbnail cell
+            delegate: Item {
+                id: wallpaperCell
 
                 required property string modelData
                 required property int index
 
                 readonly property int sourceIndex: tabRoot.panel.wallpaperPage * tabRoot.panel.wallpaperPageSize + index
-                readonly property bool selected: sourceIndex === tabRoot.panel.wallpaperCurrentIndex
-                readonly property int row: Math.floor(index / wallpaperGrid.columns)
-                readonly property int column: index % wallpaperGrid.columns
+                readonly property bool selected: wallpaperView.currentIndex === index
 
-                // Keep the final painted geometry pixel-stable.
-                x: Math.round((wallpaperGrid.width - wallpaperGrid.trackWidth) / 2 + column * (wallpaperGrid.cardWidth + wallpaperGrid.gap))
-                y: Math.round(wallpaperGrid.edgeInset + row * (wallpaperGrid.cardHeight + wallpaperGrid.gap))
-                width: Math.round(wallpaperGrid.cardWidth)
-                height: Math.round(wallpaperGrid.cardHeight)
+                width: wallpaperView.cellWidth
+                height: wallpaperView.cellHeight
 
-                radius: 14
-                color: Colors.bgPrimary
-                antialiasing: true
+                // Rounded wallpaper card surface
+                Rectangle {
+                    id: wallpaperCard
 
-                // Use ClippingRectangle's own border so it covers the image edge.
-                border.width: 1
-                border.color: wallpaperCard.selected || wallpaperMouse.containsMouse ? Colors.fgAccent : "transparent"
-                contentInsideBorder: true
+                    anchors.fill: parent
+                    anchors.margins: wallpaperGrid.cardMargin
+                    radius: wallpaperGrid.cardRadius
+                    color: Colors.bgPrimary
+                    antialiasing: true
 
-                scale: wallpaperCard.selected || wallpaperMouse.containsMouse ? 1.015 : 1
+                    Rectangle {
+                        id: maskRect
 
-                Behavior on scale {
-                    NumberAnimation {
-                        duration: 120
+                        width: thumbnailImage.width
+                        height: thumbnailImage.height
+                        radius: wallpaperCard.radius
+                        visible: false
+                        layer.enabled: true
                     }
-                }
 
-                Image {
-                    id: wallpaperImage
+                    CachedWallpaperImage {
+                        id: thumbnailImage
 
-                    anchors.fill: parent
+                        anchors.fill: parent
+                        sourcePath: wallpaperCell.modelData
+                        cacheSize: 256
 
-                    source: tabRoot.panel.fileUrl(wallpaperCard.modelData)
-                    fillMode: Image.PreserveAspectCrop
-                    asynchronous: true
+                        layer.enabled: true
+                        layer.effect: MultiEffect {
+                            maskEnabled: true
+                            maskThresholdMin: 0.5
+                            maskSpreadAtMin: 1.0
+                            maskSource: maskRect
+                        }
+                    }
 
-                    smooth: true
-                    mipmap: true
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: parent.radius
+                        color: wallpaperMouse.containsMouse ? Colors.alpha(Colors.scrimTertiary, 0.28) : "transparent"
 
-                    // Important on HiDPI: sourceSize is an image pixel bound, not just
-                    // the logical QML item size. Keep it stable; don't bind it to scale.
-                    sourceSize.width: Math.ceil(wallpaperCard.width * Screen.devicePixelRatio)
-                    sourceSize.height: Math.ceil(wallpaperCard.height * Screen.devicePixelRatio)
-                }
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 120
+                            }
+                        }
+                    }
 
-                MouseArea {
-                    id: wallpaperMouse
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onEntered: tabRoot.panel.wallpaperCurrentIndex = wallpaperCard.sourceIndex
-                    onClicked: tabRoot.panel.applyWallpaper(wallpaperCard.modelData)
+                    MouseArea {
+                        id: wallpaperMouse
+
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onEntered: tabRoot.panel.wallpaperCurrentIndex = wallpaperCell.sourceIndex
+                        onClicked: {
+                            tabRoot.panel.wallpaperCurrentIndex = wallpaperCell.sourceIndex;
+                            tabRoot.panel.applyWallpaper(wallpaperCell.modelData);
+                        }
+                    }
                 }
             }
         }

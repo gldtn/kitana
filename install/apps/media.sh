@@ -5,6 +5,7 @@ echo "Installing media apps..."
 PACKAGES=(
   cava
   celluloid
+  ffmpegthumbnailer
   imv
   obs-studio
 )

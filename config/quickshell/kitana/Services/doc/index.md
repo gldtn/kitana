@@ -10,3 +10,4 @@
 | [`QuickshellSettings`](QuickshellSettings.md) | `QuickshellSettings.qml` | QuickshellSettings owns durable Quickshell user settings backed by `~/.local/state/kitana/quickshell-settings.json`. |
 | [`SystemStatus`](SystemStatus.md) | `SystemStatus.qml` | SystemStatus is a singleton service in the Services module that exposes shared state or command helpers to the rest of the shell. |
 | [`UiPreferences`](UiPreferences.md) | `UiPreferences.qml` | UiPreferences is a singleton service in the Services module that exposes shared state or command helpers to the rest of the shell. |
+| [`WallpaperThumbnailCache`](WallpaperThumbnailCache.md) | `WallpaperThumbnailCache.qml` | WallpaperThumbnailCache resolves wallpaper thumbnail cache paths and helper command locations. |

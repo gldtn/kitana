@@ -19,7 +19,7 @@ RowLayout {
     readonly property var panel: dashboard
     readonly property var weather: panel ? panel.weather : ({})
 
-    spacing: 14
+    spacing: tabRoot.panel.tabCardSpacing
 
     // Date and world clock sidebar
     Rectangle {

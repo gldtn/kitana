@@ -28,22 +28,85 @@ awww_angle="${KITANA_AWWW_TRANSITION_ANGLE:-45}"
 awww_pos="${KITANA_AWWW_TRANSITION_POS:-center}"
 awww_bezier="${KITANA_AWWW_TRANSITION_BEZIER:-.54,0,.34,.99}"
 
-wallpapers=()
-while IFS= read -r wallpaper; do
-  wallpapers+=("$wallpaper")
-done < <(find -L "$wall_dir" -maxdepth 1 -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" -o -iname "*.gif" -o -iname "*.avif" \) 2>/dev/null | sort -V)
+usage() {
+  cat <<EOF
+Usage: kitana-wallpaper [--dir|--list|--restore|--random|--set-dir DIR|WALLPAPER]
+EOF
+}
+
+persist_wallpaper_dir() {
+  local new_dir="$1"
+  local config_dir tmp replaced=0 line
+
+  if [ ! -d "$new_dir" ]; then
+    printf 'Wallpaper directory not found: %s\n' "$new_dir" >&2
+    exit 1
+  fi
+
+  config_dir="$(dirname "$kitana_config")"
+  mkdir -p "$config_dir"
+  new_dir="$(cd "$new_dir" && pwd -P)"
+  tmp="$(mktemp "$kitana_config.tmp.XXXXXX")"
+
+  if [ -f "$kitana_config" ]; then
+    while IFS= read -r line || [ -n "$line" ]; do
+      case "$line" in
+        KITANA_WALLPAPER_DIR=*)
+          if [ "$replaced" -eq 0 ]; then
+            printf 'KITANA_WALLPAPER_DIR=%q\n' "$new_dir"
+            replaced=1
+          fi
+          ;;
+        *)
+          printf '%s\n' "$line"
+          ;;
+      esac
+    done <"$kitana_config" >"$tmp"
+  else
+    {
+      printf '# Kitana user config\n\n'
+      printf 'KITANA_WALLPAPER_DIR=%q\n' "$new_dir"
+    } >"$tmp"
+    replaced=1
+  fi
+
+  if [ "$replaced" -eq 0 ]; then
+    printf 'KITANA_WALLPAPER_DIR=%q\n' "$new_dir" >>"$tmp"
+  fi
+
+  if [ -f "$kitana_config" ]; then
+    chmod --reference="$kitana_config" "$tmp" 2>/dev/null || chmod 0644 "$tmp"
+  else
+    chmod 0644 "$tmp"
+  fi
+
+  mv -f "$tmp" "$kitana_config"
+  printf '%s\n' "$new_dir"
+}
 
 selected=""
 restore=0
 random=0
+list=0
 
 case "${1:-}" in
+  --help|-h)
+    usage
+    exit 0
+    ;;
   --dir)
     printf '%s\n' "$wall_dir"
     exit 0
     ;;
   --list)
-    printf '%s\n' "${wallpapers[@]}"
+    list=1
+    ;;
+  --set-dir)
+    if [ "$#" -lt 2 ]; then
+      usage >&2
+      exit 2
+    fi
+    persist_wallpaper_dir "$2"
     exit 0
     ;;
   --restore)
@@ -58,6 +121,16 @@ case "${1:-}" in
     selected="$1"
     ;;
 esac
+
+wallpapers=()
+while IFS= read -r wallpaper; do
+  wallpapers+=("$wallpaper")
+done < <(find -L "$wall_dir" -maxdepth 1 -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" -o -iname "*.gif" -o -iname "*.avif" \) 2>/dev/null | sort -V)
+
+if [ "$list" -eq 1 ]; then
+  printf '%s\n' "${wallpapers[@]}"
+  exit 0
+fi
 
 if [ "$restore" -eq 1 ]; then
   if [ -f "$state_file" ]; then
