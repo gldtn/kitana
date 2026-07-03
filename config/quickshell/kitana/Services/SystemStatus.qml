@@ -70,6 +70,9 @@ Singleton {
     readonly property bool audioMuted: audioAvailable ? audioSinkNode.audio.muted : false
     readonly property int audioVolume: audioAvailable ? Math.round(audioSinkNode.audio.volume * 100) : 0
     readonly property string audioSink: audioSinkNode ? audioNodeLabel(audioSinkNode) : "Default sink"
+    readonly property int audioBitDepth: audioNodeBitDepth(audioSinkNode)
+    property int audioSampleRate: 0
+    readonly property string audioQualityLabel: audioQualityText(audioBitDepth, audioSampleRate)
     readonly property var audioSinks: pipewireAudioSinks.map(node => ({
         id: node.id,
         name: root.audioNodeLabel(node),
@@ -108,6 +111,10 @@ Singleton {
     }
 
     function refresh() {
+        if (audioSinkNode)
+            audioQualityPoll.exec(["pw-metadata", "-n", "settings", "0", "clock.rate"]);
+        else
+            audioSampleRate = 0;
         brightnessPoll.exec(["sh", "-c", "brightnessctl -c backlight -m 2>/dev/null | awk -F, '{ gsub(/%/, \"\", $4); print $4 }'"]);
         keyboardPoll.exec(["hyprctl", "devices", "-j"]);
     }
@@ -445,6 +452,47 @@ Singleton {
         return name || "Audio device";
     }
 
+    function audioNodeBitDepth(node): int {
+        if (!node)
+            return 0;
+
+        const props = node.properties || {};
+        const bits = parseInt(props["alsa.resolution_bits"] || props["audio.bits"] || "0");
+        if (bits > 0)
+            return bits;
+
+        const format = String(props["audio.format"] || "").toUpperCase();
+        const match = format.match(/(?:S|U|F)(\d+)/);
+        return match ? parseInt(match[1]) : 0;
+    }
+
+    function audioQualityText(bits: int, rate: int): string {
+        const parts = [];
+        if (bits > 0)
+            parts.push(bits + "-bit");
+        if (rate > 0)
+            parts.push(formatSampleRate(rate));
+        return parts.length > 0 ? parts.join(" / ") : "Audio Quality";
+    }
+
+    function formatSampleRate(rate: int): string {
+        if (rate <= 0)
+            return "";
+
+        if (rate % 1000 === 0)
+            return Math.round(rate / 1000) + " kHz";
+        return (Math.round(rate / 100) / 10).toFixed(1) + " kHz";
+    }
+
+    function parseAudioSampleRate(text: string): int {
+        const match = text.match(/key:'clock\.rate'\s+value:'([^']+)'/);
+        if (!match)
+            return 0;
+
+        const rate = String(match[1]).match(/\d+/);
+        return rate ? parseInt(rate[0]) : 0;
+    }
+
     function audioNodeIconName(node) {
         if (!node)
             return "audio.output";
@@ -525,6 +573,18 @@ Singleton {
     }
 
     PwObjectTracker { objects: root.pipewireTrackedObjects }
+
+    Process {
+        id: audioQualityPoll
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const rate = root.parseAudioSampleRate(text);
+                if (rate > 0)
+                    root.audioSampleRate = rate;
+            }
+        }
+    }
 
     Process {
         id: brightnessPoll

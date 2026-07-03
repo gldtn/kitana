@@ -33,6 +33,11 @@ QtObject {
     readonly property var fallbackMapping: ({
             fgPrimary: "fg",
             fgSecondary: "grey",
+            fgMuted: {
+                ref: "fgOnPrimary",
+                mix: "fgPrimary",
+                ratio: 0.25
+            },
             fgTertiary: "bg_highlight",
             fgOnPrimary: "bg",
             fgAccent: "orange",
@@ -236,6 +241,7 @@ QtObject {
     // Core semantic foreground roles
     readonly property color fgPrimary: resolve("fgPrimary", "#ffffff")
     readonly property color fgSecondary: resolve("fgSecondary", "#7b8496")
+    readonly property color fgMuted: resolve("fgMuted", mixColor(fgOnPrimary, fgPrimary, 0.25))
     readonly property color fgTertiary: resolve("fgTertiary", "#3c4048")
     readonly property color fgOnPrimary: resolve("fgOnPrimary", "#16181a")
     readonly property color fgAccent: resolve("fgAccent", "#ffbd5e")

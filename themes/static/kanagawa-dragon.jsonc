@@ -78,6 +78,11 @@
     // fg color palette
     "fgPrimary": "dragonWhite",
     "fgSecondary": "dragonGray",
+    "fgMuted": {
+      "ref": "fgOnPrimary",
+      "mix": "fgPrimary",
+      "ratio": 0.25
+    },
     "fgTertiary": "dragonGray",
     "fgOnPrimary": "dragonBlack3",
     // bg color palette

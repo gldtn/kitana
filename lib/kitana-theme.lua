@@ -14,6 +14,7 @@ local ORDER = {
 local ROLES = {
   "fgPrimary",
   "fgSecondary",
+  "fgMuted",
   "fgTertiary",
   "fgOnPrimary",
   "fgAccent",

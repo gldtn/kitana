@@ -16,21 +16,23 @@ Rectangle {
     property string iconName: Icons.defaultIcon
     property bool prominent: false
     property bool selected: false
+    property int cornerRadius: prominent ? 10 : 8
+    property string iconTone: ""
 
     signal clicked
 
     Layout.preferredWidth: prominent ? 46 : 38
     Layout.preferredHeight: prominent ? 46 : 38
-    radius: prominent ? 14 : 14
-    color: !enabled ? Colors.subtlePrimary : prominent ? (mediaButtonMouse.containsMouse ? Colors.bgAccent : Colors.alpha(Colors.bgAccent, 0.3)) : selected ? (mediaButtonMouse.containsMouse ? Colors.bgAccent : Colors.alpha(Colors.bgAccent, 0.3)) : mediaButtonMouse.containsMouse ? Colors.bgTertiary : Colors.subtleSecondary
-    border.color: !enabled ? Colors.borderFaint : (prominent || selected ? Colors.borderAccent : Colors.borderFaint)
+    radius: cornerRadius
+    color: !enabled ? Colors.subtlePrimary : Colors.subtleSecondary
+    border.color: !enabled ? Colors.borderFaint : (selected ? Colors.borderAccent : Colors.borderFaint)
     border.width: 0.8
 
     // Media control icon
     Controls.Icon {
         anchors.fill: parent
         name: root.iconName
-        tone: !root.enabled ? "disabled" : (root.prominent ? "onAccent" : (root.selected ? "accent" : "primary"))
+        tone: !root.enabled ? "disabled" : (root.iconTone.length > 0 ? root.iconTone : (root.prominent ? (mediaButtonMouse.containsMouse ? "accent" : "secondary") : (root.selected ? "accent" : "primary")))
         size: root.prominent ? settings.iconPixelSize + 4 : settings.iconPixelSize - 1
     }
 

@@ -3,6 +3,7 @@
 | Component | Source | Summary |
 |-----------|--------|---------|
 | [`ActionTile`](ActionTile.md) | `ActionTile.qml` | ActionTile is a reusable centered action tile with an icon, title, subtitle, and shortcut badge. |
+| [`Badge`](Badge.md) | `Badge.qml` | Badge is the shared Kitana badge control for compact labels, statuses, shortcuts, and metadata. |
 | [`BlurredBackdrop`](BlurredBackdrop.md) | `BlurredBackdrop.qml` | BlurredBackdrop is a reusable Components component used to compose panel content consistently. |
 | [`CloseButton`](CloseButton.md) | `CloseButton.qml` | CloseButton is a reusable dismiss control for close and clear actions. |
 | [`Icon`](Icon.md) | `Icon.qml` | Icon is a reusable Components component used to compose panel content consistently. |
@@ -12,3 +13,4 @@
 | [`Pagination`](Pagination.md) | `Pagination.qml` | Pagination is a reusable Flux-style page navigation row with chevrons, numbered pages, and ellipses. |
 | [`SegmentedTabs`](SegmentedTabs.md) | `SegmentedTabs.qml` | SegmentedTabs is a reusable segmented selector with optional icons, equal-width segments, and compact sizing. |
 | [`ShortcutBadge`](ShortcutBadge.md) | `ShortcutBadge.qml` | ShortcutBadge is a reusable static keyboard shortcut label with subtle background and border roles. |
+| [`ValueSlider`](ValueSlider.md) | `ValueSlider.qml` | ValueSlider is the shared Kitana slider control for percentage-like values. |

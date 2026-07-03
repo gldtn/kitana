@@ -2,15 +2,15 @@
 
 ## Component Overview
 
-ShortcutBadge is a reusable static keyboard shortcut label with subtle background and border roles.
+ShortcutBadge is a keyboard shortcut compatibility wrapper over the shared Badge control.
 
 ## Project Structure and Dependencies
 
 Source file: `Components/Controls/ShortcutBadge.qml`.
 
-Qt imports: `import QtQuick`, `import QtQuick.Layouts`.
+Qt imports: none directly.
 
-Project imports: `import "../.."`, `import "../../custom" as Custom`.
+Project imports: `import "../.."`.
 
 ## Properties
 
@@ -18,8 +18,8 @@ Project imports: `import "../.."`, `import "../../custom" as Custom`.
 |----------|------|---------|-------------|
 | `text` | `string` | `""` | Badge label, usually a single shortcut key. |
 | `badgeHeight` | `int` | `18` | Preferred badge height. |
-| `horizontalPadding` | `int` | `10` | Total horizontal padding added around the label. |
-| `textPixelSize` | `int` | `settings.textPixelSize - 2` | Label text size. |
-| `backgroundColor` | `color` | `Colors.subtleSecondary` | Badge surface color. |
-| `borderColor` | `color` | `Colors.borderFaint` | Badge border color. |
-| `tone` | `string` | `"secondary"` | Label icon/text tone. |
+| `horizontalPadding` | `int` | `5` | Per-side horizontal padding around the label. |
+| `textPixelSize` | `int` | `root.defaultFontPixelSize()` | Label text size. |
+| `backgroundColor` | `color` | `Colors.scrimSecondary` | Badge surface color. |
+| `borderColor` | `color` | `Colors.borderLight` | Badge border color. |
+| `tone` | `string` | `"subtle"` | Label text tone. |

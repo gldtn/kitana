@@ -36,6 +36,11 @@
     // fg color palette
     "fgPrimary": "foreground",
     "fgSecondary": "muted",
+    "fgMuted": {
+      "ref": "fgOnPrimary",
+      "mix": "fgPrimary",
+      "ratio": 0.25
+    },
     "fgTertiary": "muted",
     "fgOnPrimary": "background",
     // bg color palette

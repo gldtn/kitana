@@ -75,6 +75,7 @@ PanelWindow {
     readonly property bool islandActive: panelVisible
     readonly property bool expandedSurface: panelVisible || closing
     readonly property var activeScreen: panelScreen || fallbackScreen
+    readonly property var focusedMonitor: Hyprland.focusedMonitor
     readonly property int activeScreenWidth: activeScreen ? activeScreen.width : 1920
     readonly property int activeScreenHeight: activeScreen ? activeScreen.height : 1080
     readonly property real collapsedWidth: Math.max(islandPreview.implicitWidth, 1)
@@ -1045,7 +1046,7 @@ PanelWindow {
         enabled: root.expandedSurface
         visible: root.expandedSurface
         hoverEnabled: true
-        focus: true
+        focus: root.expandedSurface
         Keys.priority: Keys.BeforeItem
         Keys.onPressed: event => root.handleKey(event)
         onPositionChanged: mouse => root.updateCompactHover(mouse.x, mouse.y)

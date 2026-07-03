@@ -34,9 +34,15 @@
     // fg color palette
     "fgPrimary": "fg",
     "fgSecondary": "grey",
+    "fgMuted": {
+      "ref": "fgOnPrimary",
+      "mix": "fgPrimary",
+      "ratio": 0.25
+    },
     "fgTertiary": {
-      "ref": "fg",
-      "darken": 0.2
+      "ref": "fgPrimary",
+      "mix": "accentColor",
+      "ratio": 0.23
     },
     "fgOnPrimary": "bg",
     // bg color palette
@@ -84,7 +90,11 @@
   },
   "icons": {
     "primary": "fg",
-    "secondary": "red",
+    "secondary": {
+      "ref": "fg",
+      "mix": "accentColor",
+      "ratio": 0.38
+    },
     "muted": "grey",
     "subtle": {
       "ref": "fg",

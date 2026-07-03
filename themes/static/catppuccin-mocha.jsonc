@@ -46,6 +46,11 @@
     // fg color palette
     "fgPrimary": "text",
     "fgSecondary": "overlay2",
+    "fgMuted": {
+      "ref": "fgOnPrimary",
+      "mix": "fgPrimary",
+      "ratio": 0.25
+    },
     "fgTertiary": "overlay2",
     "fgOnPrimary": "mantle",
     // bg color palette

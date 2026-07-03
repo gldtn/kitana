@@ -128,7 +128,7 @@ check_dir() {
 echo "Validating Kitana install..."
 echo
 
-for cmd in git yay Hyprland start-hyprland hyprctl sddm quickshell awww awww-daemon nmcli nc lspci reflector rsync lua fwupdmgr dmidecode cargo rustc; do
+for cmd in git yay Hyprland start-hyprland hyprctl sddm quickshell awww awww-daemon nmcli nc lspci reflector rsync lua fwupdmgr dmidecode cargo rustc cmake ninja g++ pkg-config; do
   check_command "$cmd"
 done
 
@@ -142,7 +142,9 @@ echo
 for pkg in \
   awww \
   bluez \
+  cmake \
   desktop-file-utils \
+  fftw \
   hyprland \
   hyprqt6engine \
   hyprlock \
@@ -153,10 +155,15 @@ for pkg in \
   fwupd \
   linux-firmware \
   networkmanager \
+  ninja \
   openbsd-netcat \
   papers \
   pciutils \
+  pipewire \
+  pkgconf \
   quickshell \
+  qt6-base \
+  qt6-declarative \
   reflector \
   rsync \
   rust \
@@ -170,6 +177,12 @@ done
 check_any_package "ghostty" ghostty ghostty-nightly-bin
 check_any_package "sddm" sddm sddm-git
 check_package "libappindicator"
+
+if PKG_CONFIG_PATH="$HOME/.local/lib/pkgconfig:${PKG_CONFIG_PATH:-}" pkg-config --exists libcava; then
+  pass "pkg-config: libcava"
+else
+  fail "pkg-config missing: libcava"
+fi
 
 if [ -f /usr/share/applications/org.gnome.Papers.desktop ] || [ -f "$HOME/.local/share/applications/org.gnome.Papers.desktop" ]; then
   pass "PDF viewer desktop entry: org.gnome.Papers.desktop"
@@ -415,6 +428,7 @@ for helper in \
   kitana-launcher \
   kitana-pkg-add \
   kitana-quickshell \
+  kitana-quickshell-build-cava \
   kitana-refresh \
   kitana-reinstall \
   kitana-sddm-monitor \
@@ -729,6 +743,12 @@ if grep -q '^singleton Colors 1.0 Config/Colors.qml$' "$HOME/.config/quickshell/
   pass "Quickshell root singletons"
 else
   fail "Quickshell root singletons missing"
+fi
+
+if [ -f "$HOME/.local/lib/kitana/qml/Kitana/Cava/qmldir" ]; then
+  pass "Quickshell Cava QML module"
+else
+  fail "Quickshell Cava QML module missing"
 fi
 
 if [ -f "$HOME/.config/quickshell/kitana/Services/LoginMonitor.qml" ] && grep -q '^singleton LoginMonitor 1.0 LoginMonitor.qml$' "$HOME/.config/quickshell/kitana/Services/qmldir"; then

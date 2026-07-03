@@ -1,0 +1,193 @@
+#!/bin/bash
+
+set -euo pipefail
+
+KITANA_DIR="${KITANA_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+source_dir="$KITANA_DIR/native/quickshell-cava"
+build_dir="${KITANA_BUILD_DIR:-$KITANA_DIR/.build/quickshell-cava}"
+install_prefix="${KITANA_QML_INSTALL_PREFIX:-$HOME/.local}"
+qml_install_dir="${KITANA_QML_INSTALL_DIR:-lib/kitana/qml}"
+pkg_config_dir="$install_prefix/lib/pkgconfig"
+libcava_repo="${KITANA_LIBCAVA_REPO:-https://github.com/LukashonakV/cava.git}"
+libcava_ref="${KITANA_LIBCAVA_REF:-f4b69943ea7fecbbeec97fac8e73af03b39be499}"
+libcava_source_dir="${KITANA_LIBCAVA_SOURCE_DIR:-$KITANA_DIR/.build/libcava-src}"
+clean=0
+if_deps=0
+
+prepend_path() {
+  local entry="$1"
+  local current="$2"
+
+  case ":$current:" in
+    *":$entry:"*)
+      printf '%s\n' "$current"
+      ;;
+    *)
+      if [ -n "$current" ]; then
+        printf '%s:%s\n' "$entry" "$current"
+      else
+        printf '%s\n' "$entry"
+      fi
+      ;;
+  esac
+}
+
+export PKG_CONFIG_PATH="$(prepend_path "$pkg_config_dir" "${PKG_CONFIG_PATH:-}")"
+
+usage() {
+  cat <<EOF
+Usage: kitana-quickshell-build-cava [--clean] [--if-deps]
+
+Build and install Kitana's native Quickshell Cava QML module.
+
+Options:
+  --clean    Remove the previous build directory before building
+  --if-deps  Exit successfully when build dependencies are missing
+EOF
+}
+
+has_cava_pkg_config() {
+  pkg-config --exists libcava || pkg-config --exists cava
+}
+
+missing_dependencies() {
+  local missing=()
+  local command
+
+  for command in cc cmake git ninja pkg-config g++; do
+    if ! command -v "$command" >/dev/null 2>&1; then
+      missing+=("$command")
+    fi
+  done
+
+  if command -v pkg-config >/dev/null 2>&1; then
+    if ! pkg-config --exists libpipewire-0.3; then
+      missing+=("pipewire")
+    fi
+    if ! pkg-config --exists fftw3; then
+      missing+=("fftw3")
+    fi
+  fi
+
+  if [ "${#missing[@]}" -gt 0 ]; then
+    printf '%s\n' "${missing[@]}"
+  fi
+}
+
+build_local_libcava() {
+  local libcava_lib_dir="$install_prefix/lib"
+  local libcava_include_dir="$install_prefix/include/cava"
+  local libcava_pc="$pkg_config_dir/libcava.pc"
+  local libcava_version="0.10.7"
+  local libcava_library="$libcava_lib_dir/libcava.so.$libcava_version"
+  local fftw_cflags=()
+  local fftw_libs=()
+
+  mkdir -p "$KITANA_DIR/.build" "$libcava_lib_dir" "$libcava_include_dir" "$pkg_config_dir"
+
+  if [ ! -d "$libcava_source_dir/.git" ]; then
+    rm -rf "$libcava_source_dir"
+    git clone "$libcava_repo" "$libcava_source_dir"
+  fi
+
+  git -C "$libcava_source_dir" fetch --depth 1 origin "$libcava_ref"
+  git -C "$libcava_source_dir" checkout --detach FETCH_HEAD
+
+  read -r -a fftw_cflags <<<"$(pkg-config --cflags fftw3)"
+  read -r -a fftw_libs <<<"$(pkg-config --libs fftw3)"
+
+  cc \
+    -fPIC \
+    -O2 \
+    -I"$libcava_source_dir/include" \
+    "${fftw_cflags[@]}" \
+    -shared \
+    "$libcava_source_dir/cavacore.c" \
+    -Wl,-soname,libcava.so.0 \
+    -o "$libcava_library" \
+    "${fftw_libs[@]}" \
+    -lm
+
+  ln -sfn "$(basename "$libcava_library")" "$libcava_lib_dir/libcava.so.0"
+  ln -sfn "$(basename "$libcava_library")" "$libcava_lib_dir/libcava.so"
+  cp "$libcava_source_dir/include/cava/cavacore.h" "$libcava_include_dir/cavacore.h"
+
+  cat >"$libcava_pc" <<EOF
+prefix=$install_prefix
+exec_prefix=\${prefix}
+libdir=\${prefix}/lib
+includedir=\${prefix}/include
+
+Name: libcava
+Description: Cava visualizer core library
+Version: $libcava_version
+Libs: -L\${libdir} -lcava
+Cflags: -I\${includedir}
+EOF
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --clean)
+      clean=1
+      ;;
+    --if-deps)
+      if_deps=1
+      ;;
+    -h|--help|help)
+      usage
+      exit 0
+      ;;
+    *)
+      usage >&2
+      exit 2
+      ;;
+  esac
+  shift
+done
+
+mapfile -t missing < <(missing_dependencies)
+if [ "${#missing[@]}" -gt 0 ]; then
+  if [ "$if_deps" -eq 1 ]; then
+    printf 'Skipping Kitana Cava QML module build; missing: %s\n' "${missing[*]}" >&2
+    exit 0
+  fi
+
+  printf 'Missing Kitana Cava QML module dependencies: %s\n' "${missing[*]}" >&2
+  printf 'Install them with: kitana-pkg-add cmake ninja pkgconf qt6-base qt6-declarative pipewire fftw git\n' >&2
+  exit 1
+fi
+
+if ! has_cava_pkg_config; then
+  printf 'Building user-local libcava: %s\n' "$install_prefix"
+  build_local_libcava
+fi
+
+if ! has_cava_pkg_config; then
+  printf 'Failed to make libcava visible through pkg-config.\n' >&2
+  exit 1
+fi
+
+if [ ! -d "$source_dir" ]; then
+  printf 'Missing Kitana Cava QML module source: %s\n' "$source_dir" >&2
+  exit 1
+fi
+
+if [ "$clean" -eq 1 ]; then
+  rm -rf "$build_dir"
+fi
+
+cmake_args=(
+  -S "$source_dir"
+  -B "$build_dir"
+  -G Ninja
+  -DCMAKE_BUILD_TYPE=Release
+  -DCMAKE_INSTALL_PREFIX="$install_prefix"
+  -DKITANA_QML_INSTALL_DIR="$qml_install_dir"
+)
+
+cmake "${cmake_args[@]}"
+cmake --build "$build_dir"
+cmake --install "$build_dir"
+
+printf 'Installed Kitana Cava QML module: %s/%s/Kitana/Cava\n' "$install_prefix" "$qml_install_dir"

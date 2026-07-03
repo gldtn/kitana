@@ -1,7 +1,6 @@
 // Kitana managed Quickshell system component
 
 import QtQuick
-import QtQuick.Controls
 import "../.."
 import "../../Components/Controls" as Controls
 import "../../custom" as Custom
@@ -46,46 +45,14 @@ Row {
     }
 
     // Slider control
-    Slider {
+    Controls.ValueSlider {
         id: control
 
         anchors.verticalCenter: parent.verticalCenter
         width: root.width - sliderIcon.width - valueText.width - root.spacing * 2
         height: 22
-        from: 0
-        to: 100
         value: root.value
         onMoved: root.moved(value)
-
-        // Slider track
-        background: Rectangle {
-            x: control.leftPadding
-            y: control.topPadding + control.availableHeight / 2 - height / 2
-            width: control.availableWidth
-            height: 6
-            radius: 3
-            color: Colors.subtleSecondary
-
-            // Filled slider track
-            Rectangle {
-                width: control.visualPosition * parent.width
-                height: parent.height
-                radius: parent.radius
-                color: Colors.fgAccent
-            }
-        }
-
-        // Slider handle
-        handle: Rectangle {
-            x: control.leftPadding + control.visualPosition * (control.availableWidth - width)
-            y: control.topPadding + control.availableHeight / 2 - height / 2
-            width: 16
-            height: 16
-            radius: 8
-            color: Colors.fgAccent
-            border.color: Colors.fgAccent
-            border.width: 1
-        }
     }
 
     // Slider value label

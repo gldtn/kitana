@@ -6,11 +6,34 @@ config_name="kitana"
 config_file="$HOME/.config/quickshell/$config_name/shell.qml"
 colors_file="$HOME/.config/quickshell/$config_name/Config/Colors.qml"
 kitana_dir="${KITANA_DIR:-$HOME/.local/share/kitana}"
+kitana_qml_import_dir="${KITANA_QML_IMPORT_DIR:-$HOME/.local/lib/kitana/qml}"
+kitana_lib_dir="${KITANA_LIB_DIR:-$HOME/.local/lib}"
 theme_file="$HOME/.config/kitana/theme"
 log_file="/tmp/kitana-quickshell.log"
 action="${1:-reload}"
 
+prepend_path() {
+  local entry="$1"
+  local current="$2"
+
+  case ":$current:" in
+    *":$entry:"*)
+      printf '%s\n' "$current"
+      ;;
+    *)
+      if [ -n "$current" ]; then
+        printf '%s:%s\n' "$entry" "$current"
+      else
+        printf '%s\n' "$entry"
+      fi
+      ;;
+  esac
+}
+
 export QS_NO_RELOAD_POPUP=1
+export QML2_IMPORT_PATH="$(prepend_path "$kitana_qml_import_dir" "${QML2_IMPORT_PATH:-}")"
+export QML_IMPORT_PATH="$(prepend_path "$kitana_qml_import_dir" "${QML_IMPORT_PATH:-}")"
+export LD_LIBRARY_PATH="$(prepend_path "$kitana_lib_dir" "${LD_LIBRARY_PATH:-}")"
 
 if ! command -v quickshell >/dev/null 2>&1; then
   exit 0

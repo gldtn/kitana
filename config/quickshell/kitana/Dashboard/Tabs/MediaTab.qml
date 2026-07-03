@@ -5,7 +5,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Effects
 import QtQuick.Layouts
-import QtQuick.Shapes
+import Kitana.Cava as KitanaCava
 import "../.."
 import "../Components"
 import "../../Components/Controls" as Controls
@@ -22,25 +22,19 @@ Item {
     property var dashboard: null
     readonly property var panel: dashboard
     readonly property bool mediaActive: panel !== null && panel.panelVisible && panel.activeTab === "media"
-    readonly property bool audioOverlayOpen: panel !== null && panel.mediaAudioOverlayOpen
     readonly property string albumArtSource: Services.MediaService.artSource()
-    readonly property real progressInset: 9
+    readonly property real progressInset: 8
+    readonly property int controlRadius: 7
+    readonly property int heroCardInset: 16
+    readonly property int albumStagePadding: 56
+    readonly property int maxAlbumCoverSize: 280
+    readonly property int spectrumBarCount: 12
+    readonly property bool spectrumActive: mediaActive
+    property bool outputDevicePickerOpen: false
+    property bool outputDevicePickerRendered: false
 
     Layout.fillWidth: true
     Layout.fillHeight: true
-
-    function closeAudioOverlay(): void {
-        if (panel !== null)
-            panel.mediaAudioOverlayOpen = false;
-    }
-
-    function toggleAudioOverlay(): void {
-        if (panel === null)
-            return;
-
-        Services.SystemStatus.refresh();
-        panel.mediaAudioOverlayOpen = !panel.mediaAudioOverlayOpen;
-    }
 
     // Keep MPRIS position bindings fresh only while this tab is visible.
     Timer {
@@ -51,115 +45,79 @@ Item {
         onTriggered: Services.MediaService.refreshPosition()
     }
 
-    // Media playback card
-    Rectangle {
-        id: mediaCard
+    Timer {
+        id: outputDevicePickerHideTimer
 
+        interval: 150
+        onTriggered: if (!tabRoot.outputDevicePickerOpen)
+            tabRoot.outputDevicePickerRendered = false
+    }
+
+    KitanaCava.CavaProvider {
+        id: mediaSpectrum
+
+        bars: tabRoot.spectrumBarCount
+        frameRate: 30
+        active: tabRoot.spectrumActive
+    }
+
+    onOutputDevicePickerOpenChanged: {
+        if (outputDevicePickerOpen) {
+            outputDevicePickerHideTimer.stop();
+            outputDevicePickerRendered = true;
+        } else {
+            outputDevicePickerHideTimer.restart();
+        }
+    }
+
+    // Media tab section layout: hero above output and spectrum cards.
+    ColumnLayout {
         anchors.fill: parent
-        radius: tabRoot.panel.sectionRadius
-        color: tabRoot.panel.sectionContainer
-        border.color: tabRoot.panel.sectionBorder
-        border.width: tabRoot.panel.sectionBorderWidth
-        clip: true
+        spacing: tabRoot.panel.tabCardSpacing
 
-        // Masked accent pools preserve the edge-circle look without leaking past rounded corners.
-        Item {
-            id: mediaAccentSource
-
-            anchors.fill: parent
-            visible: false
-            layer.enabled: true
-
-            Rectangle {
-                width: 260
-                height: 260
-                x: parent.width - width * 0.62
-                y: -height * 0.55
-                radius: width / 2
-                color: Colors.alpha(Colors.bgAccent, Services.MediaService.playing ? 0.28 : 0.14)
-            }
-
-            Rectangle {
-                width: 220
-                height: 220
-                x: -width * 0.45
-                y: parent.height - height * 0.48
-                radius: width / 2
-                color: Colors.alpha(Colors.fgAccent, 0.12)
-            }
-        }
-
+        // Primary media section with artwork, metadata, seek, and playback controls.
         Rectangle {
-            id: mediaAccentMask
+            id: heroCard
 
-            anchors.fill: parent
-            radius: mediaCard.radius
-            visible: false
-            layer.enabled: true
-        }
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.minimumHeight: 250
+            radius: tabRoot.panel.sectionRadius
+            color: tabRoot.panel.sectionContainer
+            border.color: tabRoot.panel.sectionBorder
+            border.width: tabRoot.panel.sectionBorderWidth
+            clip: true
 
-        MultiEffect {
-            anchors.fill: mediaAccentSource
-            source: mediaAccentSource
-            maskEnabled: true
-            maskSource: mediaAccentMask
-        }
+            RowLayout {
+                anchors.fill: parent
+                anchors.margins: tabRoot.heroCardInset
+                spacing: 18
 
-        ColumnLayout {
-            anchors.fill: parent
-            anchors.margins: 18
-            spacing: 12
-
-            // Album hero and currently playing metadata
-            Rectangle {
-                id: mediaHero
-
-                Layout.fillWidth: true
-                Layout.preferredHeight: Math.max(174, Math.min(214, mediaCard.height * 0.48))
-                radius: tabRoot.panel.sectionRadius - 2
-                color: Colors.bgTertiary
-                border.color: Colors.borderLight
-                border.width: 0.8
-                clip: true
-
+                // Album artwork presentation block.
                 Item {
-                    id: heroAccentSource
+                    id: albumStage
 
-                    anchors.fill: parent
-                    visible: false
-                    layer.enabled: true
+                    readonly property int coverSize: Math.round(Math.max(120, Math.min(tabRoot.maxAlbumCoverSize, heroCard.width * 0.34, height - tabRoot.albumStagePadding)))
+                    readonly property int stageWidth: coverSize + tabRoot.albumStagePadding
+
+                    Layout.minimumWidth: stageWidth
+                    Layout.preferredWidth: stageWidth
+                    Layout.maximumWidth: stageWidth
+                    Layout.fillHeight: true
 
                     Rectangle {
-                        width: 190
-                        height: 190
-                        x: parent.width - width * 0.58
-                        y: parent.height - height * 0.72
-                        radius: width / 2
-                        color: Colors.alpha(Colors.bgAccent, 0.22)
-                    }
-                }
+                        id: albumBackdrop
 
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.margins: 14
-                    spacing: 16
-
-                    // Rounded album artwork or icon fallback
-                    Rectangle {
-                        id: albumCover
-
-                        Layout.preferredWidth: Math.min(214, Math.max(144, mediaHero.width * 0.34))
-                        Layout.fillHeight: true
-                        radius: mediaHero.radius - 2
-                        color: Colors.bgPrimary
+                        anchors.fill: parent
+                        radius: 18
+                        color: Colors.alpha(Colors.bgPrimary, 0.46)
+                        border.color: Colors.borderFaint
                         border.width: 1
-                        clip: true
 
                         Image {
-                            id: albumArt
+                            id: albumBackdropImage
 
                             anchors.fill: parent
-                            anchors.margins: 1
                             source: tabRoot.albumArtSource
                             sourceSize.width: width
                             sourceSize.height: height
@@ -169,655 +127,743 @@ Item {
                         }
 
                         Rectangle {
-                            id: albumArtMask
+                            id: albumBackdropMask
 
                             anchors.fill: parent
-                            anchors.margins: 1
-                            radius: Math.max(0, albumCover.radius - 1)
+                            radius: albumBackdrop.radius
                             visible: false
                             layer.enabled: true
                         }
 
                         MultiEffect {
-                            anchors.fill: albumArt
-                            source: albumArt
-                            visible: tabRoot.albumArtSource.length > 0 && albumArt.status === Image.Ready
+                            anchors.fill: albumBackdropImage
+                            source: albumBackdropImage
+                            opacity: 0.10
+                            visible: tabRoot.albumArtSource.length > 0 && albumBackdropImage.status === Image.Ready
                             maskEnabled: true
-                            maskSource: albumArtMask
+                            maskSource: albumBackdropMask
                         }
 
-                        Controls.Icon {
-                            anchors.centerIn: parent
-                            visible: !(tabRoot.albumArtSource.length > 0 && albumArt.status === Image.Ready)
-                            name: "media.default"
-                            tone: "accent"
-                            size: Math.round(Math.min(parent.width, parent.height) * 0.44)
-                        }
-                        // Album cover border
                         Rectangle {
-                            anchors.fill: parent
-                            anchors.margins: 0
-                            radius: albumCover.radius
-                            color: "transparent"
-                            border.color: Colors.borderHeavy
-                            border.width: 1.3
+                            id: albumFrame
+
+                            width: albumStage.coverSize
+                            height: width
+                            anchors.centerIn: parent
+                            radius: 8
+                            color: Colors.bgPrimary
+                            border.color: Colors.borderFaint
+                            border.width: 1
+                            clip: true
+
+                            Image {
+                                id: albumArt
+
+                                anchors.fill: parent
+                                anchors.margins: 1
+                                source: tabRoot.albumArtSource
+                                sourceSize.width: width
+                                sourceSize.height: height
+                                fillMode: Image.PreserveAspectCrop
+                                asynchronous: true
+                                visible: false
+                            }
+
+                            Rectangle {
+                                id: albumArtMask
+
+                                anchors.fill: parent
+                                anchors.margins: 1
+                                radius: Math.max(0, albumFrame.radius - 1)
+                                visible: false
+                                layer.enabled: true
+                            }
+
+                            MultiEffect {
+                                anchors.fill: albumArt
+                                source: albumArt
+                                visible: tabRoot.albumArtSource.length > 0 && albumArt.status === Image.Ready
+                                maskEnabled: true
+                                maskSource: albumArtMask
+                            }
+
+                            Controls.Icon {
+                                anchors.centerIn: parent
+                                visible: !(tabRoot.albumArtSource.length > 0 && albumArt.status === Image.Ready)
+                                name: "media.default"
+                                tone: "accent"
+                                size: Math.round(albumFrame.width * 0.34)
+                            }
                         }
                     }
 
-                    // Playback identity, title, and artist stack
+                    Controls.Badge {
+                        id: qualityBadge
+
+                        anchors.left: albumBackdrop.left
+                        anchors.top: albumBackdrop.top
+                        anchors.leftMargin: 16
+                        anchors.topMargin: 16
+                        z: 3
+                        width: Math.min(albumBackdrop.width - 32, Math.max(124, qualityBadge.implicitWidth))
+                        text: Services.SystemStatus.audioQualityLabel
+                        size: "sm"
+                        colorVariant: "secondary"
+                        icon: "media.note"
+                        horizontalPadding: 10
+                        fontPixelSize: settings.textPixelSize - 2
+                        iconTone: "secondary"
+                    }
+                }
+
+                // Metadata, progress, and controls stack.
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    Layout.minimumWidth: 0
+                    spacing: 8
+                    clip: true
+
                     ColumnLayout {
                         Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        spacing: 8
-
-                        RowLayout {
-                            Layout.fillWidth: true
-                            spacing: 8
-                            // Media player identity chip (Spotify, VLC, etc.)
-                            Rectangle {
-                                Layout.preferredWidth: Math.min(190, Math.max(116, playerLabel.implicitWidth + 26))
-                                Layout.preferredHeight: 32
-                                radius: 16
-                                color: Colors.alpha(Colors.bgPrimary, 0.54)
-                                border.color: Colors.alpha(Colors.borderLight, 0.56)
-                                border.width: 1
-
-                                Text {
-                                    id: playerLabel
-
-                                    anchors.centerIn: parent
-                                    width: parent.width - 20
-                                    text: Services.MediaService.playerName
-                                    color: Colors.fgAccent
-                                    elide: Text.ElideRight
-                                    horizontalAlignment: Text.AlignHCenter
-                                    font.family: Typography.fontFamily
-                                    font.pixelSize: settings.textPixelSize
-                                    font.weight: Font.DemiBold
-                                }
-                            }
-
-                            Item {
-                                Layout.fillWidth: true
-                            }
-                            // Media status chip (playing, paused, stopped)
-                            Rectangle {
-                                Layout.preferredWidth: 88
-                                Layout.preferredHeight: 32
-                                radius: 16
-                                color: Services.MediaService.playing ? Colors.subtleAccent : Colors.alpha(Colors.bgPrimary, 0.46)
-                                border.color: Services.MediaService.playing ? Colors.borderAccent : Colors.borderFaint
-                                border.width: 1
-
-                                Text {
-                                    anchors.centerIn: parent
-                                    text: Services.MediaService.status
-                                    color: Services.MediaService.playing ? Colors.fgPrimary : Colors.fgSecondary
-                                    font.family: Typography.fontFamily
-                                    font.pixelSize: settings.textPixelSize
-                                    font.weight: Font.DemiBold
-                                }
-                            }
-                        }
-
-                        Item {
-                            Layout.fillHeight: true
-                        }
+                        Layout.minimumWidth: 0
+                        spacing: 1
 
                         Text {
                             Layout.fillWidth: true
+                            Layout.minimumWidth: 0
                             text: Services.MediaService.title
                             color: Colors.fgPrimary
                             elide: Text.ElideRight
-                            maximumLineCount: 2
-                            wrapMode: Text.Wrap
+                            maximumLineCount: 1
+                            wrapMode: Text.NoWrap
                             font.family: Typography.fontFamily
-                            font.pixelSize: Math.max(20, Math.min(24, mediaHero.height / 7.2))
+                            font.pixelSize: 25
                             font.weight: Font.Black
                         }
 
                         Text {
                             Layout.fillWidth: true
+                            Layout.minimumWidth: 0
                             text: Services.MediaService.artist.length > 0 ? Services.MediaService.artist : "Unknown Artist"
                             color: Colors.fgSecondary
                             elide: Text.ElideRight
                             font.family: Typography.fontFamily
-                            font.pixelSize: settings.textPixelSize + 2
-                            font.weight: Font.DemiBold
+                            font.pixelSize: settings.textPixelSize + 3
                         }
 
                         Text {
                             Layout.fillWidth: true
-                            visible: Services.MediaService.album.length > 0
-                            text: Services.MediaService.album
-                            color: Colors.fgTertiary
+                            Layout.minimumWidth: 0
+                            text: Services.MediaService.playerName
+                            color: Colors.fgMuted
                             elide: Text.ElideRight
                             font.family: Typography.fontFamily
-                            font.pixelSize: settings.textPixelSize
+                            font.pixelSize: settings.textPixelSize - 2
+                            font.weight: Font.DemiBold
                         }
-                    }
-                }
-
-                // mediaHero border
-                Rectangle {
-                    id: mediaHeroBorder
-
-                    anchors.fill: parent
-                    anchors.margins: 0
-                    radius: mediaHero.radius
-                    color: "transparent"
-                    border.color: Colors.borderLight
-                    border.width: 0.8
-                }
-            }
-
-            // Seekable track progress with elapsed and total time
-            ColumnLayout {
-                Layout.fillWidth: true
-                spacing: 6
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    Layout.leftMargin: tabRoot.progressInset
-                    Layout.rightMargin: tabRoot.progressInset
-                    spacing: 8
-
-                    Text {
-                        text: Services.MediaService.positionLabel
-                        color: Colors.fgSecondary
-                        font.family: Typography.fontFamily
-                        font.pixelSize: settings.textPixelSize
-                        font.weight: Font.DemiBold
                     }
 
                     Item {
+                        Layout.preferredHeight: 8
+                    }
+
+                    RowLayout {
                         Layout.fillWidth: true
-                    }
+                        Layout.minimumWidth: 0
+                        spacing: 8
 
-                    Text {
-                        text: Services.MediaService.lengthLabel
-                        color: Colors.fgSecondary
-                        font.family: Typography.fontFamily
-                        font.pixelSize: settings.textPixelSize
-                        font.weight: Font.DemiBold
-                    }
-                }
-
-                Item {
-                    id: progressTrack
-
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 32
-
-                    readonly property real strokeInset: tabRoot.progressInset
-                    readonly property real strokeEnd: Math.max(strokeInset, width - strokeInset)
-                    readonly property real strokeSpan: Math.max(1, strokeEnd - strokeInset)
-                    readonly property real progressX: strokeInset + strokeSpan * (Services.MediaService.hasProgress ? Services.MediaService.progress : 0)
-                    readonly property real waveAmplitude: 3.2
-                    readonly property real waveHalfStep: Math.max(30, Math.min(44, strokeSpan / 9))
-
-                    function ratioFromX(pointerX: real): real {
-                        return (pointerX - strokeInset) / strokeSpan;
-                    }
-
-                    function wavePath(targetX: real): string {
-                        const centerY = height / 2;
-                        const endX = Math.max(strokeInset, Math.min(strokeEnd, targetX));
-                        if (endX <= strokeInset + 1)
-                            return "";
-
-                        let path = "M " + strokeInset + " " + centerY;
-                        let x = strokeInset;
-                        let waveSign = -1;
-
-                        while (x < endX - 0.5) {
-                            const nextX = Math.min(endX, x + waveHalfStep);
-                            const span = nextX - x;
-                            const controlY = centerY + waveSign * waveAmplitude * 1.22;
-                            path += " C " + (x + span / 3) + " " + controlY + " " + (nextX - span / 3) + " " + controlY + " " + nextX + " " + centerY;
-                            x = nextX;
-                            waveSign *= -1;
+                        Controls.Badge {
+                            text: Services.MediaService.status
+                            size: "md"
+                            colorVariant: Services.MediaService.playing ? "accent" : "tertiary"
                         }
 
-                        return path;
-                    }
-
-                    Rectangle {
-                        x: Services.MediaService.hasProgress && progressTrack.progressX > progressTrack.strokeInset + 1 ? Math.min(progressTrack.strokeEnd, progressTrack.progressX + 10) : progressTrack.strokeInset
-                        width: Math.max(0, progressTrack.strokeEnd - x)
-                        height: 5
-                        anchors.verticalCenter: parent.verticalCenter
-                        radius: height / 2
-                        color: Colors.alpha(Colors.fgSecondary, 0.34)
-                    }
-
-                    Shape {
-                        anchors.fill: parent
-                        visible: Services.MediaService.hasProgress && progressTrack.progressX > progressTrack.strokeInset + 1
-                        preferredRendererType: Shape.CurveRenderer
-
-                        ShapePath {
-                            fillColor: "transparent"
-                            strokeColor: Colors.lighten(Colors.bgAccent, 0.30)
-                            strokeWidth: 7
-                            capStyle: ShapePath.RoundCap
-                            joinStyle: ShapePath.RoundJoin
-
-                            PathSvg {
-                                path: progressTrack.wavePath(progressTrack.progressX)
-                            }
-                        }
-                    }
-
-                    Rectangle {
-                        width: 7
-                        height: 7
-                        x: progressTrack.strokeEnd - width / 2
-                        anchors.verticalCenter: parent.verticalCenter
-                        radius: width / 2
-                        color: Colors.lighten(Colors.bgAccent, 0.30)
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        enabled: Services.MediaService.canSeek && Services.MediaService.hasProgress
-                        hoverEnabled: true
-                        cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-                        onPressed: mouse => Services.MediaService.setPosition(progressTrack.ratioFromX(mouse.x))
-                        onPositionChanged: mouse => {
-                            if (pressed)
-                                Services.MediaService.setPosition(progressTrack.ratioFromX(mouse.x));
-                        }
-                    }
-                }
-            }
-
-            // Playback controls and optional queue mode chips
-            RowLayout {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 52
-                Layout.topMargin: -4
-                Layout.bottomMargin: 8
-                spacing: 8
-
-                Rectangle {
-                    Layout.preferredWidth: 96
-                    Layout.preferredHeight: 42
-                    visible: Services.MediaService.shuffleSupported
-                    radius: 21
-                    color: Services.MediaService.shuffle ? Colors.subtleAccent : Colors.alpha(Colors.bgPrimary, 0.58)
-                    border.color: Services.MediaService.shuffle ? Colors.borderAccent : Colors.borderFaint
-                    border.width: 1
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: "Shuffle"
-                        color: Services.MediaService.shuffle ? Colors.fgPrimary : Colors.fgSecondary
-                        font.family: Typography.fontFamily
-                        font.pixelSize: settings.textPixelSize
-                        font.weight: Font.DemiBold
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: Services.MediaService.toggleShuffle()
-                    }
-                }
-
-                Item {
-                    Layout.fillWidth: true
-                }
-
-                MediaButton {
-                    iconName: "media.previous"
-                    enabled: Services.MediaService.canPrevious
-                    onClicked: Services.MediaService.previous()
-                }
-
-                MediaButton {
-                    iconName: Services.MediaService.playing ? "media.pause" : "media.play"
-                    prominent: true
-                    enabled: Services.MediaService.canTogglePlaying
-                    onClicked: Services.MediaService.playPause()
-                }
-
-                MediaButton {
-                    iconName: "media.next"
-                    enabled: Services.MediaService.canNext
-                    onClicked: Services.MediaService.next()
-                }
-
-                MediaButton {
-                    iconName: "media.stop"
-                    enabled: Services.MediaService.canStop
-                    onClicked: Services.MediaService.stop()
-                }
-
-                Item {
-                    Layout.fillWidth: true
-                }
-
-                Rectangle {
-                    Layout.preferredWidth: 112
-                    Layout.preferredHeight: 42
-                    visible: Services.MediaService.loopSupported
-                    radius: 21
-                    color: Services.MediaService.looping ? Colors.subtleAccent : Colors.alpha(Colors.bgPrimary, 0.58)
-                    border.color: Services.MediaService.looping ? Colors.borderAccent : Colors.borderFaint
-                    border.width: 1
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: Services.MediaService.loopLabel
-                        color: Services.MediaService.looping ? Colors.fgPrimary : Colors.fgSecondary
-                        font.family: Typography.fontFamily
-                        font.pixelSize: settings.textPixelSize
-                        font.weight: Font.DemiBold
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: Services.MediaService.cycleLoop()
-                    }
-                }
-            }
-
-            // Material expressive audio footer
-            Rectangle {
-                id: audioFooter
-
-                Layout.fillWidth: true
-                Layout.preferredHeight: 44
-                Layout.bottomMargin: 22
-                radius: 20
-                color: mediaHero.color
-                border.color: mediaHeroBorder.border.color
-                border.width: mediaHeroBorder.border.width
-                readonly property real innerItemHeight: 28
-                readonly property color itemColor: Colors.fgSecondary
-                readonly property color accentColor: Colors.mixColor(Colors.bgTertiary, Colors.bgAccent, 0.5)
-
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.leftMargin: 8
-                    anchors.rightMargin: 8
-                    anchors.topMargin: 5
-                    anchors.bottomMargin: 5
-                    spacing: 8
-
-                    // Output picker button
-                    Rectangle {
-                        Layout.preferredWidth: audioFooter.innerItemHeight
-                        Layout.preferredHeight: audioFooter.innerItemHeight
-                        Layout.alignment: Qt.AlignVCenter
-                        radius: 15
-                        color: outputPickerMouse.containsMouse || tabRoot.audioOverlayOpen ? audioFooter.accentColor : "transparent"
-
-                        Text {
-                            anchors.centerIn: parent
-                            text: Icons.glyph("ui.more.horizontal")
-                            color: tabRoot.audioOverlayOpen ? Colors.bgAccent : (Colors.dark ? Colors.bgPrimary : Colors.fgPrimary)
-                            font.family: Typography.iconFontFamily
-                            font.pixelSize: settings.iconPixelSize + 4
-                        }
-
-                        MouseArea {
-                            id: outputPickerMouse
-
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: tabRoot.toggleAudioOverlay()
-                        }
-                    }
-
-                    // Smooth volume drag surface
-                    Rectangle {
-                        id: volumeSurface
-
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: audioFooter.innerItemHeight
-                        Layout.alignment: Qt.AlignVCenter
-                        radius: 8
-                        color: "transparent"
-
-                        readonly property real fillRatio: Math.max(0, Math.min(1, Services.SystemStatus.audioVolume / 100))
-                        readonly property real fillWidth: width * fillRatio
-                        readonly property bool fillAtMax: fillRatio >= 0.995
-                        readonly property real splitterWidth: 5
-                        readonly property real splitterGap: 8
-                        readonly property bool splitterVisible: fillRatio > 0.04 && !fillAtMax
-                        readonly property real splitterX: Math.max(radius, Math.min(width - radius - splitterWidth, fillWidth - splitterWidth / 2))
-                        readonly property real activeWidth: fillAtMax ? width : (splitterVisible ? Math.max(0, splitterX - splitterGap) : fillWidth)
-                        readonly property real inactiveX: fillAtMax ? width : (splitterVisible ? Math.min(width, splitterX + splitterWidth + splitterGap) : fillWidth)
-                        readonly property real inactiveWidth: Math.max(0, width - inactiveX)
-
-                        function ratioFromX(pointerX: real): real {
-                            return Math.max(0, Math.min(1, pointerX / Math.max(1, width)));
+                        Controls.Badge {
+                            Layout.preferredWidth: 150
+                            text: Services.MediaService.album.length > 0 ? Services.MediaService.album : "No album"
+                            size: "md"
+                            colorVariant: "tertiary"
                         }
 
                         Item {
-                            anchors.left: parent.left
-                            anchors.top: parent.top
-                            anchors.bottom: parent.bottom
-                            width: volumeSurface.activeWidth
-                            clip: !volumeSurface.fillAtMax
-                            visible: volumeSurface.activeWidth > 0.5
+                            Layout.fillWidth: true
+                        }
+                    }
+
+                    Item {
+                        Layout.preferredHeight: 4
+                    }
+
+                    // Seekable track progress with elapsed and total time.
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        Layout.minimumWidth: 0
+                        spacing: 4
+
+                        Rectangle {
+                            id: progressTrack
+
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 8
+                            radius: 4
+                            color: Colors.bgTertiary
+
+                            readonly property real fillRatio: Services.MediaService.hasProgress ? Math.max(0, Math.min(1, Services.MediaService.progress)) : 0
+
+                            function ratioFromX(pointerX: real): real {
+                                return Math.max(0, Math.min(1, (pointerX - tabRoot.progressInset) / Math.max(1, width - 2 * tabRoot.progressInset)));
+                            }
 
                             Rectangle {
                                 anchors.left: parent.left
                                 anchors.top: parent.top
                                 anchors.bottom: parent.bottom
-                                width: volumeSurface.activeWidth + (volumeSurface.fillAtMax ? 0 : volumeSurface.radius)
-                                radius: volumeSurface.radius
-                                color: Services.SystemStatus.audioMuted ? Colors.alpha(audioFooter.itemColor, 0.28) : audioFooter.accentColor
+                                width: tabRoot.progressInset + Math.max(0, parent.width - 2 * tabRoot.progressInset) * progressTrack.fillRatio
+                                radius: parent.radius
+                                color: Services.MediaService.hasProgress ? Colors.fgAccent : "transparent"
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                enabled: Services.MediaService.canSeek && Services.MediaService.hasProgress
+                                hoverEnabled: true
+                                cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                onPressed: mouse => Services.MediaService.setPosition(progressTrack.ratioFromX(mouse.x))
+                                onPositionChanged: mouse => {
+                                    if (pressed)
+                                        Services.MediaService.setPosition(progressTrack.ratioFromX(mouse.x));
+                                }
                             }
                         }
 
-                        Item {
-                            x: volumeSurface.inactiveX
-                            width: volumeSurface.inactiveWidth
-                            anchors.top: parent.top
-                            anchors.bottom: parent.bottom
-                            clip: true
-                            visible: volumeSurface.inactiveWidth > 0.5
+                        RowLayout {
+                            Layout.fillWidth: true
 
-                            Rectangle {
-                                x: volumeSurface.splitterVisible ? -volumeSurface.radius : 0
-                                width: parent.width + (volumeSurface.splitterVisible ? volumeSurface.radius : 0)
-                                anchors.top: parent.top
-                                anchors.bottom: parent.bottom
-                                radius: volumeSurface.radius
-                                color: Colors.alpha(audioFooter.itemColor, Colors.dark ? 0.28 : 0.38)
+                            Text {
+                                text: Services.MediaService.positionLabel
+                                color: Colors.fgSecondary
+                                font.family: Typography.fontFamily
+                                font.pixelSize: settings.textPixelSize - 1
                             }
 
-                            Rectangle {
-                                width: 5
-                                height: 5
-                                x: parent.width - width - 12
-                                anchors.verticalCenter: parent.verticalCenter
-                                visible: parent.width > 34
-                                radius: width / 2
-                                color: Colors.alpha(Colors.bgOnPrimary, 0.82)
+                            Item {
+                                Layout.fillWidth: true
                             }
-                        }
 
-                        Rectangle {
-                            width: volumeSurface.splitterWidth
-                            height: parent.height + 8
-                            x: volumeSurface.splitterX
-                            y: -4
-                            visible: volumeSurface.splitterVisible
-                            radius: width / 2
-                            color: Services.SystemStatus.audioMuted ? Colors.alpha(audioFooter.itemColor, 0.48) : audioFooter.accentColor
-                        }
-
-                        Text {
-                            anchors.left: parent.left
-                            anchors.leftMargin: 14
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: Services.SystemStatus.audioMuted ? "Muted" : Services.SystemStatus.audioVolume + "%"
-                            color: volumeSurface.fillRatio > 0.22 && !Services.SystemStatus.audioMuted ? Colors.fgOnPrimary : (Colors.dark ? Colors.bgPrimary : Colors.fgPrimary)
-                            font.family: Typography.fontFamily
-                            font.pixelSize: settings.textPixelSize + 1
-                            font.weight: Font.Black
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onPressed: mouse => Services.SystemStatus.setAudioVolume(volumeSurface.ratioFromX(mouse.x) * 100)
-                            onPositionChanged: mouse => {
-                                if (pressed)
-                                    Services.SystemStatus.setAudioVolume(volumeSurface.ratioFromX(mouse.x) * 100);
+                            Text {
+                                text: Services.MediaService.lengthLabel
+                                color: Colors.fgSecondary
+                                font.family: Typography.fontFamily
+                                font.pixelSize: settings.textPixelSize - 1
                             }
                         }
                     }
 
-                    // Mute toggle button
-                    Rectangle {
-                        Layout.preferredWidth: audioFooter.innerItemHeight
-                        Layout.preferredHeight: audioFooter.innerItemHeight
-                        Layout.alignment: Qt.AlignVCenter
-                        radius: 15
-                        color: Services.SystemStatus.audioMuted ? Colors.alpha(audioFooter.itemColor, 0.28) : audioFooter.accentColor
+                    // Playback controls and queue mode chips.
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.minimumWidth: 0
+                        spacing: 12
 
-                        Controls.Icon {
-                            anchors.centerIn: parent
-                            name: Services.SystemStatus.audioIconName
-                            tone: Services.SystemStatus.audioMuted ? "primary" : "onAccent"
-                            size: settings.iconPixelSize - 1
+                        MediaButton {
+                            iconName: "media.shuffle"
+                            cornerRadius: tabRoot.controlRadius
+                            visible: Services.MediaService.shuffleSupported
+                            selected: Services.MediaService.shuffle
+                            onClicked: Services.MediaService.toggleShuffle()
                         }
 
-                        MouseArea {
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: Services.SystemStatus.toggleAudioMute()
+                        MediaButton {
+                            iconName: "media.loop"
+                            cornerRadius: tabRoot.controlRadius
+                            visible: Services.MediaService.loopSupported
+                            selected: Services.MediaService.looping
+                            onClicked: Services.MediaService.cycleLoop()
+                        }
+
+                        Item {
+                            Layout.fillWidth: true
+                        }
+
+                        MediaButton {
+                            iconName: "media.previous"
+                            cornerRadius: tabRoot.controlRadius
+                            enabled: Services.MediaService.canPrevious
+                            onClicked: Services.MediaService.previous()
+                        }
+
+                        MediaButton {
+                            iconName: Services.MediaService.playing ? "media.pause" : "media.play"
+                            cornerRadius: tabRoot.controlRadius
+                            prominent: true
+                            enabled: Services.MediaService.canTogglePlaying
+                            onClicked: Services.MediaService.playPause()
+                        }
+
+                        MediaButton {
+                            iconName: "media.next"
+                            cornerRadius: tabRoot.controlRadius
+                            enabled: Services.MediaService.canNext
+                            onClicked: Services.MediaService.next()
+                        }
+
+                        Item {
+                            Layout.fillWidth: true
+                        }
+
+                        MediaButton {
+                            iconName: "media.stop"
+                            cornerRadius: tabRoot.controlRadius
+                            iconTone: "danger"
+                            enabled: Services.MediaService.canStop
+                            onClicked: Services.MediaService.stop()
                         }
                     }
                 }
             }
         }
 
-        // Audio overlay close catcher
-        MouseArea {
-            anchors.fill: parent
-            enabled: tabRoot.audioOverlayOpen
-            visible: tabRoot.audioOverlayOpen
-            onClicked: tabRoot.closeAudioOverlay()
-        }
+        // Lower media control sections.
+        RowLayout {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 134
+            spacing: tabRoot.panel.tabCardSpacing
 
-        // Audio output overlay card
-        Rectangle {
-            id: audioOverlay
+            // Audio output and volume section.
+            Rectangle {
+                id: outputControlCard
 
-            width: Math.min(360, parent.width - 36)
-            height: Math.min(260, parent.height - 36)
-            anchors.left: parent.left
-            anchors.bottom: parent.bottom
-            anchors.margins: 18
-            visible: tabRoot.audioOverlayOpen
-            radius: 24
-            color: Colors.bgPrimary
-            border.color: Colors.borderAccent
-            border.width: 1
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                Layout.preferredWidth: 430
+                radius: tabRoot.panel.sectionRadius
+                color: tabRoot.panel.sectionContainer
+                border.color: tabRoot.panel.sectionBorder
+                border.width: tabRoot.panel.sectionBorderWidth
+                clip: false
 
-            // Audio output controls and device list
-            ColumnLayout {
-                anchors.fill: parent
-                anchors.margins: 14
-                spacing: 10
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: 14
+                    spacing: 12
 
-                // Audio overlay header
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: 8
-
-                    Text {
+                    // Output device identity and picker trigger.
+                    RowLayout {
                         Layout.fillWidth: true
-                        text: "Audio Output"
-                        color: Colors.fgPrimary
-                        font.family: Typography.fontFamily
-                        font.pixelSize: 15
-                        font.weight: Font.Bold
-                    }
+                        Layout.preferredHeight: 40
+                        spacing: 10
 
-                    Controls.CloseButton {
-                        buttonSize: 30
-                        onClicked: tabRoot.closeAudioOverlay()
-                    }
-                }
+                        Rectangle {
+                            Layout.preferredWidth: 40
+                            Layout.preferredHeight: 40
+                            radius: tabRoot.controlRadius
+                            color: Colors.subtleSecondary
+                            border.color: Colors.borderFaint
+                            border.width: 1
 
-                Rectangle {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 38
-                    radius: 18
-                    color: Colors.subtleAccent
-                    border.color: Colors.borderFaint
-                    border.width: 1
-
-                    Text {
-                        anchors.fill: parent
-                        anchors.leftMargin: 14
-                        anchors.rightMargin: 14
-                        text: Services.SystemStatus.audioSink
-                        color: Colors.fgPrimary
-                        elide: Text.ElideRight
-                        verticalAlignment: Text.AlignVCenter
-                        font.family: Typography.fontFamily
-                        font.pixelSize: settings.textPixelSize
-                        font.weight: Font.DemiBold
-                    }
-                }
-
-                // Scrollable audio output devices
-                Flickable {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    clip: true
-                    contentWidth: width
-                    contentHeight: mediaDeviceList.implicitHeight
-
-                    // Audio output device rows
-                    ColumnLayout {
-                        id: mediaDeviceList
-
-                        width: parent.width
-                        spacing: 8
-
-                        // One row per audio sink
-                        Repeater {
-                            model: Services.SystemStatus.audioSinks
-
-                            MediaDeviceRow {
-                                required property var modelData
-
-                                name: modelData.name
-                                iconName: modelData.iconName || "audio.output"
-                                subtitle: modelData.subtitle || "Output device"
-                                active: Services.SystemStatus.audioSink === modelData.name
-                                onClicked: Services.SystemStatus.setAudioSink(modelData.id)
+                            Controls.Icon {
+                                anchors.centerIn: parent
+                                name: "audio.output"
+                                tone: "accent"
+                                size: settings.iconPixelSize
                             }
                         }
 
-                        // Empty audio device message
-                        Text {
+                        ColumnLayout {
                             Layout.fillWidth: true
-                            visible: Services.SystemStatus.audioSinks.length === 0
-                            text: "No output devices found"
-                            color: Colors.fgSecondary
-                            horizontalAlignment: Text.AlignHCenter
+                            spacing: 2
+
+                            Text {
+                                Layout.fillWidth: true
+                                text: "OUTPUT DEVICE"
+                                color: Colors.fgAccent
+                                elide: Text.ElideRight
+                                font.family: Typography.fontFamily
+                                font.pixelSize: settings.textPixelSize - 2
+                                font.letterSpacing: 1.6
+                                font.weight: Font.Black
+                            }
+
+                            Text {
+                                Layout.fillWidth: true
+                                text: Services.SystemStatus.audioSink
+                                color: Colors.fgPrimary
+                                elide: Text.ElideRight
+                                font.family: Typography.fontFamily
+                                font.pixelSize: settings.textPixelSize + 1
+                                font.weight: Font.DemiBold
+                            }
+                        }
+
+                        Item {
+                            id: outputDevicePickerLane
+
+                            Layout.preferredWidth: 46
+                            Layout.preferredHeight: 40
+
+                            IconControlButton {
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                iconName: "ui.more.vertical"
+                                hoverColor: Colors.scrimSecondary
+                                selected: tabRoot.outputDevicePickerOpen
+                                onClicked: tabRoot.outputDevicePickerOpen = !tabRoot.outputDevicePickerOpen
+                            }
+                        }
+                    }
+
+                    // Compact mute, level, and percentage row.
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        spacing: 6
+
+                        IconControlButton {
+                            buttonSize: 20
+                            iconName: Services.SystemStatus.audioIconName
+                            iconTone: "primary"
+                            iconHorizontalAlignment: Text.AlignLeft
+                            onClicked: Services.SystemStatus.toggleAudioMute()
+                        }
+
+                        Controls.ValueSlider {
+                            id: audioLevelSlider
+
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 28
+                            value: Services.SystemStatus.audioVolume
+                            enabled: Services.SystemStatus.audioAvailable
+                            fillColor: Services.SystemStatus.audioMuted ? Colors.borderFaint : Colors.fgAccent
+                            handleColor: fillColor
+                            onMoved: Services.SystemStatus.setAudioVolume(audioLevelSlider.value)
+                        }
+
+                        Text {
+                            Layout.preferredWidth: Math.max(32, implicitWidth)
+                            text: Services.SystemStatus.audioVolume + "%"
+                            color: Services.SystemStatus.audioMuted ? Colors.fgSecondary : Colors.fgPrimary
+                            horizontalAlignment: Text.AlignRight
                             font.family: Typography.fontFamily
-                            font.pixelSize: settings.textPixelSize
+                            font.pixelSize: settings.textPixelSize + 1
+                            font.weight: Font.Black
                         }
                     }
                 }
+            }
+
+            // Live audio visualizer section with a fixed title divider.
+            Rectangle {
+                id: spectrumCard
+
+                Layout.preferredWidth: 220
+                Layout.fillHeight: true
+                radius: tabRoot.panel.sectionRadius
+                color: tabRoot.panel.sectionContainer
+                border.color: tabRoot.panel.sectionBorder
+                border.width: tabRoot.panel.sectionBorderWidth
+                clip: true
+
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: 14
+                    spacing: 8
+
+                    // Fixed header stays outside the animated bar layout.
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 18
+                        spacing: 8
+
+                        Rectangle {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 1
+                            color: Colors.borderFaint
+                        }
+
+                        Text {
+                            text: "VISUALIZER"
+                            color: Colors.fgAccent
+                            font.family: Typography.fontFamily
+                            font.pixelSize: settings.textPixelSize - 3
+                            font.letterSpacing: 1.6
+                            font.weight: Font.Black
+                        }
+
+                        Rectangle {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 1
+                            color: Colors.borderFaint
+                        }
+                    }
+
+                    // Bar plot is isolated so animated heights do not relayout the header.
+                    Item {
+                        id: visualizerPlot
+
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+
+                        RowLayout {
+                            anchors.fill: parent
+                            spacing: 7
+
+                            Repeater {
+                                model: mediaSpectrum.values
+
+                                Rectangle {
+                                    required property real modelData
+                                    readonly property real barValue: Math.max(0.04, Math.min(1, modelData))
+
+                                    Layout.fillWidth: true
+                                    Layout.preferredHeight: Math.max(8, visualizerPlot.height * barValue)
+                                    Layout.alignment: Qt.AlignBottom
+                                    radius: 3
+                                    color: tabRoot.spectrumActive ? Colors.subtleAccent : Colors.bgTertiary
+                                    opacity: tabRoot.spectrumActive ? 1 : 0.58
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Click-away region for the output picker.
+    MouseArea {
+        anchors.fill: parent
+        enabled: tabRoot.outputDevicePickerOpen
+        visible: enabled
+        z: 20
+        onClicked: tabRoot.outputDevicePickerOpen = false
+    }
+
+    // Lightweight output device picker with subtle zebra rows.
+    Rectangle {
+        id: outputDevicePickerPopup
+
+        readonly property point popupOrigin: outputControlCard.mapToItem(tabRoot, outputControlCard.width - width - 12, outputControlCard.height - height - 12)
+
+        visible: tabRoot.outputDevicePickerRendered
+        z: 21
+        width: Math.min(330, Math.max(270, outputControlCard.width - 24))
+        height: Math.min(250, outputDeviceList.implicitHeight + 50)
+        x: Math.max(0, Math.min(tabRoot.width - width, popupOrigin.x))
+        y: Math.max(0, Math.min(tabRoot.height - height, popupOrigin.y))
+        opacity: tabRoot.outputDevicePickerOpen ? 1 : 0
+        scale: tabRoot.outputDevicePickerOpen ? 1 : 0.92
+        transformOrigin: Item.BottomRight
+        radius: tabRoot.controlRadius
+        color: Colors.bgPrimary
+        border.color: Colors.borderFaint
+        border.width: 1
+        clip: true
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 140
+                easing.type: Easing.OutCubic
+            }
+        }
+
+        Behavior on scale {
+            NumberAnimation {
+                duration: 150
+                easing.type: Easing.OutBack
+            }
+        }
+
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: 9
+            spacing: 6
+
+            // Popup header with explicit dismiss affordance.
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 24
+                spacing: 8
+
+                Text {
+                    Layout.fillWidth: true
+                    text: "Output Devices"
+                    color: Colors.fgPrimary
+                    elide: Text.ElideRight
+                    font.family: Typography.fontFamily
+                    font.pixelSize: settings.textPixelSize
+                    font.weight: Font.DemiBold
+                }
+
+                Controls.CloseButton {
+                    buttonSize: 22
+                    iconSize: 12
+                    variant: "light"
+                    onClicked: tabRoot.outputDevicePickerOpen = false
+                }
+            }
+
+            Flickable {
+                id: outputDeviceFlickable
+
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                contentWidth: width
+                contentHeight: outputDeviceList.implicitHeight
+                boundsBehavior: Flickable.StopAtBounds
+                clip: true
+
+                Column {
+                    id: outputDeviceList
+
+                    width: outputDeviceFlickable.width
+                    spacing: 1
+
+                    Text {
+                        width: parent.width
+                        height: visible ? 38 : 0
+                        visible: Services.SystemStatus.audioSinks.length === 0
+                        text: "No output devices"
+                        color: Colors.fgSecondary
+                        verticalAlignment: Text.AlignVCenter
+                        horizontalAlignment: Text.AlignHCenter
+                        font.family: Typography.fontFamily
+                        font.pixelSize: settings.textPixelSize
+                    }
+
+                    Repeater {
+                        model: Services.SystemStatus.audioSinks
+
+                        OutputDeviceRow {
+                            required property int index
+                            required property var modelData
+
+                            rowIndex: index
+                            sink: modelData
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    component IconControlButton: Rectangle {
+        id: buttonRoot
+
+        property string iconName: Icons.defaultIcon
+        property bool selected: false
+        property int buttonSize: 34
+        property string iconTone: selected ? "accent" : "primary"
+        property int iconHorizontalAlignment: Text.AlignHCenter
+        property color hoverColor: "transparent"
+
+        signal clicked
+
+        implicitWidth: buttonSize
+        implicitHeight: buttonSize
+        Layout.preferredWidth: buttonSize
+        Layout.preferredHeight: buttonSize
+        radius: tabRoot.controlRadius
+        color: buttonMouse.containsMouse ? hoverColor : "transparent"
+        border.width: 0
+
+        Controls.Icon {
+            anchors.fill: parent
+            name: buttonRoot.iconName
+            tone: !buttonRoot.enabled ? "disabled" : buttonRoot.iconTone
+            size: settings.iconPixelSize - 1
+            horizontalAlignment: buttonRoot.iconHorizontalAlignment
+        }
+
+        MouseArea {
+            id: buttonMouse
+
+            anchors.fill: parent
+            enabled: buttonRoot.enabled
+            hoverEnabled: true
+            cursorShape: buttonRoot.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+            onClicked: buttonRoot.clicked()
+        }
+    }
+
+    component OutputDeviceRow: Rectangle {
+        id: deviceRoot
+
+        required property var sink
+        property int rowIndex: 0
+        readonly property bool active: Services.SystemStatus.audioSink === sink.name
+
+        width: parent ? parent.width : 0
+        height: 44
+        radius: Math.max(3, tabRoot.controlRadius - 3)
+        color: deviceMouse.containsMouse ? Colors.alpha(Colors.bgTertiary, 0.72) : (rowIndex % 2 === 0 ? Colors.alpha(Colors.bgTertiary, 0.28) : "transparent")
+
+        RowLayout {
+            anchors.fill: parent
+            anchors.leftMargin: 10
+            anchors.rightMargin: 10
+            spacing: 9
+
+            Rectangle {
+                Layout.preferredWidth: deviceRoot.active ? 3 : 0
+                Layout.fillHeight: true
+                Layout.topMargin: 8
+                Layout.bottomMargin: 8
+                radius: 2
+                color: Colors.subtleAccent
+            }
+
+            Controls.Icon {
+                Layout.preferredWidth: 20
+                Layout.preferredHeight: 20
+                name: deviceRoot.sink.iconName || "audio.output"
+                tone: deviceRoot.active ? "accent" : "secondary"
+                size: settings.iconPixelSize - 1
+            }
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 1
+
+                Text {
+                    Layout.fillWidth: true
+                    text: deviceRoot.sink.name
+                    color: deviceRoot.active ? Colors.fgPrimary : Colors.fgSecondary
+                    elide: Text.ElideRight
+                    font.family: Typography.fontFamily
+                    font.pixelSize: settings.textPixelSize
+                    font.weight: Font.DemiBold
+                }
+
+                Text {
+                    Layout.fillWidth: true
+                    text: deviceRoot.active ? "Current output" : (deviceRoot.sink.subtitle || "Output device")
+                    color: Colors.fgTertiary
+                    elide: Text.ElideRight
+                    font.family: Typography.fontFamily
+                    font.pixelSize: settings.textPixelSize - 2
+                }
+            }
+
+            Controls.Icon {
+                Layout.preferredWidth: 18
+                Layout.preferredHeight: 18
+                visible: deviceRoot.active
+                name: "ui.check"
+                tone: "accent"
+                size: settings.iconPixelSize - 2
+            }
+        }
+
+        MouseArea {
+            id: deviceMouse
+
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: {
+                Services.SystemStatus.setAudioSink(deviceRoot.sink.id);
+                tabRoot.outputDevicePickerOpen = false;
             }
         }
     }

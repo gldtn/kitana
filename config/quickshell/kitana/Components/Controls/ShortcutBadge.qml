@@ -1,43 +1,22 @@
 // Kitana managed Quickshell control
 
-import QtQuick
-import QtQuick.Layouts
 import "../.."
-import "../../custom" as Custom
 
-// Reusable keyboard shortcut badge
-Rectangle {
+// Keyboard shortcut badge wrapper over the shared Badge control.
+Badge {
     id: root
 
-    Custom.Settings {
-        id: settings
-    }
-
-    property string text: ""
-    property int badgeHeight: 18
-    property int horizontalPadding: 10
-    property int textPixelSize: settings.textPixelSize - 2
-    property color backgroundColor: Colors.scrimSecondary
-    property color borderColor: Colors.borderLight
+    property int textPixelSize: root.defaultFontPixelSize()
     property string tone: "subtle"
 
-    implicitWidth: shortcutLabel.implicitWidth + horizontalPadding
-    implicitHeight: badgeHeight
-    Layout.preferredWidth: implicitWidth
-    Layout.preferredHeight: implicitHeight
-    radius: 6
-    color: backgroundColor
-    border.color: borderColor
-    border.width: 0.8
-
-    Text {
-        id: shortcutLabel
-
-        anchors.centerIn: parent
-        text: root.text
-        color: Icons.toneColor(root.tone)
-        font.family: Typography.fontFamily
-        font.pixelSize: root.textPixelSize
-        font.weight: Font.DemiBold
-    }
+    size: "xs"
+    colorVariant: "subtle"
+    badgeHeight: 18
+    horizontalPadding: 5
+    fontPixelSize: textPixelSize
+    cornerRadius: 6
+    backgroundColor: Colors.scrimSecondary
+    foregroundColor: Icons.toneColor(root.tone)
+    borderColor: Colors.borderLight
+    borderWidth: 0.8
 }
