@@ -20,7 +20,7 @@ FloatingWindow {
     }
 
     property bool panelVisible: false
-    property string activeTab: "widgets"
+    property string activeTab: Services.QuickshellSettings.themePreviewDefaultTab
     readonly property string kitanaDir: Quickshell.env("KITANA_DIR") || Quickshell.env("HOME") + "/.local/share/kitana"
     readonly property var foregroundRoles: ["fgPrimary", "fgSecondary", "fgMuted", "fgTertiary", "fgOnPrimary", "fgAccent"]
     readonly property var backgroundRoles: ["bgPrimary", "bgSecondary", "bgTertiary", "bgOnPrimary", "bgAccent"]
@@ -84,10 +84,6 @@ FloatingWindow {
             label: qsTr("Secondary")
         },
         {
-            variant: "tertiary",
-            label: qsTr("Tertiary")
-        },
-        {
             variant: "subtle",
             label: qsTr("Subtle")
         },
@@ -98,14 +94,10 @@ FloatingWindow {
         {
             variant: "ghost",
             label: qsTr("Ghost")
-        },
-        {
-            variant: "inverted",
-            label: qsTr("Inverted")
         }
     ]
     readonly property var badgeSizeSamples: ["xs", "sm", "md", "lg"]
-    readonly property var previewTabs: [
+    readonly property var previewTabModel: [
         {
             value: "widgets",
             label: qsTr("Widgets"),
@@ -115,11 +107,6 @@ FloatingWindow {
             value: "surfaces",
             label: qsTr("Surfaces"),
             iconName: "dashboard"
-        },
-        {
-            value: "badges",
-            label: qsTr("Badges"),
-            iconName: "ui.dot"
         },
         {
             value: "swatches",
@@ -149,8 +136,19 @@ FloatingWindow {
     }
 
     function openIfAutoEnabled(): void {
-        if (Services.QuickshellSettings.themePreviewAutoOpen)
+        if (Services.QuickshellSettings.themePreviewAutoOpen) {
+            activeTab = Services.QuickshellSettings.themePreviewDefaultTab;
             root.open();
+        }
+    }
+
+    function previewTabLabel(value: string): string {
+        for (let i = 0; i < previewTabModel.length; i++) {
+            const tab = previewTabModel[i];
+            if (tab.value === value)
+                return tab.label;
+        }
+        return qsTr("Widgets");
     }
 
     function refreshCurrentTheme(): void {
@@ -303,6 +301,11 @@ FloatingWindow {
 
         function onThemePreviewAutoOpenChanged(): void {
             root.openIfAutoEnabled();
+        }
+
+        function onThemePreviewDefaultTabChanged(): void {
+            if (!root.panelVisible)
+                root.activeTab = Services.QuickshellSettings.themePreviewDefaultTab;
         }
     }
 
@@ -532,11 +535,12 @@ FloatingWindow {
         id: toneRoot
 
         property var sample: ({})
+        property bool compact: false
         readonly property string toneName: String(sample.tone || "primary")
         readonly property string label: String(sample.label || toneName)
 
-        width: 64
-        height: 38
+        width: compact ? 42 : 64
+        height: compact ? 32 : 38
 
         Controls.Icon {
             id: toneIcon
@@ -544,7 +548,7 @@ FloatingWindow {
             anchors.horizontalCenter: parent.horizontalCenter
             name: "theme"
             tone: toneRoot.toneName
-            size: 17
+            size: toneRoot.compact ? 15 : 17
         }
 
         Text {
@@ -555,7 +559,7 @@ FloatingWindow {
             color: Colors.fgSecondary
             horizontalAlignment: Text.AlignHCenter
             font.family: Typography.fontFamily
-            font.pixelSize: settings.textPixelSize - 5
+            font.pixelSize: settings.textPixelSize - (toneRoot.compact ? 6 : 5)
             font.weight: Font.DemiBold
         }
     }
@@ -565,7 +569,7 @@ FloatingWindow {
 
         property string label: ""
         property string size: "sm"
-        property bool outline: false
+        property bool hasBorder: false
         property bool rounded: false
         property string iconName: ""
         property var samples: root.badgeVariantSamples
@@ -598,10 +602,62 @@ FloatingWindow {
                     text: modelData.label || String(modelData)
                     size: modelData.badgeSize || badgeRowRoot.size
                     colorVariant: modelData.variant || "subtle"
-                    outline: badgeRowRoot.outline
+                    hasBorder: badgeRowRoot.hasBorder
                     rounded: badgeRowRoot.rounded
                     icon: badgeRowRoot.iconName
                 }
+            }
+        }
+    }
+
+    component BadgeVariantGrid: Row {
+        id: badgeGridRoot
+
+        readonly property real columnWidth: Math.max(0, (width - spacing) / 2)
+
+        width: parent ? parent.width : 0
+        spacing: 10
+
+        Column {
+            width: badgeGridRoot.columnWidth
+            spacing: 8
+
+            BadgeVariantRow {
+                width: parent.width
+                label: qsTr("Filled")
+            }
+
+            BadgeVariantRow {
+                width: parent.width
+                label: qsTr("Bordered")
+                hasBorder: true
+            }
+
+            BadgeVariantRow {
+                width: parent.width
+                label: qsTr("Rounded")
+                rounded: true
+            }
+        }
+
+        Column {
+            width: badgeGridRoot.columnWidth
+            spacing: 8
+
+            BadgeVariantRow {
+                width: parent.width
+                label: qsTr("Sizes")
+                samples: root.badgeSizeSamples.map(sizeName => ({
+                            variant: "accent",
+                            label: sizeName.toUpperCase(),
+                            badgeSize: sizeName
+                        }))
+            }
+
+            BadgeVariantRow {
+                width: parent.width
+                label: qsTr("With Icon")
+                iconName: "theme"
             }
         }
     }
@@ -618,6 +674,8 @@ FloatingWindow {
         color: surfaceColor
         border.color: Colors.borderFaint
         border.width: 0.8
+        border.pixelAligned: false
+        antialiasing: true
 
         // Badge states using the shared Controls.Badge component.
         Column {
@@ -636,30 +694,8 @@ FloatingWindow {
                 font.weight: Font.Bold
             }
 
-            BadgeVariantRow {
-                label: qsTr("Filled")
-                iconName: "ui.dot"
-            }
-
-            BadgeVariantRow {
-                label: qsTr("Outline")
-                outline: true
-            }
-
-            BadgeVariantRow {
-                label: qsTr("Rounded")
-                rounded: true
-                iconName: "ui.dot"
-            }
-
-            BadgeVariantRow {
-                label: qsTr("Sizes")
-                samples: root.badgeSizeSamples.map(sizeName => ({
-                            variant: "accent",
-                            label: sizeName.toUpperCase(),
-                            badgeSize: sizeName
-                        }))
-                iconName: "theme"
+            BadgeVariantGrid {
+                width: parent.width
             }
         }
     }
@@ -743,6 +779,8 @@ FloatingWindow {
         color: Colors.bgSecondary
         border.color: Colors.borderFaint
         border.width: 0.8
+        border.pixelAligned: false
+        antialiasing: true
 
         // DateTime tab monthly calendar sample
         Column {
@@ -904,6 +942,8 @@ FloatingWindow {
         color: surfaceColor
         border.color: Colors.borderFaint
         border.width: 0.8
+        border.pixelAligned: false
+        antialiasing: true
 
         QtObject {
             id: tabSampleDashboard
@@ -945,10 +985,31 @@ FloatingWindow {
                 Row {
                     id: surfaceHeaderControls
 
-                    width: shortcutBadge.width + dismissStates.width + spacing
-                    height: Math.max(shortcutBadge.height, dismissStates.height)
+                    width: inlineIconTones.width + shortcutBadge.width + dismissStates.width + spacing * 2
+                    height: Math.max(inlineIconTones.height, shortcutBadge.height, dismissStates.height)
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: 8
+                    spacing: 7
+
+                    // Compact icon tone samples share the header row with the shortcut state.
+                    Row {
+                        id: inlineIconTones
+
+                        width: implicitWidth
+                        height: implicitHeight
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 0
+
+                        Repeater {
+                            model: root.iconToneSamples
+
+                            IconToneSample {
+                                required property var modelData
+
+                                sample: modelData
+                                compact: true
+                            }
+                        }
+                    }
 
                     Controls.ShortcutBadge {
                         id: shortcutBadge
@@ -1018,25 +1079,22 @@ FloatingWindow {
                 }
             }
 
-            // Actual icon tone colors on this card background
-            Flow {
-                id: iconToneFlow
-
-                readonly property int columns: Math.max(1, Math.min(root.iconToneSamples.length, Math.floor((width + spacing) / 64)))
-                readonly property real sampleWidth: Math.floor((width - spacing * (columns - 1)) / columns)
-
+            // Badge variants and sizing against this surface background
+            Column {
                 width: parent.width
-                spacing: 1
+                spacing: 7
 
-                Repeater {
-                    model: root.iconToneSamples
+                Text {
+                    width: parent.width
+                    text: qsTr("Badges")
+                    color: Colors.fgPrimary
+                    font.family: Typography.fontFamily
+                    font.pixelSize: settings.textPixelSize - 2
+                    font.weight: Font.DemiBold
+                }
 
-                    IconToneSample {
-                        required property var modelData
-
-                        width: iconToneFlow.sampleWidth
-                        sample: modelData
-                    }
+                BadgeVariantGrid {
+                    width: parent.width
                 }
             }
 
@@ -1212,6 +1270,8 @@ FloatingWindow {
                     color: Colors.bgSecondary
                     border.color: Colors.borderFaint
                     border.width: 0.6
+                    border.pixelAligned: false
+                    antialiasing: true
                     clip: true
 
                     Column {
@@ -1226,6 +1286,8 @@ FloatingWindow {
                             color: hoverHandler.hovered ? Colors.scrimTertiary : Colors.bgTertiary
                             border.color: Colors.borderLight
                             border.width: 0.8
+                            border.pixelAligned: false
+                            antialiasing: true
 
                             HoverHandler {
                                 id: hoverHandler
@@ -1400,6 +1462,8 @@ FloatingWindow {
             color: Colors.bgSecondary
             border.color: Colors.borderFaint
             border.width: 0.8
+            border.pixelAligned: false
+            antialiasing: true
 
             // Shared control samples not tied to a larger panel.
             Column {
@@ -1428,9 +1492,9 @@ FloatingWindow {
                             iconName: "theme"
                         },
                         {
-                            value: "badges",
-                            label: qsTr("Badges"),
-                            iconName: "ui.dot"
+                            value: "surfaces",
+                            label: qsTr("Surfaces"),
+                            iconName: "dashboard"
                         },
                         {
                             value: "swatches",
@@ -1487,33 +1551,6 @@ FloatingWindow {
         ControlSurfaceSample {
             width: parent.width
             label: "bgTertiary"
-            surfaceColor: Colors.bgTertiary
-        }
-    }
-
-    component BadgesTab: Column {
-        width: parent ? parent.width : 0
-        spacing: 10
-
-        SectionTitle {
-            text: qsTr("Badges")
-        }
-
-        BadgeVariantPanel {
-            width: parent.width
-            title: qsTr("Badge Variants On bgPrimary")
-            surfaceColor: Colors.bgPrimary
-        }
-
-        BadgeVariantPanel {
-            width: parent.width
-            title: qsTr("Badge Variants On bgSecondary")
-            surfaceColor: Colors.bgSecondary
-        }
-
-        BadgeVariantPanel {
-            width: parent.width
-            title: qsTr("Badge Variants On bgTertiary")
             surfaceColor: Colors.bgTertiary
         }
     }
@@ -1598,7 +1635,7 @@ FloatingWindow {
                 Item {
                     id: titleArea
 
-                    width: parent.width - autoOpenToggle.width - refreshButton.width - closeButton.width - parent.spacing * 3
+                    width: parent.width - defaultTabButton.width - autoOpenToggle.width - refreshButton.width - closeButton.width - parent.spacing * 4
                     height: titleColumn.implicitHeight
 
                     Column {
@@ -1635,6 +1672,14 @@ FloatingWindow {
                     }
                 }
 
+                HeaderButton {
+                    id: defaultTabButton
+
+                    anchors.verticalCenter: parent.verticalCenter
+                    label: root.activeTab === Services.QuickshellSettings.themePreviewDefaultTab ? qsTr("Default: %1").arg(root.previewTabLabel(Services.QuickshellSettings.themePreviewDefaultTab)) : qsTr("Set Default")
+                    onClicked: Services.QuickshellSettings.setThemePreviewDefaultTab(root.activeTab)
+                }
+
                 HeaderToggle {
                     id: autoOpenToggle
 
@@ -1667,7 +1712,7 @@ FloatingWindow {
 
                 width: parent.width
                 height: implicitHeight
-                model: root.previewTabs
+                model: root.previewTabModel
                 currentValue: root.activeTab
                 onActivated: value => root.activeTab = value
             }
@@ -1707,14 +1752,6 @@ FloatingWindow {
                     }
 
                     Component {
-                        id: badgesTabComponent
-
-                        BadgesTab {
-                            width: content.width
-                        }
-                    }
-
-                    Component {
                         id: swatchesTabComponent
 
                         ColorSwatchesTab {
@@ -1727,7 +1764,7 @@ FloatingWindow {
 
                         width: parent.width
                         height: implicitHeight
-                        sourceComponent: root.activeTab === "surfaces" ? surfacesTabComponent : (root.activeTab === "badges" ? badgesTabComponent : (root.activeTab === "swatches" ? swatchesTabComponent : widgetsTabComponent))
+                        sourceComponent: root.activeTab === "surfaces" ? surfacesTabComponent : (root.activeTab === "swatches" ? swatchesTabComponent : widgetsTabComponent)
                     }
 
                     // Representative shell surfaces and controls
@@ -1851,6 +1888,8 @@ FloatingWindow {
                                     color: Colors.bgSecondary
                                     border.color: Colors.borderFaint
                                     border.width: 0.6
+                                    border.pixelAligned: false
+                                    antialiasing: true
                                     clip: true
 
                                     Column {
@@ -1865,6 +1904,8 @@ FloatingWindow {
                                             color: hoverHandler.hovered ? Colors.scrimTertiary : Colors.bgTertiary
                                             border.color: Colors.borderLight
                                             border.width: 0.8
+                                            border.pixelAligned: false
+                                            antialiasing: true
 
                                             HoverHandler {
                                                 id: hoverHandler

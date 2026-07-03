@@ -18,10 +18,12 @@ Project imports: `import "../.."`, `import "../../custom" as Custom`.
 |----------|------|---------|-------------|
 | `text` | `string` | `""` | Badge label. |
 | `size` | `string` | `"sm"` | Size variant: `xs`, `sm`, `md`, or `lg`. |
-| `colorVariant` | `string` | `"subtle"` | Color variant: `primary`, `secondary`, `tertiary`, `subtle`, `ghost`, `inverted`, or `accent`. |
-| `outline` | `bool` | `false` | Uses transparent fill with variant border and foreground colors. |
+| `colorVariant` | `string` | `"subtle"` | Color variant: `primary`, `secondary`, `subtle`, `ghost`, or `accent`. |
+| `hasBorder` | `bool` | `false` | Adds a fractional border around the badge without changing the fill. |
 | `rounded` | `bool` | `false` | Uses pill radius instead of compact badge radius. |
 | `icon` | `string` | `""` | Optional leading semantic icon token. |
 | `trailingIcon` | `string` | `""` | Optional trailing semantic icon token. |
+| `textVerticalOffset` | `real` | `0.5` for `xs`, otherwise `0` | Visual text baseline offset for optical centering. |
+| `iconVerticalOffset` | `real` | `-0.5` for `xs`, otherwise `0` | Visual icon offset for optical centering. |
 
-The component also exposes sizing and color override properties such as `badgeHeight`, `horizontalPadding`, `fontPixelSize`, `backgroundColor`, `foregroundColor`, `borderColor`, and `iconTone` for compatibility wrappers and special cases.
+Use `colorVariant: "ghost"` with `hasBorder: true` for a transparent outlined badge. The component also exposes sizing and color override properties such as `badgeHeight`, `horizontalPadding`, `fontPixelSize`, `backgroundColor`, `foregroundColor`, `borderColor`, `borderWidth`, and `iconTone` for compatibility wrappers and special cases.

@@ -5,7 +5,7 @@ import QtQuick.Layouts
 import "../.."
 import "../../custom" as Custom
 
-// Shared badge with Flux-style size, color, outline, icon, and rounded variants.
+// Shared badge with size, color, border, icon, and rounded variants.
 Rectangle {
     id: root
 
@@ -16,7 +16,7 @@ Rectangle {
     property string text: ""
     property string size: "sm"
     property string colorVariant: "subtle"
-    property bool outline: false
+    property bool hasBorder: false
     property bool rounded: false
     property string icon: ""
     property string trailingIcon: ""
@@ -25,6 +25,8 @@ Rectangle {
     property int gap: defaultGap()
     property int fontPixelSize: defaultFontPixelSize()
     property int iconSize: defaultIconSize()
+    property real textVerticalOffset: defaultTextVerticalOffset()
+    property real iconVerticalOffset: defaultIconVerticalOffset()
     property int cornerRadius: defaultRadius()
     property color backgroundColor: defaultBackgroundColor()
     property color foregroundColor: defaultForegroundColor()
@@ -40,18 +42,23 @@ Rectangle {
     color: backgroundColor
     border.color: borderColor
     border.width: borderWidth
-    clip: true
+    border.pixelAligned: false
+    antialiasing: true
 
     function normalizedSize(): string {
         if (size === "xs" || size === "sm" || size === "md" || size === "lg")
             return size;
-        return "sm";
+        return "sm"; // defaults to small "sm" size
     }
 
     function normalizedVariant(): string {
-        if (colorVariant === "primary" || colorVariant === "secondary" || colorVariant === "tertiary" || colorVariant === "subtle" || colorVariant === "ghost" || colorVariant === "inverted" || colorVariant === "accent")
+        if (colorVariant === "primary" || colorVariant === "secondary" || colorVariant === "subtle" || colorVariant === "ghost" || colorVariant === "accent")
             return colorVariant;
         return "subtle";
+    }
+
+    function shouldDrawBorder(): bool {
+        return hasBorder;
     }
 
     function defaultHeight(): int {
@@ -62,7 +69,7 @@ Rectangle {
             return 30;
         if (value === "lg")
             return 36;
-        return 24;
+        return 24; // small
     }
 
     function defaultHorizontalPadding(): int {
@@ -73,7 +80,7 @@ Rectangle {
             return 14;
         if (value === "lg")
             return 16;
-        return 10;
+        return 10; // smalll
     }
 
     function defaultGap(): int {
@@ -88,7 +95,7 @@ Rectangle {
             return settings.textPixelSize;
         if (value === "lg")
             return settings.textPixelSize + 1;
-        return settings.textPixelSize - 1;
+        return settings.textPixelSize - 1; // small
     }
 
     function defaultIconSize(): int {
@@ -99,7 +106,7 @@ Rectangle {
             return settings.iconPixelSize - 2;
         if (value === "lg")
             return settings.iconPixelSize;
-        return settings.iconPixelSize - 4;
+        return settings.iconPixelSize - 4; // small
     }
 
     function defaultRadius(): int {
@@ -110,58 +117,53 @@ Rectangle {
             return 7;
         if (value === "lg")
             return 9;
-        return 6;
+        return 6; // small
+    }
+
+    function defaultTextVerticalOffset(): real {
+        return normalizedSize() === "xs" ? 0.5 : 0;
+    }
+
+    function defaultIconVerticalOffset(): real {
+        return normalizedSize() === "xs" ? -0.5 : 0;
     }
 
     function defaultBackgroundColor(): color {
         const value = normalizedVariant();
-        if (outline || value === "ghost")
+        if (value === "ghost")
             return "transparent";
         if (value === "primary")
-            return Colors.bgPrimary;
+            return Colors.bgTertiary;
         if (value === "secondary")
             return Colors.bgSecondary;
-        if (value === "tertiary")
-            return Colors.bgTertiary;
-        if (value === "inverted")
-            return Colors.fgPrimary;
+        if (value === "subtle")
+            return Colors.mixColor(Colors.bgTertiary, Colors.bgPrimary, 0.45);
         if (value === "accent")
             return Colors.subtleAccent;
-        return Colors.subtleSecondary;
+        return Colors.bgPrimary;
     }
 
     function defaultForegroundColor(): color {
         const value = normalizedVariant();
-        if (value === "inverted")
-            return Colors.fgOnPrimary;
         if (value === "accent")
-            return outline ? Colors.fgAccent : Colors.fgPrimary;
-        return Colors.fgPrimary;
+            return Colors.fgAccent;
+        return Colors.mixColor(Colors.fgSecondary, Colors.fgAccent, 0.12);
     }
 
     function defaultBorderColor(): color {
-        const value = normalizedVariant();
-        if (value === "ghost")
-            return outline ? Colors.borderFaint : "transparent";
-        if (value === "primary" || value === "secondary" || value === "tertiary" || value === "subtle")
-            return Colors.borderFaint;
-        if (value === "inverted")
-            return Colors.borderHeavy;
-        if (value === "accent")
-            return Colors.borderAccent;
-        return Colors.borderFaint;
+        if (!shouldDrawBorder())
+            return "transparent";
+        return Colors.mixColor(Colors.borderLight, Colors.borderAccent, 0.12);
     }
 
     function defaultBorderWidth(): real {
-        return normalizedVariant() === "ghost" && !outline ? 0 : 1;
+        return shouldDrawBorder() ? 0.6 : 0;
     }
 
     function defaultIconTone(): string {
         const value = normalizedVariant();
         if (value === "primary")
             return "primary";
-        if (value === "inverted")
-            return "inverse";
         if (value === "accent")
             return "accent";
         return "secondary";
@@ -177,11 +179,16 @@ Rectangle {
 
         Icon {
             visible: root.icon.length > 0
-            Layout.preferredWidth: visible ? root.iconSize : 0
+            Layout.preferredWidth: visible ? implicitWidth : 0
             Layout.preferredHeight: visible ? root.iconSize : 0
             name: root.icon.length > 0 ? root.icon : Icons.defaultIcon
             tone: root.iconTone
             size: root.iconSize
+            horizontalAlignment: Text.AlignLeft
+
+            transform: Translate {
+                y: root.iconVerticalOffset
+            }
         }
 
         Text {
@@ -190,20 +197,29 @@ Rectangle {
             text: root.text
             color: root.foregroundColor
             elide: Text.ElideRight
-            horizontalAlignment: Text.AlignHCenter
+            horizontalAlignment: root.icon.length > 0 || root.trailingIcon.length > 0 ? Text.AlignLeft : Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             font.family: Typography.fontFamily
             font.pixelSize: root.fontPixelSize
             font.weight: Font.DemiBold
+
+            transform: Translate {
+                y: root.textVerticalOffset
+            }
         }
 
         Icon {
             visible: root.trailingIcon.length > 0
-            Layout.preferredWidth: visible ? root.iconSize : 0
+            Layout.preferredWidth: visible ? implicitWidth : 0
             Layout.preferredHeight: visible ? root.iconSize : 0
             name: root.trailingIcon.length > 0 ? root.trailingIcon : Icons.defaultIcon
             tone: root.iconTone
             size: root.iconSize
+            horizontalAlignment: Text.AlignLeft
+
+            transform: Translate {
+                y: root.iconVerticalOffset
+            }
         }
     }
 }

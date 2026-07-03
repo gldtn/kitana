@@ -29,6 +29,8 @@ RowLayout {
         color: tabRoot.panel.sectionContainer
         border.color: tabRoot.panel.sectionBorder
         border.width: tabRoot.panel.sectionBorderWidth
+        border.pixelAligned: false
+        antialiasing: true
 
         // Sidebar content stack
         ColumnLayout {
@@ -145,6 +147,8 @@ RowLayout {
         color: tabRoot.panel.sectionContainer
         border.color: tabRoot.panel.sectionBorder
         border.width: tabRoot.panel.sectionBorderWidth
+        border.pixelAligned: false
+        antialiasing: true
 
         // Calendar header and day grid
         ColumnLayout {

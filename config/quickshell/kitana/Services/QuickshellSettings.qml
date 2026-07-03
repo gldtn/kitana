@@ -18,11 +18,13 @@ Singleton {
     property string weatherUnits: "F"
     property bool weatherHideLocation: false
     property bool themePreviewAutoOpen: false
+    property string themePreviewDefaultTab: "widgets"
     property var worldClocks: defaultWorldClocks()
 
     readonly property string stateDir: (Quickshell.env("HOME") || "") + "/.local/state/kitana"
     readonly property string settingsPath: stateDir + "/quickshell-settings.json"
     readonly property var layoutPillDisplayModes: ["icons", "compact", "full"]
+    readonly property var themePreviewTabs: ["widgets", "surfaces", "swatches"]
 
     function defaultWorldClocks(): var {
         return [
@@ -43,6 +45,10 @@ Singleton {
 
     function validWeatherUnits(units: string): bool {
         return units === "F" || units === "C";
+    }
+
+    function validThemePreviewTab(tab: string): bool {
+        return themePreviewTabs.indexOf(tab) !== -1;
     }
 
     function numberOr(value: var, fallback: int): int {
@@ -85,7 +91,8 @@ Singleton {
                 pillRadius: pillRadiusPreference
             },
             themePreview: {
-                autoOpen: themePreviewAutoOpen
+                autoOpen: themePreviewAutoOpen,
+                defaultTab: themePreviewDefaultTab
             },
             dashboard: {
                 weather: {
@@ -117,6 +124,9 @@ Singleton {
             pillRadiusPreference = numberOr(bar.pillRadius, pillRadiusPreference);
 
             const themePreview = settings.themePreview || ({});
+            const defaultTab = stringOr(themePreview.defaultTab, themePreviewDefaultTab);
+            if (validThemePreviewTab(defaultTab))
+                themePreviewDefaultTab = defaultTab;
             themePreviewAutoOpen = !!themePreview.autoOpen;
 
             const dashboard = settings.dashboard || ({});
@@ -148,6 +158,13 @@ Singleton {
         if (themePreviewAutoOpen === value)
             return;
         themePreviewAutoOpen = value;
+        save();
+    }
+
+    function setThemePreviewDefaultTab(tab: string): void {
+        if (!validThemePreviewTab(tab) || themePreviewDefaultTab === tab)
+            return;
+        themePreviewDefaultTab = tab;
         save();
     }
 

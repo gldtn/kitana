@@ -297,6 +297,8 @@ PanelWindow {
                 color: Colors.bgPrimary
                 border.color: Colors.borderFaint
                 border.width: 0.6
+                border.pixelAligned: false
+                antialiasing: true
 
                 // Confirmation text and actions
                 ColumnLayout {
@@ -370,6 +372,8 @@ PanelWindow {
         color: button.active || buttonMouse.containsMouse ? Colors.subtleAccent : Colors.bgTertiary
         border.color: button.active ? Colors.mixColor(Colors.bgPrimary, Colors.subtleAccent, .2) : "transparent"
         border.width: 0.6
+        border.pixelAligned: false
+        antialiasing: true
 
         // Confirmation button label
         Text {

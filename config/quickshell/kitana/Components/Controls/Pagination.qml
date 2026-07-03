@@ -133,6 +133,8 @@ RowLayout {
             opacity: dimmed ? 0.42 : 1
             border.color: Colors.borderFaint
             border.width: 0.6
+            border.pixelAligned: false
+            antialiasing: true
 
             // Directional chevron
             Text {

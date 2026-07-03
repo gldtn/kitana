@@ -132,6 +132,8 @@ PanelWindow {
                 color: Colors.bgSecondary
                 border.color: Colors.borderFaint
                 border.width: 0.6
+                border.pixelAligned: false
+                antialiasing: true
                 clip: true
                 // Active detail pane loader
                 Loader {

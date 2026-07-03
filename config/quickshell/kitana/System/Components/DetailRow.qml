@@ -24,6 +24,8 @@ Rectangle {
     color: mouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary
     border.color: active ? Colors.borderAccent : Colors.borderFaint
     border.width: 0.8
+    border.pixelAligned: false
+    antialiasing: true
 
     // Detail icon and text row
     Row {

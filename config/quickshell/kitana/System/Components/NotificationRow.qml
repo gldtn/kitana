@@ -40,6 +40,8 @@ Rectangle {
     color: hoverHandler.hovered ? Colors.scrimTertiary : Colors.bgTertiary
     border.color: Colors.borderLight // outter border
     border.width: 0.8
+    border.pixelAligned: false
+    antialiasing: true
 
     onItemChanged: bodyExpanded = false
 

@@ -305,6 +305,8 @@ PanelWindow {
         color: actionMouse.containsMouse && enabled ? Colors.subtleAccent : Colors.bgTertiary
         border.color: actionMouse.containsMouse && enabled ? Colors.borderAccent : Colors.borderFaint
         border.width: 0.8
+        border.pixelAligned: false
+        antialiasing: true
 
         Text {
             id: labelText
@@ -348,6 +350,8 @@ PanelWindow {
         color: "transparent"
         border.color: pagerRoot.pagerAccentColor
         border.width: pagerRoot.pagerBorderWidth
+        border.pixelAligned: false
+        antialiasing: true
         clip: true
 
         RowLayout {
@@ -624,6 +628,8 @@ PanelWindow {
                     color: card.sectionContainer
                     border.color: card.sectionBorder
                     border.width: card.sectionBorderWidth
+                    border.pixelAligned: false
+                    antialiasing: true
 
                     // Workspace layout options content
                     GridLayout {
@@ -681,6 +687,8 @@ PanelWindow {
                     color: card.sectionContainer
                     border.color: card.sectionBorder
                     border.width: card.sectionBorderWidth
+                    border.pixelAligned: false
+                    antialiasing: true
 
                     ColumnLayout {
                         id: geometryContent
@@ -796,6 +804,8 @@ PanelWindow {
                 color: card.sectionContainer
                 border.color: card.sectionBorder
                 border.width: card.sectionBorderWidth
+                border.pixelAligned: false
+                antialiasing: true
 
                 GridLayout {
                     id: loginMonitorContent

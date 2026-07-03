@@ -68,6 +68,8 @@ ColumnLayout {
         color: tabRoot.panel.sectionContainer
         border.color: tabRoot.panel.sectionBorder
         border.width: tabRoot.panel.sectionBorderWidth
+        border.pixelAligned: false
+        antialiasing: true
 
         // Weather condition and metric content
         RowLayout {
@@ -169,6 +171,8 @@ ColumnLayout {
         color: tabRoot.panel.sectionContainer
         border.color: tabRoot.panel.sectionBorder
         border.width: tabRoot.panel.sectionBorderWidth
+        border.pixelAligned: false
+        antialiasing: true
 
         // Sunrise, sunset, and moon metrics
         RowLayout {
@@ -225,6 +229,8 @@ ColumnLayout {
                 color: tabRoot.panel.sectionContainer
                 border.color: tabRoot.panel.sectionBorder
                 border.width: tabRoot.panel.sectionBorderWidth
+                border.pixelAligned: false
+                antialiasing: true
 
                 // Forecast day details
                 Column {

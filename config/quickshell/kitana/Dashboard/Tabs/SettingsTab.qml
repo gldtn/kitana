@@ -74,6 +74,8 @@ ColumnLayout {
                 color: tabRoot.panel.sectionContainer
                 border.color: tabRoot.panel.sectionBorder
                 border.width: tabRoot.panel.sectionBorderWidth
+                border.pixelAligned: false
+                antialiasing: true
 
                 // Weather settings form
                 ColumnLayout {
@@ -131,6 +133,8 @@ ColumnLayout {
                 color: Colors.bgSecondary
                 border.color: Colors.borderFaint
                 border.width: 0.8
+                border.pixelAligned: false
+                antialiasing: true
 
                 // World clock settings form
                 ColumnLayout {
@@ -197,6 +201,8 @@ ColumnLayout {
                 color: tabRoot.panel.sectionContainer
                 border.color: tabRoot.panel.sectionBorder
                 border.width: tabRoot.panel.sectionBorderWidth
+                border.pixelAligned: false
+                antialiasing: true
 
                 // Wallpaper settings form
                 ColumnLayout {

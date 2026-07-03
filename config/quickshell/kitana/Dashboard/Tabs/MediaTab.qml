@@ -86,6 +86,8 @@ Item {
             color: tabRoot.panel.sectionContainer
             border.color: tabRoot.panel.sectionBorder
             border.width: tabRoot.panel.sectionBorderWidth
+            border.pixelAligned: false
+            antialiasing: true
             clip: true
 
             RowLayout {
@@ -276,14 +278,14 @@ Item {
                         Controls.Badge {
                             text: Services.MediaService.status
                             size: "md"
-                            colorVariant: Services.MediaService.playing ? "accent" : "tertiary"
+                            colorVariant: Services.MediaService.playing ? "accent" : "secondary"
                         }
 
                         Controls.Badge {
                             Layout.preferredWidth: 150
                             text: Services.MediaService.album.length > 0 ? Services.MediaService.album : "No album"
                             size: "md"
-                            colorVariant: "tertiary"
+                            colorVariant: "subtle"
                         }
 
                         Item {
@@ -441,6 +443,8 @@ Item {
                 color: tabRoot.panel.sectionContainer
                 border.color: tabRoot.panel.sectionBorder
                 border.width: tabRoot.panel.sectionBorderWidth
+                border.pixelAligned: false
+                antialiasing: true
                 clip: false
 
                 ColumnLayout {
@@ -562,6 +566,8 @@ Item {
                 color: tabRoot.panel.sectionContainer
                 border.color: tabRoot.panel.sectionBorder
                 border.width: tabRoot.panel.sectionBorderWidth
+                border.pixelAligned: false
+                antialiasing: true
                 clip: true
 
                 ColumnLayout {

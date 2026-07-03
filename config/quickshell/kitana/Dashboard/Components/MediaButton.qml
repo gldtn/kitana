@@ -27,6 +27,8 @@ Rectangle {
     color: !enabled ? Colors.subtlePrimary : Colors.subtleSecondary
     border.color: !enabled ? Colors.borderFaint : (selected ? Colors.borderAccent : Colors.borderFaint)
     border.width: 0.8
+    border.pixelAligned: false
+    antialiasing: true
 
     // Media control icon
     Controls.Icon {
