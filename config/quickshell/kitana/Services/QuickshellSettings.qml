@@ -17,6 +17,7 @@ Singleton {
     property string weatherLocation: "Attleboro, MA"
     property string weatherUnits: "F"
     property bool weatherHideLocation: false
+    property bool themePreviewAutoOpen: false
     property var worldClocks: defaultWorldClocks()
 
     readonly property string stateDir: (Quickshell.env("HOME") || "") + "/.local/state/kitana"
@@ -83,6 +84,9 @@ Singleton {
                 topMargin: topMarginPreference,
                 pillRadius: pillRadiusPreference
             },
+            themePreview: {
+                autoOpen: themePreviewAutoOpen
+            },
             dashboard: {
                 weather: {
                     location: weatherLocation,
@@ -112,6 +116,9 @@ Singleton {
             topMarginPreference = numberOr(bar.topMargin, topMarginPreference);
             pillRadiusPreference = numberOr(bar.pillRadius, pillRadiusPreference);
 
+            const themePreview = settings.themePreview || ({});
+            themePreviewAutoOpen = !!themePreview.autoOpen;
+
             const dashboard = settings.dashboard || ({});
             const weather = dashboard.weather || ({});
             weatherLocation = stringOr(weather.location, weatherLocation);
@@ -134,6 +141,13 @@ Singleton {
         if (!validLayoutPillDisplayMode(mode) || layoutPillDisplayMode === mode)
             return;
         layoutPillDisplayMode = mode;
+        save();
+    }
+
+    function setThemePreviewAutoOpen(value: bool): void {
+        if (themePreviewAutoOpen === value)
+            return;
+        themePreviewAutoOpen = value;
         save();
     }
 

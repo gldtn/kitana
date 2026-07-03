@@ -8,6 +8,7 @@ import Quickshell.Io
 import ".."
 import "../Components/Controls" as Controls
 import "../Dashboard/Components" as Dashboard
+import "../Services" as Services
 import "../System/Components" as System
 import "../custom" as Custom
 
@@ -19,8 +20,9 @@ FloatingWindow {
     }
 
     property bool panelVisible: false
+    property string activeTab: "widgets"
     readonly property string kitanaDir: Quickshell.env("KITANA_DIR") || Quickshell.env("HOME") + "/.local/share/kitana"
-    readonly property var foregroundRoles: ["fgPrimary", "fgSecondary", "fgTertiary", "fgOnPrimary", "fgAccent"]
+    readonly property var foregroundRoles: ["fgPrimary", "fgSecondary", "fgMuted", "fgTertiary", "fgOnPrimary", "fgAccent"]
     readonly property var backgroundRoles: ["bgPrimary", "bgSecondary", "bgTertiary", "bgOnPrimary", "bgAccent"]
     readonly property var borderRoles: ["borderDark", "borderFaint", "borderLight", "borderHeavy", "borderAccent"]
     readonly property var feedbackRoles: ["info", "success", "warning", "error", "subtleAccent", "subtlePrimary", "subtleSecondary", "subtleTertiary"]
@@ -72,6 +74,59 @@ FloatingWindow {
             label: "inverse"
         }
     ]
+    readonly property var badgeVariantSamples: [
+        {
+            variant: "primary",
+            label: qsTr("Primary")
+        },
+        {
+            variant: "secondary",
+            label: qsTr("Secondary")
+        },
+        {
+            variant: "tertiary",
+            label: qsTr("Tertiary")
+        },
+        {
+            variant: "subtle",
+            label: qsTr("Subtle")
+        },
+        {
+            variant: "accent",
+            label: qsTr("Accent")
+        },
+        {
+            variant: "ghost",
+            label: qsTr("Ghost")
+        },
+        {
+            variant: "inverted",
+            label: qsTr("Inverted")
+        }
+    ]
+    readonly property var badgeSizeSamples: ["xs", "sm", "md", "lg"]
+    readonly property var previewTabs: [
+        {
+            value: "widgets",
+            label: qsTr("Widgets"),
+            iconName: "theme"
+        },
+        {
+            value: "surfaces",
+            label: qsTr("Surfaces"),
+            iconName: "dashboard"
+        },
+        {
+            value: "badges",
+            label: qsTr("Badges"),
+            iconName: "ui.dot"
+        },
+        {
+            value: "swatches",
+            label: qsTr("Color Swatches"),
+            iconName: "theme"
+        }
+    ]
 
     title: qsTr("Kitana Theme Preview")
     screen: Quickshell.screens.length > 0 ? Quickshell.screens[0] : null
@@ -93,6 +148,11 @@ FloatingWindow {
         panelVisible ? close() : open();
     }
 
+    function openIfAutoEnabled(): void {
+        if (Services.QuickshellSettings.themePreviewAutoOpen)
+            root.open();
+    }
+
     function refreshCurrentTheme(): void {
         const theme = Colors.theme && Colors.theme.slug ? Colors.theme.slug : Colors.name.toLowerCase().replace(/\s+/g, "-");
         themeRefreshProcess.exec([kitanaDir + "/bin/kitana-theme", theme]);
@@ -104,6 +164,8 @@ FloatingWindow {
             return Colors.fgPrimary;
         case "fgSecondary":
             return Colors.fgSecondary;
+        case "fgMuted":
+            return Colors.fgMuted;
         case "fgTertiary":
             return Colors.fgTertiary;
         case "fgOnPrimary":
@@ -235,6 +297,16 @@ FloatingWindow {
     Process {
         id: themeRefreshProcess
     }
+
+    Connections {
+        target: Services.QuickshellSettings
+
+        function onThemePreviewAutoOpenChanged(): void {
+            root.openIfAutoEnabled();
+        }
+    }
+
+    Component.onCompleted: Qt.callLater(root.openIfAutoEnabled)
 
     component SectionTitle: Text {
         width: parent ? parent.width : 0
@@ -394,6 +466,68 @@ FloatingWindow {
         }
     }
 
+    component HeaderToggle: Rectangle {
+        id: toggleRoot
+
+        property string label: ""
+        property bool checked: false
+
+        signal toggled
+
+        width: toggleLabel.implicitWidth + toggleTrack.width + 28
+        height: 28
+        radius: 9
+        color: toggleMouse.containsMouse || checked ? Colors.bgTertiary : Colors.bgSecondary
+        border.color: checked ? Colors.borderAccent : (toggleMouse.containsMouse ? Colors.borderLight : Colors.borderFaint)
+        border.width: 1
+
+        Row {
+            anchors.centerIn: parent
+            spacing: 8
+
+            Text {
+                id: toggleLabel
+
+                anchors.verticalCenter: parent.verticalCenter
+                text: toggleRoot.label
+                color: toggleRoot.checked ? Colors.fgPrimary : Colors.fgSecondary
+                font.family: Typography.fontFamily
+                font.pixelSize: settings.textPixelSize - 1
+                font.weight: Font.DemiBold
+            }
+
+            Rectangle {
+                id: toggleTrack
+
+                anchors.verticalCenter: parent.verticalCenter
+                width: 30
+                height: 16
+                radius: 8
+                color: toggleRoot.checked ? Colors.subtleAccent : Colors.bgPrimary
+                border.color: toggleRoot.checked ? Colors.borderAccent : Colors.borderFaint
+                border.width: 1
+
+                Rectangle {
+                    width: 10
+                    height: 10
+                    x: toggleRoot.checked ? parent.width - width - 3 : 3
+                    anchors.verticalCenter: parent.verticalCenter
+                    radius: 5
+                    color: toggleRoot.checked ? Colors.fgAccent : Colors.fgSecondary
+                }
+            }
+        }
+
+        MouseArea {
+            id: toggleMouse
+
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: toggleRoot.toggled()
+        }
+    }
+
     component IconToneSample: Item {
         id: toneRoot
 
@@ -423,6 +557,110 @@ FloatingWindow {
             font.family: Typography.fontFamily
             font.pixelSize: settings.textPixelSize - 5
             font.weight: Font.DemiBold
+        }
+    }
+
+    component BadgeVariantRow: Column {
+        id: badgeRowRoot
+
+        property string label: ""
+        property string size: "sm"
+        property bool outline: false
+        property bool rounded: false
+        property string iconName: ""
+        property var samples: root.badgeVariantSamples
+
+        width: parent ? parent.width : 0
+        spacing: 6
+
+        Text {
+            width: parent.width
+            text: badgeRowRoot.label
+            color: Colors.fgSecondary
+            font.family: Typography.fontFamily
+            font.pixelSize: settings.textPixelSize - 3
+            font.weight: Font.DemiBold
+        }
+
+        // Flow of shared badge variants on the active theme surface.
+        Flow {
+            width: parent.width
+            spacing: 7
+
+            Repeater {
+                model: badgeRowRoot.samples
+
+                Controls.Badge {
+                    required property var modelData
+
+                    width: implicitWidth
+                    height: implicitHeight
+                    text: modelData.label || String(modelData)
+                    size: modelData.badgeSize || badgeRowRoot.size
+                    colorVariant: modelData.variant || "subtle"
+                    outline: badgeRowRoot.outline
+                    rounded: badgeRowRoot.rounded
+                    icon: badgeRowRoot.iconName
+                }
+            }
+        }
+    }
+
+    component BadgeVariantPanel: Rectangle {
+        id: badgePanelRoot
+
+        property string title: qsTr("Badge Variants")
+        property color surfaceColor: Colors.bgSecondary
+
+        width: parent ? parent.width : 0
+        height: badgePanelContent.implicitHeight + 24
+        radius: 14
+        color: surfaceColor
+        border.color: Colors.borderFaint
+        border.width: 0.8
+
+        // Badge states using the shared Controls.Badge component.
+        Column {
+            id: badgePanelContent
+
+            anchors.fill: parent
+            anchors.margins: 12
+            spacing: 10
+
+            Text {
+                width: parent.width
+                text: badgePanelRoot.title
+                color: Colors.fgPrimary
+                font.family: Typography.fontFamily
+                font.pixelSize: settings.textPixelSize + 1
+                font.weight: Font.Bold
+            }
+
+            BadgeVariantRow {
+                label: qsTr("Filled")
+                iconName: "ui.dot"
+            }
+
+            BadgeVariantRow {
+                label: qsTr("Outline")
+                outline: true
+            }
+
+            BadgeVariantRow {
+                label: qsTr("Rounded")
+                rounded: true
+                iconName: "ui.dot"
+            }
+
+            BadgeVariantRow {
+                label: qsTr("Sizes")
+                samples: root.badgeSizeSamples.map(sizeName => ({
+                            variant: "accent",
+                            label: sizeName.toUpperCase(),
+                            badgeSize: sizeName
+                        }))
+                iconName: "theme"
+            }
         }
     }
 
@@ -858,6 +1096,479 @@ FloatingWindow {
         }
     }
 
+    component WidgetsTab: Column {
+        id: widgetsRoot
+
+        property int samplePage: 2
+        property string sampleSegment: "widgets"
+
+        width: parent ? parent.width : 0
+        spacing: 10
+
+        SectionTitle {
+            text: qsTr("Widgets")
+        }
+
+        Row {
+            width: parent.width
+            height: 42
+            spacing: 10
+
+            Rectangle {
+                width: (parent.width - parent.spacing) / 2
+                height: parent.height
+                radius: 8
+                color: Colors.barItemBg
+                border.color: Colors.barItemBorder
+                border.width: 1
+
+                Row {
+                    anchors.fill: parent
+                    anchors.margins: 8
+                    spacing: 8
+
+                    Controls.Icon {
+                        anchors.verticalCenter: parent.verticalCenter
+                        name: "theme"
+                        tone: "primary"
+                        sizeRole: "bar"
+                    }
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: parent.width - 116
+                        text: qsTr("Bar item")
+                        color: Colors.barItemFg
+                        elide: Text.ElideRight
+                        font.family: Typography.fontFamily
+                        font.pixelSize: settings.textPixelSize
+                        font.weight: Font.DemiBold
+                    }
+
+                    Controls.ShortcutBadge {
+                        width: implicitWidth
+                        height: implicitHeight
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "SUPER"
+                    }
+                }
+            }
+
+            Controls.InputField {
+                width: (parent.width - parent.spacing) / 2
+                height: parent.height
+                fieldHeight: parent.height
+                iconName: "search"
+                text: qsTr("sample query")
+                placeholderText: qsTr("Search theme roles")
+            }
+        }
+
+        Row {
+            width: parent.width
+            height: calendarSample.height
+            spacing: 10
+
+            CalendarSample {
+                id: calendarSample
+
+                width: (parent.width - parent.spacing) / 2
+            }
+
+            // Controls and notification widgets beside the calendar sample.
+            Column {
+                width: (parent.width - parent.spacing) / 2
+                height: parent.height
+                spacing: 10
+
+                Row {
+                    id: quickTileSamples
+
+                    width: parent.width
+                    height: 64
+                    spacing: 10
+
+                    System.QuickTile {
+                        width: (parent.width - parent.spacing) / 2
+                        iconName: "network.wifi.high"
+                        title: qsTr("Active Tile")
+                        subtitle: qsTr("Accent icon")
+                        active: true
+                    }
+
+                    System.QuickTile {
+                        width: (parent.width - parent.spacing) / 2
+                        iconName: "bluetooth.on"
+                        title: qsTr("Idle Tile")
+                        subtitle: qsTr("Subtle icon")
+                        active: false
+                    }
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: parent.height - quickTileSamples.height - parent.spacing
+                    radius: 14
+                    color: Colors.bgSecondary
+                    border.color: Colors.borderFaint
+                    border.width: 0.6
+                    clip: true
+
+                    Column {
+                        anchors.fill: parent
+                        anchors.margins: 14
+                        spacing: 10
+
+                        Rectangle {
+                            width: parent.width
+                            height: 102
+                            radius: 16
+                            color: hoverHandler.hovered ? Colors.scrimTertiary : Colors.bgTertiary
+                            border.color: Colors.borderLight
+                            border.width: 0.8
+
+                            HoverHandler {
+                                id: hoverHandler
+                            }
+
+                            // Notification-style card sample.
+                            Row {
+                                anchors.fill: parent
+                                anchors.margins: 12
+                                spacing: 12
+
+                                Rectangle {
+                                    id: notificationIcon
+
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: 42
+                                    height: 42
+                                    radius: 21
+                                    color: Colors.subtleAccent
+
+                                    Controls.Icon {
+                                        anchors.centerIn: parent
+                                        name: "notifications.on"
+                                        tone: "accent"
+                                        size: 20
+                                    }
+                                }
+
+                                Column {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: parent.width - notificationIcon.width - dismissStates.width - parent.spacing * 2
+                                    spacing: 4
+
+                                    Text {
+                                        width: parent.width
+                                        text: qsTr("Notification sample")
+                                        color: Colors.fgPrimary
+                                        elide: Text.ElideRight
+                                        font.family: Typography.fontFamily
+                                        font.pixelSize: settings.textPixelSize + 1
+                                        font.weight: Font.Bold
+                                    }
+
+                                    Rectangle {
+                                        width: parent.width
+                                        height: 1
+                                        color: Colors.borderHeavy
+                                    }
+
+                                    Text {
+                                        width: parent.width
+                                        text: qsTr("Foreground, border, and tertiary surface contrast.")
+                                        color: Colors.fgSecondary
+                                        elide: Text.ElideRight
+                                        font.family: Typography.fontFamily
+                                        font.pixelSize: settings.textPixelSize - 1
+                                    }
+                                }
+
+                                Row {
+                                    id: dismissStates
+
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: inactiveDismiss.width + activeDismiss.width + spacing
+                                    height: Math.max(inactiveDismiss.height, activeDismiss.height)
+                                    spacing: 8
+
+                                    Column {
+                                        id: inactiveDismiss
+
+                                        width: 52
+                                        spacing: 4
+
+                                        Text {
+                                            width: parent.width
+                                            text: qsTr("Inactive")
+                                            color: Colors.fgSecondary
+                                            horizontalAlignment: Text.AlignHCenter
+                                            font.family: Typography.fontFamily
+                                            font.pixelSize: settings.textPixelSize - 4
+                                        }
+
+                                        Controls.CloseButton {
+                                            width: implicitWidth
+                                            height: implicitHeight
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                        }
+                                    }
+
+                                    Column {
+                                        id: activeDismiss
+
+                                        width: 44
+                                        spacing: 4
+
+                                        Text {
+                                            width: parent.width
+                                            text: qsTr("Hover")
+                                            color: Colors.fgSecondary
+                                            horizontalAlignment: Text.AlignHCenter
+                                            font.family: Typography.fontFamily
+                                            font.pixelSize: settings.textPixelSize - 4
+                                        }
+
+                                        Controls.CloseButton {
+                                            width: implicitWidth
+                                            height: implicitHeight
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                            normalColor: Colors.scrimSecondary
+                                            hoverColor: Colors.scrimSecondary
+                                            normalTone: "primary"
+                                            hoverTone: "primary"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        Rectangle {
+                            width: parent.width
+                            height: 1
+                            color: Colors.borderLight
+                        }
+
+                        Row {
+                            width: parent.width
+                            height: 30
+                            spacing: 12
+
+                            Text {
+                                width: parent.width - silentFooterAction.width - clearFooterAction.width - parent.spacing * 2
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: qsTr("3 notifications")
+                                color: Colors.fgPrimary
+                                elide: Text.ElideRight
+                                font.family: Typography.fontFamily
+                                font.pixelSize: settings.textPixelSize + 2
+                                font.weight: Font.DemiBold
+                            }
+
+                            NotificationFooterAction {
+                                id: silentFooterAction
+
+                                iconName: "notifications.off"
+                                text: qsTr("Silent")
+                                active: true
+                            }
+
+                            NotificationFooterAction {
+                                id: clearFooterAction
+
+                                iconName: "notifications.dismiss.all"
+                                text: qsTr("Clear")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        System.SliderRow {
+            width: parent.width
+            iconName: "brightness"
+            value: 68
+            label: qsTr("68%")
+        }
+
+        Rectangle {
+            width: parent.width
+            height: widgetControls.implicitHeight + 24
+            radius: 14
+            color: Colors.bgSecondary
+            border.color: Colors.borderFaint
+            border.width: 0.8
+
+            // Shared control samples not tied to a larger panel.
+            Column {
+                id: widgetControls
+
+                anchors.fill: parent
+                anchors.margins: 12
+                spacing: 12
+
+                Text {
+                    width: parent.width
+                    text: qsTr("Navigation Controls")
+                    color: Colors.fgPrimary
+                    font.family: Typography.fontFamily
+                    font.pixelSize: settings.textPixelSize + 1
+                    font.weight: Font.Bold
+                }
+
+                Controls.SegmentedTabs {
+                    width: parent.width
+                    height: implicitHeight
+                    model: [
+                        {
+                            value: "widgets",
+                            label: qsTr("Widgets"),
+                            iconName: "theme"
+                        },
+                        {
+                            value: "badges",
+                            label: qsTr("Badges"),
+                            iconName: "ui.dot"
+                        },
+                        {
+                            value: "swatches",
+                            label: qsTr("Swatches"),
+                            iconName: "wallpaper"
+                        }
+                    ]
+                    currentValue: widgetsRoot.sampleSegment
+                    onActivated: value => widgetsRoot.sampleSegment = value
+                }
+
+                Item {
+                    width: parent.width
+                    height: 30
+
+                    Controls.Pagination {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        currentPage: widgetsRoot.samplePage
+                        pageCount: 12
+                        wrap: true
+                        onPageRequested: page => widgetsRoot.samplePage = page
+                    }
+                }
+
+                Controls.KeyHintBar {
+                    width: parent.width
+                    hints: qsTr("Up/Down Navigate  -  Enter Select  -  Esc Close")
+                }
+            }
+        }
+    }
+
+    component SurfacesTab: Column {
+        width: parent ? parent.width : 0
+        spacing: 10
+
+        SectionTitle {
+            text: qsTr("Surfaces")
+        }
+
+        ControlSurfaceSample {
+            width: parent.width
+            label: "bgPrimary"
+            surfaceColor: Colors.bgPrimary
+        }
+
+        ControlSurfaceSample {
+            width: parent.width
+            label: "bgSecondary"
+            surfaceColor: Colors.bgSecondary
+        }
+
+        ControlSurfaceSample {
+            width: parent.width
+            label: "bgTertiary"
+            surfaceColor: Colors.bgTertiary
+        }
+    }
+
+    component BadgesTab: Column {
+        width: parent ? parent.width : 0
+        spacing: 10
+
+        SectionTitle {
+            text: qsTr("Badges")
+        }
+
+        BadgeVariantPanel {
+            width: parent.width
+            title: qsTr("Badge Variants On bgPrimary")
+            surfaceColor: Colors.bgPrimary
+        }
+
+        BadgeVariantPanel {
+            width: parent.width
+            title: qsTr("Badge Variants On bgSecondary")
+            surfaceColor: Colors.bgSecondary
+        }
+
+        BadgeVariantPanel {
+            width: parent.width
+            title: qsTr("Badge Variants On bgTertiary")
+            surfaceColor: Colors.bgTertiary
+        }
+    }
+
+    component ColorSwatchesTab: Column {
+        width: parent ? parent.width : 0
+        spacing: 10
+
+        SectionTitle {
+            text: qsTr("Color Swatches")
+        }
+
+        RoleGroup {
+            title: qsTr("Foreground")
+            columns: 4
+            roles: root.foregroundRoles
+        }
+
+        RoleGroup {
+            title: qsTr("Background")
+            columns: 4
+            roles: root.backgroundRoles
+        }
+
+        RoleGroup {
+            title: qsTr("Border")
+            columns: 4
+            roles: root.borderRoles
+        }
+
+        RoleGroup {
+            title: qsTr("Overlay")
+            columns: 4
+            roles: root.overlayRoles
+        }
+
+        RoleGroup {
+            title: qsTr("Feedback And Subtle")
+            columns: 4
+            roles: root.feedbackRoles
+        }
+
+        RoleGroup {
+            title: qsTr("QML Composition")
+            columns: 4
+            roles: root.compositionRoles
+        }
+
+        RoleGroup {
+            title: qsTr("Icon Tones")
+            columns: 4
+            roles: root.iconRoles
+        }
+    }
+
     // Draggable app-style theme preview surface
     Rectangle {
         id: card
@@ -887,7 +1598,7 @@ FloatingWindow {
                 Item {
                     id: titleArea
 
-                    width: parent.width - refreshButton.width - closeButton.width - parent.spacing * 2
+                    width: parent.width - autoOpenToggle.width - refreshButton.width - closeButton.width - parent.spacing * 3
                     height: titleColumn.implicitHeight
 
                     Column {
@@ -924,6 +1635,15 @@ FloatingWindow {
                     }
                 }
 
+                HeaderToggle {
+                    id: autoOpenToggle
+
+                    anchors.verticalCenter: parent.verticalCenter
+                    label: qsTr("Open On Restart")
+                    checked: Services.QuickshellSettings.themePreviewAutoOpen
+                    onToggled: Services.QuickshellSettings.setThemePreviewAutoOpen(!autoOpenToggle.checked)
+                }
+
                 HeaderButton {
                     id: refreshButton
 
@@ -942,29 +1662,81 @@ FloatingWindow {
                 }
             }
 
+            Controls.SegmentedTabs {
+                id: previewTabs
+
+                width: parent.width
+                height: implicitHeight
+                model: root.previewTabs
+                currentValue: root.activeTab
+                onActivated: value => root.activeTab = value
+            }
+
             // Scrollable preview content
             Flickable {
                 id: scroll
 
                 width: parent.width
-                height: Math.max(0, parent.height - previewHeader.height - parent.spacing)
+                height: Math.max(0, parent.height - previewHeader.height - previewTabs.height - parent.spacing * 2)
                 contentWidth: width
                 contentHeight: content.height
                 boundsBehavior: Flickable.StopAtBounds
                 clip: true
 
-                Row {
+                Column {
                     id: content
 
                     width: scroll.width
-                    height: Math.max(samplesColumn.implicitHeight, swatchesColumn.implicitHeight)
-                    spacing: 16
+                    height: tabContentLoader.height
+                    spacing: 0
+
+                    Component {
+                        id: widgetsTabComponent
+
+                        WidgetsTab {
+                            width: content.width
+                        }
+                    }
+
+                    Component {
+                        id: surfacesTabComponent
+
+                        SurfacesTab {
+                            width: content.width
+                        }
+                    }
+
+                    Component {
+                        id: badgesTabComponent
+
+                        BadgesTab {
+                            width: content.width
+                        }
+                    }
+
+                    Component {
+                        id: swatchesTabComponent
+
+                        ColorSwatchesTab {
+                            width: content.width
+                        }
+                    }
+
+                    Loader {
+                        id: tabContentLoader
+
+                        width: parent.width
+                        height: implicitHeight
+                        sourceComponent: root.activeTab === "surfaces" ? surfacesTabComponent : (root.activeTab === "badges" ? badgesTabComponent : (root.activeTab === "swatches" ? swatchesTabComponent : widgetsTabComponent))
+                    }
 
                     // Representative shell surfaces and controls
                     Column {
                         id: samplesColumn
 
-                        width: Math.floor((parent.width - parent.spacing) * 0.58)
+                        visible: false
+                        width: 0
+                        height: 0
                         spacing: 10
 
                         SectionTitle {
@@ -1024,6 +1796,10 @@ FloatingWindow {
                                 text: qsTr("sample query")
                                 placeholderText: qsTr("Search theme roles")
                             }
+                        }
+
+                        BadgeVariantPanel {
+                            width: parent.width
                         }
 
                         Row {
@@ -1286,7 +2062,9 @@ FloatingWindow {
                     Column {
                         id: swatchesColumn
 
-                        width: parent.width - samplesColumn.width - parent.spacing
+                        visible: false
+                        width: 0
+                        height: 0
                         spacing: 10
 
                         SectionTitle {
