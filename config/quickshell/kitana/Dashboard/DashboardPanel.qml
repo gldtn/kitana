@@ -87,7 +87,7 @@ PanelWindow {
     readonly property int compactWidth: Math.round(collapsedWidth)
     readonly property int compactHeight: Math.round(collapsedHeight)
     readonly property bool settingsExpanded: activeTab === "settings"
-    readonly property real expandedChromeHeight: 2 * 14 + 2 * 10 + tabSelector.implicitHeight + 1
+    readonly property real expandedChromeHeight: 2 * 14 + 10 + tabSelector.implicitHeight
     readonly property real expandedTargetWidth: settingsExpanded ? 820 : 700
     readonly property real expandedTargetHeight: settingsExpanded && settingsPreferredContentHeight > 0 ? Math.max(500, settingsPreferredContentHeight + expandedChromeHeight) : 500
     readonly property real expandedWidth: Math.min(expandedTargetWidth, Math.max(collapsedWidth, activeScreenWidth - 32))
@@ -1184,63 +1184,45 @@ PanelWindow {
                 Layout.fillWidth: true
                 spacing: 8
 
-                Dashboard.TabButton {
-                    dashboard: root.panelSelf
-                    iconName: "calendar"
-                    label: "Date"
-                    tab: "datetime"
-                }
-                Dashboard.TabButton {
-                    dashboard: root.panelSelf
-                    iconName: "weather.default"
-                    label: "Weather"
-                    tab: "weather"
-                }
-                Dashboard.TabButton {
-                    dashboard: root.panelSelf
-                    iconName: "media.default"
-                    label: "Media"
-                    tab: "media"
-                }
-                Dashboard.TabButton {
-                    dashboard: root.panelSelf
-                    iconName: "wallpaper"
-                    label: "Wallpapers"
-                    tab: "wallpapers"
-                }
-                Dashboard.TabButton {
-                    dashboard: root.panelSelf
-                    iconName: "theme"
-                    label: "Themes"
-                    tab: "themes"
-                }
-
-                Item {
+                Controls.Tabs {
                     Layout.fillWidth: true
+                    Layout.preferredHeight: implicitHeight
+                    iconPosition: "top"
+                    model: [
+                        {
+                            value: "datetime",
+                            label: qsTr("Date"),
+                            iconName: "calendar"
+                        },
+                        {
+                            value: "weather",
+                            label: qsTr("Weather"),
+                            iconName: "weather.default"
+                        },
+                        {
+                            value: "media",
+                            label: qsTr("Media"),
+                            iconName: "media.default"
+                        },
+                        {
+                            value: "wallpapers",
+                            label: qsTr("Wallpapers"),
+                            iconName: "wallpaper"
+                        },
+                        {
+                            value: "themes",
+                            label: qsTr("Themes"),
+                            iconName: "theme"
+                        },
+                        {
+                            value: "settings",
+                            label: qsTr("Settings"),
+                            iconName: "settings"
+                        }
+                    ]
+                    currentValue: root.activeTab
+                    onActivated: value => root.selectTab(value)
                 }
-
-                Dashboard.TabButton {
-                    dashboard: root.panelSelf
-                    iconName: "settings"
-                    label: ""
-                    tab: "settings"
-                    compact: true
-                }
-
-                Controls.CloseButton {
-                    Layout.alignment: Qt.AlignVCenter
-                    onClicked: {
-                        root.setCompactHoverLatched(false);
-                        root.close();
-                    }
-                }
-            }
-
-            // Tab header divider
-            Rectangle {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 1
-                color: Colors.borderFaint
             }
 
             // Active dashboard tab loader

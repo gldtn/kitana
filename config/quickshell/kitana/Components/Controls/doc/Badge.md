@@ -19,6 +19,7 @@ Project imports: `import "../.."`, `import "../../custom" as Custom`.
 | `text` | `string` | `""` | Badge label. |
 | `size` | `string` | `"sm"` | Size variant: `xs`, `sm`, `md`, or `lg`. |
 | `colorVariant` | `string` | `"subtle"` | Color variant: `primary`, `secondary`, `subtle`, `ghost`, or `accent`. |
+| `surfaceVariant` | `string` | `"default"` | Surface context for color tuning. Use `tertiary` when the badge sits on `Colors.bgTertiary`. |
 | `hasBorder` | `bool` | `false` | Adds a fractional border around the badge without changing the fill. |
 | `rounded` | `bool` | `false` | Uses pill radius instead of compact badge radius. |
 | `icon` | `string` | `""` | Optional leading semantic icon token. |

@@ -572,6 +572,7 @@ FloatingWindow {
         property bool hasBorder: false
         property bool rounded: false
         property string iconName: ""
+        property string surfaceVariant: "default"
         property var samples: root.badgeVariantSamples
 
         width: parent ? parent.width : 0
@@ -602,6 +603,7 @@ FloatingWindow {
                     text: modelData.label || String(modelData)
                     size: modelData.badgeSize || badgeRowRoot.size
                     colorVariant: modelData.variant || "subtle"
+                    surfaceVariant: badgeRowRoot.surfaceVariant
                     hasBorder: badgeRowRoot.hasBorder
                     rounded: badgeRowRoot.rounded
                     icon: badgeRowRoot.iconName
@@ -613,6 +615,7 @@ FloatingWindow {
     component BadgeVariantGrid: Row {
         id: badgeGridRoot
 
+        property string surfaceVariant: "default"
         readonly property real columnWidth: Math.max(0, (width - spacing) / 2)
 
         width: parent ? parent.width : 0
@@ -625,17 +628,20 @@ FloatingWindow {
             BadgeVariantRow {
                 width: parent.width
                 label: qsTr("Filled")
+                surfaceVariant: badgeGridRoot.surfaceVariant
             }
 
             BadgeVariantRow {
                 width: parent.width
                 label: qsTr("Bordered")
+                surfaceVariant: badgeGridRoot.surfaceVariant
                 hasBorder: true
             }
 
             BadgeVariantRow {
                 width: parent.width
                 label: qsTr("Rounded")
+                surfaceVariant: badgeGridRoot.surfaceVariant
                 rounded: true
             }
         }
@@ -647,6 +653,7 @@ FloatingWindow {
             BadgeVariantRow {
                 width: parent.width
                 label: qsTr("Sizes")
+                surfaceVariant: badgeGridRoot.surfaceVariant
                 samples: root.badgeSizeSamples.map(sizeName => ({
                             variant: "accent",
                             label: sizeName.toUpperCase(),
@@ -657,6 +664,7 @@ FloatingWindow {
             BadgeVariantRow {
                 width: parent.width
                 label: qsTr("With Icon")
+                surfaceVariant: badgeGridRoot.surfaceVariant
                 iconName: "theme"
             }
         }
@@ -667,6 +675,7 @@ FloatingWindow {
 
         property string title: qsTr("Badge Variants")
         property color surfaceColor: Colors.bgSecondary
+        property string surfaceVariant: "default"
 
         width: parent ? parent.width : 0
         height: badgePanelContent.implicitHeight + 24
@@ -696,6 +705,7 @@ FloatingWindow {
 
             BadgeVariantGrid {
                 width: parent.width
+                surfaceVariant: badgePanelRoot.surfaceVariant
             }
         }
     }
@@ -936,6 +946,7 @@ FloatingWindow {
 
         property string label: ""
         property color surfaceColor: Colors.bgSecondary
+        readonly property string badgeSurfaceVariant: label === "bgTertiary" ? "tertiary" : "default"
 
         height: surfaceContent.implicitHeight + surfaceContent.anchors.topMargin + surfaceContent.anchors.bottomMargin
         radius: 14
@@ -1095,6 +1106,7 @@ FloatingWindow {
 
                 BadgeVariantGrid {
                     width: parent.width
+                    surfaceVariant: surfaceRoot.badgeSurfaceVariant
                 }
             }
 
@@ -1159,6 +1171,10 @@ FloatingWindow {
 
         property int samplePage: 2
         property string sampleSegment: "widgets"
+        property string sampleIconTab: "overview"
+        property string sampleTopIconTab: "overview"
+        property string samplePillTab: "board"
+        property string sampleSegmentedTab: "board"
 
         width: parent ? parent.width : 0
         spacing: 10
@@ -1482,9 +1498,12 @@ FloatingWindow {
                     font.weight: Font.Bold
                 }
 
-                Controls.SegmentedTabs {
+                Controls.Tabs {
                     width: parent.width
                     height: implicitHeight
+                    variant: "default"
+                    equalWidth: false
+                    showIcons: false
                     model: [
                         {
                             value: "widgets",
@@ -1504,6 +1523,117 @@ FloatingWindow {
                     ]
                     currentValue: widgetsRoot.sampleSegment
                     onActivated: value => widgetsRoot.sampleSegment = value
+                }
+
+                Controls.Tabs {
+                    width: parent.width
+                    height: implicitHeight
+                    variant: "default"
+                    equalWidth: false
+                    model: [
+                        {
+                            value: "overview",
+                            label: qsTr("Overview"),
+                            iconName: "dashboard"
+                        },
+                        {
+                            value: "media",
+                            label: qsTr("Media"),
+                            iconName: "media.default"
+                        },
+                        {
+                            value: "weather",
+                            label: qsTr("Weather"),
+                            iconName: "weather.default"
+                        }
+                    ]
+                    currentValue: widgetsRoot.sampleIconTab
+                    onActivated: value => widgetsRoot.sampleIconTab = value
+                }
+
+                Controls.Tabs {
+                    width: parent.width
+                    height: implicitHeight
+                    variant: "default"
+                    iconPosition: "top"
+                    model: [
+                        {
+                            value: "overview",
+                            label: qsTr("Overview"),
+                            iconName: "dashboard"
+                        },
+                        {
+                            value: "media",
+                            label: qsTr("Media"),
+                            iconName: "media.note"
+                        },
+                        {
+                            value: "wallpapers",
+                            label: qsTr("Wallpapers"),
+                            iconName: "wallpaper"
+                        },
+                        {
+                            value: "weather",
+                            label: qsTr("Weather"),
+                            iconName: "weather.default"
+                        },
+                        {
+                            value: "settings",
+                            label: qsTr("Settings"),
+                            iconName: "settings"
+                        }
+                    ]
+                    currentValue: widgetsRoot.sampleTopIconTab
+                    onActivated: value => widgetsRoot.sampleTopIconTab = value
+                }
+
+                Controls.Tabs {
+                    width: parent.width
+                    height: implicitHeight
+                    variant: "pills"
+                    equalWidth: false
+                    showIcons: false
+                    model: [
+                        {
+                            value: "list",
+                            label: qsTr("List")
+                        },
+                        {
+                            value: "board",
+                            label: qsTr("Board")
+                        },
+                        {
+                            value: "timeline",
+                            label: qsTr("Timeline")
+                        }
+                    ]
+                    currentValue: widgetsRoot.samplePillTab
+                    onActivated: value => widgetsRoot.samplePillTab = value
+                }
+
+                Controls.Tabs {
+                    width: parent.width
+                    height: implicitHeight
+                    variant: "segmented"
+                    model: [
+                        {
+                            value: "list",
+                            label: qsTr("List"),
+                            iconName: "ui.more.horizontal"
+                        },
+                        {
+                            value: "board",
+                            label: qsTr("Board"),
+                            iconName: "dashboard"
+                        },
+                        {
+                            value: "timeline",
+                            label: qsTr("Timeline"),
+                            iconName: "calendar"
+                        }
+                    ]
+                    currentValue: widgetsRoot.sampleSegmentedTab
+                    onActivated: value => widgetsRoot.sampleSegmentedTab = value
                 }
 
                 Item {
@@ -1707,11 +1837,13 @@ FloatingWindow {
                 }
             }
 
-            Controls.SegmentedTabs {
+            Controls.Tabs {
                 id: previewTabs
 
                 width: parent.width
                 height: implicitHeight
+                variant: "default"
+                iconPosition: "top"
                 model: root.previewTabModel
                 currentValue: root.activeTab
                 onActivated: value => root.activeTab = value

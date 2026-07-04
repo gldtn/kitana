@@ -16,6 +16,7 @@ Rectangle {
     property string text: ""
     property string size: "sm"
     property string colorVariant: "subtle"
+    property string surfaceVariant: "default"
     property bool hasBorder: false
     property bool rounded: false
     property string icon: ""
@@ -55,6 +56,12 @@ Rectangle {
         if (colorVariant === "primary" || colorVariant === "secondary" || colorVariant === "subtle" || colorVariant === "ghost" || colorVariant === "accent")
             return colorVariant;
         return "subtle";
+    }
+
+    function normalizedSurfaceVariant(): string {
+        if (surfaceVariant === "tertiary")
+            return surfaceVariant;
+        return "default";
     }
 
     function shouldDrawBorder(): bool {
@@ -130,14 +137,21 @@ Rectangle {
 
     function defaultBackgroundColor(): color {
         const value = normalizedVariant();
+        const surface = normalizedSurfaceVariant();
         if (value === "ghost")
             return "transparent";
-        if (value === "primary")
-            return Colors.bgTertiary;
+        if (value === "primary") {
+            if (surface === "tertiary")
+                return Colors.mixColor(Colors.bgSecondary, Colors.bgTertiary, 0.16);
+            return Colors.mixColor(Colors.bgTertiary, Colors.bgSecondary, 0.12);
+        }
         if (value === "secondary")
-            return Colors.bgSecondary;
-        if (value === "subtle")
             return Colors.mixColor(Colors.bgTertiary, Colors.bgPrimary, 0.45);
+        if (value === "subtle") {
+            if (surface === "tertiary")
+                return Colors.mixColor(Colors.bgTertiary, Colors.bgSecondary, 0.12);
+            return Colors.mixColor(Colors.bgSecondary, Colors.bgTertiary, 0.16);
+        }
         if (value === "accent")
             return Colors.subtleAccent;
         return Colors.bgPrimary;

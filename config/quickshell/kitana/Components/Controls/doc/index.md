@@ -11,6 +11,6 @@
 | [`KeyHintBar`](KeyHintBar.md) | `KeyHintBar.qml` | KeyHintBar is a reusable Components component used to compose panel content consistently. |
 | [`PanelRow`](PanelRow.md) | `PanelRow.qml` | PanelRow is a reusable Components component used to compose panel content consistently. |
 | [`Pagination`](Pagination.md) | `Pagination.qml` | Pagination is a reusable Flux-style page navigation row with chevrons, numbered pages, and ellipses. |
-| [`SegmentedTabs`](SegmentedTabs.md) | `SegmentedTabs.qml` | SegmentedTabs is a reusable segmented selector with optional icons, equal-width segments, and compact sizing. |
 | [`ShortcutBadge`](ShortcutBadge.md) | `ShortcutBadge.qml` | ShortcutBadge is a reusable static keyboard shortcut label with subtle background and border roles. |
+| [`Tabs`](Tabs.md) | `Tabs.qml` | Tabs is a reusable Flux-inspired tab selector with default, segmented, pill, and icon layouts. |
 | [`ValueSlider`](ValueSlider.md) | `ValueSlider.qml` | ValueSlider is the shared Kitana slider control for percentage-like values. |

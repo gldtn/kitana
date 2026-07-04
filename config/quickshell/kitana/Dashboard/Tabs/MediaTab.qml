@@ -210,11 +210,12 @@ Item {
                         width: Math.min(albumBackdrop.width - 32, Math.max(124, qualityBadge.implicitWidth))
                         text: Services.SystemStatus.audioQualityLabel
                         size: "sm"
+                        hasBorder: true
                         colorVariant: "secondary"
                         icon: "media.note"
+                        iconTone: "secondary"
                         horizontalPadding: 10
                         fontPixelSize: settings.textPixelSize - 2
-                        iconTone: "secondary"
                     }
                 }
 

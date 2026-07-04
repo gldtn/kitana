@@ -665,11 +665,12 @@ PanelWindow {
                             }
                         }
 
-                        Controls.SegmentedTabs {
+                        Controls.Tabs {
                             Layout.fillWidth: false
                             Layout.preferredWidth: 220
                             Layout.maximumWidth: 220
                             Layout.alignment: Qt.AlignTop
+                            variant: "segmented"
                             small: true
                             showIcons: false
                             model: root.workspaceLayoutOptions()
@@ -850,11 +851,12 @@ PanelWindow {
                         }
                     }
 
-                    Controls.SegmentedTabs {
+                    Controls.Tabs {
                         Layout.fillWidth: false
                         Layout.preferredWidth: 210
                         Layout.maximumWidth: 210
                         Layout.alignment: Qt.AlignTop
+                        variant: "segmented"
                         small: true
                         showIcons: false
                         enabled: !Services.LoginMonitor.saving
