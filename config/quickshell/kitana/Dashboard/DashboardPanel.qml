@@ -46,7 +46,6 @@ PanelWindow {
     property string pickerQuery: ""
     property bool pickerSearchActive: false
     property bool pickerHelpVisible: false
-    property bool compactHoverLatched: false
     property string wallpaperDirPending: ""
     property string wallpaperSetName: "default"
     property string wallpaperManagerPath: ""
@@ -80,12 +79,9 @@ PanelWindow {
     readonly property int activeScreenHeight: activeScreen ? activeScreen.height : 1080
     readonly property real collapsedWidth: Math.max(islandPreview.implicitWidth, 1)
     readonly property real collapsedHeight: Math.max(islandPreview.implicitHeight, Services.UiPreferences.pillHeight)
+    readonly property real collapsedBaseHeight: Services.UiPreferences.pillHeight
     readonly property real collapsedX: Math.max(0, (activeScreenWidth - collapsedWidth) / 2)
-    readonly property real collapsedY: Services.UiPreferences.topMargin + (Services.UiPreferences.panelHeight - collapsedHeight) / 2
-    readonly property int compactX: Math.round(collapsedX)
-    readonly property int compactY: Math.round(collapsedY)
-    readonly property int compactWidth: Math.round(collapsedWidth)
-    readonly property int compactHeight: Math.round(collapsedHeight)
+    readonly property real collapsedY: Services.UiPreferences.topMargin + (Services.UiPreferences.panelHeight - collapsedBaseHeight) / 2
     readonly property bool settingsExpanded: activeTab === "settings"
     readonly property real expandedChromeHeight: 2 * 14 + 10 + tabSelector.implicitHeight
     readonly property real expandedTargetWidth: settingsExpanded ? 820 : 700
@@ -98,7 +94,6 @@ PanelWindow {
     readonly property real expandedRadius: 18
     readonly property real contentOpacity: smoothstep(0.58, 1, morphProgress)
     readonly property real previewOpacity: 1 - smoothstep(0.12, 0.42, morphProgress)
-    readonly property bool summaryIconVisible: compactHoverLatched || (!expandedSurface && cardMouse.containsMouse)
     readonly property var hyprlandMonitor: panelScreen ? Hyprland.monitorFor(panelScreen) : null
     readonly property var activeWorkspace: hyprlandMonitor !== null ? hyprlandMonitor.activeWorkspace : null
     readonly property bool hiddenByFullscreen: !expandedSurface && activeWorkspace !== null && activeWorkspace.hasFullscreen && hasTrueFullscreen(activeWorkspace)
@@ -128,20 +123,15 @@ PanelWindow {
     }
 
     function compactContains(x: real, y: real): bool {
-        return x >= compactX && x <= compactX + compactWidth && y >= compactY && y <= compactY + compactHeight;
+        return x >= collapsedX && x <= collapsedX + collapsedWidth && y >= collapsedY && y <= collapsedY + collapsedHeight;
     }
 
-    function setCompactHoverLatched(value: bool): void {
-        compactHoverLatched = value;
-    }
-
-    function updateCompactHover(x: real, y: real): void {
-        compactHoverLatched = compactContains(x, y);
+    function compactOpenTab(): string {
+        return islandSummary ? islandSummary.compactOpenTab : (Services.MediaService.playing ? "media" : "datetime");
     }
 
     function reopenFromCompact(): void {
-        compactHoverLatched = true;
-        open(activeTab || "datetime");
+        open(compactOpenTab());
     }
 
     function hasTrueFullscreen(workspace: var): bool {
@@ -1049,7 +1039,6 @@ PanelWindow {
         focus: root.expandedSurface
         Keys.priority: Keys.BeforeItem
         Keys.onPressed: event => root.handleKey(event)
-        onPositionChanged: mouse => root.updateCompactHover(mouse.x, mouse.y)
         onClicked: mouse => {
             if (root.closing && root.compactContains(mouse.x, mouse.y)) {
                 root.reopenFromCompact();
@@ -1063,10 +1052,10 @@ PanelWindow {
     Rectangle {
         id: card
 
-        x: root.lerp(root.compactX, root.expandedX, root.morphProgress)
-        y: root.lerp(root.compactY, root.expandedTopMargin, root.morphProgress)
-        width: root.lerp(root.compactWidth, root.expandedWidth, root.morphProgress)
-        height: root.lerp(root.compactHeight, root.expandedHeight, root.morphProgress)
+        x: root.lerp(root.collapsedX, root.expandedX, root.morphProgress)
+        y: root.lerp(root.collapsedY, root.expandedTopMargin, root.morphProgress)
+        width: root.lerp(root.collapsedWidth, root.expandedWidth, root.morphProgress)
+        height: root.lerp(root.collapsedHeight, root.expandedHeight, root.morphProgress)
         opacity: root.visible ? 1 : 0
         radius: root.lerp(root.collapsedRadius, root.expandedRadius, root.morphProgress)
         color: Colors.mixColor(Colors.barItemBg, Colors.bgPrimary, root.morphProgress)
@@ -1106,19 +1095,22 @@ PanelWindow {
             id: cardMouse
 
             anchors.fill: parent
+            acceptedButtons: Qt.LeftButton | Qt.RightButton
             hoverEnabled: true
             cursorShape: root.expandedSurface ? Qt.ArrowCursor : Qt.PointingHandCursor
             onPressed: mouse => mouse.accepted = true
-            onContainsMouseChanged: if (!root.expandedSurface)
-                root.setCompactHoverLatched(containsMouse)
-            onPositionChanged: mouse => root.updateCompactHover(card.x + mouse.x, card.y + mouse.y)
-            onClicked: {
+            onClicked: mouse => {
+                if (!root.expandedSurface && mouse.button === Qt.RightButton) {
+                    islandSummary.cycleSummaryMode();
+                    return;
+                }
+
                 if (root.closing) {
                     root.reopenFromCompact();
                     return;
                 }
                 if (!root.expandedSurface)
-                    root.open("datetime");
+                    root.open(root.compactOpenTab());
             }
         }
 
@@ -1126,10 +1118,10 @@ PanelWindow {
         Item {
             id: islandPreview
 
-            x: root.compactX - card.x
-            y: root.compactY - card.y
+            x: root.collapsedX - card.x
+            y: root.collapsedY - card.y
             implicitWidth: Math.max(islandSummary.implicitWidth, Services.UiPreferences.pillHeight) + Services.UiPreferences.clockHorizontalPadding
-            implicitHeight: Services.UiPreferences.pillHeight
+            implicitHeight: Math.max(islandSummary.implicitHeight, Services.UiPreferences.pillHeight)
             width: implicitWidth
             height: implicitHeight
             opacity: root.previewOpacity
@@ -1140,32 +1132,6 @@ PanelWindow {
 
                 anchors.centerIn: parent
                 dashboardPanel: root.panelSelf
-                opacity: root.summaryIconVisible ? 0 : 1
-                visible: !root.summaryIconVisible
-
-                Behavior on opacity {
-                    NumberAnimation {
-                        duration: 120
-                        easing.type: Easing.OutCubic
-                    }
-                }
-            }
-
-            // Hover affordance for the whole clickable dashboard island.
-            Controls.Icon {
-                anchors.centerIn: parent
-                name: "dashboard"
-                tone: "accent"
-                sizeRole: "bar"
-                opacity: root.summaryIconVisible ? 1 : 0
-                visible: root.summaryIconVisible || opacity > 0
-
-                Behavior on opacity {
-                    NumberAnimation {
-                        duration: 120
-                        easing.type: Easing.OutCubic
-                    }
-                }
             }
         }
 
