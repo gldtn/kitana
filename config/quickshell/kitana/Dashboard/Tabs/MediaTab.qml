@@ -637,116 +637,120 @@ Item {
         }
     }
 
-    // Click-away region for the output picker.
-    MouseArea {
+    // Modal backdrop and click-away target for the output picker.
+    Controls.PopupBackdrop {
         anchors.fill: parent
-        enabled: tabRoot.outputDevicePickerOpen
-        visible: enabled
+        open: tabRoot.outputDevicePickerOpen
+        rendered: tabRoot.outputDevicePickerRendered
+        scrimColor: Colors.alpha(Colors.bgPrimary, 0.36)
         z: 20
-        onClicked: tabRoot.outputDevicePickerOpen = false
-    }
+        onDismissed: tabRoot.outputDevicePickerOpen = false
 
-    // Lightweight output device picker with subtle zebra rows.
-    Rectangle {
-        id: outputDevicePickerPopup
+        // Lightweight output device picker with subtle zebra rows.
+        Rectangle {
+            id: outputDevicePickerPopup
 
-        readonly property point popupOrigin: outputControlCard.mapToItem(tabRoot, outputControlCard.width - width - 12, outputControlCard.height - height - 12)
+            readonly property point popupOrigin: outputControlCard.mapToItem(tabRoot, outputControlCard.width - width - 12, outputControlCard.height - height - 12)
 
-        visible: tabRoot.outputDevicePickerRendered
-        z: 21
-        width: Math.min(330, Math.max(270, outputControlCard.width - 24))
-        height: Math.min(250, outputDeviceList.implicitHeight + 50)
-        x: Math.max(0, Math.min(tabRoot.width - width, popupOrigin.x))
-        y: Math.max(0, Math.min(tabRoot.height - height, popupOrigin.y))
-        opacity: tabRoot.outputDevicePickerOpen ? 1 : 0
-        scale: tabRoot.outputDevicePickerOpen ? 1 : 0.92
-        transformOrigin: Item.BottomRight
-        radius: tabRoot.controlRadius
-        color: Colors.bgPrimary
-        border.color: Colors.borderFaint
-        border.width: 1
-        clip: true
+            width: Math.min(330, Math.max(270, outputControlCard.width - 24))
+            height: Math.min(250, outputDeviceList.implicitHeight + 50)
+            x: Math.max(0, Math.min(tabRoot.width - width, popupOrigin.x))
+            y: Math.max(0, Math.min(tabRoot.height - height, popupOrigin.y))
+            opacity: tabRoot.outputDevicePickerOpen ? 1 : 0
+            scale: tabRoot.outputDevicePickerOpen ? 1 : 0.92
+            transformOrigin: Item.BottomRight
+            radius: tabRoot.controlRadius
+            color: Colors.bgPrimary
+            border.color: Colors.borderFaint
+            border.width: 1
+            clip: true
 
-        Behavior on opacity {
-            NumberAnimation {
-                duration: 140
-                easing.type: Easing.OutCubic
+            MouseArea {
+                anchors.fill: parent
+                onPressed: mouse => mouse.accepted = true
             }
-        }
 
-        Behavior on scale {
-            NumberAnimation {
-                duration: 150
-                easing.type: Easing.OutBack
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 140
+                    easing.type: Easing.OutCubic
+                }
             }
-        }
 
-        ColumnLayout {
-            anchors.fill: parent
-            anchors.margins: 9
-            spacing: 6
+            Behavior on scale {
+                NumberAnimation {
+                    duration: 150
+                    easing.type: Easing.OutBack
+                }
+            }
 
-            // Popup header with explicit dismiss affordance.
-            RowLayout {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 24
-                spacing: 8
+            ColumnLayout {
+                anchors.fill: parent
+                anchors.margins: 9
+                spacing: 6
 
-                Text {
+                // Popup header with explicit dismiss affordance.
+                RowLayout {
                     Layout.fillWidth: true
-                    text: "Output Devices"
-                    color: Colors.fgPrimary
-                    elide: Text.ElideRight
-                    font.family: Typography.fontFamily
-                    font.pixelSize: settings.textPixelSize
-                    font.weight: Font.DemiBold
-                }
-
-                Controls.CloseButton {
-                    buttonSize: 22
-                    iconSize: 12
-                    variant: "light"
-                    onClicked: tabRoot.outputDevicePickerOpen = false
-                }
-            }
-
-            Flickable {
-                id: outputDeviceFlickable
-
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                contentWidth: width
-                contentHeight: outputDeviceList.implicitHeight
-                boundsBehavior: Flickable.StopAtBounds
-                clip: true
-
-                Column {
-                    id: outputDeviceList
-
-                    width: outputDeviceFlickable.width
-                    spacing: 1
+                    Layout.preferredHeight: 24
+                    spacing: 8
 
                     Text {
-                        width: parent.width
-                        height: visible ? 38 : 0
-                        visible: Services.SystemStatus.audioSinks.length === 0
-                        text: "No output devices"
-                        color: Colors.fgSecondary
-                        verticalAlignment: Text.AlignVCenter
-                        horizontalAlignment: Text.AlignHCenter
+                        Layout.fillWidth: true
+                        text: "Output Devices"
+                        color: Colors.fgPrimary
+                        elide: Text.ElideRight
                         font.family: Typography.fontFamily
                         font.pixelSize: settings.textPixelSize
+                        font.weight: Font.DemiBold
                     }
 
-                    Repeater {
-                        model: Services.SystemStatus.audioSinks
+                    Controls.CloseButton {
+                        buttonSize: 22
+                        iconSize: 12
+                        variant: "light"
+                        onClicked: tabRoot.outputDevicePickerOpen = false
+                    }
+                }
 
-                        OutputDeviceRow {
-                            required property int index
-                            required property var modelData
+                Flickable {
+                    id: outputDeviceFlickable
 
-                            rowIndex: index
-                            sink: modelData
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    contentWidth: width
+                    contentHeight: outputDeviceList.implicitHeight
+                    boundsBehavior: Flickable.StopAtBounds
+                    clip: true
+
+                    Column {
+                        id: outputDeviceList
+
+                        width: outputDeviceFlickable.width
+                        spacing: 1
+
+                        Text {
+                            width: parent.width
+                            height: visible ? 38 : 0
+                            visible: Services.SystemStatus.audioSinks.length === 0
+                            text: "No output devices"
+                            color: Colors.fgSecondary
+                            verticalAlignment: Text.AlignVCenter
+                            horizontalAlignment: Text.AlignHCenter
+                            font.family: Typography.fontFamily
+                            font.pixelSize: settings.textPixelSize
+                        }
+
+                        Repeater {
+                            model: Services.SystemStatus.audioSinks
+
+                            OutputDeviceRow {
+                                required property int index
+                                required property var modelData
+
+                                rowIndex: index
+                                sink: modelData
+                            }
                         }
                     }
                 }

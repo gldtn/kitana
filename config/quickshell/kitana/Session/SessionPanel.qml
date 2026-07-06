@@ -274,19 +274,11 @@ PanelWindow {
         }
 
         // Destructive action confirmation backdrop
-        Rectangle {
+        Controls.PopupBackdrop {
             anchors.fill: parent
-            visible: root.confirmAction.length > 0
-            radius: parent.radius
-            color: Colors.alpha(Colors.bgPrimary, 0.7)
-
-            // Confirmation cancel click target
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    root.cancelConfirmation();
-                }
-            }
+            open: root.confirmAction.length > 0
+            scrimRadius: parent.radius
+            onDismissed: root.cancelConfirmation()
 
             // Confirmation dialog card
             Rectangle {
@@ -299,6 +291,11 @@ PanelWindow {
                 border.width: 0.6
                 border.pixelAligned: false
                 antialiasing: true
+
+                MouseArea {
+                    anchors.fill: parent
+                    onPressed: mouse => mouse.accepted = true
+                }
 
                 // Confirmation text and actions
                 ColumnLayout {

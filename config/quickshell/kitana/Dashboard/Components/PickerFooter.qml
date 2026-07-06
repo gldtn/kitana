@@ -14,10 +14,8 @@ Item {
     property var dashboard: null
 
     readonly property bool searchActive: dashboard && dashboard.pickerSearchActive
-    readonly property bool helpVisible: dashboard && dashboard.pickerHelpVisible
-
     Layout.fillWidth: true
-    Layout.preferredHeight: searchActive ? 36 : (helpVisible ? 52 : 24)
+    Layout.preferredHeight: searchActive ? 36 : 24
 
     // Picker search input
     Controls.InputField {
@@ -26,8 +24,11 @@ Item {
         anchors.fill: parent
         visible: root.searchActive
         fieldHeight: 36
+        iconName: "search"
+        placeholderText: root.dashboard && root.dashboard.activeTab === "themes" ? "Search themes" : "Search wallpapers"
         text: root.dashboard ? root.dashboard.pickerQuery : ""
-        onVisibleChanged: if (visible) forceActiveFocus()
+        onVisibleChanged: if (visible)
+            Qt.callLater(() => forceActiveFocus())
         onTextChanged: {
             if (!root.dashboard)
                 return;
@@ -53,7 +54,7 @@ Item {
         anchors.fill: parent
         visible: !root.searchActive
         verticalAlignment: Text.AlignVCenter
-        text: root.helpVisible ? "arrows/hjkl move  ·  p/n pages  ·  enter/space apply  ·  / search  ·  ? hide help  ·  esc close" : "? help  ·  arrows/hjkl move  ·  / search  ·  enter/space apply  ·  esc close"
+        text: "? help  ·  arrows/hjkl move  ·  / search  ·  enter/space apply  ·  esc close"
         color: Colors.fgSecondary
         font.family: Typography.fontFamily
         font.pixelSize: settings.textPixelSize

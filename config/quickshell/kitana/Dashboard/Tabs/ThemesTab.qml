@@ -19,9 +19,6 @@ ColumnLayout {
 
     spacing: 8
 
-    // Top breathing space for picker tabs
-    PickerTopInset {}
-
     // Search/help overlay for picker navigation
     PickerHelp { dashboard: tabRoot.panel }
 

@@ -9,15 +9,14 @@ Item {
     property var dashboard: null
 
     readonly property bool searchActive: dashboard && dashboard.pickerSearchActive
-    readonly property bool helpVisible: dashboard && dashboard.pickerHelpVisible
-
     Layout.fillWidth: true
-    Layout.preferredHeight: searchActive ? 36 : (helpVisible ? 52 : 24)
+    Layout.preferredHeight: searchActive ? 36 : 24
 
     // Centered picker footer
     PickerFooter {
         width: Math.min(parent.width, 590)
-        anchors.horizontalCenter: parent.horizontalCenter
+        height: parent.height
+        anchors.centerIn: parent
         dashboard: root.dashboard
     }
 }

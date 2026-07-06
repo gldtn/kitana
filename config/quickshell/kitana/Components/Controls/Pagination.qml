@@ -27,41 +27,50 @@ RowLayout {
 
     signal pageRequested(int page)
 
-    function pageEntries(): var {
+    function numericPages(): var {
         const count = normalizedPageCount;
         const current = normalizedCurrentPage;
+        const limit = Math.max(3, maxPageButtons);
+        const pages = [];
+
+        if (count <= limit) {
+            for (let page = 0; page < count; page++)
+                pages.push(page);
+            return pages;
+        }
+
+        const middleSlots = limit - 2;
+        let start = current - Math.floor(middleSlots / 2);
+        let end = start + middleSlots - 1;
+
+        if (start < 1) {
+            start = 1;
+            end = start + middleSlots - 1;
+        }
+        if (end > count - 2) {
+            end = count - 2;
+            start = end - middleSlots + 1;
+        }
+
+        pages.push(0);
+        for (let page = Math.max(1, start); page <= Math.min(count - 2, end); page++)
+            pages.push(page);
+        pages.push(count - 1);
+
+        return pages;
+    }
+
+    function pageEntries(): var {
         const entries = [{
                 type: "previous",
                 page: previousPage()
             }];
+        const pages = numericPages();
 
-        if (count <= Math.max(3, maxPageButtons)) {
-            for (let page = 0; page < count; page++)
-                entries.push({ type: "page", page });
-        } else {
-            let start = Math.max(1, current - 1);
-            let end = Math.min(count - 2, current + 1);
-
-            if (current <= 2) {
-                start = 1;
-                end = Math.min(count - 2, 4);
-            } else if (current >= count - 3) {
-                start = Math.max(1, count - 5);
-                end = count - 2;
-            }
-
-            entries.push({ type: "page", page: 0 });
-
-            if (start > 1)
+        for (let index = 0; index < pages.length; index++) {
+            if (index > 0 && pages[index] - pages[index - 1] > 1)
                 entries.push({ type: "ellipsis", page: -1 });
-
-            for (let page = start; page <= end; page++)
-                entries.push({ type: "page", page });
-
-            if (end < count - 2)
-                entries.push({ type: "ellipsis", page: -1 });
-
-            entries.push({ type: "page", page: count - 1 });
+            entries.push({ type: "page", page: pages[index] });
         }
 
         entries.push({

@@ -52,6 +52,7 @@ PanelWindow {
     property string wallpaperManagerStatus: ""
     property bool wallpaperSetBusy: false
     property string wallpaperSetAction: ""
+    property string appliedWallpaperPath: ""
     property real settingsPreferredContentHeight: 0
     property string kitanaDir: Quickshell.env("KITANA_DIR") || Quickshell.env("HOME") + "/.local/share/kitana"
     property string wallpaperDir: Quickshell.env("KITANA_WALLPAPER_DIR") || Quickshell.env("HOME") + "/.config/kitana/wallpapers"
@@ -64,6 +65,8 @@ PanelWindow {
     property bool mediaAudioOverlayOpen: false
     readonly property string stateDir: (Quickshell.env("HOME") || "") + "/.local/state/kitana"
     readonly property string weatherCachePath: stateDir + "/dashboard-weather-cache.json"
+    readonly property string kitanaConfigDir: (Quickshell.env("HOME") || "") + "/.config/kitana"
+    readonly property string appliedWallpaperStatePath: kitanaConfigDir + "/wallpaper"
     readonly property string weatherLocation: Services.QuickshellSettings.weatherLocation
     readonly property string weatherUnits: Services.QuickshellSettings.weatherUnits
     readonly property bool weatherHideLocation: Services.QuickshellSettings.weatherHideLocation
@@ -169,6 +172,7 @@ PanelWindow {
             return;
         closing = true;
         mediaAudioOverlayOpen = false;
+        pickerHelpVisible = false;
         animateTo(0);
     }
 
@@ -215,6 +219,8 @@ PanelWindow {
     function refreshTab(): void {
         if (activeTab === "themes" && themes.length === 0)
             themeListProcess.exec([kitanaDir + "/bin/kitana-theme", "--list"]);
+        if (activeTab === "wallpapers")
+            syncWallpaperSelectionToApplied();
         if ((activeTab === "weather" || activeTab === "datetime") && !weather.current_condition)
             refreshWeather();
         if (activeTab === "datetime")
@@ -342,11 +348,15 @@ PanelWindow {
         filteredCount = filteredWallpapers().length;
         wallpaperPage = Math.min(wallpaperPage, wallpaperPageCount() - 1);
         wallpaperCurrentIndex = filteredCount > 0 ? Math.max(0, Math.min(wallpaperCurrentIndex, filteredCount - 1)) : -1;
+        if (activeTab === "wallpapers")
+            syncWallpaperSelectionToApplied();
     }
 
     function applyWallpaper(path: string): void {
-        if (path)
+        if (path) {
+            setAppliedWallpaperPath(path);
             applyProcess.exec([kitanaDir + "/bin/kitana-wallpaper", path]);
+        }
     }
 
     function loadWallpaperDir(): void {
@@ -395,6 +405,48 @@ PanelWindow {
     function currentWallpaperPath(): string {
         const items = filteredWallpapers();
         return wallpaperCurrentIndex >= 0 && wallpaperCurrentIndex < items.length ? items[wallpaperCurrentIndex] : "";
+    }
+
+    function loadAppliedWallpaper(): void {
+        setAppliedWallpaperPath(appliedWallpaperFile.text().trim());
+    }
+
+    function setAppliedWallpaperPath(path: string): void {
+        appliedWallpaperPath = pathFromFileUrl(path).trim();
+        if (activeTab === "wallpapers")
+            syncWallpaperSelectionToApplied();
+    }
+
+    function syncWallpaperSelectionToApplied(): bool {
+        const target = pathFromFileUrl(appliedWallpaperPath).trim();
+        const items = filteredWallpapers();
+        if (target.length === 0 || items.length === 0)
+            return false;
+
+        let selectedIndex = -1;
+        for (let i = 0; i < items.length; i++) {
+            if (pathFromFileUrl(items[i]).trim() === target) {
+                selectedIndex = i;
+                break;
+            }
+        }
+
+        if (selectedIndex < 0) {
+            const targetName = basename(target);
+            for (let i = 0; i < items.length; i++) {
+                if (basename(items[i]) === targetName) {
+                    selectedIndex = i;
+                    break;
+                }
+            }
+        }
+
+        if (selectedIndex < 0)
+            return false;
+
+        wallpaperPage = Math.floor(selectedIndex / wallpaperPageSize);
+        wallpaperCurrentIndex = selectedIndex;
+        return true;
     }
 
     function runWallpaperSetCommand(args: var, action: string): void {
@@ -523,6 +575,17 @@ PanelWindow {
         setWallpaperPage((wallpaperPage + delta + count) % count);
     }
 
+    function moveWallpaperSelectionOnPage(delta: int): void {
+        const items = filteredWallpapers();
+        if (items.length === 0)
+            return;
+
+        const pageStart = wallpaperPage * wallpaperPageSize;
+        const pageEnd = Math.min(items.length - 1, pageStart + wallpaperPageSize - 1);
+        const current = wallpaperCurrentIndex >= pageStart && wallpaperCurrentIndex <= pageEnd ? wallpaperCurrentIndex : pageStart;
+        wallpaperCurrentIndex = Math.max(pageStart, Math.min(pageEnd, current + delta));
+    }
+
     function filteredThemes(): var {
         const needle = pickerQuery.toLowerCase();
         return needle.length === 0 ? themes : themes.filter(theme => theme.name.toLowerCase().indexOf(needle) !== -1 || theme.slug.toLowerCase().indexOf(needle) !== -1);
@@ -556,8 +619,7 @@ PanelWindow {
             themeCurrentIndex = (themeCurrentIndex + delta + items.length) % items.length;
             themePage = Math.floor(themeCurrentIndex / themePageSize);
         } else {
-            wallpaperCurrentIndex = (wallpaperCurrentIndex + delta + items.length) % items.length;
-            wallpaperPage = Math.floor(wallpaperCurrentIndex / wallpaperPageSize);
+            moveWallpaperSelectionOnPage(delta);
         }
     }
 
@@ -587,7 +649,10 @@ PanelWindow {
         const key = event.key;
 
         if (key === Qt.Key_Escape) {
-            if (pickerSearchActive) {
+            if (pickerHelpVisible) {
+                pickerHelpVisible = false;
+                focusPanel();
+            } else if (pickerSearchActive) {
                 pickerSearchActive = false;
                 focusPanel();
             } else {
@@ -599,6 +664,13 @@ PanelWindow {
 
         if (pickerSearchActive)
             return;
+
+        if (pickerHelpVisible) {
+            if (text === "?")
+                pickerHelpVisible = false;
+            event.accepted = true;
+            return;
+        }
 
         if (key === Qt.Key_1) {
             selectTab("datetime");
@@ -654,7 +726,8 @@ PanelWindow {
             pickerSearchActive = true;
             event.accepted = true;
         } else if (text === "?") {
-            pickerHelpVisible = !pickerHelpVisible;
+            pickerSearchActive = false;
+            pickerHelpVisible = true;
             event.accepted = true;
         }
     }
@@ -956,6 +1029,15 @@ PanelWindow {
         onLoaded: root.loadCachedWeather()
     }
 
+    // Current wallpaper state written by kitana-wallpaper.
+    FileView {
+        id: appliedWallpaperFile
+
+        path: root.appliedWallpaperStatePath
+        printErrors: false
+        onLoaded: root.loadAppliedWallpaper()
+    }
+
     // Weather cache directory creator
     Process {
         id: weatherCacheDirProcess
@@ -1199,6 +1281,18 @@ PanelWindow {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 sourceComponent: root.activeTab === "wallpapers" ? wallpapersTab : (root.activeTab === "themes" ? themesTab : (root.activeTab === "media" ? mediaTab : (root.activeTab === "weather" ? weatherTab : (root.activeTab === "settings" ? settingsTab : datetimeTab))))
+            }
+        }
+
+        // Modal picker keyboard help shown from the ? shortcut.
+        Dashboard.PickerHelpPopup {
+            anchors.fill: parent
+            open: root.pickerHelpVisible
+            scrimRadius: card.radius
+            dashboard: root.panelSelf
+            onDismissed: {
+                root.pickerHelpVisible = false;
+                root.focusPanel();
             }
         }
     }

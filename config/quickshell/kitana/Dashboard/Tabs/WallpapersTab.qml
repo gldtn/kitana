@@ -19,13 +19,27 @@ ColumnLayout {
 
     property var dashboard: null
     readonly property var panel: dashboard
+    property string hoveredWallpaperPath: ""
 
     spacing: 8
 
-    function currentPageIndex(): int {
-        const pageIndex = tabRoot.panel.wallpaperCurrentIndex - tabRoot.panel.wallpaperPage * tabRoot.panel.wallpaperPageSize;
-        const pageCount = tabRoot.panel.wallpaperPageItems().length;
-        return pageIndex >= 0 && pageIndex < pageCount ? pageIndex : -1;
+    function decodedName(value: string): string {
+        try {
+            return decodeURIComponent(value);
+        } catch (error) {
+            return value;
+        }
+    }
+
+    function wallpaperDisplayName(path: string): string {
+        const base = String(path || "").replace(/^file:\/\//, "").split("/").pop() || "";
+        const name = decodedName(base);
+        const extensionIndex = name.lastIndexOf(".");
+        return extensionIndex > 0 ? name.slice(0, extensionIndex) : name;
+    }
+
+    function activeWallpaperPath(): string {
+        return hoveredWallpaperPath.length > 0 ? hoveredWallpaperPath : tabRoot.panel.currentWallpaperPath();
     }
 
     function preloadPaths(): var {
@@ -47,9 +61,6 @@ ColumnLayout {
         return paths;
     }
 
-    // Top breathing space for picker tabs
-    PickerTopInset {}
-
     // Search/help overlay for picker navigation
     PickerHelp {
         dashboard: tabRoot.panel
@@ -66,7 +77,7 @@ ColumnLayout {
         readonly property int rows: 4
         readonly property int cardMargin: Math.max(1, Math.round(tabRoot.panel.tabCardSpacing / 2))
         readonly property int cardRadius: 14
-        readonly property int visualBalanceOffset: -8
+        readonly property int visualBalanceOffset: 0
         readonly property real idealGridHeight: Math.round(width / columns * rows * 9 / 16)
 
         WallpaperThumbnailPreloader {
@@ -87,30 +98,9 @@ ColumnLayout {
             boundsBehavior: Flickable.StopAtBounds
             interactive: false
             keyNavigationEnabled: false
-            highlightFollowsCurrentItem: true
-            highlightMoveDuration: 120
-            currentIndex: tabRoot.currentPageIndex()
             cellWidth: width / wallpaperGrid.columns
             cellHeight: height / wallpaperGrid.rows
             model: tabRoot.panel.wallpaperPageItems()
-
-            onCurrentIndexChanged: if (currentIndex >= 0)
-                positionViewAtIndex(currentIndex, GridView.Contain)
-
-            highlight: Item {
-                z: 1000
-
-                // Keyboard and mouse selection border
-                Rectangle {
-                    anchors.fill: parent
-                    anchors.margins: wallpaperGrid.cardMargin
-                    radius: wallpaperGrid.cardRadius
-                    color: "transparent"
-                    border.color: Colors.fgAccent
-                    border.width: 1
-                    antialiasing: true
-                }
-            }
 
             // Wallpaper thumbnail cell
             delegate: Item {
@@ -120,7 +110,7 @@ ColumnLayout {
                 required property int index
 
                 readonly property int sourceIndex: tabRoot.panel.wallpaperPage * tabRoot.panel.wallpaperPageSize + index
-                readonly property bool selected: wallpaperView.currentIndex === index
+                readonly property bool selected: tabRoot.panel.wallpaperCurrentIndex === sourceIndex
 
                 width: wallpaperView.cellWidth
                 height: wallpaperView.cellHeight
@@ -173,13 +163,29 @@ ColumnLayout {
                         }
                     }
 
+                    // Keyboard and mouse selection border
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: parent.radius
+                        color: "transparent"
+                        border.color: wallpaperCell.selected ? Colors.fgAccent : "transparent"
+                        border.width: wallpaperCell.selected ? 1 : 0
+                        border.pixelAligned: false
+                        antialiasing: true
+                    }
+
                     MouseArea {
                         id: wallpaperMouse
 
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onEntered: tabRoot.panel.wallpaperCurrentIndex = wallpaperCell.sourceIndex
+                        onEntered: {
+                            tabRoot.hoveredWallpaperPath = wallpaperCell.modelData;
+                            tabRoot.panel.wallpaperCurrentIndex = wallpaperCell.sourceIndex;
+                        }
+                        onExited: if (tabRoot.hoveredWallpaperPath === wallpaperCell.modelData)
+                            tabRoot.hoveredWallpaperPath = ""
                         onClicked: {
                             tabRoot.panel.wallpaperCurrentIndex = wallpaperCell.sourceIndex;
                             tabRoot.panel.applyWallpaper(wallpaperCell.modelData);
@@ -195,6 +201,20 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.preferredHeight: 30
 
+        // Active wallpaper name from hover or keyboard navigation
+        Text {
+            anchors.left: parent.left
+            anchors.leftMargin: 5
+            anchors.verticalCenter: parent.verticalCenter
+            width: 220
+            text: tabRoot.wallpaperDisplayName(tabRoot.activeWallpaperPath())
+            color: Colors.fgSecondary
+            elide: Text.ElideRight
+            font.family: Typography.fontFamily
+            font.pixelSize: settings.textPixelSize
+            font.weight: Font.DemiBold
+        }
+
         // Page controls
         Controls.Pagination {
             anchors.horizontalCenter: parent.horizontalCenter
@@ -202,18 +222,19 @@ ColumnLayout {
 
             currentPage: tabRoot.panel.wallpaperPage
             pageCount: tabRoot.panel.wallpaperPageCount()
+            maxPageButtons: 3
             wrap: true
 
             onPageRequested: page => tabRoot.panel.setWallpaperPage(page)
         }
 
-        // Filtered wallpaper count label
+        // Page position label
         Text {
             anchors.right: parent.right
             anchors.rightMargin: 5
             anchors.verticalCenter: parent.verticalCenter
             width: 110
-            text: tabRoot.panel.filteredWallpapers().length + " wallpapers"
+            text: "Page " + (tabRoot.panel.wallpaperPage + 1) + " of " + Math.max(1, tabRoot.panel.wallpaperPageCount())
             color: Colors.fgSecondary
             horizontalAlignment: Text.AlignRight
             font.family: Typography.fontFamily
