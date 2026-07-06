@@ -39,7 +39,7 @@ Item {
         radius: Services.UiPreferences.pillRadius
         color: Colors.barItemBg
         border.color: Colors.barItemBorder
-        border.width: settings.borderWidth
+        border.width: Services.UiPreferences.barBorderWidth
     }
 
     function normalizeLayout(layout: string): string {

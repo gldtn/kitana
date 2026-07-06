@@ -68,15 +68,25 @@ PanelWindow {
         property string iconName: Icons.defaultIcon
         property string title: ""
         property string subtitle: ""
+        property int rowIndex: 0
+        readonly property bool hovered: actionMouse.containsMouse
+        readonly property color zebraColor: rowIndex % 2 === 0 ? Colors.alpha(Colors.bgTertiary, Colors.dark ? 0.14 : 0.20) : "transparent"
+        readonly property color selectedColor: Colors.alpha(Colors.bgAccent, Colors.dark ? 0.11 : 0.16)
 
         signal clicked
 
         Layout.fillWidth: true
         Layout.preferredHeight: 48
-        radius: 12
-        color: actionMouse.containsMouse ? Colors.bgTertiary : Colors.bgTertiary
-        border.color: Colors.borderFaint
-        border.width: 1
+        radius: 5
+        color: hovered ? selectedColor : zebraColor
+        border.width: 0
+
+        Behavior on color {
+            ColorAnimation {
+                duration: 90
+                easing.type: Easing.OutCubic
+            }
+        }
 
         // Action icon and labels
         RowLayout {
@@ -228,28 +238,37 @@ PanelWindow {
                 color: Colors.borderFaint
             }
 
-            // App launcher entry
-            MenuAction {
-                iconName: "launcher.apps"
-                title: "App launcher"
-                subtitle: "Search applications and commands"
-                onClicked: root.openLauncher()
-            }
+            // Subtle zebra menu action list
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 2
 
-            // Settings panel entry
-            MenuAction {
-                iconName: "settings"
-                title: "Settings"
-                subtitle: "Open Kitana system settings"
-                onClicked: root.openSettings()
-            }
+                // App launcher entry
+                MenuAction {
+                    rowIndex: 0
+                    iconName: "launcher.apps"
+                    title: "App launcher"
+                    subtitle: "Search applications and commands"
+                    onClicked: root.openLauncher()
+                }
 
-            // Shortcuts panel entry
-            MenuAction {
-                iconName: "input.keyboard"
-                title: "Shortcuts"
-                subtitle: "Search active Hyprland keybinds"
-                onClicked: root.openShortcuts()
+                // Settings panel entry
+                MenuAction {
+                    rowIndex: 1
+                    iconName: "settings"
+                    title: "Settings"
+                    subtitle: "Open Kitana system settings"
+                    onClicked: root.openSettings()
+                }
+
+                // Shortcuts panel entry
+                MenuAction {
+                    rowIndex: 2
+                    iconName: "input.keyboard"
+                    title: "Shortcuts"
+                    subtitle: "Search active Hyprland keybinds"
+                    onClicked: root.openShortcuts()
+                }
             }
         }
     }

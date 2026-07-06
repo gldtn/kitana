@@ -1058,9 +1058,9 @@ PanelWindow {
         height: root.lerp(root.collapsedHeight, root.expandedHeight, root.morphProgress)
         opacity: root.visible ? 1 : 0
         radius: root.lerp(root.collapsedRadius, root.expandedRadius, root.morphProgress)
-        color: Colors.mixColor(Colors.barItemBg, Colors.bgPrimary, root.morphProgress)
+        color: Colors.mixColorWithAlpha(Colors.barItemBg, Colors.bgPrimary, root.morphProgress)
         border.color: Colors.mixColor(Colors.barItemBorder, Colors.borderLight, root.morphProgress)
-        border.width: root.lerp(settings.borderWidth, 1, root.morphProgress)
+        border.width: root.lerp(Services.UiPreferences.barBorderWidth, 1, root.morphProgress)
         clip: true
 
         Behavior on x {

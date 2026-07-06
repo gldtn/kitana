@@ -14,6 +14,8 @@ Singleton {
     property int pillHeightPreference: 0
     property int topMarginPreference: -1
     property int pillRadiusPreference: -1
+    property real barBorderWidthPreference: -1
+    property real barItemBgOpacityPreference: -1
     property string weatherLocation: "Attleboro, MA"
     property string weatherUnits: "F"
     property bool weatherHideLocation: false
@@ -56,6 +58,11 @@ Singleton {
         return isNaN(numeric) ? fallback : Math.round(numeric);
     }
 
+    function realOr(value: var, fallback: real): real {
+        const numeric = Number(value);
+        return isNaN(numeric) ? fallback : numeric;
+    }
+
     function stringOr(value: var, fallback: string): string {
         if (value === undefined || value === null)
             return fallback;
@@ -88,7 +95,9 @@ Singleton {
                 panelHeight: panelHeightPreference,
                 pillHeight: pillHeightPreference,
                 topMargin: topMarginPreference,
-                pillRadius: pillRadiusPreference
+                pillRadius: pillRadiusPreference,
+                borderWidth: barBorderWidthPreference,
+                itemOpacity: barItemBgOpacityPreference
             },
             themePreview: {
                 autoOpen: themePreviewAutoOpen,
@@ -122,6 +131,8 @@ Singleton {
             pillHeightPreference = numberOr(bar.pillHeight, pillHeightPreference);
             topMarginPreference = numberOr(bar.topMargin, topMarginPreference);
             pillRadiusPreference = numberOr(bar.pillRadius, pillRadiusPreference);
+            barBorderWidthPreference = realOr(bar.borderWidth, barBorderWidthPreference);
+            barItemBgOpacityPreference = realOr(bar.itemOpacity, barItemBgOpacityPreference);
 
             const themePreview = settings.themePreview || ({});
             const defaultTab = stringOr(themePreview.defaultTab, themePreviewDefaultTab);
@@ -188,11 +199,27 @@ Singleton {
         save();
     }
 
+    function setBarBorderWidthPreference(value: real): void {
+        barBorderWidthPreference = value;
+        save();
+    }
+
+    function setBarItemBgOpacityPreference(value: real): void {
+        barItemBgOpacityPreference = value;
+        save();
+    }
+
     function resetBarGeometry(): void {
         panelHeightPreference = 0;
         pillHeightPreference = 0;
         topMarginPreference = -1;
         pillRadiusPreference = -1;
+        save();
+    }
+
+    function resetBarAppearance(): void {
+        barBorderWidthPreference = -1;
+        barItemBgOpacityPreference = -1;
         save();
     }
 

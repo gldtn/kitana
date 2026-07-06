@@ -19,11 +19,15 @@ Singleton {
     readonly property int pillHeightPreference: Services.QuickshellSettings.pillHeightPreference
     readonly property int topMarginPreference: Services.QuickshellSettings.topMarginPreference
     readonly property int pillRadiusPreference: Services.QuickshellSettings.pillRadiusPreference
+    readonly property real barBorderWidthPreference: Services.QuickshellSettings.barBorderWidthPreference
+    readonly property real barItemBgOpacityPreference: Services.QuickshellSettings.barItemBgOpacityPreference
     readonly property var layoutPillDisplayModes: ["icons", "compact", "full"]
     readonly property int defaultPanelHeight: defaults.panelHeight > 0 ? defaults.panelHeight : 34
     readonly property int defaultPillHeight: defaults.pillHeight > 0 ? defaults.pillHeight : 32
     readonly property int defaultTopMargin: defaults.topMargin >= 0 ? defaults.topMargin : 4
     readonly property int defaultPillRadius: Math.round(defaultPillHeight / (defaults.radiusDivisor > 0 ? defaults.radiusDivisor : 4))
+    readonly property real defaultBarBorderWidth: defaultReal("borderWidth", 1, 0, 2)
+    readonly property real defaultBarItemBgOpacity: defaultReal("barItemBgOpacity", 0.9, 0.35, 1)
 
     readonly property int panelHeight: resolvedInt(panelHeightPreference, defaultPanelHeight, 24, 72)
     readonly property int barHeight: panelHeight
@@ -31,9 +35,15 @@ Singleton {
     readonly property int pillHeight: Math.min(panelHeight, resolvedInt(pillHeightPreference, defaultPillHeight, 18, 72))
     readonly property int topMargin: resolvedInt(topMarginPreference, defaultTopMargin, 0, 32)
     readonly property int pillRadius: Math.min(Math.round(pillHeight / 2), resolvedInt(pillRadiusPreference, defaultPillRadius, 0, 36))
+    readonly property real barBorderWidth: resolvedReal(barBorderWidthPreference, defaultBarBorderWidth, 0, 2)
+    readonly property real barItemBgOpacity: resolvedReal(barItemBgOpacityPreference, defaultBarItemBgOpacity, 0.35, 1)
     readonly property int clockHorizontalPadding: defaults.clockHorizontalPadding > 0 ? defaults.clockHorizontalPadding : 26
     readonly property int statusHorizontalPadding: defaults.statusHorizontalPadding > 0 ? defaults.statusHorizontalPadding : 22
     readonly property int workspaceHorizontalPadding: defaults.workspaceHorizontalPadding > 0 ? defaults.workspaceHorizontalPadding : 12
+
+    function defaultReal(name: string, fallback: real, minimum: real, maximum: real): real {
+        return resolvedReal(defaults[name], fallback, minimum, maximum);
+    }
 
     function resolvedInt(value: int, fallback: int, minimum: int, maximum: int): int {
         const numeric = Number(value);
@@ -41,6 +51,18 @@ Singleton {
         const safeFallback = isNaN(fallbackNumber) ? minimum : fallbackNumber;
         const base = isNaN(numeric) || numeric < minimum ? safeFallback : numeric;
         return Math.max(minimum, Math.min(maximum, Math.round(base)));
+    }
+
+    function resolvedReal(value: var, fallback: real, minimum: real, maximum: real): real {
+        const numeric = Number(value);
+        const fallbackNumber = Number(fallback);
+        const safeFallback = isNaN(fallbackNumber) ? minimum : fallbackNumber;
+        const base = isNaN(numeric) || numeric < minimum ? safeFallback : numeric;
+        return Math.max(minimum, Math.min(maximum, base));
+    }
+
+    function roundedReal(value: real): real {
+        return Math.round(value * 100) / 100;
     }
 
     function setPanelHeight(value: int): void {
@@ -67,6 +89,18 @@ Singleton {
 
     function resetBarGeometry(): void {
         Services.QuickshellSettings.resetBarGeometry();
+    }
+
+    function setBarBorderWidth(value: real): void {
+        Services.QuickshellSettings.setBarBorderWidthPreference(roundedReal(resolvedReal(value, defaultBarBorderWidth, 0, 2)));
+    }
+
+    function setBarItemBgOpacity(value: real): void {
+        Services.QuickshellSettings.setBarItemBgOpacityPreference(roundedReal(resolvedReal(value, defaultBarItemBgOpacity, 0.35, 1)));
+    }
+
+    function resetBarAppearance(): void {
+        Services.QuickshellSettings.resetBarAppearance();
     }
 
     function setLayoutPillDisplayMode(mode: string): void {

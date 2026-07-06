@@ -13,7 +13,8 @@ QtObject {
 
     readonly property int pillHeight: 32
     readonly property int radiusDivisor: 4
-    readonly property int borderWidth: 1
+    readonly property real borderWidth: 0.8
+    readonly property real barItemBgOpacity: 0.94
 
     readonly property int clockHorizontalPadding: 26
     readonly property int statusHorizontalPadding: 22

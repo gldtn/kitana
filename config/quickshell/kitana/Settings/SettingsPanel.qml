@@ -4,7 +4,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Shapes
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
@@ -106,6 +105,32 @@ PanelWindow {
         return Services.LoginMonitor.selector || "";
     }
 
+    function settingsSections(): var {
+        return [
+            {
+                heading: "",
+                items: [
+                    {
+                        value: "bar",
+                        label: "Bar",
+                        iconName: "workspace.layout"
+                    },
+                    {
+                        value: "system",
+                        label: "System",
+                        iconName: "settings"
+                    }
+                ]
+            }
+        ];
+    }
+
+    function activeTabLabel(): string {
+        if (activeTab === "system")
+            return "System";
+        return "Bar";
+    }
+
     // Settings panel IPC command bridge
     IpcHandler {
         target: "kitana-settings"
@@ -162,8 +187,8 @@ PanelWindow {
         readonly property color sectionBorder: Colors.borderFaint
         readonly property real sectionBorderWidth: 0.6
 
-        width: Math.min(820, parent.width - 72)
-        height: Math.min(520, parent.height - 120)
+        width: Math.min(940, parent.width - 72)
+        height: Math.min(560, parent.height - 120)
         anchors.centerIn: parent
         opacity: root.revealProgress
         radius: 18
@@ -182,50 +207,65 @@ PanelWindow {
             onPressed: mouse => mouse.accepted = true
         }
 
-        // Settings tab chrome and content area
-        ColumnLayout {
+        // Settings sidebar and active content area.
+        RowLayout {
             anchors.fill: parent
             anchors.margins: 14
-            spacing: 10
+            spacing: 14
 
-            // Settings tab selector row
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: 8
-
-                TabButton {
-                    iconName: "workspace.layout"
-                    label: "Bar"
-                    tab: "bar"
-                }
-                TabButton {
-                    iconName: "settings"
-                    label: "System"
-                    tab: "system"
-                }
-
-                Item {
-                    Layout.fillWidth: true
-                }
-
-                Controls.CloseButton {
-                    Layout.alignment: Qt.AlignVCenter
-                    onClicked: root.close()
-                }
+            Controls.NavListSidebar {
+                Layout.preferredWidth: 218
+                Layout.fillHeight: true
+                title: "Settings"
+                model: root.settingsSections()
+                currentValue: root.activeTab
+                onActivated: value => root.activeTab = value
             }
 
-            // Settings tab divider
             Rectangle {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 1
+                Layout.preferredWidth: 1
+                Layout.fillHeight: true
                 color: Colors.borderFaint
             }
 
-            // Active settings tab loader
-            Loader {
+            ColumnLayout {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                sourceComponent: root.activeTab === "system" ? systemTab : barTab
+                spacing: 10
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 34
+                    spacing: 8
+
+                    Text {
+                        Layout.fillWidth: true
+                        text: root.activeTabLabel()
+                        color: Colors.fgPrimary
+                        elide: Text.ElideRight
+                        font.family: Typography.fontFamily
+                        font.pixelSize: settings.textPixelSize + 4
+                        font.weight: Font.Black
+                    }
+
+                    Controls.CloseButton {
+                        Layout.alignment: Qt.AlignVCenter
+                        onClicked: root.close()
+                    }
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 1
+                    color: Colors.borderFaint
+                }
+
+                // Active settings page loader.
+                Loader {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    sourceComponent: root.activeTab === "system" ? systemTab : barTab
+                }
             }
         }
     }
@@ -238,56 +278,6 @@ PanelWindow {
         to: 1
         duration: 140
         easing.type: Easing.OutCubic
-    }
-
-    // Reusable settings tab button
-    component TabButton: Rectangle {
-        id: tabRoot
-
-        property string iconName: Icons.defaultIcon
-        property string label: ""
-        property string tab: ""
-        readonly property bool selected: root.activeTab === tab
-
-        Layout.preferredWidth: tabContent.implicitWidth + 22
-        Layout.preferredHeight: 34
-        radius: 10
-        color: selected ? Colors.subtleAccent : (tabMouse.containsMouse ? Colors.bgTertiary : "transparent")
-        border.color: selected ? Colors.borderAccent : "transparent"
-        border.width: 1
-
-        // Tab icon and label row
-        Row {
-            id: tabContent
-            anchors.centerIn: parent
-            spacing: 7
-
-            Controls.Icon {
-                height: tabRoot.height
-                name: tabRoot.iconName
-                tone: tabRoot.selected ? "accent" : "primary"
-                sizeRole: "bar"
-            }
-
-            Text {
-                height: tabRoot.height
-                text: tabRoot.label
-                color: Colors.fgPrimary
-                verticalAlignment: Text.AlignVCenter
-                font.family: Typography.fontFamily
-                font.pixelSize: settings.textPixelSize
-                font.weight: Font.DemiBold
-            }
-        }
-
-        // Tab selection click target
-        MouseArea {
-            id: tabMouse
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onClicked: root.activeTab = tabRoot.tab
-        }
     }
 
     // Refresh,Compact button used by geometry controls
@@ -330,223 +320,23 @@ PanelWindow {
         }
     }
 
-    // Pagination-style numeric control for geometry values
-    component GeometryPager: Rectangle {
-        id: pagerRoot
-
-        property int value: 0
-        property int minimum: 0
-        property int maximum: 100
-        readonly property bool canDecrease: enabled && value > minimum
-        readonly property bool canIncrease: enabled && value < maximum
-        readonly property color pagerAccentColor: Colors.alpha(Colors.bgTertiary, 0.95)
-        readonly property real pagerBorderWidth: 0.8
-
-        signal valueRequested(int requestedValue)
-
-        Layout.preferredWidth: 124
-        Layout.preferredHeight: 30
-        radius: 8
-        color: "transparent"
-        border.color: pagerRoot.pagerAccentColor
-        border.width: pagerRoot.pagerBorderWidth
-        border.pixelAligned: false
-        antialiasing: true
-        clip: true
-
-        RowLayout {
-            anchors.fill: parent
-            spacing: 0
-
-            Rectangle {
-                Layout.preferredWidth: 31
-                Layout.fillHeight: true
-                opacity: pagerRoot.canDecrease ? 1 : 0.45
-                color: "transparent"
-
-                Shape {
-                    id: decreaseHoverFill
-
-                    anchors.fill: parent
-                    anchors.margins: 3
-                    visible: decreaseMouse.containsMouse && pagerRoot.canDecrease
-
-                    ShapePath {
-                        id: decreaseHoverPath
-
-                        readonly property real r: Math.min(5, decreaseHoverFill.width / 2, decreaseHoverFill.height / 2)
-
-                        fillColor: pagerRoot.pagerAccentColor
-                        strokeWidth: 0
-                        startX: decreaseHoverPath.r
-                        startY: 0
-
-                        PathLine {
-                            x: decreaseHoverFill.width
-                            y: 0
-                        }
-                        PathLine {
-                            x: decreaseHoverFill.width
-                            y: decreaseHoverFill.height
-                        }
-                        PathLine {
-                            x: decreaseHoverPath.r
-                            y: decreaseHoverFill.height
-                        }
-                        PathQuad {
-                            x: 0
-                            y: decreaseHoverFill.height - decreaseHoverPath.r
-                            controlX: 0
-                            controlY: decreaseHoverFill.height
-                        }
-                        PathLine {
-                            x: 0
-                            y: decreaseHoverPath.r
-                        }
-                        PathQuad {
-                            x: decreaseHoverPath.r
-                            y: 0
-                            controlX: 0
-                            controlY: 0
-                        }
-                    }
-                }
-
-                Text {
-                    anchors.centerIn: parent
-                    text: "-"
-                    color: Colors.fgPrimary
-                    font.family: Typography.fontFamily
-                    font.pixelSize: settings.textPixelSize
-                    font.weight: Font.Bold
-                }
-
-                MouseArea {
-                    id: decreaseMouse
-
-                    anchors.fill: parent
-                    enabled: pagerRoot.canDecrease
-                    hoverEnabled: true
-                    cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-                    onClicked: pagerRoot.valueRequested(Math.max(pagerRoot.minimum, pagerRoot.value - 1))
-                }
-            }
-
-            Rectangle {
-                Layout.preferredWidth: pagerRoot.pagerBorderWidth
-                Layout.fillHeight: true
-                color: pagerRoot.pagerAccentColor
-            }
-
-            Rectangle {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                color: pagerRoot.pagerAccentColor
-
-                Text {
-                    anchors.centerIn: parent
-                    text: pagerRoot.value + " px"
-                    color: Colors.fgPrimary
-                    font.family: Typography.fontFamily
-                    font.pixelSize: settings.textPixelSize
-                    font.weight: Font.DemiBold
-                }
-            }
-
-            Rectangle {
-                Layout.preferredWidth: pagerRoot.pagerBorderWidth
-                Layout.fillHeight: true
-                color: pagerRoot.pagerAccentColor
-            }
-
-            Rectangle {
-                Layout.preferredWidth: 31
-                Layout.fillHeight: true
-                opacity: pagerRoot.canIncrease ? 1 : 0.45
-                color: "transparent"
-
-                Shape {
-                    id: increaseHoverFill
-
-                    anchors.fill: parent
-                    anchors.margins: 3
-                    visible: increaseMouse.containsMouse && pagerRoot.canIncrease
-
-                    ShapePath {
-                        id: increaseHoverPath
-
-                        readonly property real r: Math.min(5, increaseHoverFill.width / 2, increaseHoverFill.height / 2)
-
-                        fillColor: pagerRoot.pagerAccentColor
-                        strokeWidth: 0
-                        startX: 0
-                        startY: 0
-
-                        PathLine {
-                            x: increaseHoverFill.width - increaseHoverPath.r
-                            y: 0
-                        }
-                        PathQuad {
-                            x: increaseHoverFill.width
-                            y: increaseHoverPath.r
-                            controlX: increaseHoverFill.width
-                            controlY: 0
-                        }
-                        PathLine {
-                            x: increaseHoverFill.width
-                            y: increaseHoverFill.height - increaseHoverPath.r
-                        }
-                        PathQuad {
-                            x: increaseHoverFill.width - increaseHoverPath.r
-                            y: increaseHoverFill.height
-                            controlX: increaseHoverFill.width
-                            controlY: increaseHoverFill.height
-                        }
-                        PathLine {
-                            x: 0
-                            y: increaseHoverFill.height
-                        }
-                        PathLine {
-                            x: 0
-                            y: 0
-                        }
-                    }
-                }
-
-                Text {
-                    anchors.centerIn: parent
-                    text: "+"
-                    color: Colors.fgPrimary
-                    font.family: Typography.fontFamily
-                    font.pixelSize: settings.textPixelSize
-                    font.weight: Font.Bold
-                }
-
-                MouseArea {
-                    id: increaseMouse
-
-                    anchors.fill: parent
-                    enabled: pagerRoot.canIncrease
-                    hoverEnabled: true
-                    cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-                    onClicked: pagerRoot.valueRequested(Math.min(pagerRoot.maximum, pagerRoot.value + 1))
-                }
-            }
-        }
-    }
-
-    // Numeric geometry preference row
-    component GeometryStepper: Rectangle {
-        id: stepRoot
+    // Numeric preference row backed by the shared rounded stepper control.
+    component NumericPreferenceRow: Rectangle {
+        id: rowRoot
 
         property string title: ""
         property string subtitle: ""
-        property int value: 0
-        property int minimum: 0
-        property int maximum: 100
+        property real value: 0
+        property real minimum: 0
+        property real maximum: 100
+        property real step: 1
+        property int decimals: 0
         property int rowIndex: 0
+        property string suffix: " px"
+        property bool percentage: false
+        property int controlWidth: percentage || decimals > 0 ? 142 : 124
 
-        signal valueRequested(int requestedValue)
+        signal valueRequested(real requestedValue)
 
         Layout.fillWidth: true
         Layout.preferredHeight: 48
@@ -567,7 +357,7 @@ PanelWindow {
 
                 Text {
                     Layout.fillWidth: true
-                    text: stepRoot.title
+                    text: rowRoot.title
                     color: Colors.fgPrimary
                     elide: Text.ElideRight
                     font.family: Typography.fontFamily
@@ -577,7 +367,7 @@ PanelWindow {
 
                 Text {
                     Layout.fillWidth: true
-                    text: stepRoot.subtitle
+                    text: rowRoot.subtitle
                     color: Colors.fgSecondary
                     elide: Text.ElideRight
                     font.family: Typography.fontFamily
@@ -585,11 +375,16 @@ PanelWindow {
                 }
             }
 
-            GeometryPager {
-                value: stepRoot.value
-                minimum: stepRoot.minimum
-                maximum: stepRoot.maximum
-                onValueRequested: requestedValue => stepRoot.valueRequested(requestedValue)
+            Controls.NumericStepper {
+                value: rowRoot.value
+                minimum: rowRoot.minimum
+                maximum: rowRoot.maximum
+                step: rowRoot.step
+                decimals: rowRoot.decimals
+                suffix: rowRoot.suffix
+                percentage: rowRoot.percentage
+                controlWidth: rowRoot.controlWidth
+                onValueRequested: requestedValue => rowRoot.valueRequested(requestedValue)
             }
         }
     }
@@ -611,13 +406,175 @@ PanelWindow {
                 width: parent.width
                 spacing: 12
 
-                Text {
+                // Persistent bar appearance controls card
+                Rectangle {
                     Layout.fillWidth: true
-                    text: "Bar"
-                    color: Colors.fgPrimary
-                    font.family: Typography.fontFamily
-                    font.pixelSize: settings.textPixelSize + 4
-                    font.weight: Font.Bold
+                    Layout.preferredHeight: appearanceContent.implicitHeight + 24
+                    radius: 16
+                    color: card.sectionContainer
+                    border.color: card.sectionBorder
+                    border.width: card.sectionBorderWidth
+                    border.pixelAligned: false
+                    antialiasing: true
+
+                    ColumnLayout {
+                        id: appearanceContent
+
+                        anchors.fill: parent
+                        anchors.margins: 12
+                        spacing: 10
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 8
+
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                spacing: 1
+
+                                Text {
+                                    Layout.fillWidth: true
+                                    text: "Bar appearance"
+                                    color: Colors.fgPrimary
+                                    font.family: Typography.fontFamily
+                                    font.pixelSize: settings.textPixelSize
+                                    font.weight: Font.Bold
+                                }
+
+                                Text {
+                                    Layout.fillWidth: true
+                                    text: "Stored live; controls main bar pills and the collapsed dashboard island."
+                                    color: Colors.fgSecondary
+                                    elide: Text.ElideRight
+                                    font.family: Typography.fontFamily
+                                    font.pixelSize: settings.textPixelSize - 1
+                                }
+                            }
+
+                            GeometryActionButton {
+                                label: "Reset"
+                                onClicked: Services.UiPreferences.resetBarAppearance()
+                            }
+                        }
+
+                        NumericPreferenceRow {
+                            rowIndex: 0
+                            title: "Pill opacity"
+                            subtitle: "Default " + Math.round(Services.UiPreferences.defaultBarItemBgOpacity * 100) + "%, applied from Colors.barItemBg"
+                            value: Services.UiPreferences.barItemBgOpacity
+                            minimum: 0.35
+                            maximum: 1
+                            step: 0.05
+                            percentage: true
+                            onValueRequested: requestedValue => Services.UiPreferences.setBarItemBgOpacity(requestedValue)
+                        }
+
+                        NumericPreferenceRow {
+                            rowIndex: 1
+                            title: "Border width"
+                            subtitle: "Default " + Services.UiPreferences.defaultBarBorderWidth.toFixed(2) + " px, accepts fractional values"
+                            value: Services.UiPreferences.barBorderWidth
+                            minimum: 0
+                            maximum: 2
+                            step: 0.05
+                            decimals: 2
+                            suffix: " px"
+                            onValueRequested: requestedValue => Services.UiPreferences.setBarBorderWidth(requestedValue)
+                        }
+                    }
+                }
+
+                // Persistent bar geometry controls card
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: geometryContent.implicitHeight + 24
+                    radius: 16
+                    color: card.sectionContainer
+                    border.color: card.sectionBorder
+                    border.width: card.sectionBorderWidth
+                    border.pixelAligned: false
+                    antialiasing: true
+
+                    ColumnLayout {
+                        id: geometryContent
+
+                        anchors.fill: parent
+                        anchors.margins: 12
+                        spacing: 10
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 8
+
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                spacing: 1
+
+                                Text {
+                                    Layout.fillWidth: true
+                                    text: "Bar geometry"
+                                    color: Colors.fgPrimary
+                                    font.family: Typography.fontFamily
+                                    font.pixelSize: settings.textPixelSize
+                                    font.weight: Font.Bold
+                                }
+
+                                Text {
+                                    Layout.fillWidth: true
+                                    text: "Stored live; defaults still come from custom settings."
+                                    color: Colors.fgSecondary
+                                    elide: Text.ElideRight
+                                    font.family: Typography.fontFamily
+                                    font.pixelSize: settings.textPixelSize - 1
+                                }
+                            }
+
+                            GeometryActionButton {
+                                label: "Reset"
+                                onClicked: Services.UiPreferences.resetBarGeometry()
+                            }
+                        }
+
+                        NumericPreferenceRow {
+                            rowIndex: 0
+                            title: "Bar height"
+                            subtitle: "Default " + Services.UiPreferences.defaultPanelHeight + " px, reserved edge height"
+                            value: Services.UiPreferences.panelHeight
+                            minimum: 24
+                            maximum: 72
+                            onValueRequested: requestedValue => Services.UiPreferences.setPanelHeight(Math.round(requestedValue))
+                        }
+
+                        NumericPreferenceRow {
+                            rowIndex: 1
+                            title: "Pill height"
+                            subtitle: "Default " + Services.UiPreferences.defaultPillHeight + " px, capped by bar height"
+                            value: Services.UiPreferences.pillHeight
+                            minimum: 18
+                            maximum: Services.UiPreferences.panelHeight
+                            onValueRequested: requestedValue => Services.UiPreferences.setPillHeight(Math.round(requestedValue))
+                        }
+
+                        NumericPreferenceRow {
+                            rowIndex: 2
+                            title: "Top margin"
+                            subtitle: "Default " + Services.UiPreferences.defaultTopMargin + " px, distance from screen edge"
+                            value: Services.UiPreferences.topMargin
+                            minimum: 0
+                            maximum: 32
+                            onValueRequested: requestedValue => Services.UiPreferences.setTopMargin(Math.round(requestedValue))
+                        }
+
+                        NumericPreferenceRow {
+                            rowIndex: 3
+                            title: "Pill radius"
+                            subtitle: "Default " + Services.UiPreferences.defaultPillRadius + " px, capped at half pill height"
+                            value: Services.UiPreferences.pillRadius
+                            minimum: 0
+                            maximum: Math.round(Services.UiPreferences.pillHeight / 2)
+                            onValueRequested: requestedValue => Services.UiPreferences.setPillRadius(Math.round(requestedValue))
+                        }
+                    }
                 }
 
                 // Workspace layout options card
@@ -680,99 +637,6 @@ PanelWindow {
                     }
                 }
 
-                // Persistent bar geometry controls card
-                Rectangle {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: geometryContent.implicitHeight + 24
-                    radius: 16
-                    color: card.sectionContainer
-                    border.color: card.sectionBorder
-                    border.width: card.sectionBorderWidth
-                    border.pixelAligned: false
-                    antialiasing: true
-
-                    ColumnLayout {
-                        id: geometryContent
-
-                        anchors.fill: parent
-                        anchors.margins: 12
-                        spacing: 10
-
-                        RowLayout {
-                            Layout.fillWidth: true
-                            spacing: 8
-
-                            ColumnLayout {
-                                Layout.fillWidth: true
-                                spacing: 1
-
-                                Text {
-                                    Layout.fillWidth: true
-                                    text: "Bar geometry"
-                                    color: Colors.fgPrimary
-                                    font.family: Typography.fontFamily
-                                    font.pixelSize: settings.textPixelSize
-                                    font.weight: Font.Bold
-                                }
-
-                                Text {
-                                    Layout.fillWidth: true
-                                    text: "Stored live; defaults still come from custom settings."
-                                    color: Colors.fgSecondary
-                                    elide: Text.ElideRight
-                                    font.family: Typography.fontFamily
-                                    font.pixelSize: settings.textPixelSize - 1
-                                }
-                            }
-
-                            GeometryActionButton {
-                                label: "Reset"
-                                onClicked: Services.UiPreferences.resetBarGeometry()
-                            }
-                        }
-
-                        GeometryStepper {
-                            rowIndex: 0
-                            title: "Bar height"
-                            subtitle: "Default " + Services.UiPreferences.defaultPanelHeight + " px, reserved edge height"
-                            value: Services.UiPreferences.panelHeight
-                            minimum: 24
-                            maximum: 72
-                            onValueRequested: requestedValue => Services.UiPreferences.setPanelHeight(requestedValue)
-                        }
-
-                        GeometryStepper {
-                            rowIndex: 1
-                            title: "Pill height"
-                            subtitle: "Default " + Services.UiPreferences.defaultPillHeight + " px, capped by bar height"
-                            value: Services.UiPreferences.pillHeight
-                            minimum: 18
-                            maximum: Services.UiPreferences.panelHeight
-                            onValueRequested: requestedValue => Services.UiPreferences.setPillHeight(requestedValue)
-                        }
-
-                        GeometryStepper {
-                            rowIndex: 2
-                            title: "Top margin"
-                            subtitle: "Default " + Services.UiPreferences.defaultTopMargin + " px, distance from screen edge"
-                            value: Services.UiPreferences.topMargin
-                            minimum: 0
-                            maximum: 32
-                            onValueRequested: requestedValue => Services.UiPreferences.setTopMargin(requestedValue)
-                        }
-
-                        GeometryStepper {
-                            rowIndex: 3
-                            title: "Pill radius"
-                            subtitle: "Default " + Services.UiPreferences.defaultPillRadius + " px, capped at half pill height"
-                            value: Services.UiPreferences.pillRadius
-                            minimum: 0
-                            maximum: Math.round(Services.UiPreferences.pillHeight / 2)
-                            onValueRequested: requestedValue => Services.UiPreferences.setPillRadius(requestedValue)
-                        }
-                    }
-                }
-
                 Item {
                     Layout.fillHeight: true
                 }
@@ -787,15 +651,6 @@ PanelWindow {
         // System settings stack
         ColumnLayout {
             spacing: 12
-
-            Text {
-                Layout.fillWidth: true
-                text: "System"
-                color: Colors.fgPrimary
-                font.family: Typography.fontFamily
-                font.pixelSize: settings.textPixelSize + 4
-                font.weight: Font.Bold
-            }
 
             // SDDM login monitor selector card
             Rectangle {

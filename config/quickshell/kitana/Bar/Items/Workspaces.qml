@@ -28,7 +28,7 @@ Item {
         for (const workspace of Hyprland.workspaces.values) {
             states[workspace.id] = {
                 active: workspace.active,
-                occupied: workspace.toplevels.values.length > 0,
+                occupied: workspace.toplevels.values.length > 0
             };
         }
         return states;
@@ -48,7 +48,9 @@ Item {
         radius: Services.UiPreferences.pillRadius
         color: Colors.barItemBg
         border.color: Colors.barItemBorder
-        border.width: settings.borderWidth
+        border.width: Services.UiPreferences.barBorderWidth
+        border.pixelAligned: false
+        antialiasing: true
     }
 
     function screenIndex(screen) {
@@ -108,10 +110,11 @@ Item {
                 readonly property var workspaceState: root.workspaceStates[workspaceId] || null
                 readonly property bool active: workspaceState ? workspaceState.active : false
                 readonly property bool occupied: workspaceState ? workspaceState.occupied : false
+                readonly property real workspaceButtonRadius: settings.radiusDivisor - 2.6
 
                 width: active ? settings.workspaceActiveWidth : settings.workspaceInactiveWidth
                 height: settings.workspacePillHeight
-                radius: height / settings.radiusDivisor
+                radius: Services.UiPreferences.pillRadius / workspaceButtonRadius
                 color: active ? Colors.bgAccent : (occupied ? Colors.bgTertiary : Colors.subtleSecondary)
 
                 // Workspace number label

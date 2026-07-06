@@ -28,7 +28,7 @@ Item {
         radius: Services.UiPreferences.pillRadius
         color: Colors.barItemBg
         border.color: Colors.barItemBorder
-        border.width: root.embedded ? 0 : settings.borderWidth
+        border.width: root.embedded ? 0 : Services.UiPreferences.barBorderWidth
     }
 
     // Theme preview icon

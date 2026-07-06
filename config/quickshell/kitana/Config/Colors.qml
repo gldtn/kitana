@@ -6,6 +6,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import "../Services" as Services
 
 QtObject {
     id: root
@@ -110,6 +111,12 @@ QtObject {
         return parseInt(colorChannel(color).slice(offset, offset + 2), 16);
     }
 
+    function alphaPart(color: string): int {
+        const value = String(color || "#000000");
+        const hex = value.startsWith("#") ? value.slice(1) : value;
+        return hex.length >= 8 ? parseInt(hex.slice(0, 2), 16) : 255;
+    }
+
     function hexPart(value: real): string {
         return Math.max(0, Math.min(255, Math.round(value))).toString(16).padStart(2, "0");
     }
@@ -118,6 +125,12 @@ QtObject {
         const amount = clampRatio(ratio);
         const inverse = 1 - amount;
         return "#" + hexPart(colorPart(from, 0) * inverse + colorPart(to, 0) * amount) + hexPart(colorPart(from, 2) * inverse + colorPart(to, 2) * amount) + hexPart(colorPart(from, 4) * inverse + colorPart(to, 4) * amount);
+    }
+
+    function mixColorWithAlpha(from: string, to: string, ratio: real): string {
+        const amount = clampRatio(ratio);
+        const inverse = 1 - amount;
+        return "#" + hexPart(alphaPart(from) * inverse + alphaPart(to) * amount) + hexPart(colorPart(from, 0) * inverse + colorPart(to, 0) * amount) + hexPart(colorPart(from, 2) * inverse + colorPart(to, 2) * amount) + hexPart(colorPart(from, 4) * inverse + colorPart(to, 4) * amount);
     }
 
     function lighten(color: string, ratio: real): string {
@@ -298,7 +311,8 @@ QtObject {
     readonly property color inputSelectedFg: fgPrimary
 
     // QML composition roles for top-bar controls
-    readonly property color barItemBg: bgPrimary
+    readonly property color barItemBgBase: resolve("barItemBg", bgPrimary)
+    readonly property color barItemBg: alpha(barItemBgBase, Services.UiPreferences.barItemBgOpacity)
     readonly property color barItemBorder: borderFaint
     readonly property color barItemFg: fgPrimary
 
