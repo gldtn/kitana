@@ -1061,7 +1061,8 @@ PanelWindow {
         color: Colors.mixColorWithAlpha(Colors.barItemBg, Colors.bgPrimary, root.morphProgress)
         border.color: Colors.mixColor(Colors.barItemBorder, Colors.borderLight, root.morphProgress)
         border.width: root.lerp(Services.UiPreferences.barBorderWidth, 1, root.morphProgress)
-        clip: true
+        border.pixelAligned: false
+        antialiasing: true
 
         Behavior on x {
             enabled: root.expandedSurface && !root.closing && root.morphProgress >= 0.99
