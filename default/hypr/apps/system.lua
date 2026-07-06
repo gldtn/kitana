@@ -51,7 +51,7 @@ hl.window_rule({
 
   float = false,
   center = false,
-  border_size = 0,
+  border_size = 1,
   no_blur = true,
 })
 

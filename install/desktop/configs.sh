@@ -342,6 +342,7 @@ quickshell_legacy_files=(
   "Bar/Items/Status.qml|Kitana managed Quickshell"
   'Bar/Items/doc/Status.md|Source file: `Bar/Items/Status.qml`'
   'Bar/Items/doc/index.md|[`Status`](Status.md)'
+  "Bar/Items/ThemePreview.qml|Kitana managed Quickshell"
   "Bar/Sections/Center.qml|Kitana managed Quickshell"
   'Bar/Sections/doc/Center.md|Source file: `Bar/Sections/Center.qml`'
   'Bar/Sections/doc/index.md|[`Center`](Center.md)'

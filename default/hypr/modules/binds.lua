@@ -56,6 +56,7 @@ bind(mod .. " + CTRL + Z", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2
 bind(mod .. " + CTRL + K", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-shortcuts open"), { description = "Shortcuts" })
 bind(mod .. " + CTRL + B", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-bar toggle"), { description = "Toggle Quickshell bar" })
 bind(mod .. " + CTRL + D", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-dashboard toggle datetime"), { description = "Dashboard" })
+bind(mod .. " + CTRL + T", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-theme-preview toggle"), { description = "Theme preview" })
 bind(mod .. " + CTRL + PERIOD", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-settings toggle bar"), { description = "Settings panel" })
 bind("PRINT", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-screenshot toggle"), { description = "Screenshot menu" })
 bind(mod .. " + SPACE", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-wallpaper --random"), { description = "Random wallpaper" })

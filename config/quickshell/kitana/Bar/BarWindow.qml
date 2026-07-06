@@ -22,7 +22,6 @@ PanelWindow {
     property var screenshotPanel: null
     property var settingsPanel: null
     property var shortcutsPanel: null
-    property var themePreview: null
     screen: panelScreen
     implicitHeight: root.barVisible ? Services.UiPreferences.panelHeight : 1
     exclusiveZone: root.barVisible ? Services.UiPreferences.exclusiveZone : 0
@@ -101,7 +100,6 @@ PanelWindow {
             panelWindow: root
             screenshotPanel: root.screenshotPanel
             controlPanel: controlPanel
-            themePreview: root.themePreview
         }
     }
 }

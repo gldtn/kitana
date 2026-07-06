@@ -27,7 +27,6 @@ ShellRoot {
     readonly property var sharedSettingsPanel: settingsPanel
     readonly property var sharedShortcutsPanel: shortcutsPanel
     readonly property var focusedScreen: screenForMonitor(Hyprland.focusedMonitor)
-    readonly property var sharedThemePreview: themePreview
 
     function screenForMonitor(monitor: var): var {
         if (!monitor || !monitor.name)
@@ -233,7 +232,6 @@ ShellRoot {
             screenshotPanel: root.sharedScreenshotPanel
             settingsPanel: root.sharedSettingsPanel
             shortcutsPanel: root.sharedShortcutsPanel
-            themePreview: root.sharedThemePreview
         }
     }
 }
