@@ -15,7 +15,9 @@ hl.on("hyprland.start", function()
   sync_workspaces()
   hl.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-wallpaper --restore")
   hl.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-wallpaper-watch")
-  hl.exec_cmd("systemctl --user start hyprpolkitagent")
+  if os.getenv("KITANA_POLKIT_AGENT") == "0" then
+    hl.exec_cmd("systemctl --user start hyprpolkitagent")
+  end
   hl.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-quickshell start")
   hl.exec_cmd("hypridle")
 end)

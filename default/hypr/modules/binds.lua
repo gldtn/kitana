@@ -60,7 +60,7 @@ bind(mod .. " + CTRL + PERIOD", hl.dsp.exec_cmd("quickshell ipc -c kitana call k
 bind("PRINT", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-screenshot toggle"), { description = "Screenshot menu" })
 bind(mod .. " + SPACE", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-wallpaper --random"), { description = "Random wallpaper" })
 bind(mod .. " + CTRL + SPACE", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-theme --next"), { description = "Next theme" })
-bind(mod .. " + CTRL + SHIFT + R", hl.dsp.exec_cmd("${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-quickshell --restart"), { description = "Restart Quickshell" })
+bind(mod .. " + CTRL + SHIFT + R", hl.dsp.exec_cmd("KITANA_POLKIT_AGENT=1 ${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-quickshell --restart"), { description = "Restart Quickshell with Kitana Polkit" })
 bind(mod .. " + COMMA", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-notifications clear"), { description = "Dismiss all notifications" })
 bind(mod .. " + CTRL + COMMA", hl.dsp.exec_cmd("quickshell ipc -c kitana call kitana-control-panel toggle notifications"), { description = "Control panel" })
 

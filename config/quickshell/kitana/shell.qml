@@ -10,6 +10,7 @@ import Quickshell.Io
 import "./Bar" as Bar
 import "./Dashboard" as Dashboard
 import "./Launcher" as Launcher
+import "./Polkit" as Polkit
 import "./Screenshot" as Screenshot
 import "./Session" as Session
 import "./Settings" as Settings
@@ -82,6 +83,15 @@ ShellRoot {
     // Shared Kitana settings panel
     Settings.SettingsPanel {
         id: settingsPanel
+    }
+
+    // Opt-in native Polkit authentication prompt
+    LazyLoader {
+        active: Services.PolkitService.enabled
+
+        Polkit.PolkitPanel {
+            panelScreen: root.focusedScreen || (Quickshell.screens.length > 0 ? Quickshell.screens[0] : null)
+        }
     }
 
     // Shared Hyprland shortcuts panel

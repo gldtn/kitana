@@ -1,0 +1,146 @@
+#!/bin/bash
+
+set -euo pipefail
+
+kitana_dir="${KITANA_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+failed=0
+
+pass() {
+  printf '[OK] %s\n' "$1"
+}
+
+fail() {
+  printf '[FAIL] %s\n' "$1"
+  failed=1
+}
+
+warn() {
+  printf '[WARN] %s\n' "$1"
+}
+
+check_file() {
+  local path="$1"
+  local label="$2"
+
+  if [ -f "$path" ]; then
+    pass "$label"
+  else
+    fail "$label missing: $path"
+  fi
+}
+
+check_contains() {
+  local path="$1"
+  local needle="$2"
+  local label="$3"
+
+  if [ -f "$path" ] && grep -F -q -- "$needle" "$path"; then
+    pass "$label"
+  else
+    fail "$label"
+  fi
+}
+
+check_not_regex() {
+  local path="$1"
+  local pattern="$2"
+  local label="$3"
+
+  if [ -f "$path" ] && grep -E -q -- "$pattern" "$path"; then
+    fail "$label"
+  else
+    pass "$label"
+  fi
+}
+
+run_capture_check() {
+  local label="$1"
+  shift
+
+  local output
+  if output="$($@ 2>&1)"; then
+    pass "$label"
+  else
+    printf '%s\n' "$output"
+    fail "$label"
+  fi
+}
+
+service_file="$kitana_dir/config/quickshell/kitana/Services/PolkitService.qml"
+agent_host_file="$kitana_dir/config/quickshell/kitana/Services/PolkitAgentHost.qml"
+panel_file="$kitana_dir/config/quickshell/kitana/Polkit/PolkitPanel.qml"
+input_file="$kitana_dir/config/quickshell/kitana/Components/Controls/InputField.qml"
+shell_file="$kitana_dir/config/quickshell/kitana/shell.qml"
+services_qmldir="$kitana_dir/config/quickshell/kitana/Services/qmldir"
+autostart_file="$kitana_dir/default/hypr/modules/autostart.lua"
+binds_file="$kitana_dir/default/hypr/modules/binds.lua"
+configs_file="$kitana_dir/install/desktop/configs.sh"
+launcher_file="$kitana_dir/bin/kitana-quickshell"
+
+check_file "$service_file" "Polkit service source"
+check_file "$agent_host_file" "Polkit agent host source"
+check_file "$panel_file" "Polkit panel source"
+
+check_contains "$services_qmldir" 'singleton PolkitService 1.0 PolkitService.qml' "Polkit service registered"
+check_contains "$service_file" 'readonly property bool enabled: Quickshell.env("KITANA_POLKIT_AGENT") !== "0"' "native Polkit is default unless opted out"
+check_contains "$service_file" 'source: root.enabled ? Qt.resolvedUrl("PolkitAgentHost.qml") : ""' "Polkit agent is lazy-loaded"
+check_not_regex "$service_file" '^import Quickshell\.Services\.Polkit$' "disabled mode does not import Polkit plugin"
+check_contains "$agent_host_file" 'import Quickshell.Services.Polkit' "agent host imports Polkit plugin"
+check_contains "$agent_host_file" 'path: "/org/kitana/Polkit"' "agent has Kitana D-Bus path"
+
+check_contains "$shell_file" 'active: Services.PolkitService.enabled' "Polkit panel follows native Polkit service gate"
+check_contains "$shell_file" 'Polkit.PolkitPanel {' "Polkit panel wired into shell"
+check_contains "$autostart_file" 'if os.getenv("KITANA_POLKIT_AGENT") == "0" then' "fallback Polkit agent autostarts only when opted out"
+check_contains "$autostart_file" 'systemctl --user start hyprpolkitagent' "fallback Polkit agent remains configured"
+check_contains "$launcher_file" 'prepare_polkit_agent' "Quickshell launcher prepares Polkit agent state"
+check_contains "$launcher_file" '[ "${KITANA_POLKIT_AGENT:-1}" != "0" ]' "Quickshell launcher defaults to native Polkit"
+check_contains "$launcher_file" 'systemctl --user stop hyprpolkitagent' "default native mode stops fallback Polkit agent"
+check_contains "$launcher_file" 'systemctl --user start hyprpolkitagent' "opt-out mode restores fallback Polkit agent"
+check_contains "$launcher_file" 'if ! wait_until_running >/dev/null 2>&1 && native_polkit_enabled; then' "native startup failure restores fallback Polkit agent"
+check_contains "$binds_file" 'KITANA_POLKIT_AGENT=1 ${KITANA_DIR:-$HOME/.local/share/kitana}/bin/kitana-quickshell --restart' "Quickshell restart bind opts into Kitana Polkit"
+check_contains "$configs_file" 'mkdir -p "$QUICKSHELL_CONFIG_DIR/Polkit"' "refresh creates Polkit config directory"
+check_contains "$configs_file" 'Notifications OSD Polkit Screenshot' "refresh deploys Polkit config directory"
+
+check_contains "$input_file" 'property alias inputMethodHints: input.inputMethodHints' "input fields expose input method hints"
+check_contains "$panel_file" 'WlrLayershell.namespace: "qs-blurred-panel"' "auth prompt uses blurred panel namespace"
+check_contains "$panel_file" 'WlrLayershell.keyboardFocus: visible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None' "auth prompt takes exclusive keyboard focus"
+check_contains "$panel_file" 'activeFlow.cancelAuthenticationRequest();' "cancel path cancels Polkit flow"
+check_contains "$panel_file" 'Keys.onEscapePressed: root.cancelRequest()' "Esc cancels Polkit flow"
+check_contains "$panel_file" 'onEscaped: root.cancelRequest()' "input Esc cancels Polkit flow"
+check_contains "$panel_file" 'responseInput.text = "";' "auth input is cleared"
+check_contains "$panel_file" 'submitGuard.restart();' "submit guard recovers active auth conversations"
+check_contains "$panel_file" '/^qs::service::polkit::Identity\(/.test(label)' "opaque identity pointers are not shown as users"
+check_contains "$panel_file" 'inputMethodHints: root.responseVisible ? Qt.ImhNone : (Qt.ImhSensitiveData | Qt.ImhNoPredictiveText | Qt.ImhNoAutoUppercase)' "password input is marked sensitive"
+check_contains "$panel_file" 'activeFlow.submit(response);' "submit passes local response only"
+check_contains "$panel_file" 'onClicked: root.focusResponse()' "backdrop click refocuses instead of closing"
+check_contains "$panel_file" 'text: qsTr("Details")' "technical request metadata is behind details expander"
+check_contains "$panel_file" 'replace(/\bas the super user\b/g, "as " + userName)' "super user label is normalized to username"
+check_contains "$panel_file" 'Behavior on detailsProgress' "details expander is animated"
+check_not_regex "$panel_file" 'console\.(log|info|warn|error)|print\(' "auth panel does not log flow or input"
+check_not_regex "$panel_file" 'ui\.visibility|visibility\.off|responseVisible.*toggle|password.*show|show.*password' "auth panel has no password reveal toggle"
+
+qml_files=(
+  "$input_file"
+  "$service_file"
+  "$agent_host_file"
+  "$panel_file"
+  "$shell_file"
+)
+
+if command -v qmllint >/dev/null 2>&1; then
+  run_capture_check "Polkit QML lint" qmllint --json - -I "$HOME/.local/lib/kitana/qml" -I "$kitana_dir/config/quickshell/kitana" -I "$kitana_dir/config/quickshell" "${qml_files[@]}"
+else
+  warn "skipping QML lint: qmllint missing"
+fi
+
+if command -v luac >/dev/null 2>&1; then
+  run_capture_check "Hypr autostart Lua syntax" luac -p "$autostart_file"
+  run_capture_check "Hypr binds Lua syntax" luac -p "$binds_file"
+else
+  warn "skipping Lua syntax check: luac missing"
+fi
+
+run_capture_check "config refresh script syntax" bash -n "$configs_file"
+run_capture_check "Quickshell launcher syntax" bash -n "$launcher_file"
+
+exit "$failed"

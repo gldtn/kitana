@@ -15,6 +15,7 @@ Rectangle {
 
     property alias text: input.text
     property alias echoMode: input.echoMode
+    property alias inputMethodHints: input.inputMethodHints
     property alias inputFocus: input.focus
     property string placeholderText: ""
     property string iconName: ""
