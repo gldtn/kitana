@@ -43,6 +43,7 @@ kitana-refresh --applications
 kitana-refresh --configs
 kitana-refresh --sddm
 kitana-refresh --wallpapers
+kitana-refresh-wallpapers-extras
 ```
 
 Optional/personal installs are available as individual commands:

@@ -430,6 +430,7 @@ for helper in \
   kitana-quickshell \
   kitana-quickshell-build-cava \
   kitana-refresh \
+  kitana-refresh-wallpapers-extras \
   kitana-reinstall \
   kitana-sddm-monitor \
   kitana-show-done \

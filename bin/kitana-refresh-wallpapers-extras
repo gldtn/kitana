@@ -1,0 +1,197 @@
+#!/bin/bash
+
+set -euo pipefail
+
+KITANA_DIR="${KITANA_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+extras_dir="${KITANA_WALLPAPER_EXTRAS_DIR:-$HOME/.local/share/kitana-wallpapers-extras}"
+state_dir="$HOME/.config/kitana"
+theme_file="$state_dir/theme"
+config_file="$state_dir/config"
+assume_yes=0
+theme=""
+
+usage() {
+  cat <<EOF
+Usage: kitana-refresh-wallpapers-extras [--yes] [--theme THEME]
+
+Regenerate themed wallpapers from kitana-wallpapers-extras and expose the
+current Kitana theme's wallpaper set.
+
+Options:
+  --yes          Skip the destructive clean confirmation
+  --theme THEME  Use a specific wallpaper set instead of the current theme
+  -h, --help     Show this help
+EOF
+}
+
+valid_wallpaper_set_name() {
+  [[ "$1" =~ ^[A-Za-z0-9._-]+$ ]] && [ "$1" != "." ] && [ "$1" != ".." ]
+}
+
+has_gum() {
+  command -v gum >/dev/null 2>&1
+}
+
+style() {
+  local color="$1"
+  shift
+
+  if has_gum; then
+    gum style --foreground "$color" "$@"
+  else
+    printf '%s\n' "$*"
+  fi
+}
+
+heading() {
+  if has_gum; then
+    gum format -- "## $1"
+  else
+    printf '%s\n' "$1"
+  fi
+}
+
+confirm() {
+  local prompt="$1"
+  local answer
+
+  [ "$assume_yes" -eq 1 ] && return 0
+
+  if has_gum && [ -t 0 ] && [ -t 1 ]; then
+    gum confirm "$prompt"
+    return $?
+  fi
+
+  if ! read -r -p "$prompt [y/N]: " answer; then
+    return 1
+  fi
+
+  [[ "$answer" =~ ^[Yy]$ ]]
+}
+
+run_step() {
+  local title="$1"
+  shift
+
+  style 6 "$title"
+  "$@"
+}
+
+generated_wallpaper_paths() {
+  local set_name rest
+
+  while IFS='|' read -r set_name rest; do
+    [ -n "$set_name" ] || continue
+    [ "$set_name" != "originals" ] || continue
+    if ! valid_wallpaper_set_name "$set_name"; then
+      printf 'Invalid wallpaper set name from generator: %s\n' "$set_name" >&2
+      exit 1
+    fi
+    printf 'wallpapers/%s\n' "$set_name"
+  done < <("$extras_dir/scripts/lutgen-wallpapers" --list-themes)
+}
+
+clean_generated_wallpaper_sets() {
+  local paths=()
+  local path
+
+  while IFS= read -r path; do
+    [ -n "$path" ] || continue
+    [ -e "$extras_dir/$path" ] || continue
+    paths+=("$path")
+  done < <(generated_wallpaper_paths)
+
+  if [ "${#paths[@]}" -eq 0 ]; then
+    style 7 "No generated wallpaper sets to clean."
+    return 0
+  fi
+
+  git -C "$extras_dir" clean -fdx -- "${paths[@]}"
+}
+
+current_theme() {
+  local env_theme=""
+  local selected_theme=""
+
+  if [ -f "$theme_file" ]; then
+    selected_theme="$(tr -d '\n' <"$theme_file")"
+    if [ -n "$selected_theme" ]; then
+      printf '%s\n' "$selected_theme"
+      return 0
+    fi
+  fi
+
+  if [ -f "$config_file" ]; then
+    # shellcheck disable=SC1090
+    source "$config_file"
+    env_theme="${KITANA_THEME:-}"
+  fi
+
+  printf '%s\n' "${env_theme:-originals}"
+}
+
+require_extras_repo() {
+  if [ ! -d "$extras_dir/.git" ]; then
+    printf 'Wallpaper extras Git repo not found: %s\n' "$extras_dir" >&2
+    printf 'Install it with: %s/bin/kitana-install-extras-wallpapers\n' "$KITANA_DIR" >&2
+    exit 1
+  fi
+
+  if [ ! -x "$extras_dir/scripts/lutgen-wallpapers" ]; then
+    printf 'Missing wallpaper generator: %s/scripts/lutgen-wallpapers\n' "$extras_dir" >&2
+    exit 1
+  fi
+
+  if [ ! -x "$extras_dir/scripts/use-wallpaper-set" ]; then
+    printf 'Missing wallpaper set switcher: %s/scripts/use-wallpaper-set\n' "$extras_dir" >&2
+    exit 1
+  fi
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --yes|-y)
+      assume_yes=1
+      ;;
+    --theme)
+      [ "$#" -ge 2 ] || { usage >&2; exit 2; }
+      theme="$2"
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      usage >&2
+      exit 2
+      ;;
+  esac
+  shift
+done
+
+require_extras_repo
+[ -n "$theme" ] || theme="$(current_theme)"
+
+heading "Refresh Kitana Wallpaper Extras"
+printf 'Extras repo: %s\n' "$extras_dir"
+printf 'Wallpaper set: %s\n' "$theme"
+printf '\n'
+
+style 3 "This removes ignored generated theme folders, but preserves wallpapers/originals."
+if ! confirm "Clean generated kitana-wallpapers-extras theme folders?"; then
+  style 3 "Wallpaper refresh cancelled."
+  exit 0
+fi
+
+run_step "Cleaning generated wallpaper sets..." \
+  clean_generated_wallpaper_sets
+
+run_step "Generating all themed wallpaper sets..." \
+  "$extras_dir/scripts/lutgen-wallpapers" --all
+
+run_step "Activating wallpaper set: $theme" \
+  "$extras_dir/scripts/use-wallpaper-set" "$theme"
+
+style 2 "Wallpaper extras refreshed for: $theme"
+style 7 "If the dashboard was already open, close and reopen it or press Refresh in Wallpaper settings."
